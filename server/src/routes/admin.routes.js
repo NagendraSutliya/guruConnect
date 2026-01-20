@@ -52,9 +52,9 @@ router.post("/teacher", requireAdmin, async (req, res) => {
 
 /* Get all feedback of logged-in institute */
 router.get("/feedback", requireAdmin, async (req, res) => {
-  const data = await Feedback.find({ instituteId: req.user.id }).sort({
-    createdAt: -1,
-  });
+  const data = await Feedback.find({ instituteId: req.user.id })
+    .populate("teacherId", "name")
+    .sort({ createdAt: -1 });
   res.json(data);
 });
 

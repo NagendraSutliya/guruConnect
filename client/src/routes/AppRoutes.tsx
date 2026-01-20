@@ -19,7 +19,8 @@ import FeedbackPanel from "../pages/admin/panels/FeedbackPanel";
 import LinksPanel from "../pages/admin/panels/LinksPanel";
 import TeacherLogin from "../pages/teacher/Login";
 import TeacherFeedback from "../pages/teacher/TeacherFeedback";
-import PublicFeedback from "../pages/public/PublicFeedback";
+// import PublicFeedback from "../pages/public/PublicFeedback";
+import FeedbackForm from "../pages/student/FeedbackForm";
 
 export default function AppRoutes() {
   return (
@@ -29,7 +30,7 @@ export default function AppRoutes() {
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/auth/verify" element={<Verify />} />
-        <Route path="/feedback/:code" element={<PublicFeedback />} />
+        <Route path="/feedback/:code" element={<FeedbackForm />} />
       </Route>
 
       <Route

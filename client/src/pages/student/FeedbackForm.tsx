@@ -1,116 +1,167 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "../../api/axiosInstance";
+import api from "../../api/axiosInstance";
+
+type Teacher = {
+  _id: string;
+  name: string;
+};
 
 const FeedbackForm = () => {
-  const { code } = useParams(); // auto detect institute from URL
+  const { code } = useParams<{ code: string }>();
 
-  const [form, setForm] = useState({
-    code: code || "",
-    classOrBatch: "",
-    teacherName: "",
-    category: "",
-    mood: "",
-    message: "",
-  });
-
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [teacherId, setTeacherId] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [mood, setMood] = useState<"happy" | "neutral" | "sad">("happy");
+  const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (!code) return;
+
+    api
+      .get(`/public/teachers/${code}`)
+      .then((res) => setTeachers(res.data))
+      .catch(() => setError("Invalid or expired link"));
+  }, [code]);
+
+  const handleSubmit = async () => {
+    setError("");
+
+    if (!teacherId || !message.trim()) {
+      setError("Please select a teacher and write feedback.");
+      return;
+    }
+
     try {
-      await axios.post("/feedback", form);
+      setLoading(true);
+      await api.post(`/public/feedback/${code}`, {
+        teacherId,
+        studentName,
+        mood,
+        message,
+      });
       setSubmitted(true);
-    } catch (err) {
-      alert("Failed to submit feedback");
+    } catch {
+      setError("Failed to submit feedback. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (submitted)
+  if (submitted) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <h2 className="text-xl font-semibold text-green-600">
-          ✅ Thank you for your anonymous feedback!
-        </h2>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="max-w-lg w-full bg-white p-8 rounded shadow text-center">
+          <h2 className="text-2xl font-bold mb-2">Thank You 🙏</h2>
+          <p>Your feedback has been submitted successfully.</p>
+        </div>
       </div>
     );
+  }
 
   return (
-    <div className="max-w-md mx-auto mt-16 p-6 border rounded-xl shadow bg-white">
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        Submit Anonymous Feedback
-      </h2>
+    <div className="min-h-screen bg-gray-50 py-12 px-4">
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold">Student Feedback</h1>
+          <p className="text-gray-600 mt-2">
+            Your feedback helps us improve teaching quality.
+          </p>
+        </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="classOrBatch"
-          placeholder="Class / Batch"
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        />
+        {/* Card */}
+        <div className="bg-white rounded-lg shadow p-8 space-y-6">
+          {/* Teacher & Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Teacher <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="border p-3 w-full rounded"
+                value={teacherId}
+                onChange={(e) => setTeacherId(e.target.value)}
+              >
+                <option value="">Select Teacher</option>
+                {teachers.map((t) => (
+                  <option key={t._id} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <select
-          name="teacherName"
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        >
-          <option value="">Select Teacher</option>
-          <option value="All">All Teachers</option>
-          <option value="Math">Math Teacher</option>
-          <option value="Science">Science Teacher</option>
-        </select>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Your Name (optional)
+              </label>
+              <input
+                className="border p-3 w-full rounded"
+                placeholder="e.g. John Doe"
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+              />
+            </div>
+          </div>
 
-        <select
-          name="category"
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        >
-          <option value="">Select Category</option>
-          <option value="Teaching">Teaching</option>
-          <option value="Behavior">Behavior</option>
-          <option value="Stress">Stress</option>
-          <option value="Infrastructure">Infrastructure</option>
-        </select>
+          {/* Mood */}
+          <div>
+            <label className="block text-sm font-medium mb-3">
+              How was your experience?
+            </label>
+            <div className="flex gap-4">
+              {(["happy", "neutral", "sad"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setMood(m)}
+                  className={`flex-1 py-3 rounded font-medium transition ${
+                    mood === m
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  }`}
+                >
+                  {m.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </div>
 
-        <select
-          name="mood"
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          required
-        >
-          <option value="">Select Mood</option>
-          <option value="🙂">🙂 Happy</option>
-          <option value="😐">😐 Neutral</option>
-          <option value="😟">😟 Sad</option>
-        </select>
+          {/* Message */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Feedback <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              className="border p-3 w-full rounded resize-none"
+              rows={5}
+              placeholder="Write your feedback..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
 
-        <textarea
-          name="message"
-          placeholder="Write your feedback..."
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          rows={4}
-          required
-        />
+          {/* Error */}
+          {error && <p className="text-sm text-red-600 text-center">{error}</p>}
 
-        <button
-          type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded font-semibold"
-        >
-          Submit Feedback
-        </button>
-      </form>
+          {/* Submit */}
+          <div className="pt-4">
+            <button
+              onClick={handleSubmit}
+              disabled={loading || !teacherId || !message.trim()}
+              className="w-full md:w-auto px-10 py-3 bg-black text-white rounded disabled:opacity-50"
+            >
+              {loading ? "Submitting..." : "Submit Feedback"}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
