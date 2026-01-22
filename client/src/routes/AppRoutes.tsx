@@ -31,6 +31,7 @@ export default function AppRoutes() {
         <Route path="/auth/register" element={<Register />} />
         <Route path="/auth/verify" element={<Verify />} />
         <Route path="/feedback/:code" element={<FeedbackForm />} />
+        <Route path="/teacher/login" element={<TeacherLogin />} />
       </Route>
 
       <Route
@@ -47,8 +48,6 @@ export default function AppRoutes() {
         <Route path="link" element={<LinksPanel />} />
         <Route path="dashboard" element={<AdminDashboard />} />
       </Route>
-
-      <Route path="/teacher/login" element={<TeacherLogin />} />
 
       <Route
         path="/teacher"

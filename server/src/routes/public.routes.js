@@ -36,7 +36,7 @@ router.post("/feedback/:code", async (req, res) => {
       instituteId: link.instituteId,
       teacherId: teacher._id,
       teacherName: teacher.name,
-      studentName: req.body.studentName || null, // optional
+      studentName: req.body.studentName || undefined, // optional
       classOrBatch,
       mood,
       message,

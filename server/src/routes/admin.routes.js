@@ -5,6 +5,7 @@ const Feedback = require("../models/Feedback");
 const { requireAdmin } = require("../middleware/auth");
 const Teacher = require("../models/Teacher");
 const PublicLink = require("../models/PublicLink");
+const Institute = require("../models/Institute");
 
 // Get all teachers of this institute
 router.get("/teachers", requireAdmin, async (req, res) => {
@@ -15,18 +16,70 @@ router.get("/teachers", requireAdmin, async (req, res) => {
 });
 
 // Dashboard stats
+// router.get("/stats", requireAdmin, async (req, res) => {
+//   const teachers = await Teacher.countDocuments({ instituteId: req.user.id });
+
+//   const today = new Date();
+//   today.setHours(0, 0, 0, 0);
+
+//   const feedbackToday = await Feedback.countDocuments({
+//     instituteId: req.user.id,
+//     createdAt: { $gte: today },
+//   });
+
+//   res.json({ teachers, feedbackToday });
+// });
+
+// Dashboard Stats for all cards
 router.get("/stats", requireAdmin, async (req, res) => {
-  const teachers = await Teacher.countDocuments({ instituteId: req.user.id });
+  try {
+    const instituteId = req.user.id;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const feedbackToday = await Feedback.countDocuments({
-    instituteId: req.user.id,
-    createdAt: { $gte: today },
-  });
+    const institute = await Institute.findById(instituteId).select("plan");
 
-  res.json({ teachers, feedbackToday });
+    // Parallel DB querieswant to fetch it from db only i have updated admin_routes.js
+    const [
+      teachers,
+      students,
+      totalFeedback,
+      feedbackToday,
+      avgRating,
+      newTeachersToday,
+    ] = await Promise.all([
+      Teacher.countDocuments({ instituteId }),
+      // If you have Student model
+      // Student.countDocuments({ instituteId }),
+      0, // TEMP: replace when Student model exists
+      Feedback.countDocuments({ instituteId }),
+      Feedback.countDocuments({
+        instituteId,
+        createdAt: { $gte: today },
+      }),
+      Feedback.aggregate([
+        { $match: { instituteId } },
+        { $group: { _id: null, avg: { $avg: "$rating" } } },
+      ]),
+      Teacher.countDocuments({
+        instituteId,
+        createdAt: { $gte: today },
+      }),
+    ]);
+    res.json({
+      teachers,
+      students,
+      totalFeedback,
+      feedbackToday,
+      avgRating: avgRating[0]?.avg || 0,
+      newTeachersToday,
+      plan: institute?.plan || "free",
+    });
+  } catch (err) {
+    console.error("Admin stats error:", err);
+    res.status(500).json({ message: "Failed to load stats" });
+  }
 });
 
 /* Create Teacher */
@@ -34,7 +87,7 @@ router.post("/teacher", requireAdmin, async (req, res) => {
   try {
     const hashed = await bcrypt.hash(req.body.password, 10);
 
-    console.log("req.user:", req.user);
+    // console.log("req.user:", req.user);
 
     const teacher = await Teacher.create({
       name: req.body.name,

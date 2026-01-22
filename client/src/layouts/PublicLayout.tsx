@@ -4,8 +4,13 @@ import Navbar from "../components/Navbar";
 const PublicLayout = () => {
   return (
     <>
-      <Navbar />
-      <Outlet />
+      <div className="h-screen flex flex-col overflow-hidden">
+        <Navbar />
+
+        <main className="flex-1 overflow-hidden">
+          <Outlet />
+        </main>
+      </div>
     </>
   );
 };

@@ -41,12 +41,12 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white shadow relative">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
           <img
             src="/guruconnect-logo.png"
             alt="GuruConnect Logo"
-            className="w-[80px] h-[80px]"
+            className="w-20 h-20"
           />
         </Link>
 

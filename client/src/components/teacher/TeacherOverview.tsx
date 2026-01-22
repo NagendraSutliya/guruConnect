@@ -29,7 +29,7 @@ const TeacherOverview = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-bold">Welcome 👋</h1>
+      <h1 className="text-2xl font-bold">Welcome 👋 Mr. {}</h1>
 
       <div className="grid grid-cols-3 gap-6">
         <Card title="Total Feedback" value={data.total} />
