@@ -1,0 +1,155 @@
+guruconnect/
+│
+├── server/                         # Backend (Node + Express + MongoDB)
+│   ├── src/
+│   │   ├── app.js                   # Express app setup
+│   │   ├── server.js                # Server entry point
+│   │   │
+│   │   ├── config/
+│   │   │   ├── db.js                # MongoDB connection
+│   │   │   ├── env.js               # Env validation
+│   │   │   └── constants.js         # App-wide constants
+│   │   │
+│   │   ├── models/                  # Mongoose Schemas
+│   │   │   ├── Institute.js
+│   │   │   ├── Admin.js
+│   │   │   ├── Teacher.js
+│   │   │   ├── Student.js            # (future)
+│   │   │   ├── Feedback.js
+│   │   │   ├── PublicLink.js
+│   │   │   ├── AuditLog.js           # (future)
+│   │   │   └── index.js
+│   │   │
+│   │   ├── routes/                  # API Routes
+│   │   │   ├── auth.routes.js
+│   │   │   ├── admin.routes.js
+│   │   │   ├── teacher.routes.js
+│   │   │   ├── feedback.routes.js
+│   │   │   ├── public.routes.js
+│   │   │   └── index.js
+│   │   │
+│   │   ├── controllers/             # Business Logic
+│   │   │   ├── auth.controller.js
+│   │   │   ├── admin.controller.js
+│   │   │   ├── teacher.controller.js
+│   │   │   ├── feedback.controller.js
+│   │   │   └── public.controller.js
+│   │   │
+│   │   ├── middleware/              # Express Middleware
+│   │   │   ├── auth.js               # JWT + role check
+│   │   │   ├── requireAdmin.js
+│   │   │   ├── requireTeacher.js
+│   │   │   ├── checkStatus.js        # active / inactive
+│   │   │   ├── errorHandler.js
+│   │   │   └── rateLimiter.js        # (future)
+│   │   │
+│   │   ├── services/                # Reusable logic
+│   │   │   ├── token.service.js
+│   │   │   ├── mail.service.js
+│   │   │   ├── feedback.service.js
+│   │   │   └── audit.service.js
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── response.js           # Standard API responses
+│   │   │   ├── logger.js
+│   │   │   ├── validators.js
+│   │   │   └── helpers.js
+│   │   │
+│   │   └── docs/                    # Internal backend docs
+│   │       ├── api-contract.md
+│   │       └── db-schema.md
+│   │
+│   ├── .env
+│   ├── .env.example
+│   ├── package.json
+│   └── nodemon.json
+│
+├── client/                         # Frontend (React + Tailwind)
+│   ├── src/
+│   │   ├── main.tsx / main.jsx
+│   │   ├── App.tsx
+│   │   │
+│   │   ├── api/
+│   │   │   ├── axiosInstance.ts
+│   │   │   ├── auth.api.ts
+│   │   │   ├── admin.api.ts
+│   │   │   ├── teacher.api.ts
+│   │   │   └── feedback.api.ts
+│   │   │
+│   │   ├── auth/
+│   │   │   ├── AuthProvider.tsx
+│   │   │   ├── ProtectedRoute.tsx
+│   │   │   └── useAuth.ts
+│   │   │
+│   │   ├── routes/
+│   │   │   ├── AdminRoutes.tsx
+│   │   │   ├── TeacherRoutes.tsx
+│   │   │   └── PublicRoutes.tsx
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── admin/
+│   │   │   │   ├── Dashboard.tsx
+│   │   │   │   ├── TeacherPanel.tsx
+│   │   │   │   ├── FeedbackPanel.tsx
+│   │   │   │   └── Settings.tsx
+│   │   │   │
+│   │   │   ├── teacher/
+│   │   │   │   ├── Dashboard.tsx
+│   │   │   │   ├── Feedback.tsx
+│   │   │   │   └── Profile.tsx
+│   │   │   │
+│   │   │   └── public/
+│   │   │       ├── FeedbackForm.tsx
+│   │   │       └── ThankYou.tsx
+│   │   │
+│   │   ├── components/
+│   │   │   ├── ui/
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── Badge.tsx
+│   │   │   │   ├── Modal.tsx
+│   │   │   │   ├── Table.tsx
+│   │   │   │   └── Loader.tsx
+│   │   │   │
+│   │   │   ├── layout/
+│   │   │   │   ├── AdminLayout.tsx
+│   │   │   │   ├── TeacherLayout.tsx
+│   │   │   │   └── PublicLayout.tsx
+│   │   │   │
+│   │   │   └── common/
+│   │   │       ├── Header.tsx
+│   │   │       ├── Sidebar.tsx
+│   │   │       └── EmptyState.tsx
+│   │   │
+│   │   ├── hooks/
+│   │   │   ├── useFetch.ts
+│   │   │   ├── useDebounce.ts
+│   │   │   └── usePagination.ts
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── formatDate.ts
+│   │   │   ├── constants.ts
+│   │   │   └── permissions.ts
+│   │   │
+│   │   ├── styles/
+│   │   │   └── globals.css
+│   │   │
+│   │   └── types/
+│   │       ├── auth.types.ts
+│   │       ├── teacher.types.ts
+│   │       └── feedback.types.ts
+│   │
+│   ├── index.html
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   └── package.json
+│
+├── docs/                           # Product Documentation
+│   ├── product-requirements.md
+│   ├── system-architecture.md
+│   ├── er-diagram.png
+│   ├── api-contract.xlsx
+│   └── deployment-guide.md
+│
+├── .gitignore
+├── README.md
+└── docker-compose.yml              # (future)
