@@ -1,34 +1,20 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
-const Feedback = require("../models/Feedback");
-const { requireAdmin } = require("../middleware/auth");
-const Teacher = require("../models/Teacher");
-const PublicLink = require("../models/PublicLink");
-const Institute = require("../models/Institute");
+const Feedback = require("../../models/Feedback");
+const { requireAdmin } = require("../../middleware/auth");
+const Teacher = require("../../models/Teacher");
+const PublicLink = require("../../models/PublicLink");
+const Institute = require("../../models/Institute");
 
 // Get all teachers of this institute
 router.get("/teachers", requireAdmin, async (req, res) => {
   const teachers = await Teacher.find({ instituteId: req.user.id }).select(
     "-password"
   );
+  // .sort({ createdAt: -1 });
   res.json(teachers);
 });
-
-// Dashboard stats
-// router.get("/stats", requireAdmin, async (req, res) => {
-//   const teachers = await Teacher.countDocuments({ instituteId: req.user.id });
-
-//   const today = new Date();
-//   today.setHours(0, 0, 0, 0);
-
-//   const feedbackToday = await Feedback.countDocuments({
-//     instituteId: req.user.id,
-//     createdAt: { $gte: today },
-//   });
-
-//   res.json({ teachers, feedbackToday });
-// });
 
 // Dashboard Stats for all cards
 router.get("/stats", requireAdmin, async (req, res) => {
@@ -103,6 +89,52 @@ router.post("/teacher", requireAdmin, async (req, res) => {
   }
 });
 
+// Soft Delete Teacher (Deactivate)
+// router.delete("/teacher/:id", requireAdmin, async (req, res) => {
+//   try {
+//     const teacherId = req.params.id;
+
+//     const teacher = await Teacher.findOne({
+//       _id: teacherId,
+//       instituteId: req.user.id,
+//     });
+
+//     if (!teacher) {
+//       return res.status(404).json("Teacher not found");
+//     }
+
+//     if ((teacher.status = "inactive")) {
+//       return res.status(400).json({ message: "Teacher already inactive" });
+//     }
+
+//     teacher.status === "inactive";
+//     await teacher.save();
+
+//     res.json({ message: "Teacher Deactivated Successfully" });
+//   } catch (err) {
+//     console.error("Soft delete failed", err);
+//     res.status(500).json({ message: "Failed to deactivate teacher" });
+//   }
+// });
+
+router.patch("/teacher/:id/deactivate", requireAdmin, async (req, res) => {
+  try {
+    const teacher = await Teacher.findOneAndUpdate(
+      { _id: req.params.id, instituteId: req.user.id },
+      { status: "inactive" },
+      { new: true }
+    );
+
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    res.json({ message: "Teacher deactivated", teacher });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to deactivate teacher" });
+  }
+});
+
 /* Get all feedback of logged-in institute */
 router.get("/feedback", requireAdmin, async (req, res) => {
   const data = await Feedback.find({ instituteId: req.user.id })
@@ -137,20 +169,5 @@ router.post("/link", requireAdmin, async (req, res) => {
 
   res.json(link);
 });
-
-// Get or create institute public link
-// router.get("/link", requireAdmin, async (req, res) => {
-//   let link = await PublicLink.findOne({ instituteId: req.user.id });
-
-//   if (!link) {
-//     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-//     link = await PublicLink.create({
-//       instituteId: req.user.id,
-//       linkCode: code,
-//     });
-//   }
-
-//   res.json(link);
-// });
 
 module.exports = router;

@@ -1,4 +1,4 @@
-import TeacherChart from "../../components/teacher/TeacherChart";
+// import TeacherChart from "../../components/teacher/TeacherChart";
 import TeacherOverview from "../../components/teacher/TeacherOverview";
 import TeacherRecent from "../../components/teacher/TeacherRecent";
 

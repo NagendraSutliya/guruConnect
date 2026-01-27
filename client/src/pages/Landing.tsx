@@ -3,25 +3,6 @@ import { Link } from "react-router-dom";
 const Landing = () => {
   return (
     <div className="bg-[#f8fafc] text-gray-800 px-10">
-      {/* ================= NAVBAR ================= */}
-      {/* <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-6">
-        <div className="flex items-center gap-2">
-          <div className="" />
-          <img src="./guruconnect-logo.png" className="w-[100px] h-[100px]" /> */}
-      {/* <span className="text-xl font-bold">
-            <span className="text-orange-500">Guru</span>
-            <span className="text-blue-600">Connect</span>
-          </span> */}
-      {/* </div>
-
-        <Link
-          to="/auth/login"
-          className="bg-blue-600 text-white px-5 py-2 rounded-md font-medium hover:bg-blue-700 transition"
-        >
-          Login
-        </Link>
-      </nav> */}
-
       {/* ================= HERO ================= */}
       <section className="max-w-7xl mx-auto px-10 grid md:grid-cols-2 gap-4 items-center">
         {/* Left */}

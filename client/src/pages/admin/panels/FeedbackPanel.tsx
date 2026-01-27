@@ -75,51 +75,46 @@ const FeedbackPanel = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-end justify-between">
-        <div>
-          <h2 className="text-3xl font-bold">Student Feedback</h2>
-          {/* <p className="text-sm text-gray-500">
-            {filteredFeedback.length} responses
-          </p> */}
-        </div>
-      </div>
+      <div className="sticky top-0 z-20 bg-gray-100 py-1">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          Student Feedback
+        </h2>
 
-      {/* Filters */}
-      <div className="bg-white border rounded-xl p-4 shadow-sm space-y-4">
-        <div>
+        {/* Filters */}
+        <div className="bg-white border rounded-xl p-4 shadow-sm space-y-4">
           <p className="text-lg md:text-xl font-bold text-gray-600">
             {filteredFeedback.length} Responses
           </p>
-        </div>
-        <div className="flex flex-wrap gap-4">
-          <select
-            className="border px-3 py-2 rounded w-56"
-            value={selectedTeacher}
-            onChange={(e) => setSelectedTeacher(e.target.value)}
-          >
-            <option value="">All Teachers</option>
-            {teachers.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
 
-          <select
-            className="border px-3 py-2 rounded w-40"
-            value={selectedMood}
-            onChange={(e) =>
-              setSelectedMood(e.target.value as Feedback["mood"] | "")
-            }
-          >
-            <option value="">All Moods</option>
-            <option value="happy">Happy</option>
-            <option value="neutral">Neutral</option>
-            <option value="sad">Sad</option>
-          </select>
+          <div className="flex flex-wrap gap-4">
+            <select
+              className="border px-3 py-2 rounded w-56"
+              value={selectedTeacher}
+              onChange={(e) => setSelectedTeacher(e.target.value)}
+            >
+              <option value="">All Teachers</option>
+              {teachers.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className="border px-3 py-2 rounded w-40"
+              value={selectedMood}
+              onChange={(e) =>
+                setSelectedMood(e.target.value as Feedback["mood"] | "")
+              }
+            >
+              <option value="">All Moods</option>
+              <option value="happy">Happy</option>
+              <option value="neutral">Neutral</option>
+              <option value="sad">Sad</option>
+            </select>
+          </div>
         </div>
       </div>
-
       {/* Empty State */}
       {filteredFeedback.length === 0 && (
         <div className="bg-gradient-to-br from-gray-50 to-white border rounded-2xl py-20 text-center text-gray-400">

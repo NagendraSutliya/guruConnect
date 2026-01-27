@@ -7,7 +7,7 @@ const PublicLayout = () => {
       <div className="h-screen flex flex-col overflow-hidden">
         <Navbar />
 
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>

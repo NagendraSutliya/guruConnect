@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import TeacherNavbar from "../components/Teachernavbar";
+import TeacherNavbar from "../components/teacher/TeacherNavbar";
 
 const TeacherLayout = () => {
   const navItems = [

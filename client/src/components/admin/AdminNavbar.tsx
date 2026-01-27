@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   FaBell,
   FaCog,
-  FaHome,
   FaSignOutAlt,
   FaUserCircle,
   FaUserShield,
