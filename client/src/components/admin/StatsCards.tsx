@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import api from "../api/axiosInstance";
+import api from "../../api/axiosInstance";
 import {
   FaUser,
   FaChalkboardTeacher,
@@ -173,7 +173,7 @@ const StatsCards = () => {
                     fill="#4ade80"
                     label
                   >
-                    {chartDataMap[activeChart].map((entry, index) => (
+                    {chartDataMap[activeChart].map((index: any) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}

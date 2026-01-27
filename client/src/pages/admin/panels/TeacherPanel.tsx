@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
+import ViewTeacherModal from "../../../components/admin/ViewTeacherModal";
+import AddTeacherModal from "../../../components/admin/AddTeacherModal";
 
 const TeacherPanel = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -8,6 +10,13 @@ const TeacherPanel = () => {
     name: "",
     email: "",
     password: "",
+  });
+  const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "active" | "inactive"
+  >(() => {
+    return (localStorage.getItem("teacherFilter") as any) || "all";
   });
 
   const loadTeachers = async () => {
@@ -38,162 +47,223 @@ const TeacherPanel = () => {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      {/* ===== Header Section ===== */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800 py-2">Teachers</h2>
+  const closeAddTeacher = () => {
+    setForm({ name: "", email: "", password: "" });
+    setShowForm(false);
+  };
 
-        {!showForm && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold shadow hover:bg-blue-700 hover:shadow-md transition"
-          >
-            + Add Teacher
-          </button>
-        )}
+  useEffect(() => {
+    localStorage.setItem("teacherFilter", statusFilter);
+  }, [statusFilter]);
+
+  const viewTeacher = (teacher: any) => {
+    setSelectedTeacher(teacher);
+    setShowViewModal(true);
+  };
+
+  const removeTeacher = async (id: string) => {
+    const confirmDeactivate = window.confirm(
+      "Are you seure you wamt to remove the teacher?"
+    );
+
+    if (!confirmDeactivate) return;
+
+    try {
+      await api.patch(`/admin/teacher/${id}/deactivate`);
+      // Update UI instantly (no full reload)
+      setTeachers((prev) =>
+        prev.map((t) => (t._id === id ? { ...t, status: "inactive" } : t))
+      );
+      loadTeachers();
+    } catch (err) {
+      console.error("Failed to remove teacher", err);
+      alert("Failed to remove teacher");
+    }
+  };
+
+  const filteredTeachers = teachers.filter((teacher) => {
+    if (statusFilter === "all") return true;
+    return teacher.status === statusFilter;
+  });
+
+  const counts = {
+    all: teachers.length,
+    active: teachers.filter((t) => t.status === "active").length,
+    inactive: teachers.filter((t) => t.status === "inactive").length,
+  };
+
+  return (
+    <div className="space-y-1 pb-8">
+      {/* ===== Header Section ===== */}
+      <div className="sticky top-0 z-20 bg-gray-100 py-1">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800 py-2">Teachers</h2>
+
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold shadow hover:bg-blue-700 hover:shadow-md transition"
+            >
+              + Add Teacher
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ===== Main Container ===== */}
-      <div className="bg-white border rounded-2xl shadow-sm p-6 space-y-6">
-        {/* Teacher Count */}
-        <div className="flex items-center justify-start gap-2">
-          <p className="text-lg font-bold text-gray-700">Total Teachers</p>
-          <span className="text-blue-700 px-3 text-xl font-bold">
-            {teachers.length}
-          </span>
-        </div>
-
-        {/* Teacher List */}
-        {teachers.length === 0 ? (
-          <div className="text-center py-10 text-gray-400">
-            <p className="text-lg font-medium">No teachers added yet</p>
-            <p className="text-sm mt-1">Click “Add Teacher” to get started</p>
+      <div className="flex-1 overflow-y-auto space-y-6">
+        <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
+          {/* Teacher Count */}
+          <div className="flex items-center justify-start gap-2">
+            <p className="text-lg font-bold text-gray-700">Total Teachers</p>
+            <span className="text-blue-700 px-3 text-xl font-bold">
+              {teachers.length}
+            </span>
           </div>
-        ) : (
-          <div>
-            {/* Table Header */}
-            <div className="hidden md:grid grid-cols-5 gap-4 px-4 py-3 bg-gray-50 rounded-lg text-xs font-semibold text-gray-500 uppercase">
-              <span>Teacher</span>
-              <span>Email</span>
-              <span>Joined</span>
-              <span>Status</span>
-              <span className="text-right">Actions</span>
-            </div>
 
-            {/* Rows */}
-            <ul className="divide-y border rounded-xl overflow-hidden mt-2">
-              {teachers.map((teacher: any) => {
-                const initials = teacher?.name?.charAt(0)?.toUpperCase() ?? "?";
+          <div className="flex justify-end">
+            <div className="inline-flex bg-gray-100 rounded-full">
+              {(["all", "active", "inactive"] as const).map((status) => {
+                const isActive = statusFilter === status;
 
                 return (
-                  <li
-                    key={teacher._id}
-                    className="grid grid-cols-1 md:grid-cols-5 gap-4 px-4 py-4 items-center hover:bg-gray-50 transition"
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={`px-4 py-1 rounded-full text-sm font-semibold transition
+          ${
+            isActive
+              ? "bg-green-600 text-white shadow"
+              : "text-gray-600 hover:bg-gray-200"
+          }`}
                   >
-                    {/* Teacher */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold uppercase">
-                        {initials}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-800">
-                          {teacher.name || "Unnamed"}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          ID: {teacher._id?.slice(-6)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Email */}
-                    <div className="text-sm text-gray-600 truncate">
-                      {teacher.email}
-                    </div>
-
-                    {/* Joined */}
-                    <div className="text-sm text-gray-600">
-                      {teacher.createdAt
-                        ? new Date(teacher.createdAt).toLocaleDateString(
-                            "en-GB"
-                          )
-                        : "—"}
-                    </div>
-
-                    {/* Status */}
-                    <div>
-                      <span className="inline-flex items-center bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                        Active
-                      </span>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex justify-end gap-2">
-                      <button className="px-3 py-1.5 rounded-md text-sm font-medium text-blue-600 hover:bg-blue-50 transition">
-                        View
-                      </button>
-                      <button className="px-3 py-1.5 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition">
-                        Remove
-                      </button>
-                    </div>
-                  </li>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}{" "}
+                    <span
+                      className={`${
+                        isActive ? "text-white/90" : "text-gray-400"
+                      }`}
+                    >
+                      ({counts[status]})
+                    </span>
+                  </button>
                 );
               })}
-            </ul>
-          </div>
-        )}
-
-        {/* Add Teacher Form */}
-        {showForm && (
-          <div className="pt-6 border-t space-y-4">
-            <h3 className="text-lg font-semibold text-gray-700">
-              Add New Teacher
-            </h3>
-
-            <div className="grid md:grid-cols-3 gap-4">
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-
-              <input
-                type="email"
-                placeholder="Email Address"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-
-              <input
-                type="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={addTeacher}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
-              >
-                Save Teacher
-              </button>
-
-              <button
-                onClick={() => setShowForm(false)}
-                className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition"
-              >
-                Cancel
-              </button>
             </div>
           </div>
-        )}
+
+          {/* Teacher List */}
+          {teachers.length === 0 ? (
+            <div className="text-center py-10 text-gray-400">
+              <p className="text-lg font-medium">No teachers added yet</p>
+              <p className="text-sm mt-1">Click “Add Teacher” to get started</p>
+            </div>
+          ) : (
+            <div>
+              {/* Table Header */}
+              <div className="hidden md:grid grid-cols-5 gap-4 px-4 py-3 bg-gray-50 rounded-lg text-xs font-semibold text-gray-500 uppercase">
+                <span>Teacher</span>
+                <span>Email</span>
+                <span>Joined</span>
+                <span>Status</span>
+                <span className="text-right">Actions</span>
+              </div>
+
+              {/* Rows */}
+              <ul className="divide-y border rounded-xl overflow-hidden mt-2">
+                {filteredTeachers.map((teacher: any) => {
+                  const initials =
+                    teacher?.name?.charAt(0)?.toUpperCase() ?? "?";
+
+                  return (
+                    <li
+                      key={teacher._id}
+                      className="grid grid-cols-1 md:grid-cols-5 gap-4 px-4 py-4 items-center hover:bg-gray-50 transition"
+                    >
+                      {/* Teacher */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold uppercase">
+                          {initials}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-800">
+                            {teacher.name || "Unnamed"}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            ID: {teacher._id?.slice(-6)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Email */}
+                      <div className="text-sm text-gray-600 truncate">
+                        {teacher.email}
+                      </div>
+
+                      {/* Joined */}
+                      <div className="text-sm text-gray-600">
+                        {teacher.createdAt
+                          ? new Date(teacher.createdAt).toLocaleDateString(
+                              "en-GB"
+                            )
+                          : "—"}
+                      </div>
+
+                      {/* Status */}
+                      <span
+                        className={`w-fit inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                          teacher.status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-200 text-gray-600"
+                        }`}
+                      >
+                        {teacher.status === "active" ? "Active" : "Inactive"}
+                      </span>
+
+                      {/* Actions */}
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => viewTeacher(teacher)}
+                          className="px-3 py-1.5 rounded-md text-sm font-medium text-blue-600 hover:bg-blue-50 transition"
+                        >
+                          View
+                        </button>
+                        <button
+                          disabled={teacher.status === "inactive"}
+                          onClick={() => removeTeacher(teacher._id)}
+                          className={`px-3 py-1.5 rounded-md text-sm font-medium transition ${
+                            teacher.status === "inactive"
+                              ? "text-gray-400 cursor-not-allowed"
+                              : "text-red-600 hover:bg-red-50"
+                          }`}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Add Teacher Form */}
+      {showForm && (
+        <AddTeacherModal
+          form={form}
+          setForm={setForm}
+          onSave={addTeacher}
+          onClose={closeAddTeacher}
+        />
+      )}
+
+      {showViewModal && selectedTeacher && (
+        <ViewTeacherModal
+          teacher={selectedTeacher}
+          onClose={() => setShowViewModal(false)}
+        />
+      )}
     </div>
   );
 };

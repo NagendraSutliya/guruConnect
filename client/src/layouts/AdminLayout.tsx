@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import AdminNavbar from "../components/AdminNavbar";
+import AdminNavbar from "../components/admin/AdminNavbar";
 
 const AdminLayout = () => {
   const navItems = [
@@ -55,7 +55,7 @@ const AdminLayout = () => {
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 px-6 mt-2 overflow-y-auto">
             <Outlet />
           </main>
         </div>
