@@ -1,18 +1,12 @@
-import express from "express";
-
-import adminRoutes from "./v1/admin.routes.js";
-import authRoutes from "./v1/auth.routes.js";
-import teacherRoutes from "./v1/teacher.routes.js";
-import publicRoutes from "./v1/public.routes.js";
-import feedbackRoutes from "./v1/feedback.routes.js";
-
+const express = require("express");
 const router = express.Router();
 
-// API v1
-router.use("/api/v1/auth", authRoutes);
-router.use("/api/v1/admin", adminRoutes);
-router.use("/api/v1/teacher", teacherRoutes);
-router.use("/api/v1/public", publicRoutes);
-router.use("/api/v1/feedback", feedbackRoutes);
+router.use("/v1/auth", require("./v1/auth.routes"));
+router.use("/v1/admin", require("./v1/admin.routes"));
+router.use("/v1/teacher", require("./v1/teacher.routes"));
+router.use("/v1/public", require("./v1/public.routes"));
+router.use("/v1/feedback", require("./v1/feedback.routes"));
 
-export default router;
+router.use("/v1/academic", require("./v1/academic.routes"));
+
+module.exports = router;

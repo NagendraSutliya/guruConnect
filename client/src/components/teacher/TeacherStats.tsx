@@ -14,7 +14,7 @@ const TeacherStats = () => {
           Authorization: "Bearer " + localStorage.getItem("teacherToken"),
         },
       })
-      .then((res) => setStats(res.data))
+      .then((res) => setStats(res.data.data))
       .catch(() => {});
   }, []);
 

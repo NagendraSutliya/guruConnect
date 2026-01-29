@@ -1,7 +1,7 @@
-import Feedback from "../models/Feedback.js";
-import { successResponse, errorResponse } from "../utils/response.js";
+const Feedback = require("../models/Feedback.js");
+const { successResponse, errorResponse } = require("../utils/response.js");
 
-export const submitFeedback = async (req, res) => {
+const submitFeedback = async (req, res) => {
   try {
     const feedback = await Feedback.create(req.body);
     return successResponse(res, "Feedback submitted", feedback, 201);
@@ -10,7 +10,7 @@ export const submitFeedback = async (req, res) => {
   }
 };
 
-export const getAllFeedback = async (req, res) => {
+const getAllFeedback = async (req, res) => {
   try {
     const feedbacks = await Feedback.find({ isDeleted: false });
     return successResponse(res, "Feedback fetched", feedbacks);
@@ -18,3 +18,5 @@ export const getAllFeedback = async (req, res) => {
     return errorResponse(res, err.message);
   }
 };
+
+module.exports = { submitFeedback, getAllFeedback };

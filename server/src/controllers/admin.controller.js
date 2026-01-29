@@ -1,13 +1,13 @@
-import bcrypt from "bcrypt";
-import Teacher from "../models/Teacher.js";
-import Feedback from "../models/Feedback.js";
-import PublicLink from "../models/PublicLink.js";
-import Institute from "../models/Institute.js";
-import { successResponse, errorResponse } from "../utils/response.js";
+const bcrypt = require("bcrypt");
+const Teacher = require("../models/Teacher.js");
+const Feedback = require("../models/Feedback.js");
+const PublicLink = require("../models/PublicLink.js");
+const Institute = require("../models/Institute.js");
+const { successResponse, errorResponse } = require("../utils/response.js");
 
 /* ===================== TEACHERS ===================== */
 
-export const getTeachers = async (req, res) => {
+const getTeachers = async (req, res) => {
   try {
     const teachers = await Teacher.find({ instituteId: req.user.id })
       .select("-password")
@@ -19,7 +19,7 @@ export const getTeachers = async (req, res) => {
   }
 };
 
-export const createTeacher = async (req, res) => {
+const createTeacher = async (req, res) => {
   try {
     const hashed = await bcrypt.hash(req.body.password, 10);
 
@@ -37,7 +37,7 @@ export const createTeacher = async (req, res) => {
   }
 };
 
-export const deactivateTeacher = async (req, res) => {
+const deactivateTeacher = async (req, res) => {
   try {
     const teacher = await Teacher.findOneAndUpdate(
       { _id: req.params.id, instituteId: req.user.id },
@@ -57,7 +57,7 @@ export const deactivateTeacher = async (req, res) => {
 
 /* ===================== DASHBOARD STATS ===================== */
 
-export const getAdminStats = async (req, res) => {
+const getAdminStats = async (req, res) => {
   try {
     const instituteId = req.user.id;
 
@@ -106,7 +106,7 @@ export const getAdminStats = async (req, res) => {
 
 /* ===================== FEEDBACK ===================== */
 
-export const getInstituteFeedback = async (req, res) => {
+const getTeachersFeedback = async (req, res) => {
   try {
     const feedback = await Feedback.find({ instituteId: req.user.id })
       .populate("teacherId", "name")
@@ -118,7 +118,7 @@ export const getInstituteFeedback = async (req, res) => {
   }
 };
 
-export const deleteFeedback = async (req, res) => {
+const deleteFeedback = async (req, res) => {
   try {
     await Feedback.findByIdAndDelete(req.params.id);
     return successResponse(res, "Feedback deleted");
@@ -129,7 +129,7 @@ export const deleteFeedback = async (req, res) => {
 
 /* ===================== PUBLIC LINK ===================== */
 
-export const getPublicLink = async (req, res) => {
+const getPublicLink = async (req, res) => {
   try {
     const link = await PublicLink.findOne({ instituteId: req.user.id });
     return successResponse(res, "Link fetched", link);
@@ -138,7 +138,7 @@ export const getPublicLink = async (req, res) => {
   }
 };
 
-export const createPublicLink = async (req, res) => {
+const createPublicLink = async (req, res) => {
   try {
     const existing = await PublicLink.findOne({ instituteId: req.user.id });
     if (existing) {
@@ -156,4 +156,15 @@ export const createPublicLink = async (req, res) => {
   } catch (err) {
     return errorResponse(res, "Failed to create public link");
   }
+};
+
+module.exports = {
+  getTeachers,
+  createTeacher,
+  deactivateTeacher,
+  getAdminStats,
+  getTeachersFeedback,
+  deleteFeedback,
+  getPublicLink,
+  createPublicLink,
 };

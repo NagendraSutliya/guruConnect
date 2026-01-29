@@ -9,8 +9,8 @@ const TeacherLogin = () => {
 
   const login = async () => {
     try {
-      const res = await api.post("/teacher/login", { email, password });
-      localStorage.setItem("teacherToken", res.data.token);
+      const res = await api.post("/auth/teacher/login", { email, password });
+      localStorage.setItem("teacherToken", res.data.data.token);
       localStorage.setItem("role", "teacher");
       nav("/teacher/dashboard");
     } catch {

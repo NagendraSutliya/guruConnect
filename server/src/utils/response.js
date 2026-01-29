@@ -1,4 +1,4 @@
-export const successResponse = (
+const successResponse = (
   res,
   message = "Success",
   data = null,
@@ -11,7 +11,7 @@ export const successResponse = (
   });
 };
 
-export const errorResponse = (
+const errorResponse = (
   res,
   message = "Something went wrong",
   statusCode = 500,
@@ -23,3 +23,5 @@ export const errorResponse = (
     errors,
   });
 };
+
+module.exports = { successResponse, errorResponse };

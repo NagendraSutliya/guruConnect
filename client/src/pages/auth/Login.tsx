@@ -12,8 +12,15 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await api.post("/auth/login", { email, password });
-      localStorage.setItem("adminToken", res.data.token);
+
+      console.log("Login response:", res.data); // <-- ADD THIS
+
+      localStorage.setItem("adminToken", res.data.data.token);
       localStorage.setItem("role", "admin");
+
+      // DEBUG: check if token is stored
+      console.log("Stored token:", localStorage.getItem("adminToken"));
+
       nav("/admin/dashboard");
     } catch (err: any) {
       alert(err.response?.data || "Login failed");

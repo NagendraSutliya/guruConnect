@@ -22,7 +22,7 @@ const TeacherPanel = () => {
   const loadTeachers = async () => {
     try {
       const res = await api.get("/admin/teachers");
-      setTeachers(res.data);
+      setTeachers(res.data.data);
     } catch (err) {
       console.error("Failed to load teachers", err);
     }

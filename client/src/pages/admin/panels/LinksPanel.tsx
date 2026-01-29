@@ -13,7 +13,7 @@ const LinksPanel = () => {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
       })
-      .then((res) => setLink(res.data || null))
+      .then((res) => setLink(res.data.data || null))
       .finally(() => setLoading(false));
   }, []);
 
@@ -55,7 +55,8 @@ const LinksPanel = () => {
           🔗 Public Feedback Link
         </h2>
 
-        {!link && (
+        {/* {!link && ( */}
+        {(!link || !link.linkCode) && (
           <div className="text-center space-y-4">
             <p className="text-gray-500 text-sm">
               No public feedback link exists yet.

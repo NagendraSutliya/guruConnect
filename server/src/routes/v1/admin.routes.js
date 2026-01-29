@@ -1,16 +1,15 @@
-import express from "express";
-import { requireAdmin } from "../../middleware/auth.js";
-
-import {
+const express = require("express");
+const { requireAdmin } = require("../../middleware/auth.js");
+const {
   getTeachers,
   getAdminStats,
   createTeacher,
   deactivateTeacher,
-  getInstituteFeedback,
+  getTeachersFeedback,
   deleteFeedback,
   getPublicLink,
   createPublicLink,
-} from "../../controllers/admin.controller.js";
+} = require("../../controllers/admin.controller.js");
 
 const router = express.Router();
 
@@ -23,11 +22,11 @@ router.patch("/teacher/:id/deactivate", requireAdmin, deactivateTeacher);
 router.get("/stats", requireAdmin, getAdminStats);
 
 // Feedback
-router.get("/feedback", requireAdmin, getInstituteFeedback);
+router.get("/feedback", requireAdmin, getTeachersFeedback);
 router.delete("/feedback/:id", requireAdmin, deleteFeedback);
 
 // Public Link
 router.get("/link", requireAdmin, getPublicLink);
 router.post("/link", requireAdmin, createPublicLink);
 
-export default router;
+module.exports = router;

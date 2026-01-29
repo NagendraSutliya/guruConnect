@@ -59,7 +59,7 @@ const StatsCards = () => {
           Authorization: "Bearer " + localStorage.getItem("adminToken"),
         },
       })
-      .then((res) => setStats(res.data))
+      .then((res) => setStats(res.data.data))
       .catch((err) => console.error("Failed to load stats:", err));
   }, []);
 
@@ -173,7 +173,7 @@ const StatsCards = () => {
                     fill="#4ade80"
                     label
                   >
-                    {chartDataMap[activeChart].map((entry, index) => (
+                    {chartDataMap[activeChart].map((index: any) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}

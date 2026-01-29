@@ -7,7 +7,7 @@ const TeacherDashboard = () => {
     <div className="space-y-6">
       <TeacherOverview />
       <div className="grid grid-cols-2 gap-6">
-        <TeacherRecent />
+        {/* <TeacherRecent /> */}
         {/* <TeacherChart /> */}
       </div>
     </div>

@@ -36,7 +36,7 @@ const FeedbackPanel = () => {
   useEffect(() => {
     api
       .get("/admin/feedback", { headers })
-      .then((res) => setFeedback(res.data))
+      .then((res) => setFeedback(res.data.data))
       .finally(() => setLoading(false));
   }, []);
 
