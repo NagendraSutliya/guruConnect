@@ -10,8 +10,15 @@ const TeacherLogin = () => {
   const login = async () => {
     try {
       const res = await api.post("/auth/teacher/login", { email, password });
+
+      console.log("Login response:", res.data.data); // <-- ADD THIS
+
       localStorage.setItem("teacherToken", res.data.data.token);
       localStorage.setItem("role", "teacher");
+
+      // DEBUG: check if token is stored
+      console.log("Stored token:", localStorage.getItem("teacherToken"));
+
       nav("/teacher/dashboard");
     } catch {
       alert("Invalid login");

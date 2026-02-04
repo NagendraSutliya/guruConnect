@@ -1,4 +1,4 @@
-import TeacherPanel from "./panels/TeacherPanel";
+import TeacherPanel from "../panels/TeacherPanel";
 
 const Teachers = () => {
   return (

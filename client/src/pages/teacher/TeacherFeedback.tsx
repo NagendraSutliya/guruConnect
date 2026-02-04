@@ -11,7 +11,7 @@ const TeacherFeedback = () => {
           Authorization: "Bearer " + localStorage.getItem("teacherToken"),
         },
       })
-      .then((res) => setData(res.data));
+      .then((res) => setData(res.data.data));
   });
 
   const badge = (m: any) =>

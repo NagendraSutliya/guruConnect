@@ -6,8 +6,8 @@ exports.createAcademicYear = async (req, res) => {
   try {
     const { name, startDate, endDate } = req.body;
 
-    console.log("BODY RECEIVED:", req.body);
-    if (!name || !!startDate || !endDate) {
+    // console.log("BODY RECEIVED:", req.body);
+    if (!name || !startDate || !endDate) {
       return errorResponse(res, "Missing required fields", 400);
     }
 

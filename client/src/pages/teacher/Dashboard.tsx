@@ -1,6 +1,6 @@
 // import TeacherChart from "../../components/teacher/TeacherChart";
 import TeacherOverview from "../../components/teacher/TeacherOverview";
-import TeacherRecent from "../../components/teacher/TeacherRecent";
+// import TeacherRecent from "../../components/teacher/TeacherRecent";
 
 const TeacherDashboard = () => {
   return (

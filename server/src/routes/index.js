@@ -9,4 +9,12 @@ router.use("/v1/feedback", require("./v1/feedback.routes"));
 
 router.use("/v1/academic", require("./v1/academic.routes"));
 
+router.use("/v1/classes", require("./v1/class.routes"));
+
+router.use("/v1/sections", require("./v1/section.routes"));
+
+router.use("/v1/subjects", require("./v1/subject.routes"));
+
+router.use("/v1/teacher-assign", require("./v1/teacherAssignment.routes"));
+
 module.exports = router;
