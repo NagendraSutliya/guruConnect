@@ -4,6 +4,7 @@ const Feedback = require("../models/Feedback.js");
 const PublicLink = require("../models/PublicLink.js");
 const Institute = require("../models/Institute.js");
 const { successResponse, errorResponse } = require("../utils/response.js");
+const Student = require("../models/Student.js");
 
 /* ===================== TEACHERS ===================== */
 
@@ -49,9 +50,30 @@ const deactivateTeacher = async (req, res) => {
       return errorResponse(res, "Teacher not found", 404);
     }
 
+    console.log("Deactivate ID:", req.params.id);
+    console.log("Institute:", req.user.id);
+
     return successResponse(res, "Teacher deactivated", teacher);
   } catch (err) {
     return errorResponse(res, "Failed to deactivate teacher");
+  }
+};
+
+const activateTeacher = async (req, res) => {
+  try {
+    const teacher = await Teacher.findOneAndUpdate(
+      { _id: req.params.id, instituteId: req.user.id },
+      { status: "active" },
+      { new: true }
+    );
+
+    if (!teacher) {
+      return errorResponse(res, "Teacher not found", 404);
+    }
+
+    return successResponse(res, "Teacher activated", teacher);
+  } catch (err) {
+    return errorResponse(res, "Failed to activate teacher");
   }
 };
 
@@ -68,12 +90,14 @@ const getAdminStats = async (req, res) => {
 
     const [
       teachers,
+      students,
       totalFeedback,
       feedbackToday,
       avgRating,
       newTeachersToday,
     ] = await Promise.all([
       Teacher.countDocuments({ instituteId }),
+      Student.countDocuments({ classId: { $exists: true } }),
       Feedback.countDocuments({ instituteId }),
       Feedback.countDocuments({
         instituteId,
@@ -91,7 +115,7 @@ const getAdminStats = async (req, res) => {
 
     return successResponse(res, "Admin stats loaded", {
       teachers,
-      students: 0, // placeholder
+      students, // : 0, // placeholder
       totalFeedback,
       feedbackToday,
       avgRating: avgRating[0]?.avg || 0,
@@ -162,6 +186,7 @@ module.exports = {
   getTeachers,
   createTeacher,
   deactivateTeacher,
+  activateTeacher,
   getAdminStats,
   getTeachersFeedback,
   deleteFeedback,

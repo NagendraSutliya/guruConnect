@@ -15,11 +15,11 @@ const TeacherSchema = new mongoose.Schema(
     //   required: true, // public sharing code
     // },
     role: { type: String, default: "teacher" },
-    // status: {
-    //   type: String,
-    //   enum: ["active", "inactive"],
-    //   default: "active",
-    // },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
 
   { timestamps: true }

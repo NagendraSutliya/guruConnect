@@ -31,11 +31,22 @@ import AttendanceTeacher from "../pages/teacher/Attendance";
 import Marks from "../pages/teacher/Marks";
 import StudyMaterial from "../pages/teacher/StudyMaterial";
 import Tests from "../pages/teacher/Tests";
-import Students from "../pages/student/Students";
-import AttendanceAdmin from "../pages/student/Attendance";
+// import Students from "../pages/student/Students";
+import Attendance from "../pages/admin/student/Attendance";
 import Routine from "../pages/admin/academic/Routine";
 import Exams from "../pages/admin/exams/Exams";
 import Results from "../pages/admin/exams/Results";
+import Students from "../pages/admin/student/Students";
+import StudentLogin from "../pages/student/Login";
+import StudentRoute from "../guards/StudentRoute";
+import StudentLayout from "../layouts/StudentLayout";
+import StudentDashboard from "../pages/student/Dashboard";
+import ChangePassword from "../pages/student/ChangePassword";
+import StudentResults from "../pages/student/StudentResults";
+import StudentMaterial from "../pages/student/StudentMaterial";
+import StudentTests from "../pages/student/StudentTests";
+import StudentProfile from "../pages/student/StudentProfile";
+import StudentAttendance from "../pages/student/StudentAttendance";
 
 export default function AppRoutes() {
   return (
@@ -47,6 +58,7 @@ export default function AppRoutes() {
         <Route path="/auth/verify" element={<Verify />} />
         <Route path="/feedback/:code" element={<FeedbackForm />} />
         <Route path="/teacher/login" element={<TeacherLogin />} />
+        <Route path="/student/login" element={<StudentLogin />} />
       </Route>
 
       <Route
@@ -71,7 +83,7 @@ export default function AppRoutes() {
         <Route path="teacher-assign" element={<TeacherAssignPanel />} />
 
         <Route path="students" element={<Students />} />
-        <Route path="attendance" element={<AttendanceAdmin />} />
+        <Route path="attendance" element={<Attendance />} />
         <Route path="routine" element={<Routine />} />
 
         <Route path="exam" element={<Exams />} />
@@ -93,6 +105,23 @@ export default function AppRoutes() {
         <Route path="marks" element={<Marks />} />
         <Route path="material" element={<StudyMaterial />} />
         <Route path="tests" element={<Tests />} />
+      </Route>
+
+      <Route
+        path="/student"
+        element={
+          <StudentRoute>
+            <StudentLayout />
+          </StudentRoute>
+        }
+      >
+        <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="attendance" element={<StudentAttendance />} />
+        <Route path="results" element={<StudentResults />} />
+        <Route path="material" element={<StudentMaterial />} />
+        <Route path="tests" element={<StudentTests />} />
+        <Route path="profile" element={<StudentProfile />} />
+        <Route path="change-password" element={<ChangePassword />} />
       </Route>
     </Routes>
   );

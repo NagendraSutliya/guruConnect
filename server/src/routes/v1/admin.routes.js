@@ -9,14 +9,27 @@ const {
   deleteFeedback,
   getPublicLink,
   createPublicLink,
+  activateTeacher,
 } = require("../../controllers/admin.controller.js");
-
+const {
+  getStudents,
+  createStudent,
+  deactivateStudent,
+  activateStudent,
+} = require("../../controllers/student.controller.js");
 const router = express.Router();
 
 // Teachers
 router.get("/teachers", requireAdmin, getTeachers);
 router.post("/teacher", requireAdmin, createTeacher);
+router.patch("/teacher/:id/activate", requireAdmin, activateTeacher);
 router.patch("/teacher/:id/deactivate", requireAdmin, deactivateTeacher);
+
+/* ================= STUDENTS ================= */
+router.get("/students", requireAdmin, getStudents);
+router.post("/student", requireAdmin, createStudent);
+router.patch("/student/:id/deactivate", requireAdmin, deactivateStudent);
+router.patch("/student/:id/activate", requireAdmin, activateStudent);
 
 // Dashboard
 router.get("/stats", requireAdmin, getAdminStats);

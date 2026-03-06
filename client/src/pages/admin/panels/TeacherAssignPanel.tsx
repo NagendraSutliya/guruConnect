@@ -7,6 +7,8 @@ const TeacherAssignPanel = () => {
   const [sections, setSections] = useState([]);
   const [subjects, setSubjects] = useState([]);
 
+  const [assignments, setAssignments] = useState([]);
+
   const [form, setForm] = useState({
     teacherId: "",
     classId: "",
@@ -15,15 +17,17 @@ const TeacherAssignPanel = () => {
   });
 
   const load = async () => {
-    const t = await api.get("/teacher");
+    const t = await api.get("/admin/teachers");
     const c = await api.get("/classes");
     const s = await api.get("/sections");
     const sub = await api.get("/subjects");
+    const a = await api.get("/teacher-assign");
 
     setTeachers(t.data.data);
     setClasses(c.data.data);
     setSections(s.data.data);
     setSubjects(sub.data.data);
+    setAssignments(a.data.data);
   };
 
   useEffect(() => {
@@ -33,6 +37,13 @@ const TeacherAssignPanel = () => {
   const assign = async () => {
     await api.post("/teacher-assign", form);
     alert("Assigned!");
+    load();
+  };
+
+  const getName = (field: any) => {
+    if (!field) return "-";
+    if (typeof field === "string") return field;
+    return field.name || "-";
   };
 
   return (
@@ -89,6 +100,29 @@ const TeacherAssignPanel = () => {
       >
         Assign Teacher
       </button>
+
+      <h3 className="text-lg font-semibold mt-8 mb-2">Assigned Teachers</h3>
+
+      <table className="w-full border rounded">
+        <thead className="bg-gray-100 text-left">
+          <tr>
+            <th className="p-2">Teacher</th>
+            <th className="p-2">Class</th>
+            <th className="p-2">Section</th>
+            <th className="p-2">Subject</th>
+          </tr>
+        </thead>
+        <tbody>
+          {assignments.map((a: any) => (
+            <tr key={a._id} className="border-t">
+              <td className="p-2">{getName(a.teacherId)}</td>
+              <td className="p-2">{getName(a.classId)}</td>
+              <td className="p-2">{getName(a.sectionId)}</td>
+              <td className="p-2">{getName(a.subjectId)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

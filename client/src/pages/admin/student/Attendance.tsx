@@ -1,5 +1,5 @@
-import AttendancePanel from "../panels/AttendancePanel";
+import StudentAttendancePanel from "../panels/StudentAttendancePanel";
 
-export default function Attendance() {
-  return <AttendancePanel />;
+export default function StudentAttendance() {
+  return <StudentAttendancePanel />;
 }

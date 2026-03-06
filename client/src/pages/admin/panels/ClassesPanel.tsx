@@ -3,7 +3,17 @@ import api from "../../../api/axiosInstance";
 
 const ClassesPanel = () => {
   const [classes, setClasses] = useState([]);
+  const [academicYearId, setAcademicYearId] = useState("");
   const [name, setName] = useState("");
+
+  const [years, setYears] = useState([]);
+
+  useEffect(() => {
+    api
+      .get("/academic/academic-year")
+      .then((res) => setYears(res.data.data))
+      .catch((err) => console.log(err.response?.data));
+  }, []);
 
   const load = async () => {
     const res = await api.get("/classes");
@@ -15,9 +25,18 @@ const ClassesPanel = () => {
   }, []);
 
   const create = async () => {
-    await api.post("/classes", { name });
-    setName("");
-    load();
+    if (!name || !academicYearId) {
+      alert("All fields required");
+      return;
+    }
+
+    try {
+      await api.post("/classes", { name, academicYearId });
+      setName("");
+      load();
+    } catch (err: any) {
+      console.log(err.response?.data);
+    }
   };
 
   return (
@@ -25,6 +44,19 @@ const ClassesPanel = () => {
       <h2 className="text-xl font-bold mb-4">Classes</h2>
 
       <div className="flex gap-2 mb-6">
+        <select
+          value={academicYearId}
+          onChange={(e) => setAcademicYearId(e.target.value)}
+          className="border p-2"
+        >
+          <option value="">Select academic year</option>
+          {years.map((y: any) => (
+            <option key={y._id} value={y._id}>
+              {y.name}
+            </option>
+          ))}
+        </select>
+
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}

@@ -29,3 +29,12 @@ exports.getSections = async (req, res) => {
     return errorResponse(res, "Failed to load sections");
   }
 };
+
+// GET SECTION BY CLASS
+exports.getSectionsByClass = async (req, res) => {
+  const { classId } = req.params;
+
+  const list = await Section.find({ classId });
+
+  return successResponse(res, "Sections loaded", list);
+};

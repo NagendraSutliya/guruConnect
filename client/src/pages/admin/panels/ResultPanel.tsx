@@ -1,63 +1,93 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 
-const ResultPanel = () => {
+const AdminResultPanel = () => {
+  const [exams, setExams] = useState<any[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
   const [results, setResults] = useState<any[]>([]);
-  const [studentId, setStudentId] = useState("");
+  const [summary, setSummary] = useState<any>(null);
+
   const [examId, setExamId] = useState("");
-  const [marks, setMarks] = useState("");
+  const [classId, setClassId] = useState("");
 
   const load = async () => {
-    const res = await api.get("/results");
-    setResults(res.data.data);
+    const e = await api.get("/exams");
+    const c = await api.get("/classes");
+
+    setExams(e.data.data);
+    setClasses(c.data.data);
   };
 
-  const create = async () => {
-    await api.post("/results", { studentId, examId, marks });
-    setStudentId("");
-    setExamId("");
-    setMarks("");
-    load();
+  const loadResults = async () => {
+    const res = await api.get(
+      `/results/admin?examId=${examId}&classId=${classId}`
+    );
+    setResults(res.data.data);
+    setSummary(res.data.summary);
   };
 
   useEffect(() => {
     load();
   }, []);
 
-  return (
-    <div>
-      <h2 className="text-xl font-bold mb-6">Results</h2>
+  useEffect(() => {
+    loadResults();
+  }, [examId, classId]);
 
-      {/* Add Result */}
-      <div className="bg-white p-4 rounded shadow mb-6 flex gap-2">
-        <input
-          className="border p-2 rounded"
-          placeholder="Student ID"
-          value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
-        />
-        <input
-          className="border p-2 rounded"
-          placeholder="Exam ID"
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Result Dashboard</h2>
+
+      {/* Filters */}
+      <div className="flex gap-3">
+        <select
           value={examId}
           onChange={(e) => setExamId(e.target.value)}
-        />
-        <input
-          type="number"
           className="border p-2 rounded"
-          placeholder="Marks"
-          value={marks}
-          onChange={(e) => setMarks(e.target.value)}
-        />
-        <button
-          onClick={create}
-          className="bg-purple-600 text-white px-4 rounded"
         >
-          Add
-        </button>
+          <option value="">All Exams</option>
+          {exams.map((e) => (
+            <option key={e._id} value={e._id}>
+              {e.name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={classId}
+          onChange={(e) => setClassId(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">All Classes</option>
+          {classes.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Table */}
+      {/* Summary Cards */}
+      {summary && (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-white p-4 rounded shadow">
+            <p className="text-gray-500">Average Marks</p>
+            <p className="text-2xl font-bold">{summary.average}</p>
+          </div>
+
+          <div className="bg-white p-4 rounded shadow">
+            <p className="text-gray-500">Topper</p>
+            <p className="text-xl font-bold">{summary.topper}</p>
+          </div>
+
+          <div className="bg-white p-4 rounded shadow">
+            <p className="text-gray-500">Total Students</p>
+            <p className="text-2xl font-bold">{summary.total}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Result table */}
       <div className="bg-white rounded shadow">
         <table className="w-full text-sm">
           <thead className="bg-gray-100">
@@ -72,7 +102,7 @@ const ResultPanel = () => {
               <tr key={r._id} className="border-t">
                 <td className="p-3">{r.studentId?.name}</td>
                 <td className="p-3">{r.examId?.name}</td>
-                <td className="p-3">{r.marks}</td>
+                <td className="p-3 font-semibold">{r.marks}</td>
               </tr>
             ))}
           </tbody>
@@ -82,4 +112,4 @@ const ResultPanel = () => {
   );
 };
 
-export default ResultPanel;
+export default AdminResultPanel;

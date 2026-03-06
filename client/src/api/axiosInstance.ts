@@ -11,6 +11,7 @@ axiosInstance.interceptors.request.use((config) => {
 
   if (role === "admin") token = localStorage.getItem("adminToken");
   if (role === "teacher") token = localStorage.getItem("teacherToken");
+  if (role === "student") token = localStorage.getItem("studentToken");
 
   if (token) config.headers.Authorization = "Bearer " + token;
   return config;

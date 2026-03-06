@@ -17,4 +17,12 @@ router.use("/v1/subjects", require("./v1/subject.routes"));
 
 router.use("/v1/teacher-assign", require("./v1/teacherAssignment.routes"));
 
+router.use("/v1/student", require("./v1/student.routes"));
+
+router.use("/v1/attendance", require("./v1/attendance.routes"));
+
+router.use("/v1/exams", require("./v1/exam.routes"));
+
+router.use("/v1/results", require("./v1/result.routes"));
+
 module.exports = router;

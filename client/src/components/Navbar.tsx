@@ -12,12 +12,15 @@ export default function Navbar() {
       ? localStorage.getItem("adminToken")
       : role === "teacher"
       ? localStorage.getItem("teacherToken")
+      : role === "student"
+      ? localStorage.getItem("studentToken")
       : null;
 
   const logout = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("adminToken");
     localStorage.removeItem("teacherToken");
+    localStorage.removeItem("studentToken");
     navigate("/");
   };
 
@@ -82,6 +85,17 @@ export default function Navbar() {
                     >
                       👩‍🏫 Teacher
                     </Link>
+
+                    {/* Student */}
+                    <div className="border-t" />
+
+                    <Link
+                      to="/student/login"
+                      onClick={() => setShowLogin(false)}
+                      className="block px-5 py-3 text-gray-700 hover:bg-purple-50 transition"
+                    >
+                      🎓 Student
+                    </Link>
                   </div>
                 )}
               </div>
@@ -122,6 +136,25 @@ export default function Navbar() {
                 className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700 transition font-medium"
               >
                 Teacher Dashboard
+              </Link>
+
+              <button
+                onClick={logout}
+                className="px-4 py-2 rounded-md border border-red-500 text-red-500 hover:bg-red-50 transition font-medium"
+              >
+                Logout
+              </button>
+            </>
+          )}
+
+          {/* Student */}
+          {token && role === "student" && (
+            <>
+              <Link
+                to="/student/dashboard"
+                className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-purple-700 transition font-medium"
+              >
+                Student Dashboard
               </Link>
 
               <button

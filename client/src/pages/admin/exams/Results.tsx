@@ -1,5 +1,5 @@
-import ResultPanel from "../panels/ResultPanel";
+import AdminResultPanel from "../panels/ResultPanel";
 
 export default function Results() {
-  return <ResultPanel />;
+  return <AdminResultPanel />;
 }

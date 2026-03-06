@@ -61,23 +61,18 @@ const TeacherPanel = () => {
     setShowViewModal(true);
   };
 
-  const removeTeacher = async (id: string) => {
-    const confirmDeactivate = window.confirm(
-      "Are you seure you wamt to remove the teacher?"
-    );
-
-    if (!confirmDeactivate) return;
-
+  const toggleTeacher = async (teacher: any) => {
     try {
-      await api.patch(`/admin/teacher/${id}/deactivate`);
-      // Update UI instantly (no full reload)
-      setTeachers((prev) =>
-        prev.map((t) => (t._id === id ? { ...t, status: "inactive" } : t))
-      );
-      loadTeachers();
+      if (teacher.status === "active") {
+        await api.patch(`/admin/teacher/${teacher._id}/deactivate`);
+      } else {
+        await api.patch(`/admin/teacher/${teacher._id}/activate`);
+      }
+
+      loadTeachers(); // refresh from DB
     } catch (err) {
-      console.error("Failed to remove teacher", err);
-      alert("Failed to remove teacher");
+      console.error("Toggle failed", err);
+      alert("Failed to update status");
     }
   };
 
@@ -228,15 +223,16 @@ const TeacherPanel = () => {
                           View
                         </button>
                         <button
-                          disabled={teacher.status === "inactive"}
-                          onClick={() => removeTeacher(teacher._id)}
+                          onClick={() => toggleTeacher(teacher)}
                           className={`px-3 py-1.5 rounded-md text-sm font-medium transition ${
-                            teacher.status === "inactive"
-                              ? "text-gray-400 cursor-not-allowed"
-                              : "text-red-600 hover:bg-red-50"
+                            teacher.status === "active"
+                              ? "text-red-600 hover:bg-red-50"
+                              : "text-green-600 hover:bg-green-50"
                           }`}
                         >
-                          Remove
+                          {teacher.status === "active"
+                            ? "Deactivate"
+                            : "Activate"}
                         </button>
                       </div>
                     </li>
