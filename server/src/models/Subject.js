@@ -9,8 +9,20 @@ const subjectSchema = new mongoose.Schema(
       ref: "Class",
       required: true,
     },
+    sectionId: { type: mongoose.Schema.Types.ObjectId, ref: "Section" },
+
+    instituteId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
   },
   { timestamps: true }
+);
+
+// Optional: prevent duplicate subjects in same class+section+institute
+subjectSchema.index(
+  { name: 1, classId: 1, sectionId: 1, instituteId: 1 },
+  { unique: true }
 );
 
 module.exports = mongoose.model("Subject", subjectSchema);

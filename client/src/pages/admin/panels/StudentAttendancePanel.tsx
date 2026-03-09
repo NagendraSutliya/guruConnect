@@ -1,198 +1,19 @@
-// import { useEffect, useState } from "react";
-// import api from "../../../api/axiosInstance";
-
-// const StudentAttendancePanel = () => {
-//   const [classes, setClasses] = useState<any[]>([]);
-//   const [sections, setSections] = useState<any[]>([]);
-//   const [students, setStudents] = useState<any[]>([]);
-//   const [records, setRecords] = useState<any[]>([]);
-
-//   const [classId, setClassId] = useState("");
-//   const [sectionId, setSectionId] = useState("");
-//   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-
-//   const [attendance, setAttendance] = useState<Record<string, string>>({});
-//   const [loading, setLoading] = useState(false);
-
-//   /* ================= LOAD DATA ================= */
-
-//   const loadClasses = async () => {
-//     const res = await api.get("/classes");
-//     setClasses(res.data.data);
-//   };
-
-//   const loadSections = async (cid: string) => {
-//     if (!cid) return setSections([]);
-//     const res = await api.get(`/sections/class/${cid}`);
-//     setSections(res.data.data);
-//   };
-
-//   const loadStudents = async () => {
-//     if (!classId) return;
-//     setLoading(true);
-
-//     const params = new URLSearchParams();
-//     params.append("classId", classId);
-//     if (sectionId) params.append("sectionId", sectionId);
-
-//     const res = await api.get(`/students?${params.toString()}`);
-//     setStudents(res.data.data);
-
-//     setLoading(false);
-//   };
-
-//   const loadAttendance = async () => {
-//     const res = await api.get(`/attendance?date=${date}`);
-//     setRecords(res.data.data);
-//   };
-
-//   useEffect(() => {
-//     loadClasses();
-//     loadAttendance();
-//   }, []);
-
-//   useEffect(() => {
-//     loadSections(classId);
-//     loadStudents();
-//   }, [classId, sectionId]);
-
-//   /* ================= MARK ================= */
-
-//   const toggleAttendance = (studentId: string) => {
-//     setAttendance((prev) => ({
-//       ...prev,
-//       [studentId]: prev[studentId] === "present" ? "absent" : "present",
-//     }));
-//   };
-
-//   const saveAttendance = async () => {
-//     const payload = Object.entries(attendance).map(([studentId, status]) => ({
-//       studentId,
-//       date,
-//       status,
-//     }));
-
-//     await api.post("/attendance", payload);
-//     alert("Attendance saved");
-//     loadAttendance();
-//   };
-
-//   /* ================= UI ================= */
-
-//   return (
-//     <div>
-//       <h2 className="text-xl font-bold mb-6">Attendance Record</h2>
-
-//       {/* Filters */}
-//       <div className="grid grid-cols-4 gap-3 mb-6">
-//         <select value={classId} onChange={(e) => setClassId(e.target.value)}>
-//           <option>Select class</option>
-//           {classes.map((c) => (
-//             <option key={c._id} value={c._id}>
-//               {c.name}
-//             </option>
-//           ))}
-//         </select>
-
-//         <select
-//           value={sectionId}
-//           onChange={(e) => setSectionId(e.target.value)}
-//         >
-//           <option>Section (optional)</option>
-//           {sections.map((s) => (
-//             <option key={s._id} value={s._id}>
-//               {s.name}
-//             </option>
-//           ))}
-//         </select>
-
-//         <input
-//           type="date"
-//           value={date}
-//           onChange={(e) => setDate(e.target.value)}
-//         />
-
-//         <button
-//           onClick={saveAttendance}
-//           className="bg-green-600 text-white rounded"
-//         >
-//           Save
-//         </button>
-//       </div>
-
-//       {/* Mark attendance */}
-//       <div className="bg-white rounded shadow mb-8">
-//         {loading ? (
-//           <div className="p-6 text-gray-500">Loading students...</div>
-//         ) : students.length === 0 ? (
-//           <div className="p-6 text-gray-500">No students found</div>
-//         ) : (
-//           <table className="w-full text-sm">
-//             <thead className="bg-gray-100">
-//               <tr>
-//                 <th className="p-3">Student</th>
-//                 <th className="p-3">Mark</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {students.map((s) => (
-//                 <tr key={s._id} className="border-t">
-//                   <td className="p-3">{s.name}</td>
-//                   <td className="p-3">
-//                     <button
-//                       onClick={() => toggleAttendance(s._id)}
-//                       className={`px-3 py-1 rounded text-white ${
-//                         attendance[s._id] === "present"
-//                           ? "bg-green-600"
-//                           : "bg-red-600"
-//                       }`}
-//                     >
-//                       {attendance[s._id] === "present" ? "Present" : "Absent"}
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         )}
-//       </div>
-
-//       {/* History */}
-//       <div className="bg-white rounded shadow">
-//         <h3 className="p-4 font-semibold">Attendance Records</h3>
-
-//         <table className="w-full text-sm">
-//           <thead className="bg-gray-100">
-//             <tr>
-//               <th className="p-3">Student</th>
-//               <th className="p-3">Date</th>
-//               <th className="p-3">Status</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {records.map((r) => (
-//               <tr key={r._id} className="border-t">
-//                 <td className="p-3">{r.studentId?.name}</td>
-//                 <td className="p-3">{r.date.slice(0, 10)}</td>
-//                 <td className="p-3">{r.status}</td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default StudentAttendancePanel;
-
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
+import { FaUserCheck, FaUserTimes, FaChartLine } from "react-icons/fa";
 
-const Card = ({ title, value, color }: any) => (
-  <div className="bg-white rounded-xl shadow p-6 text-center">
-    <p className="text-gray-500 text-sm">{title}</p>
-    <p className={`text-3xl font-bold text-${color}-600 mt-2`}>{value}</p>
+const Card = ({ title, value, color, icon }: any) => (
+  <div className={`bg-white shadow rounded-xl p-6 flex items-center gap-4`}>
+    <div
+      className={`p-3 rounded-full bg-${color}-100 text-${color}-600 text-xl 
+                    flex items-center justify-center`}
+    >
+      {icon}
+    </div>
+
+    <p className="text-gray-500 flex-1">{title}</p>
+
+    <p className={`text-2xl font-bold text-${color}-600`}>{value}</p>
   </div>
 );
 
@@ -241,19 +62,6 @@ const StudentAttendancePanel = () => {
   const [studentSummary, setStudentSummary] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
 
-  // const load = async () => {
-  //   const t = await api.get("/attendance/summary/today");
-  //   const c = await api.get("/attendance/summary/class");
-  //   const s = await api.get("/attendance/summary/student");
-  //   const h = await api.get("/attendance/history");
-
-  //   setToday(t.data.data);
-  //   setClassSummary(c.data.data || []);
-  //   setStudentSummary(s.data.data || []);
-  //   setHistory(h.data.data || []);
-  // };
-
-  // For dummy data display
   const load = async () => {
     setToday(dummyToday);
     setClassSummary(dummyClassSummary);
@@ -271,33 +79,48 @@ const StudentAttendancePanel = () => {
 
       {/* ===== Today Summary ===== */}
       {today && (
-        <div className="grid grid-cols-3 gap-4">
-          <Card title="Present" value={today.present} color="green" />
-          <Card title="Absent" value={today.absent} color="red" />
-          <Card title="Attendance Rate" value={`${today.rate}%`} color="blue" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <Card
+            title="Present"
+            value={today.present}
+            color="green"
+            icon={<FaUserCheck />}
+          />
+          <Card
+            title="Absent"
+            value={today.absent}
+            color="red"
+            icon={<FaUserTimes />}
+          />
+          <Card
+            title="Attendance Rate"
+            value={`${today.rate}%`}
+            color="blue"
+            icon={<FaChartLine />}
+          />
         </div>
       )}
 
       {/* ===== Class Summary ===== */}
       <div className="bg-white rounded-xl shadow p-4">
-        <h3 className="font-semibold mb-3">Class Summary</h3>
-
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100">
+        <h3 className="font-semibold mb-3 text-gray-700">Class Summary</h3>
+        <table className="w-full text-sm border-collapse">
+          <thead className="bg-cyan-50 text-gray-600">
             <tr>
-              <th className="p-3">Class</th>
-              <th className="p-3">Present</th>
-              <th className="p-3">Absent</th>
-              <th className="p-3">Rate</th>
+              <th className="p-3 text-left">Class</th>
+              <th className="p-3 text-left">Present</th>
+              <th className="p-3 text-left">Absent</th>
+              <th className="p-3 text-left">Rate</th>
             </tr>
           </thead>
-
           <tbody>
             {classSummary.map((c, i) => (
-              <tr key={i} className="border-t">
-                <td className="p-3">{c.class}</td>
-                <td className="p-3">{c.present}</td>
-                <td className="p-3">{c.absent}</td>
+              <tr key={i} className="border-t hover:bg-gray-50 transition">
+                <td className="p-3 font-medium">{c.class}</td>
+                <td className="p-3 text-green-600 font-semibold">
+                  {c.present}
+                </td>
+                <td className="p-3 text-red-600 font-semibold">{c.absent}</td>
                 <td className="p-3 font-semibold">{c.rate}%</td>
               </tr>
             ))}
@@ -307,19 +130,19 @@ const StudentAttendancePanel = () => {
 
       {/* ===== Student Summary ===== */}
       <div className="bg-white rounded-xl shadow p-4">
-        <h3 className="font-semibold mb-3">Student Attendance Report</h3>
-
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100">
+        <h3 className="font-semibold mb-3 text-gray-700">
+          Student Attendance Report
+        </h3>
+        <table className="w-full text-sm border-collapse">
+          <thead className="bg-cyan-50 text-gray-600">
             <tr>
-              <th className="p-3">Student</th>
-              <th className="p-3">Attendance %</th>
+              <th className="p-3 text-left">Student</th>
+              <th className="p-3 text-left">Attendance %</th>
             </tr>
           </thead>
-
           <tbody>
             {studentSummary.map((s, i) => (
-              <tr key={i} className="border-t">
+              <tr key={i} className="border-t hover:bg-gray-50 transition">
                 <td className="p-3">{s.name}</td>
                 <td className="p-3 font-semibold">{s.percentage}%</td>
               </tr>
@@ -330,23 +153,31 @@ const StudentAttendancePanel = () => {
 
       {/* ===== History ===== */}
       <div className="bg-white rounded-xl shadow p-4">
-        <h3 className="font-semibold mb-3">Attendance History</h3>
-
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100">
+        <h3 className="font-semibold mb-3 text-gray-700">Attendance History</h3>
+        <table className="w-full text-sm border-collapse">
+          <thead className="bg-cyan-50 text-gray-600">
             <tr>
-              <th className="p-3">Student</th>
-              <th className="p-3">Date</th>
-              <th className="p-3">Status</th>
+              <th className="p-3 text-left">Student</th>
+              <th className="p-3 text-left">Date</th>
+              <th className="p-3 text-left">Status</th>
             </tr>
           </thead>
-
           <tbody>
             {history.map((r) => (
-              <tr key={r._id} className="border-t">
+              <tr key={r._id} className="border-t hover:bg-gray-50 transition">
                 <td className="p-3">{r.studentId?.name}</td>
-                <td className="p-3">{r.date.slice(0, 10)}</td>
-                <td className="p-3">{r.status}</td>
+                <td className="p-3">{r.date}</td>
+                <td className="p-3">
+                  <span
+                    className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                      r.status === "present"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>

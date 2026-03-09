@@ -11,6 +11,11 @@ const sectionSchema = new mongoose.Schema(
       ref: "Class",
       required: true,
     },
+    instituteId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Institute",
+      required: true,
+    },
   },
   { timestamps: true }
 );

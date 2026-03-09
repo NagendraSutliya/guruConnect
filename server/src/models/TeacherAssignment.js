@@ -15,7 +15,7 @@ const teacherAssignmentSchema = new mongoose.Schema(
     sectionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Section",
-      required: true,
+      // required: true,
     },
     subjectId: {
       type: mongoose.Schema.Types.ObjectId,

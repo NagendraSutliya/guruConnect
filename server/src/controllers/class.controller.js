@@ -9,6 +9,20 @@ exports.createClass = async (req, res) => {
       return errorResponse(res, "Missing fields", 400);
     }
 
+    const exists = await Class.findOne({
+      name,
+      academicYearId,
+      instituteId: req.user.id,
+    });
+
+    if (exists) {
+      return errorResponse(
+        res,
+        "Class already exists for this academic year",
+        400
+      );
+    }
+
     const cls = await Class.create({
       name,
       academicYearId,
@@ -25,7 +39,9 @@ exports.getClasses = async (req, res) => {
   try {
     const list = await Class.find({
       instituteId: req.user.id,
-    }).populate("academicYearId", "name");
+    })
+      .populate("academicYearId", "name")
+      .sort({ name: 1 });
 
     return successResponse(res, "Classes loaded", list);
   } catch (err) {
