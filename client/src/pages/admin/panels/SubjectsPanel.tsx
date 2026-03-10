@@ -1,54 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { FiTrash2, FiEdit } from "react-icons/fi";
-
-// --- Toast Component ---
-interface ToastProps {
-  message: string;
-  type?: "success" | "error" | "info" | "warn";
-  onClose: () => void;
-}
-const Toast = ({ message, type = "info", onClose }: ToastProps) => {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 3000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  const bgColor =
-    type === "success"
-      ? "bg-green-500"
-      : type === "error"
-      ? "bg-red-500"
-      : type === "warn"
-      ? "bg-yellow-500"
-      : "bg-blue-500";
-
-  return (
-    <div
-      className={`fixed top-5 right-5 ${bgColor} text-white px-4 py-2 rounded shadow-md`}
-    >
-      {message}
-    </div>
-  );
-};
-
-// --- Types ---
-interface Class {
-  _id: string;
-  name: string;
-}
-interface Section {
-  _id: string;
-  name: string;
-  classId: string;
-}
-interface Subject {
-  _id: string;
-  name: string;
-  code: string;
-  classId: Class;
-  sectionId?: Section | null;
-}
+import type { Subject } from "../../../types/subject";
+import type { Section } from "../../../types/section";
+import type { Class } from "../../../types/class";
+import Toast from "../../../components/admin/Toast";
 
 // --- SubjectsPanel ---
 const SubjectsPanel = () => {

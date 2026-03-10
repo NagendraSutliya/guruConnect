@@ -13,6 +13,16 @@ const AdminNavbar = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  const goToProfile = () => {
+    setShowProfileDropdown(false);
+    navigate("/admin/profile");
+  };
+
+  const goToSettings = () => {
+    setShowProfileDropdown(false);
+    navigate("/admin/settings");
+  };
+
   const logout = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("adminToken");
@@ -74,20 +84,21 @@ const AdminNavbar = () => {
 
           {showProfileDropdown && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 animate-dropdown">
-              <Link
-                to="/admin/profile"
-                className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
+              <button
+                onClick={goToProfile}
+                className="flex items-center w-full gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
               >
                 <FaUserCircle />
                 Profile
-              </Link>
-              <Link
-                to="/admin/settings"
-                className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
+              </button>
+
+              <button
+                onClick={goToSettings}
+                className="flex items-center w-full gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
               >
                 <FaCog />
                 Settings
-              </Link>
+              </button>
               <button
                 onClick={logout}
                 className="flex items-center w-full gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"

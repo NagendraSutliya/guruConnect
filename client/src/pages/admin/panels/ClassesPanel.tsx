@@ -1,57 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-
-// Toast component
-const Toast = ({
-  message,
-  type = "info",
-  onClose,
-}: {
-  message: string;
-  type?: "success" | "error" | "info" | "warn";
-  onClose: () => void;
-}) => {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 3000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  const bgColor =
-    type === "success"
-      ? "bg-green-500"
-      : type === "error"
-      ? "bg-red-500"
-      : type === "warn"
-      ? "bg-yellow-500"
-      : "bg-blue-500";
-
-  return (
-    <div
-      className={`fixed top-5 right-5 ${bgColor} text-white px-4 py-2 rounded shadow-md`}
-    >
-      {message}
-    </div>
-  );
-};
-
-interface AcademicYear {
-  _id: string;
-  name: string;
-  isActive: boolean;
-}
-
-interface Class {
-  _id: string;
-  name: string;
-  academicYearId: AcademicYear;
-}
-
-interface Section {
-  _id: string;
-  name: string;
-  classId: Class;
-}
+import Toast from "../../../components/admin/Toast";
+import type { AcademicYear } from "../../../types/academicYear";
+import type { Class } from "../../../types/class";
+import type { Section } from "../../../types/section";
 
 const ClassesPanel = () => {
   const [classes, setClasses] = useState<Class[]>([]);

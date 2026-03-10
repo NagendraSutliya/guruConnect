@@ -1,17 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
-
-type Feedback = {
-  _id: string;
-  message: string;
-  mood: "happy" | "neutral" | "sad";
-  teacherName?: string;
-  teacherId?: { name: string; _id?: string };
-  studentName?: string;
-  studentId?: { name: string };
-  classOrBatch?: string;
-  createdAt: string;
-};
+import type { Feedback } from "../../../types/feedback";
 
 const MOOD_CONFIG: Record<
   Feedback["mood"],

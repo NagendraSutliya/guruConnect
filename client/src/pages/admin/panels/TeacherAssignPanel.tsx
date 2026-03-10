@@ -132,7 +132,7 @@ const TeacherAssignPanel = () => {
       <div className="bg-white shadow-md rounded-xl p-6">
         <h2 className="text-xl font-semibold mb-6">Assign Teacher</h2>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-4 gap-4">
           <div>
             <label className="text-sm text-gray-600">Teacher</label>
             <select
@@ -198,13 +198,15 @@ const TeacherAssignPanel = () => {
           </div>
         </div>
 
-        <button
-          disabled={!isValid || loading}
-          onClick={assign}
-          className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {loading ? "Assigning..." : "Assign Teacher"}
-        </button>
+        <div className="flex justify-end mt-6">
+          <button
+            disabled={!isValid || loading}
+            onClick={assign}
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loading ? "Assigning..." : "Assign Teacher"}
+          </button>
+        </div>
       </div>
 
       {/* ASSIGNMENT TABLE */}

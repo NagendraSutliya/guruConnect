@@ -47,6 +47,7 @@ import StudentMaterial from "../pages/student/StudentMaterial";
 import StudentTests from "../pages/student/StudentTests";
 import StudentProfile from "../pages/student/StudentProfile";
 import StudentAttendance from "../pages/student/StudentAttendance";
+import AdminProfile from "../pages/admin/AdminProfile";
 
 export default function AppRoutes() {
   return (
@@ -69,11 +70,11 @@ export default function AppRoutes() {
           </AdminRoute>
         }
       >
-        {/* <Route path="dashboard" element={<Dashboard />} /> */}
+        <Route path="profile" element={<AdminProfile />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="teachers" element={<Teachers />} />
         <Route path="feedback" element={<FeedbackPanel />} />
         <Route path="link" element={<LinksPanel />} />
-        <Route path="dashboard" element={<AdminDashboard />} />
 
         {/* NEW */}
         <Route path="academic-years" element={<AcademicYears />} />

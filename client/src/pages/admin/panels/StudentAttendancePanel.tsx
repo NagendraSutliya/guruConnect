@@ -17,44 +17,44 @@ const Card = ({ title, value, color, icon }: any) => (
   </div>
 );
 
-const dummyToday = {
-  present: 320,
-  absent: 45,
-  rate: 87,
-};
+// const dummyToday = {
+//   present: 320,
+//   absent: 45,
+//   rate: 87,
+// };
 
-const dummyClassSummary = [
-  { class: "Class 1A", present: 28, absent: 2, rate: 93 },
-  { class: "Class 2B", present: 25, absent: 5, rate: 83 },
-  { class: "Class 3C", present: 30, absent: 0, rate: 100 },
-];
+// const dummyClassSummary = [
+//   { class: "Class 1A", present: 28, absent: 2, rate: 93 },
+//   { class: "Class 2B", present: 25, absent: 5, rate: 83 },
+//   { class: "Class 3C", present: 30, absent: 0, rate: 100 },
+// ];
 
-const dummyStudentSummary = [
-  { name: "Rahul Sharma", percentage: 92 },
-  { name: "Anita Verma", percentage: 85 },
-  { name: "Ravi Kumar", percentage: 78 },
-];
+// const dummyStudentSummary = [
+//   { name: "Rahul Sharma", percentage: 92 },
+//   { name: "Anita Verma", percentage: 85 },
+//   { name: "Ravi Kumar", percentage: 78 },
+// ];
 
-const dummyHistory = [
-  {
-    _id: "1",
-    studentId: { name: "Rahul Sharma" },
-    date: "2026-02-12",
-    status: "present",
-  },
-  {
-    _id: "2",
-    studentId: { name: "Anita Verma" },
-    date: "2026-02-12",
-    status: "absent",
-  },
-  {
-    _id: "3",
-    studentId: { name: "Ravi Kumar" },
-    date: "2026-02-11",
-    status: "present",
-  },
-];
+// const dummyHistory = [
+//   {
+//     _id: "1",
+//     studentId: { name: "Rahul Sharma" },
+//     date: "2026-02-12",
+//     status: "present",
+//   },
+//   {
+//     _id: "2",
+//     studentId: { name: "Anita Verma" },
+//     date: "2026-02-12",
+//     status: "absent",
+//   },
+//   {
+//     _id: "3",
+//     studentId: { name: "Ravi Kumar" },
+//     date: "2026-02-11",
+//     status: "present",
+//   },
+// ];
 
 const StudentAttendancePanel = () => {
   const [today, setToday] = useState<any>(null);
@@ -63,10 +63,24 @@ const StudentAttendancePanel = () => {
   const [history, setHistory] = useState<any[]>([]);
 
   const load = async () => {
-    setToday(dummyToday);
-    setClassSummary(dummyClassSummary);
-    setStudentSummary(dummyStudentSummary);
-    setHistory(dummyHistory);
+    try {
+      const todayRes = await api.get("/attendance/summary/today");
+      const classRes = await api.get("/attendance/summary/class");
+      const studentRes = await api.get("/attendance/summary/student");
+      const historyRes = await api.get("/attendance/history");
+
+      setToday(todayRes.data.data);
+      setClassSummary(classRes.data.data);
+      setStudentSummary(studentRes.data.data);
+      setHistory(historyRes.data.data);
+
+      // setToday(dummyToday);
+      // setClassSummary(dummyClassSummary);
+      // setStudentSummary(dummyStudentSummary);
+      // setHistory(dummyHistory);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {

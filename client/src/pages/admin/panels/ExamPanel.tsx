@@ -1,22 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-
-interface Exam {
-  _id: string;
-  name: string;
-  date: string;
-  startTime?: string;
-  endTime?: string;
-  classId?: { _id: string; name: string };
-  sectionId?: { _id: string; name: string };
-  subjectId?: { _id: string; name: string };
-}
-
-interface Option {
-  _id: string;
-  name: string;
-}
+import type { Exam, Option } from "../../../types/exam";
+import Toast from "../../../components/admin/Toast";
 
 const ExamPanel = () => {
   const [exams, setExams] = useState<Exam[]>([]);
@@ -24,6 +10,9 @@ const ExamPanel = () => {
   const [classes, setClasses] = useState<Option[]>([]);
   const [sections, setSections] = useState<Option[]>([]);
   const [subjects, setSubjects] = useState<Option[]>([]);
+  const [toast, setToast] = useState<{ message: string; type?: string } | null>(
+    null
+  );
 
   const [form, setForm] = useState({
     name: "",
@@ -143,6 +132,7 @@ const ExamPanel = () => {
             <label className="text-sm text-gray-600">Exam Name</label>
             <input
               name="name"
+              placeholder="Unit/Mock/Final Exam"
               value={form.name}
               onChange={handleChange}
               className="border p-2 rounded w-full"
