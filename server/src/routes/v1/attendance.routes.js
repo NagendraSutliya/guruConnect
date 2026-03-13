@@ -7,10 +7,10 @@ const {
   getStudentSummary,
   getAttendanceHistory,
 } = require("../../controllers/attendance.controller");
-const { requireAdmin } = require("../../middleware/auth");
+const { requireAdmin, requireTeacher } = require("../../middleware/auth");
 
-router.post("/", saveAttendance);
-router.get("/", getAttendance);
+router.post("/", requireTeacher, saveAttendance);
+router.get("/", requireTeacher, getAttendance);
 
 router.get("/history", requireAdmin, getAttendanceHistory);
 router.get("/summary/today", requireAdmin, getTodaySummary);

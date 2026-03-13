@@ -146,3 +146,33 @@ exports.changeStudentPassword = async (req, res) => {
     return errorResponse(res, "Failed to udpate password");
   }
 };
+
+/* ================= STUDENTS BY CLASS ================= */
+
+exports.getStudentsByClass = async (req, res) => {
+  try {
+    const { classId, sectionId } = req.query;
+
+    if (!classId) {
+      return errorResponse(res, "classId is required");
+    }
+
+    const filter = {
+      classId,
+      isActive: true,
+    };
+
+    if (sectionId) {
+      filter.sectionId = sectionId;
+    }
+
+    const students = await Student.find(filter)
+      .select("_id name rollNo")
+      .sort({ rollNo: 1 });
+
+    return successResponse(res, "Students loaded", students);
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, "Failed to load students");
+  }
+};

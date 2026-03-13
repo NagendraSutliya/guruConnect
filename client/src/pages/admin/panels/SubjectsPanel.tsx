@@ -4,7 +4,7 @@ import { FiTrash2, FiEdit } from "react-icons/fi";
 import type { Subject } from "../../../types/subject";
 import type { Section } from "../../../types/section";
 import type { Class } from "../../../types/class";
-import Toast from "../../../components/admin/Toast";
+import Toast from "../../../components/Toast";
 
 // --- SubjectsPanel ---
 const SubjectsPanel = () => {

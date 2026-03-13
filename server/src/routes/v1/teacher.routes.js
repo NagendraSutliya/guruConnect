@@ -4,6 +4,7 @@ const {
   getTeacherStats,
   getTeacherOverview,
   getTeacherFeedback,
+  getAttendanceSummary,
 } = require("../../controllers/teacher.controller.js");
 
 const router = express.Router();
@@ -12,5 +13,6 @@ router.get("/stats", requireTeacher, getTeacherStats);
 router.get("/overview", requireTeacher, getTeacherOverview);
 router.get("/feedback", requireTeacher, getTeacherFeedback);
 router.get("/feedback/all", requireTeacher, getTeacherFeedback);
+router.get("/attendance/summary", requireTeacher, getAttendanceSummary);
 
 module.exports = router;

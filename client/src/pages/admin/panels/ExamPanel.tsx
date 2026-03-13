@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import type { Exam, Option } from "../../../types/exam";
-import Toast from "../../../components/admin/Toast";
+import Toast from "../../../components/Toast";
 
 const ExamPanel = () => {
   const [exams, setExams] = useState<Exam[]>([]);

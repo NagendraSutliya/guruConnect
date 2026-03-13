@@ -9,6 +9,11 @@ const ClassSchema = new mongoose.Schema(
       ref: "Institute",
       required: true,
     },
+    teacherId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
+      required: true,
+    },
   },
   { timestamps: true }
 );

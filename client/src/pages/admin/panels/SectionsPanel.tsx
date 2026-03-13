@@ -3,7 +3,7 @@ import api from "../../../api/axiosInstance";
 import { FiTrash2, FiEdit } from "react-icons/fi";
 import type { Section } from "../../../types/section";
 import type { Class } from "../../../types/class";
-import Toast from "../../../components/admin/Toast";
+import Toast from "../../../components/Toast";
 
 const SectionsPanel = () => {
   const [sections, setSections] = useState<Section[]>([]);

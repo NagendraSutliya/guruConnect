@@ -4,7 +4,7 @@ const { successResponse, errorResponse } = require("../utils/response");
 /* ================= SAVE ATTENDANCE (bulk) ================= */
 exports.saveAttendance = async (req, res) => {
   try {
-    const records = req.body; // array
+    const { classId, sectionId, date, records } = req.body;
 
     const instituteId = req.user.id;
 
@@ -16,23 +16,23 @@ exports.saveAttendance = async (req, res) => {
       updateOne: {
         filter: {
           studentId: r.studentId,
-          date: new Date(r.date),
+          date: new Date(date),
         },
         update: {
           instituteId,
           studentId: r.studentId,
-          classId: r.classId,
-          sectionId: r.sectionId || null,
-          date: new Date(r.date),
+          classId,
+          sectionId: sectionId || null,
+          date: new Date(date),
           status: r.status,
         },
-        upsert: true, // overwrite if exists
+        upsert: true,
       },
     }));
 
     await Attendance.bulkWrite(ops);
 
-    return successResponse(res, "Attendance saved");
+    return successResponse(res, "Attendance saved successfully");
   } catch (err) {
     console.log(err);
     return errorResponse(res, "Failed to save attendance");

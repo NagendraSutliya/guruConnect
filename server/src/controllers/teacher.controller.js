@@ -1,9 +1,10 @@
 const Feedback = require("../models/Feedback.js");
+const Class = require("../models/Class.js"); // make sure you import Class
+const Attendance = require("../models/Attendance.js"); // make sure you import Attendance
 const { successResponse, errorResponse } = require("../utils/response.js");
 
 /* ================= DASHBOARD STATS ================= */
-
-const getTeacherStats = async (req, res) => {
+exports.getTeacherStats = async (req, res) => {
   try {
     const total = await Feedback.countDocuments({ teacherId: req.user.id });
 
@@ -25,8 +26,7 @@ const getTeacherStats = async (req, res) => {
 };
 
 /* ================= DASHBOARD OVERVIEW ================= */
-
-const getTeacherOverview = async (req, res) => {
+exports.getTeacherOverview = async (req, res) => {
   try {
     const teacherId = req.user.id;
 
@@ -62,9 +62,47 @@ const getTeacherOverview = async (req, res) => {
   }
 };
 
-/* ================= FEEDBACK ================= */
+/* ================= Attendance Stats ================= */
+exports.getAttendanceSummary = async (req, res) => {
+  try {
+    const teacherId = req.user.id;
 
-const getTeacherFeedback = async (req, res) => {
+    // 1️⃣ Get classes assigned to teacher
+    const classes = await Class.find({ teacherId }).select("_id name");
+
+    const classIds = classes.map((c) => c._id);
+
+    if (!classIds.length) {
+      return successResponse(res, "No classes assigned", []);
+    }
+
+    // 2️⃣ Get attendance aggregation
+    const attendance = await Attendance.aggregate([
+      {
+        $match: {
+          classId: { $in: classIds },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            classId: "$classId",
+            status: "$status",
+          },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    return successResponse(res, "Attendance summary loaded", attendance);
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, "Failed to load attendance summary");
+  }
+};
+
+/* ================= FEEDBACK ================= */
+exports.getTeacherFeedback = async (req, res) => {
   try {
     const feedback = await Feedback.find({
       teacherId: req.user.id,
@@ -75,5 +113,3 @@ const getTeacherFeedback = async (req, res) => {
     return errorResponse(res, "Failed to load feedback");
   }
 };
-
-module.exports = { getTeacherStats, getTeacherOverview, getTeacherFeedback };

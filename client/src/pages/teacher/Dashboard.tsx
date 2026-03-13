@@ -1,62 +1,48 @@
-// // import TeacherChart from "../../components/teacher/TeacherChart";
-// import TeacherOverview from "../../components/teacher/TeacherOverview";
-// // import TeacherRecent from "../../components/teacher/TeacherRecent";
-
-// import OverviewCards from "../../components/teacher/dashboard/OverviewCards";
-// import MessagesWidget from "../../components/teacher/dashboard/MessagesWidget";
-// import PerformanceChart from "../../components/teacher/dashboard/PerformanceChart";
-// import StudentsTable from "../../components/teacher/dashboard/StudentsTable";
-// import CalendarWidget from "../../components/teacher/dashboard/CalendarWidget";
-// import WeeklySchedule from "../../components/teacher/dashboard/WeeklySchedule";
-// import NotesWidget from "../../components/teacher/dashboard/NotesWidget";
-
-// const TeacherDashboard = () => {
-//   return (
-//     <div className="space-y-6">
-//       <TeacherOverview />
-//       <div className="grid grid-cols-2 gap-6">
-//         {/* <TeacherRecent /> */}
-//         {/* <TeacherChart /> */}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default TeacherDashboard;
-
-import OverviewCards from "../../components/teacher/dashboard/OverviewCards";
-import MessagesWidget from "../../components/teacher/dashboard/MessagesWidget";
-import PerformanceChart from "../../components/teacher/dashboard/PerformanceChart";
-import StudentsTable from "../../components/teacher/dashboard/StudentsTable";
-import CalendarWidget from "../../components/teacher/dashboard/CalendarWidget";
-import WeeklySchedule from "../../components/teacher/dashboard/WeeklySchedule";
-import NotesWidget from "../../components/teacher/dashboard/NotesWidget";
+import AttendanceSummary from "./dashboard/AttendanceSummary";
+import TodayClassesWidget from "./dashboard/TodayClassesWidget";
+import MessagesWidget from "./dashboard/MessagesWidget";
+import OverviewCards from "./dashboard/OverviewCards";
+import WeeklySchedule from "./dashboard/WeeklySchedule";
+import PerformanceChart from "./dashboard/PerformanceChart";
+import StudentsTable from "./dashboard/StudentsTable";
+import AssignmentsWidget from "./dashboard/AssignmentsWidget";
+import AnnouncementsWidget from "./dashboard/AnnouncementsWidget";
+import NotesWidget from "./dashboard/NotesWidget";
 
 const TeacherDashboard = () => {
   return (
-    <div className="space-y-6">
-      {/* Overview Cards */}
-      <OverviewCards />
-
-      {/* Messages + Performance + Calendar */}
-      <div className="grid grid-cols-3 gap-6">
-        <MessagesWidget />
-        <PerformanceChart />
-        <CalendarWidget />
-      </div>
-
-      {/* Students Table + Weekly Schedule */}
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2">
-          <StudentsTable />
+    <>
+      <h1 className="text-2xl font-bold mb-8">Welcome 👋 Mr. {}</h1>
+      <div className="space-y-6">
+        {/* Attendance First */}
+        <div className="grid grid-cols-1 gap-6">
+          <AttendanceSummary />
+          <TodayClassesWidget />
+          <MessagesWidget />
         </div>
 
-        <WeeklySchedule />
-      </div>
+        {/* Overview */}
+        <OverviewCards />
 
-      {/* Notes */}
-      <NotesWidget />
-    </div>
+        {/* Schedule + Performance */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <WeeklySchedule />
+          <PerformanceChart />
+        </div>
+
+        {/* Students */}
+        <StudentsTable />
+
+        {/* Tasks */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AssignmentsWidget />
+          <AnnouncementsWidget />
+        </div>
+
+        {/* Personal Notes */}
+        <NotesWidget />
+      </div>
+    </>
   );
 };
 
