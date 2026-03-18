@@ -28,7 +28,7 @@ import Subjects from "../pages/admin/academic/Subjects";
 import TeacherAssignPanel from "../pages/admin/panels/TeacherAssignPanel";
 import MyAssignments from "../pages/teacher/MyAssignments";
 import AttendanceTeacher from "../pages/teacher/Attendance";
-import Marks from "../pages/teacher/Marks";
+import Result from "../pages/teacher/Result";
 import StudyMaterial from "../pages/teacher/StudyMaterial";
 import Tests from "../pages/teacher/Tests";
 // import Students from "../pages/student/Students";
@@ -48,6 +48,7 @@ import StudentTests from "../pages/student/StudentTests";
 import StudentProfile from "../pages/student/StudentProfile";
 import StudentAttendance from "../pages/student/StudentAttendance";
 import AdminProfile from "../pages/admin/AdminProfile";
+import ExamSubjectPanel from "../pages/admin/panels/ExamSubjectPanel";
 
 export default function AppRoutes() {
   return (
@@ -88,6 +89,7 @@ export default function AppRoutes() {
         <Route path="routine" element={<Routine />} />
 
         <Route path="exam" element={<Exams />} />
+        <Route path="exam-subjects/:examId" element={<ExamSubjectPanel />} />
         <Route path="result" element={<Results />} />
       </Route>
 
@@ -103,7 +105,7 @@ export default function AppRoutes() {
         <Route path="feedback" element={<TeacherFeedback />} />
         <Route path="assignments" element={<MyAssignments />} />
         <Route path="attendance" element={<AttendanceTeacher />} />
-        <Route path="marks" element={<Marks />} />
+        <Route path="results" element={<Result />} />
         <Route path="material" element={<StudyMaterial />} />
         <Route path="tests" element={<Tests />} />
       </Route>

@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const examSchema = new mongoose.Schema(
   {
+    instituteId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Institute",
+      required: true,
+    },
     name: { type: String, required: true },
     classId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -13,17 +18,17 @@ const examSchema = new mongoose.Schema(
       ref: "Section",
       default: null,
     },
-    subjectId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Subject",
-      required: true,
-    },
-    date: { type: Date, required: true },
-    startTime: String,
-    endTime: String,
+    // subjectId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Subject",
+    //   required: true,
+    // },
+    // date: { type: Date, required: true },
+    // startTime: String,
+    // endTime: String,
     status: {
       type: String,
-      enum: ["upcoming", "completed"],
+      enum: ["upcoming", "ongoing", "completed"],
       default: "upcoming",
     },
   },

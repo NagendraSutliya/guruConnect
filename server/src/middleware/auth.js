@@ -24,7 +24,11 @@ exports.requireAdmin = (req, res, next) => {
 
     if (decoded.role !== "admin") return res.status(403).json("Admins only");
 
-    req.user = { id: decoded.id, role: decoded.role };
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+      instituteId: decoded.instituteId, // ✅ add this
+    };
     next();
   } catch {
     res.status(401).json("Invalid token");
@@ -70,4 +74,29 @@ exports.requireStudent = (req, res, next) => {
   } catch {
     res.status(401).json("Invalid token");
   }
+};
+
+exports.allowRoles = (...roles) => {
+  return (req, res, next) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json("No token");
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      if (!roles.includes(decoded.role)) {
+        return res.status(403).json("Access denied");
+      }
+
+      req.user = {
+        id: decoded.id,
+        role: decoded.role,
+        instituteId: decoded.instituteId,
+      };
+
+      next();
+    } catch {
+      res.status(401).json("Invalid token");
+    }
+  };
 };

@@ -5,10 +5,11 @@ const {
   deleteExam,
   updateExam,
 } = require("../../controllers/exam.controller");
+const { requireAdmin, allowRoles } = require("../../middleware/auth");
 
-router.get("/", getExams);
-router.post("/", createExam);
-router.put("/:id", updateExam);
-router.delete("/:id", deleteExam);
+router.get("/", allowRoles("admin", "teacher"), getExams);
+router.post("/", requireAdmin, createExam);
+router.put("/:id", requireAdmin, updateExam);
+router.delete("/:id", requireAdmin, deleteExam);
 
 module.exports = router;

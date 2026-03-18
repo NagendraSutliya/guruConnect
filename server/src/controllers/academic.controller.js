@@ -62,3 +62,27 @@ exports.activateAcademicYear = async (req, res) => {
     return errorResponse(res, "Failed to activate academic year");
   }
 };
+
+/* ================= DELETE ACADEMIC YEAR ================= */
+exports.deleteAcademicYear = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const year = await AcademicYear.findById(id);
+
+    if (!year) {
+      return errorResponse(res, "Academic year not found", 404);
+    }
+
+    // Prevent deleting active year
+    if (year.isActive) {
+      return errorResponse(res, "Active academic year cannot be deleted", 400);
+    }
+
+    await AcademicYear.findByIdAndDelete(id);
+
+    return successResponse(res, "Academic year deleted");
+  } catch (err) {
+    console.log(err);
+    return errorResponse(res, "Failed to delete academic year");
+  }
+};

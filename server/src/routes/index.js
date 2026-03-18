@@ -25,4 +25,6 @@ router.use("/v1/exams", require("./v1/exam.routes"));
 
 router.use("/v1/results", require("./v1/result.routes"));
 
+router.use("/v1/exam-subjects", require("./v1/examSubject.routes"));
+
 module.exports = router;

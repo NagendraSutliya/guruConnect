@@ -5,6 +5,7 @@ const {
   getAssignments,
   getMyAssignments,
   deleteAssignment,
+  updateAssignment,
 } = require("../../controllers/teacherAssignment.controller");
 
 router.post("/", requireAdmin, assignTeacher);
@@ -12,5 +13,6 @@ router.get("/", requireAdmin, getAssignments);
 
 router.get("/my", requireTeacher, getMyAssignments);
 router.delete("/:id", requireAdmin, deleteAssignment); // <-- DELETE route
+router.put("/:id", requireAdmin, updateAssignment);
 
 module.exports = router;

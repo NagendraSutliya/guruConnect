@@ -10,6 +10,8 @@ const {
   getPublicLink,
   createPublicLink,
   activateTeacher,
+  updateTeacher,
+  deleteTeacher,
 } = require("../../controllers/admin.controller.js");
 const {
   getStudents,
@@ -24,6 +26,8 @@ router.get("/teachers", requireAdmin, getTeachers);
 router.post("/teacher", requireAdmin, createTeacher);
 router.patch("/teacher/:id/activate", requireAdmin, activateTeacher);
 router.patch("/teacher/:id/deactivate", requireAdmin, deactivateTeacher);
+router.put("/teacher/:id", requireAdmin, updateTeacher);
+router.delete("/teacher/:id", requireAdmin, deleteTeacher);
 
 /* ================= STUDENTS ================= */
 router.get("/students", requireAdmin, getStudents);

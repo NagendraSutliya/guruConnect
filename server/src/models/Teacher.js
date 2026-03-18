@@ -10,10 +10,6 @@ const TeacherSchema = new mongoose.Schema(
       ref: "Institute",
       required: true,
     },
-    // instituteCode: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   required: true, // public sharing code
-    // },
     role: { type: String, default: "teacher" },
     status: {
       type: String,

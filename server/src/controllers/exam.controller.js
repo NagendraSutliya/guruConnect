@@ -1,25 +1,50 @@
+const mongoose = require("mongoose");
 const Exam = require("../models/Exam");
 const { successResponse, errorResponse } = require("../utils/response");
 
+// ============ GET EXAMS ==============
 exports.getExams = async (req, res) => {
   try {
-    const exams = await Exam.find()
+    const { classId, sectionId } = req.query;
+
+    const filter = {};
+
+    // ✅ SAFE classId
+    if (classId && mongoose.Types.ObjectId.isValid(classId)) {
+      filter.classId = classId; // no need to convert manually
+    }
+
+    // ✅ SAFE sectionId
+    if (sectionId && mongoose.Types.ObjectId.isValid(sectionId)) {
+      filter.$or = [{ sectionId: sectionId }, { sectionId: null }];
+    }
+
+    console.log("FILTER =>", filter); // 🔥 debug
+    const exams = await Exam.find(filter)
       .populate("classId", "name")
-      .populate("sectionId", "name")
-      .populate("subjectId", "name")
-      .sort({ date: 1 });
-    return successResponse(res, "Exams loaded", exams);
+      .populate("sectionId", "name");
+    //  .populate("subjectId", "name")
+    //  .sort({ date: 1 })
+    res.json({
+      success: true,
+      data: exams,
+    });
   } catch (err) {
-    return errorResponse(res, "Failed to load exams");
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch exams",
+    });
   }
 };
 
+// ============ CREATE EXAMS ==============
 exports.createExam = async (req, res) => {
   try {
-    const { name, classId, sectionId, subjectId, date, startTime, endTime } =
-      req.body;
+    console.log("REQ USER =>", req.user); // debug
+    const { name, classId, sectionId } = req.body;
 
-    if (!name || !classId || !subjectId || !date) {
+    if (!name || !classId) {
       return errorResponse(res, "Missing required fields");
     }
 
@@ -27,11 +52,9 @@ exports.createExam = async (req, res) => {
       name,
       classId,
       sectionId: sectionId || null,
-      subjectId,
-      date,
-      startTime,
-      endTime,
+      instituteId: req.user.instituteId, // ✅ IMPORTANT
     });
+
     return successResponse(res, "Exam created", exam);
   } catch (err) {
     console.log(err);
@@ -39,10 +62,13 @@ exports.createExam = async (req, res) => {
   }
 };
 
+// ============ UPDATE EXAMS ==============
 exports.updateExam = async (req, res) => {
   try {
-    const { name, classId, sectionId, subjectId, date, startTime, endTime } =
-      req.body;
+    // const { name, classId, sectionId, subjectId, date, startTime, endTime } =
+    //   req.body;
+
+    const { name, classId, sectionId } = req.body;
 
     const updatedExam = await Exam.findByIdAndUpdate(
       req.params.id,
@@ -50,16 +76,16 @@ exports.updateExam = async (req, res) => {
         name,
         classId,
         sectionId: sectionId || null,
-        subjectId,
-        date,
-        startTime,
-        endTime,
+        // subjectId,
+        // date,
+        // startTime,
+        // endTime,
       },
       { new: true, runValidators: true }
     )
       .populate("classId", "name")
-      .populate("sectionId", "name")
-      .populate("subjectId", "name");
+      .populate("sectionId", "name");
+    // .populate("subjectId", "name");
 
     if (!updatedExam) {
       return errorResponse(res, "Exam not found");
@@ -72,6 +98,7 @@ exports.updateExam = async (req, res) => {
   }
 };
 
+// ============ DELETE EXAMS ==============
 exports.deleteExam = async (req, res) => {
   try {
     await Exam.findByIdAndDelete(req.params.id);

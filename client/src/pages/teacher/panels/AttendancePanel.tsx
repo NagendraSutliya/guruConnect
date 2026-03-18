@@ -154,13 +154,19 @@ const AttendancePanel = () => {
   };
 
   const classes = Array.from(
-    new Map(assignments.map((a) => [a.classId._id, a.classId])).values()
+    new Map(
+      assignments
+        .filter((a) => a.classId && a.classId._id)
+        .map((a) => [a.classId._id, a.classId])
+    ).values()
   );
 
   const sections = Array.from(
     new Map(
       assignments
-        .filter((a) => a.classId._id === selectedClassId)
+        .filter(
+          (a) => a.classId && a.sectionId && a.classId._id === selectedClassId
+        )
         .map((a) => [a.sectionId._id, a.sectionId])
     ).values()
   );

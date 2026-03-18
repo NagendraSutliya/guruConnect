@@ -105,7 +105,7 @@ exports.loginInstitute = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: inst._id, role: "admin" },
+      { id: inst._id, role: "admin", instituteId: inst._id },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );

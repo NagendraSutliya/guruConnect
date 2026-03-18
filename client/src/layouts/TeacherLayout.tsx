@@ -41,8 +41,8 @@ const TeacherLayout = () => {
       icon: <FaClipboardCheck size={16} />,
       children: [
         { name: "Attendance", path: "/teacher/attendance" },
-        { name: "Marks", path: "/teacher/marks" },
         { name: "Tests", path: "/teacher/tests" },
+        { name: "Results", path: "/teacher/results" },
       ],
     },
     {

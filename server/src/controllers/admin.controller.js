@@ -8,7 +8,7 @@ const Student = require("../models/Student.js");
 
 /* ===================== TEACHERS ===================== */
 
-const getTeachers = async (req, res) => {
+exports.getTeachers = async (req, res) => {
   try {
     const teachers = await Teacher.find({ instituteId: req.user.id })
       .select("-password")
@@ -20,7 +20,7 @@ const getTeachers = async (req, res) => {
   }
 };
 
-const createTeacher = async (req, res) => {
+exports.createTeacher = async (req, res) => {
   try {
     const hashed = await bcrypt.hash(req.body.password, 10);
 
@@ -38,7 +38,7 @@ const createTeacher = async (req, res) => {
   }
 };
 
-const deactivateTeacher = async (req, res) => {
+exports.deactivateTeacher = async (req, res) => {
   try {
     const teacher = await Teacher.findOneAndUpdate(
       { _id: req.params.id, instituteId: req.user.id },
@@ -59,7 +59,7 @@ const deactivateTeacher = async (req, res) => {
   }
 };
 
-const activateTeacher = async (req, res) => {
+exports.activateTeacher = async (req, res) => {
   try {
     const teacher = await Teacher.findOneAndUpdate(
       { _id: req.params.id, instituteId: req.user.id },
@@ -77,9 +77,54 @@ const activateTeacher = async (req, res) => {
   }
 };
 
+exports.updateTeacher = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const updateData = { name, email };
+    if (password) {
+      const hashed = await bcrypt.hash(password, 10);
+      updateData.password = hashed;
+    }
+
+    const teacher = await Teacher.findOneAndUpdate(
+      { _id: req.params.id, instituteId: req.user.id },
+      updateData,
+      { new: true }
+    ).select("-password");
+
+    if (!teacher) {
+      return errorResponse(res, "Teacher not found", 404);
+    }
+
+    return successResponse(res, "Teacher updated", teacher);
+  } catch (err) {
+    console.error("Update teacher error:", err);
+    return errorResponse(res, "Failed to update teacher");
+  }
+};
+
+exports.deleteTeacher = async (req, res) => {
+  try {
+    const teacher = await Teacher.findOneAndDelete({
+      _id: req.params.id,
+      instituteId: req.user.id,
+    });
+
+    if (!teacher) {
+      return errorResponse(res, "Teacher not found", 404);
+    }
+
+    return successResponse(res, "Teacher deleted");
+  } catch (err) {
+    console.error("Delete teacher error:", err);
+    return errorResponse(res, "Failed to delete teacher");
+  }
+};
+
 /* ===================== DASHBOARD STATS ===================== */
 
-const getAdminStats = async (req, res) => {
+exports.getAdminStats = async (req, res) => {
   try {
     const instituteId = req.user.id;
 
@@ -130,7 +175,7 @@ const getAdminStats = async (req, res) => {
 
 /* ===================== FEEDBACK ===================== */
 
-const getTeachersFeedback = async (req, res) => {
+exports.getTeachersFeedback = async (req, res) => {
   try {
     const feedback = await Feedback.find({ instituteId: req.user.id })
       .populate("teacherId", "name")
@@ -142,7 +187,7 @@ const getTeachersFeedback = async (req, res) => {
   }
 };
 
-const deleteFeedback = async (req, res) => {
+exports.deleteFeedback = async (req, res) => {
   try {
     await Feedback.findByIdAndDelete(req.params.id);
     return successResponse(res, "Feedback deleted");
@@ -153,7 +198,7 @@ const deleteFeedback = async (req, res) => {
 
 /* ===================== PUBLIC LINK ===================== */
 
-const getPublicLink = async (req, res) => {
+exports.getPublicLink = async (req, res) => {
   try {
     const link = await PublicLink.findOne({ instituteId: req.user.id });
     return successResponse(res, "Link fetched", link);
@@ -162,7 +207,7 @@ const getPublicLink = async (req, res) => {
   }
 };
 
-const createPublicLink = async (req, res) => {
+exports.createPublicLink = async (req, res) => {
   try {
     const existing = await PublicLink.findOne({ instituteId: req.user.id });
     if (existing) {
@@ -180,16 +225,4 @@ const createPublicLink = async (req, res) => {
   } catch (err) {
     return errorResponse(res, "Failed to create public link");
   }
-};
-
-module.exports = {
-  getTeachers,
-  createTeacher,
-  deactivateTeacher,
-  activateTeacher,
-  getAdminStats,
-  getTeachersFeedback,
-  deleteFeedback,
-  getPublicLink,
-  createPublicLink,
 };

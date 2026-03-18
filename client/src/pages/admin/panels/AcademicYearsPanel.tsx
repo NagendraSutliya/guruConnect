@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiToggleLeft, FiToggleRight } from "react-icons/fi";
 import Toast from "../../../components/Toast";
-import type { AcademicYear } from "../../../types/academicYear";
+import type { AcademicYear } from "../../../types/admin/academicYear";
 
 // --- Helper: default session dates ---
 const getDefaultSessionDates = () => {
@@ -20,59 +20,52 @@ const getDefaultSessionDates = () => {
   }
 
   const formatLocalDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   };
 
-  // July 1 → month = 6 (0-indexed), April 30 → month = 3
-  const startDate = formatLocalDate(new Date(startYear, 6, 1)); // 1 July
-  const endDate = formatLocalDate(new Date(endYear, 3, 31)); // 31 March
-  const name = `${startYear}-${endYear}`;
-
-  return { startDate, endDate, name };
+  return {
+    startDate: formatLocalDate(new Date(startYear, 6, 1)),
+    endDate: formatLocalDate(new Date(endYear, 3, 31)),
+    name: `${startYear}-${endYear}`,
+  };
 };
 
-type SortColumn = "name" | "startDate" | "endDate" | "status";
-type SortOrder = "asc" | "desc";
+// --- Date Format MM-DD-YYYY for display ---
+const formatDate = (date: string) => {
+  const d = new Date(date);
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${mm}-${dd}-${yyyy}`;
+};
 
 const AcademicYearsPanel = () => {
   const defaultDates = getDefaultSessionDates();
 
   const [years, setYears] = useState<AcademicYear[]>([]);
-  const [form, setForm] = useState({
-    name: defaultDates.name,
-    startDate: defaultDates.startDate,
-    endDate: defaultDates.endDate,
-  });
+  const [form, setForm] = useState(defaultDates);
   const [editId, setEditId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [toastMessage, setToastMessage] = useState<{
-    message: string;
-    type?: string;
-  } | null>(null);
+  const [toastMessage, setToastMessage] = useState<any>(null);
 
-  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null); // sorting disabled by default
-  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  // --- Pagination ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  // --- Toast ---
-  const showToast = (
-    message: string,
-    type: "success" | "error" | "warn" | "info" = "info"
-  ) => {
+  const showToast = (message: string, type = "info") =>
     setToastMessage({ message, type });
-  };
 
-  // --- Load Academic Years ---
   const load = async () => {
     setLoading(true);
     try {
       const res = await api.get("/academic/academic-year");
       setYears(res.data.data);
     } catch {
-      showToast("Failed to load academic years", "error");
+      showToast("Failed to load", "error");
     } finally {
       setLoading(false);
     }
@@ -82,301 +75,246 @@ const AcademicYearsPanel = () => {
     load();
   }, []);
 
-  // --- Add/Edit Year ---
   const handleSubmit = async () => {
     if (!form.name || !form.startDate || !form.endDate)
-      return showToast("Fill all fields!", "warn");
+      return showToast("Fill all fields", "warn");
 
     setLoading(true);
     try {
       if (editId) {
         await api.put(`/academic/academic-year/${editId}`, form);
-        showToast("Academic year updated!", "success");
+        showToast("Updated", "success");
       } else {
         await api.post("/academic/academic-year", form);
-        showToast("Academic year added!", "success");
-
-        // Auto-increment to next session
-        const nextStart = new Date(
-          new Date(form.startDate).getFullYear() + 1,
-          6,
-          1
-        )
-          .toISOString()
-          .split("T")[0];
-        const nextEnd = new Date(
-          new Date(form.endDate).getFullYear() + 1,
-          2,
-          31
-        )
-          .toISOString()
-          .split("T")[0];
-        const nextName = `${new Date(nextStart).getFullYear()}-${new Date(
-          nextEnd
-        ).getFullYear()}`;
-        setForm({ name: nextName, startDate: nextStart, endDate: nextEnd });
+        showToast("Added", "success");
       }
       setEditId(null);
       load();
     } catch {
-      showToast("Operation failed!", "error");
+      showToast("Error", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  // --- Activate Year ---
   const activate = async (id: string) => {
-    if (!confirm("Activate this academic year? This will deactivate others."))
-      return;
-    setLoading(true);
-    try {
-      await api.patch(`/academic/academic-year/${id}/activate`);
-      showToast("Activated!", "success");
-      load();
-    } catch {
-      showToast("Failed to activate", "error");
-    } finally {
-      setLoading(false);
-    }
+    await api.patch(`/academic/academic-year/${id}/activate`);
+    load();
   };
 
-  // --- Delete Year ---
+  const deactivate = async (id: string) => {
+    await api.patch(`/academic/academic-year/${id}/deactivate`);
+    load();
+  };
+
   const remove = async (id: string) => {
-    if (!confirm("Delete this academic year?")) return;
-    setLoading(true);
-    try {
-      await api.delete(`/academic/academic-year/${id}`);
-      showToast("Deleted!", "success");
-      load();
-    } catch {
-      showToast("Failed to delete", "error");
-    } finally {
-      setLoading(false);
-    }
+    await api.delete(`/academic/academic-year/${id}`);
+    load();
   };
 
-  // --- Edit Year ---
-  const edit = (year: AcademicYear) => {
+  const edit = (y: AcademicYear) => {
     setForm({
-      name: year.name,
-      startDate: year.startDate,
-      endDate: year.endDate,
+      name: y.name,
+      startDate: y.startDate,
+      endDate: y.endDate,
     });
-    setEditId(year._id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setEditId(y._id);
   };
 
-  // --- Sorting ---
-  const handleSort = (column: SortColumn) => {
-    if (sortColumn === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortOrder("asc");
-    }
-  };
+  // --- Filter and Paginate ---
+  const filtered = years.filter(
+    (y) =>
+      y.name.toLowerCase().includes(search.toLowerCase()) ||
+      (y.isActive ? "active" : "inactive").includes(search.toLowerCase())
+  );
 
-  const sortedYears = [...years]
-    .filter(
-      (y) =>
-        y.name.toLowerCase().includes(search.toLowerCase()) ||
-        (y.isActive ? "active" : "inactive").includes(search.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (!sortColumn) return 0; // sorting disabled by default
-
-      let aVal: any, bVal: any;
-      switch (sortColumn) {
-        case "name":
-          aVal = a.name.toLowerCase();
-          bVal = b.name.toLowerCase();
-          break;
-        case "startDate":
-          aVal = new Date(a.startDate).getTime();
-          bVal = new Date(b.startDate).getTime();
-          break;
-        case "endDate":
-          aVal = new Date(a.endDate).getTime();
-          bVal = new Date(b.endDate).getTime();
-          break;
-        case "status":
-          aVal = a.isActive ? 1 : 0;
-          bVal = b.isActive ? 1 : 0;
-          break;
-      }
-      if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
-
-  const renderSortArrow = (column: SortColumn) => {
-    if (sortColumn !== column) return null;
-    return sortOrder === "asc" ? " ▲" : " ▼";
-  };
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Toast */}
+    <div className="space-y-4 pb-8">
       {toastMessage && (
         <Toast
           message={toastMessage.message}
-          type={toastMessage.type as any}
+          type={toastMessage.type}
           onClose={() => setToastMessage(null)}
         />
       )}
 
+      {/* Title */}
       <h2 className="text-2xl font-bold text-gray-800">Academic Years</h2>
 
-      {/* Search */}
-      <input
-        placeholder="Search by name or status..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="border rounded p-2 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-
       {/* Form */}
-      <div className="bg-white shadow rounded p-4 flex flex-col md:flex-row md:items-end gap-4 mt-4">
-        <div className="flex flex-col flex-1">
-          <label className="text-sm font-medium text-gray-600">Year</label>
-          <input
-            placeholder="2026-2027"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="w-full flex flex-wrap gap-4">
+          <div className="flex-grow flex flex-col gap-1">
+            <label className="text-sm text-gray-600">Year</label>
+            <input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="border p-2 rounded"
+              placeholder="Year (e.g. 2025-2026)"
+            />
+          </div>
+          <div className="flex-grow flex flex-col gap-1">
+            <label className="text-sm text-gray-600">Session Start</label>
+            <input
+              type="date"
+              value={form.startDate}
+              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+              className="border p-2 rounded"
+            />
+          </div>
+          <div className="flex-grow flex flex-col gap-1">
+            <label className="text-sm text-gray-600">Session End</label>
+            <input
+              type="date"
+              value={form.endDate}
+              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+              className="border p-2 rounded"
+            />
+          </div>
+          <div className="flex-1 flex items-end">
+            <button
+              onClick={handleSubmit}
+              className="w-28 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg whitespace-nowrap"
+            >
+              {loading ? "Loading..." : editId ? "Update" : "Add"}
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600">
-            Start Date
-          </label>
-          <input
-            type="date"
-            value={form.startDate}
-            onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-            className="border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600">End Date</label>
-          <input
-            type="date"
-            value={form.endDate}
-            onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-            className="border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          {editId ? "Update" : "Add"}
-        </button>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto mt-4">
-        {loading ? (
-          <p className="text-gray-500">Loading...</p>
-        ) : (
-          <table className="min-w-full bg-white shadow rounded overflow-hidden">
-            <thead className="bg-gray-100 cursor-pointer">
+      {/* Table Container */}
+      <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Years</h3>
+          <input
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-64 px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Table */}
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <table className="w-full table-fixed">
+            <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
               <tr>
-                <th
-                  className="text-left p-3"
-                  onClick={() => handleSort("name")}
-                >
-                  Name{renderSortArrow("name")}
-                </th>
-                <th
-                  className="text-left p-3"
-                  onClick={() => handleSort("startDate")}
-                >
-                  Start{renderSortArrow("startDate")}
-                </th>
-                <th
-                  className="text-left p-3"
-                  onClick={() => handleSort("endDate")}
-                >
-                  End{renderSortArrow("endDate")}
-                </th>
-                <th
-                  className="text-left p-3"
-                  onClick={() => handleSort("status")}
-                >
-                  Status{renderSortArrow("status")}
-                </th>
-                <th className="p-3">Actions</th>
+                <th className="p-3 ">Name</th>
+                <th className="p-3 ">Start</th>
+                <th className="p-3 ">End</th>
+                <th className="p-3 ">Status</th>
+                <th className="p-3 text-right">Actions</th>
               </tr>
             </thead>
+
             <tbody>
-              {sortedYears.map((y) => (
-                <tr
-                  key={y._id}
-                  className={`border-t ${
-                    y.isActive
-                      ? "bg-green-50 font-semibold"
-                      : "hover:bg-gray-50"
-                  }`}
-                >
+              {paginated.map((y) => (
+                <tr key={y._id} className="border-t hover:bg-gray-50">
                   <td className="p-3">{y.name}</td>
-                  <td className="p-3">
-                    {new Date(y.startDate).toLocaleDateString()}
-                  </td>
-                  <td className="p-3">
-                    {new Date(y.endDate).toLocaleDateString()}
-                  </td>
+                  <td className="p-3 text-sm">{formatDate(y.startDate)}</td>
+                  <td className="p-3 text-sm">{formatDate(y.endDate)}</td>
                   <td className="p-3">
                     <span
                       className={`px-2 py-1 rounded text-sm ${
                         y.isActive
-                          ? "bg-green-200 text-green-800"
-                          : "bg-gray-200 text-gray-700"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-200 text-gray-600"
                       }`}
                     >
-                      {y.isActive ? "Active" : "Inactive"}
+                      {y.isActive ? "active" : "inactive"}
                     </span>
                   </td>
-                  <td className="p-3 space-x-2 text-right">
-                    {!y.isActive && (
-                      <button
-                        onClick={() => activate(y._id)}
-                        className="text-blue-600 hover:underline"
-                      >
-                        Activate
-                      </button>
-                    )}
+
+                  {/* Actions */}
+                  <td className="p-3 flex justify-end gap-1">
+                    <button
+                      onClick={() =>
+                        y.isActive ? deactivate(y._id) : activate(y._id)
+                      }
+                      className={`p-1 rounded ${
+                        y.isActive
+                          ? "text-red-600 hover:bg-red-50"
+                          : "text-green-600 hover:bg-green-50"
+                      }`}
+                      title={y.isActive ? "Deactivate" : "Activate"}
+                    >
+                      {y.isActive ? <FiToggleLeft /> : <FiToggleRight />}
+                    </button>
+
                     <button
                       onClick={() => edit(y)}
-                      className="text-yellow-600 hover:underline"
+                      className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
                     >
-                      <FiEdit size={14} />
-                      {/* Edit */}
+                      <FiEdit />
                     </button>
+
                     <button
                       onClick={() => remove(y._id)}
-                      className="text-red-600 hover:underline"
+                      className="text-red-600 p-1 rounded hover:bg-red-50"
                     >
-                      <FiTrash2 size={14} />
-                      {/* Delete */}
+                      <FiTrash2 />
                     </button>
                   </td>
                 </tr>
               ))}
-              {sortedYears.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="p-3 text-center text-gray-500">
-                    No academic years found
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
-        )}
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-4">
+          {/* Items per page selector */}
+          <div>
+            <label className="mr-2 text-gray-700 text-sm">
+              Items per page:
+            </label>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1); // reset to first page
+              }}
+              className="border rounded px-2 py-1 text-sm"
+            >
+              {[5, 10, 15, 20].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Page navigation */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            <span className="text-sm">
+              Page {currentPage} of {totalPages || 1}
+            </span>
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

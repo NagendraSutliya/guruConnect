@@ -202,7 +202,7 @@ const AdminResultPanel = () => {
 
       <div className="bg-white rounded shadow overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-green-50">
+          <thead className="bg-green-100">
             <tr>
               <th className="p-3 text-left">Student</th>
               <th className="p-3">Exam</th>

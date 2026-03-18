@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
 import { FiTrash2, FiEdit } from "react-icons/fi";
-import type { Subject } from "../../../types/subject";
-import type { Section } from "../../../types/section";
-import type { Class } from "../../../types/class";
+import type { Subject } from "../../../types/admin/subject";
+import type { Section } from "../../../types/admin/section";
+import type { Class } from "../../../types/admin/class";
 import Toast from "../../../components/Toast";
 
-// --- SubjectsPanel ---
 const SubjectsPanel = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
@@ -18,6 +17,11 @@ const SubjectsPanel = () => {
   const [toast, setToast] = useState<{ message: string; type?: string } | null>(
     null
   );
+
+  // Pagination & Search
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [search, setSearch] = useState("");
 
   // --- Load classes and subjects ---
   const loadData = async () => {
@@ -59,17 +63,13 @@ const SubjectsPanel = () => {
   }, [selectedClass]);
 
   const generateCode = (subjectName: string, className: string) => {
-    // Take first 4 letters of subject, uppercase, remove spaces
     const sub = subjectName
       .trim()
       .substring(0, 4)
       .toUpperCase()
       .replace(/\s+/g, "");
-
-    // Take digits from class name (e.g., "Grade 10" -> 10)
     const grade = className.match(/\d+/)?.[0] || "";
-
-    return sub + grade; // e.g., "MATH10"
+    return sub + grade;
   };
 
   // --- Create or Update Subject ---
@@ -83,11 +83,9 @@ const SubjectsPanel = () => {
     }
 
     try {
-      // Find selected class object
       const selectedClassObj = classes.find((c) => c._id === selectedClass);
       if (!selectedClassObj) throw new Error("Class not found");
 
-      // Auto-generate code for new subject
       const generatedCode = editId
         ? subjects.find((s) => s._id === editId)?.code || ""
         : generateCode(name, selectedClassObj.name);
@@ -123,7 +121,6 @@ const SubjectsPanel = () => {
     }
   };
 
-  // --- Edit subject ---
   const editSubject = (s: Subject) => {
     setName(s.name);
     setSelectedClass(s.classId._id);
@@ -131,7 +128,6 @@ const SubjectsPanel = () => {
     setEditId(s._id);
   };
 
-  // --- Delete subject ---
   const deleteSubject = async (id: string) => {
     if (!confirm("Are you sure you want to delete this subject?")) return;
     try {
@@ -142,6 +138,25 @@ const SubjectsPanel = () => {
       setToast({ message: "Failed to delete subject", type: "error" });
     }
   };
+
+  // --- Filtered and Paginated subjects ---
+  const filteredSubjects = useMemo(() => {
+    return subjects.filter(
+      (s) =>
+        s.name.toLowerCase().includes(search.toLowerCase()) ||
+        s.classId.name.toLowerCase().includes(search.toLowerCase()) ||
+        (s.sectionId?.name || "All")
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        s.code.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [subjects, search]);
+
+  const totalPages = Math.ceil(filteredSubjects.length / itemsPerPage);
+  const paginatedSubjects = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredSubjects.slice(start, start + itemsPerPage);
+  }, [filteredSubjects, currentPage, itemsPerPage]);
 
   return (
     <div className="p-6 space-y-6">
@@ -209,7 +224,7 @@ const SubjectsPanel = () => {
         <div className="md:self-end">
           <button
             onClick={saveSubject}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition w-full md:w-auto"
+            className="w-28 bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
           >
             {editId ? "Update" : "Create"}
           </button>
@@ -217,56 +232,122 @@ const SubjectsPanel = () => {
       </div>
 
       {/* Subjects Table */}
-      <div className="overflow-x-auto bg-white shadow rounded">
-        <table className="min-w-full divide-y divide-gray-200 text-center">
-          <thead className="bg-green-50">
-            <tr>
-              <th className="p-3 text-sm font-medium text-gray-700">#</th>
-              <th className="p-3 text-sm font-medium text-gray-700">Class</th>
-              <th className="p-3 text-sm font-medium text-gray-700">Section</th>
-              <th className="p-3 text-sm font-medium text-gray-700">Code</th>
-              <th className="p-3 text-sm font-medium text-gray-700">
-                Subject Name
-              </th>
-              <th className="p-3 text-sm font-medium text-gray-700">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {subjects.length > 0 ? (
-              subjects.map((s, idx) => (
-                <tr key={s._id} className="hover:bg-gray-50">
-                  <td className="p-3">{idx + 1}</td>
-                  <td className="p-3">{s.classId.name}</td>
-                  <td className="p-3">{s.sectionId?.name || "All"}</td>
-                  <td className="p-3">{s.code}</td>
-                  <td className="p-3">{s.name}</td>
-                  <td className="p-3 flex justify-center gap-3">
-                    <button
-                      onClick={() => editSubject(s)}
-                      className="text-yellow-600 flex items-center gap-1"
-                    >
-                      <FiEdit size={16} />
-                      {/* Edit */}
-                    </button>
-                    <button
-                      onClick={() => deleteSubject(s._id)}
-                      className="text-red-600 flex items-center gap-1"
-                    >
-                      <FiTrash2 size={16} />
-                      {/* Delete */}
-                    </button>
+      <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Subjects</h3>
+          <input
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-64 px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="overflow-x-auto bg-white shadow rounded">
+          <table className="min-w-full divide-y divide-gray-200 text-center">
+            <thead className="bg-green-100">
+              <tr>
+                <th className="p-3 text-sm font-medium text-gray-700">#</th>
+                <th className="p-3 text-sm font-medium text-gray-700">Class</th>
+                <th className="p-3 text-sm font-medium text-gray-700">
+                  Section
+                </th>
+                <th className="p-3 text-sm font-medium text-gray-700">Code</th>
+                <th className="p-3 text-sm font-medium text-gray-700">
+                  Subject Name
+                </th>
+                <th className="p-3 text-sm font-medium text-gray-700">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {paginatedSubjects.length > 0 ? (
+                paginatedSubjects.map((s, idx) => (
+                  <tr key={s._id} className="hover:bg-gray-50">
+                    <td className="p-3">
+                      {(currentPage - 1) * itemsPerPage + idx + 1}
+                    </td>
+                    <td className="p-3">{s.classId.name}</td>
+                    <td className="p-3">{s.sectionId?.name || "All"}</td>
+                    <td className="p-3">{s.code}</td>
+                    <td className="p-3">{s.name}</td>
+                    <td className="p-3 flex justify-center gap-3">
+                      <button
+                        onClick={() => editSubject(s)}
+                        className="text-yellow-600 flex items-center gap-1"
+                      >
+                        <FiEdit size={16} />
+                      </button>
+                      <button
+                        onClick={() => deleteSubject(s._id)}
+                        className="text-red-600 flex items-center gap-1"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="p-3 text-center text-gray-500">
+                    No subjects found
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="p-3 text-center text-gray-500">
-                  No subjects found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-4">
+          <div>
+            <label className="mr-2 text-gray-700 text-sm">
+              Items per page:
+            </label>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border rounded px-2 py-1 text-sm"
+            >
+              {[5, 10, 15, 20].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            <span className="text-sm">
+              Page {currentPage} of {totalPages || 1}
+            </span>
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

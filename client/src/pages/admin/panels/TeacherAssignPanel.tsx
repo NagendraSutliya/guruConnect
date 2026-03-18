@@ -3,12 +3,12 @@ import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 const TeacherAssignPanel = () => {
+  /** --------------------- State Variables --------------------- **/
   const [teachers, setTeachers] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [assignments, setAssignments] = useState<any[]>([]);
-
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +19,12 @@ const TeacherAssignPanel = () => {
     subjectId: "",
   });
 
-  // Load teachers, classes, subjects, assignments
+  const [editingAssignment, setEditingAssignment] = useState<any | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  /** --------------------- Load Data --------------------- **/
   const load = async () => {
     try {
       const [tRes, cRes, subRes, aRes] = await Promise.all([
@@ -42,7 +47,7 @@ const TeacherAssignPanel = () => {
     load();
   }, []);
 
-  // Load sections dynamically for selected class
+  /** --------------------- Dynamic Sections --------------------- **/
   useEffect(() => {
     if (!form.classId) {
       setSections([]);
@@ -54,21 +59,19 @@ const TeacherAssignPanel = () => {
       try {
         const res = await api.get(`/sections/class/${form.classId}`);
         setSections(res.data.data);
-        // Reset section selection if none
         setForm((prev) => ({ ...prev, sectionId: "" }));
       } catch (err) {
+        console.log(err);
         setSections([]);
         setForm((prev) => ({ ...prev, sectionId: "" }));
-        console.log(err);
       }
     };
 
     loadSections();
   }, [form.classId]);
 
-  // Assign teacher
+  /** --------------------- Assign Teacher --------------------- **/
   const assign = async () => {
-    // Required fields check
     if (!form.teacherId || !form.classId || !form.subjectId) {
       alert("Teacher, Class, and Subject are required");
       return;
@@ -77,7 +80,6 @@ const TeacherAssignPanel = () => {
     try {
       setLoading(true);
 
-      // Only include sectionId if it is truthy
       const payload: any = {
         teacherId: form.teacherId,
         classId: form.classId,
@@ -85,7 +87,13 @@ const TeacherAssignPanel = () => {
       };
       if (form.sectionId) payload.sectionId = form.sectionId;
 
-      await api.post("/teacher-assign", payload);
+      // await api.post("/teacher-assign", payload);
+      if (editingAssignment) {
+        await api.put(`/teacher-assign/${editingAssignment._id}`, payload);
+        setEditingAssignment(null); // reset after update
+      } else {
+        await api.post("/teacher-assign", payload);
+      }
 
       setForm({ teacherId: "", classId: "", sectionId: "", subjectId: "" });
       load();
@@ -96,7 +104,7 @@ const TeacherAssignPanel = () => {
     }
   };
 
-  // Remove assignment
+  /** --------------------- Remove Assignment --------------------- **/
   const removeAssignment = async (id: string) => {
     if (!confirm("Delete this assignment?")) return;
 
@@ -112,27 +120,44 @@ const TeacherAssignPanel = () => {
     }
   };
 
-  // Helper to display names
+  /** --------------------- Helper Functions --------------------- **/
   const getName = (field: any) => {
     if (!field) return "-";
     if (typeof field === "string") return field;
     return field.name || "-";
   };
 
-  // Filtered assignments by teacher name
+  /** --------------------- Filtered & Paginated Assignments --------------------- **/
   const filteredAssignments = assignments.filter((a: any) =>
     getName(a.teacherId).toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
+
+  const paginatedAssignments = filteredAssignments.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  /** Reset page when search or itemsPerPage changes **/
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, itemsPerPage]);
+
   const isValid = form.teacherId && form.classId && form.subjectId;
 
+  /** --------------------- Render --------------------- **/
   return (
     <div className="space-y-8">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-800 py-2">
+          Assign Teacher
+        </h2>
+      </div>
       {/* ASSIGN FORM */}
       <div className="bg-white shadow-md rounded-xl p-6">
-        <h2 className="text-xl font-semibold mb-6">Assign Teacher</h2>
-
         <div className="grid md:grid-cols-4 gap-4">
+          {/* Teacher */}
           <div>
             <label className="text-sm text-gray-600">Teacher</label>
             <select
@@ -149,6 +174,7 @@ const TeacherAssignPanel = () => {
             </select>
           </div>
 
+          {/* Class */}
           <div>
             <label className="text-sm text-gray-600">Class</label>
             <select
@@ -165,6 +191,7 @@ const TeacherAssignPanel = () => {
             </select>
           </div>
 
+          {/* Section */}
           <div>
             <label className="text-sm text-gray-600">Section (Optional)</label>
             <select
@@ -181,6 +208,7 @@ const TeacherAssignPanel = () => {
             </select>
           </div>
 
+          {/* Subject */}
           <div>
             <label className="text-sm text-gray-600">Subject</label>
             <select
@@ -202,7 +230,7 @@ const TeacherAssignPanel = () => {
           <button
             disabled={!isValid || loading}
             onClick={assign}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? "Assigning..." : "Assign Teacher"}
           </button>
@@ -210,8 +238,8 @@ const TeacherAssignPanel = () => {
       </div>
 
       {/* ASSIGNMENT TABLE */}
-      <div className="bg-white shadow-md rounded-xl p-6">
-        <div className="flex justify-between items-center mb-4">
+      <div className="bg-white shadow-md rounded-xl p-6 space-y-4">
+        <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Teacher Assignments</h3>
           <input
             placeholder="Search teacher..."
@@ -221,27 +249,27 @@ const TeacherAssignPanel = () => {
           />
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100">
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <table className="w-full text-sm border">
+            <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
               <tr>
-                <th className="p-3 text-left">Teacher</th>
-                <th className="p-3 text-left">Class</th>
-                <th className="p-3 text-left">Section</th>
-                <th className="p-3 text-left">Subject</th>
-                <th className="p-3 text-left">Actions</th>
+                <th className="p-3">Teacher</th>
+                <th className="p-3">Class</th>
+                <th className="p-3">Section</th>
+                <th className="p-3">Subject</th>
+                <th className="pr-6 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredAssignments.length === 0 && (
+              {paginatedAssignments.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="text-center p-4 text-gray-500">
+                  <td colSpan={5} className="text-center p-6 text-gray-500">
                     No assignments found
                   </td>
                 </tr>
               )}
 
-              {filteredAssignments.map((a: any) => (
+              {paginatedAssignments.map((a: any) => (
                 <tr key={a._id} className="border-t hover:bg-gray-50">
                   <td className="p-3">{getName(a.teacherId)}</td>
                   <td className="p-3">{getName(a.classId)}</td>
@@ -249,34 +277,75 @@ const TeacherAssignPanel = () => {
                     {getName(a.sectionId) || "All / No Section"}
                   </td>
                   <td className="p-3">{getName(a.subjectId)}</td>
-                  <td className="p-3">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          setForm({
-                            teacherId: a.teacherId?._id,
-                            classId: a.classId?._id,
-                            sectionId: a.sectionId?._id || "",
-                            subjectId: a.subjectId?._id,
-                          })
-                        }
-                        className="flex items-center gap-1 bg-blue-50 text-blue-600 px-3 py-1 rounded hover:bg-blue-100 transition"
-                      >
-                        <FiEdit size={14} />
-                      </button>
+                  <td className="p-3 mr-4 flex justify-end gap-1">
+                    <button
+                      onClick={() => {
+                        setForm({
+                          teacherId: a.teacherId?._id,
+                          classId: a.classId?._id,
+                          sectionId: a.sectionId?._id || "",
+                          subjectId: a.subjectId?._id,
+                        }),
+                          setEditingAssignment(a); // <-- track the assignment being edited
+                      }}
+                      className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
+                    >
+                      <FiEdit />
+                    </button>
 
-                      <button
-                        onClick={() => removeAssignment(a._id)}
-                        className="flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1 rounded hover:bg-red-100 transition"
-                      >
-                        <FiTrash2 size={14} />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => removeAssignment(a._id)}
+                      className="text-red-600 p-1 rounded hover:bg-red-50"
+                    >
+                      <FiTrash2 />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-2">
+          <div>
+            <label className="mr-2 text-gray-700 text-sm">
+              Items per page:
+            </label>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => setItemsPerPage(Number(e.target.value))}
+              className="border rounded px-2 py-1 text-sm"
+            >
+              {[5, 10, 15, 20].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="text-sm">
+              Page {currentPage} of {totalPages || 1}
+            </span>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

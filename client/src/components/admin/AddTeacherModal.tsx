@@ -5,6 +5,8 @@ interface AddTeacherModalProps {
   setForm: (form: any) => void;
   onSave: () => void;
   onClose: () => void;
+  loading?: boolean;
+  isEdit?: boolean;
 }
 
 const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
@@ -12,11 +14,16 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
   setForm,
   onSave,
   onClose,
+  loading = false,
+  isEdit = false,
 }) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl w-full max-w-2xl p-6 shadow-lg space-y-4">
-        <h3 className="text-lg font-bold text-gray-800">Add New Teacher</h3>
+        {/* ✅ Dynamic Title */}
+        <h3 className="text-lg font-bold text-gray-800">
+          {isEdit ? "Edit Teacher" : "Add New Teacher"}
+        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Name */}
@@ -40,13 +47,15 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
           {/* Password */}
           <input
             type="password"
-            placeholder="Password *"
+            placeholder={
+              isEdit ? "Leave blank to keep current password" : "Password *"
+            }
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           />
 
-          {/* Phone Number */}
+          {/* Phone */}
           <input
             type="text"
             placeholder="Phone Number"
@@ -73,10 +82,10 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
             className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           />
 
-          {/* Subjects Assigned */}
+          {/* Subjects */}
           <input
             type="text"
-            placeholder="Subjects Assigned (comma separated)"
+            placeholder="Subjects (comma separated)"
             value={form.subjects || ""}
             onChange={(e) => setForm({ ...form, subjects: e.target.value })}
             className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
@@ -85,7 +94,6 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
           {/* Joining Date */}
           <input
             type="date"
-            placeholder="Joining Date"
             value={form.joiningDate || ""}
             onChange={(e) => setForm({ ...form, joiningDate: e.target.value })}
             className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
@@ -96,14 +104,22 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
         <div className="flex justify-end gap-3 mt-4">
           <button
             onClick={onSave}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
+            disabled={loading}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Save Teacher
+            {loading
+              ? isEdit
+                ? "Updating..."
+                : "Saving..."
+              : isEdit
+              ? "Update Teacher"
+              : "Save Teacher"}
           </button>
 
           <button
             onClick={onClose}
-            className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition"
+            disabled={loading}
+            className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition disabled:opacity-50"
           >
             Cancel
           </button>

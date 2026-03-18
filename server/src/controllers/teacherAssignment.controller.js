@@ -71,3 +71,29 @@ exports.deleteAssignment = async (req, res) => {
     return errorResponse(res, "Failed to delete assignment", 500);
   }
 };
+
+// --- Update assignment ---
+exports.updateAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { teacherId, classId, sectionId, subjectId } = req.body;
+
+    if (!teacherId || !classId || !subjectId) {
+      return errorResponse(res, "Missing required fields", 400);
+    }
+
+    const payload = { teacherId, classId, subjectId };
+    if (sectionId) payload.sectionId = sectionId;
+
+    const updated = await TeacherAssignment.findByIdAndUpdate(id, payload, {
+      new: true,
+    });
+
+    if (!updated) return errorResponse(res, "Assignment not found", 404);
+
+    return successResponse(res, "Assignment updated", updated);
+  } catch (err) {
+    console.log("Update assignment error:", err);
+    return errorResponse(res, "Failed to update assignment", 500);
+  }
+};
