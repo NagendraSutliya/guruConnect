@@ -57,3 +57,68 @@ exports.getSectionsByClass = async (req, res) => {
 
   return successResponse(res, "Sections loaded", list);
 };
+
+/* UPDATE SECTION */
+exports.updateSection = async (req, res) => {
+  try {
+    const { id } = req.params; // section ID
+    const { name, classId } = req.body;
+
+    if (!name || !classId)
+      return errorResponse(res, "Missing required fields", 400);
+
+    const section = await Section.findOne({
+      _id: id,
+      instituteId: req.user.id,
+    });
+
+    if (!section) return errorResponse(res, "Section not found", 404);
+
+    // Check for duplicate name in same class
+    const exists = await Section.findOne({
+      name,
+      classId,
+      _id: { $ne: id },
+      instituteId: req.user.id,
+    });
+
+    if (exists)
+      return errorResponse(
+        res,
+        "Another section with same name exists in this class",
+        400
+      );
+
+    section.name = name;
+    section.classId = classId;
+
+    await section.save();
+
+    return successResponse(res, "Section updated successfully", section);
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, "Failed to update section");
+  }
+};
+
+/* DELETE SECTION */
+exports.deleteSection = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const section = await Section.findOne({
+      _id: id,
+      instituteId: req.user.id,
+    });
+
+    if (!section) return errorResponse(res, "Section not found", 404);
+
+    // Use deleteOne instead of remove
+    await Section.deleteOne({ _id: id, instituteId: req.user.id });
+
+    return successResponse(res, "Section deleted successfully");
+  } catch (err) {
+    console.error("Delete Section Error:", err); // log full error
+    return errorResponse(res, "Failed to delete section");
+  }
+};

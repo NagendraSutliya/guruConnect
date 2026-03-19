@@ -186,7 +186,7 @@ const ExamSubjectPanel = () => {
 
         <button
           onClick={handleAdd}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded px-4"
+          className="w-28 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4"
         >
           Add
         </button>

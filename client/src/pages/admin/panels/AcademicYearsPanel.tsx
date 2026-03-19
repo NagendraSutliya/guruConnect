@@ -3,6 +3,7 @@ import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2, FiToggleLeft, FiToggleRight } from "react-icons/fi";
 import Toast from "../../../components/Toast";
 import type { AcademicYear } from "../../../types/admin/academicYear";
+import UpdateAcademicYearModal from "../modals/admin/UpdateAcademicYearModal";
 
 // --- Helper: default session dates ---
 const getDefaultSessionDates = () => {
@@ -47,12 +48,13 @@ const AcademicYearsPanel = () => {
 
   const [years, setYears] = useState<AcademicYear[]>([]);
   const [form, setForm] = useState(defaultDates);
-  const [editId, setEditId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [toastMessage, setToastMessage] = useState<any>(null);
 
-  // --- Pagination ---
+  const [editingYear, setEditingYear] = useState<AcademicYear | null>(null);
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
@@ -81,14 +83,9 @@ const AcademicYearsPanel = () => {
 
     setLoading(true);
     try {
-      if (editId) {
-        await api.put(`/academic/academic-year/${editId}`, form);
-        showToast("Updated", "success");
-      } else {
-        await api.post("/academic/academic-year", form);
-        showToast("Added", "success");
-      }
-      setEditId(null);
+      await api.post("/academic/academic-year", form);
+      showToast("Added", "success");
+      setForm(defaultDates);
       load();
     } catch {
       showToast("Error", "error");
@@ -113,15 +110,10 @@ const AcademicYearsPanel = () => {
   };
 
   const edit = (y: AcademicYear) => {
-    setForm({
-      name: y.name,
-      startDate: y.startDate,
-      endDate: y.endDate,
-    });
-    setEditId(y._id);
+    setEditingYear(y);
   };
 
-  // --- Filter and Paginate ---
+  // Filter + paginate
   const filtered = years.filter(
     (y) =>
       y.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -144,10 +136,9 @@ const AcademicYearsPanel = () => {
         />
       )}
 
-      {/* Title */}
       <h2 className="text-2xl font-bold text-gray-800">Academic Years</h2>
 
-      {/* Form */}
+      {/* Add New Year Form */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="w-full flex flex-wrap gap-4">
           <div className="flex-grow flex flex-col gap-1">
@@ -180,27 +171,29 @@ const AcademicYearsPanel = () => {
           <div className="flex-1 flex items-end">
             <button
               onClick={handleSubmit}
-              className="w-28 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg whitespace-nowrap"
+              className="w-full px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg whitespace-nowrap"
             >
-              {loading ? "Loading..." : editId ? "Update" : "Add"}
+              {loading ? "Loading..." : "Add Session"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Table Container */}
+      {/* Table */}
       <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Years</h3>
           <input
             placeholder="Search..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-64 px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Table */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <table className="w-full table-fixed">
             <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
@@ -212,7 +205,6 @@ const AcademicYearsPanel = () => {
                 <th className="p-3 text-right">Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {paginated.map((y) => (
                 <tr key={y._id} className="border-t hover:bg-gray-50">
@@ -230,8 +222,6 @@ const AcademicYearsPanel = () => {
                       {y.isActive ? "active" : "inactive"}
                     </span>
                   </td>
-
-                  {/* Actions */}
                   <td className="p-3 flex justify-end gap-1">
                     <button
                       onClick={() =>
@@ -267,9 +257,8 @@ const AcademicYearsPanel = () => {
           </table>
         </div>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         <div className="flex justify-between items-center mt-4">
-          {/* Items per page selector */}
           <div>
             <label className="mr-2 text-gray-700 text-sm">
               Items per page:
@@ -278,7 +267,7 @@ const AcademicYearsPanel = () => {
               value={itemsPerPage}
               onChange={(e) => {
                 setItemsPerPage(Number(e.target.value));
-                setCurrentPage(1); // reset to first page
+                setCurrentPage(1);
               }}
               className="border rounded px-2 py-1 text-sm"
             >
@@ -290,7 +279,6 @@ const AcademicYearsPanel = () => {
             </select>
           </div>
 
-          {/* Page navigation */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -299,11 +287,9 @@ const AcademicYearsPanel = () => {
             >
               Prev
             </button>
-
             <span className="text-sm">
               Page {currentPage} of {totalPages || 1}
             </span>
-
             <button
               onClick={() =>
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
@@ -316,6 +302,15 @@ const AcademicYearsPanel = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {editingYear && (
+        <UpdateAcademicYearModal
+          year={editingYear}
+          onClose={() => setEditingYear(null)}
+          onUpdated={load} // refresh table after update
+        />
+      )}
     </div>
   );
 };

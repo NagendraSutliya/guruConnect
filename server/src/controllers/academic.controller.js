@@ -63,6 +63,30 @@ exports.activateAcademicYear = async (req, res) => {
   }
 };
 
+// ================= UPDATE ACADEMIC YEAR =================
+exports.updateAcademicYear = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, startDate, endDate } = req.body;
+
+    const year = await AcademicYear.findById(id);
+    if (!year) {
+      return errorResponse(res, "Academic year not found", 404);
+    }
+
+    year.name = name || year.name;
+    year.startDate = startDate || year.startDate;
+    year.endDate = endDate || year.endDate;
+
+    await year.save();
+
+    return successResponse(res, "Academic year updated", year);
+  } catch (err) {
+    console.log(err);
+    return errorResponse(res, "Failed to update academic year");
+  }
+};
+
 /* ================= DELETE ACADEMIC YEAR ================= */
 exports.deleteAcademicYear = async (req, res) => {
   try {

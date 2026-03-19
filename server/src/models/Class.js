@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const ClassSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    academicYearId: { type: String, ref: "AcademicYear", required: true },
+    academicYearId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AcademicYear",
+      required: true,
+    },
     instituteId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Institute",
@@ -12,7 +16,7 @@ const ClassSchema = new mongoose.Schema(
     teacherId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Teacher",
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true }

@@ -101,7 +101,14 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end gap-3 mt-4">
+        <div className="flex justify-between  gap-3 mt-4">
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition disabled:opacity-50"
+          >
+            Cancel
+          </button>
           <button
             onClick={onSave}
             disabled={loading}
@@ -114,14 +121,6 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
               : isEdit
               ? "Update Teacher"
               : "Save Teacher"}
-          </button>
-
-          <button
-            onClick={onClose}
-            disabled={loading}
-            className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition disabled:opacity-50"
-          >
-            Cancel
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import ViewTeacherModal from "../../../components/admin/ViewTeacherModal";
-import AddTeacherModal from "../../../components/admin/AddTeacherModal";
+import AddTeacherModal from "../modals/admin/AddTeacherModal";
 import Toast from "../../../components/Toast";
 import {
   FiEdit,
@@ -245,7 +245,7 @@ const TeacherPanel = () => {
           {/* Teacher Table */}
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <table className="w-full table-fixed">
-              <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
+              <thead className="bg-green-100 text-sm font-semibold text-gray-700 uppercase text-left">
                 <tr>
                   <th className="p-3">Teacher</th>
                   <th className="p-3">Email</th>

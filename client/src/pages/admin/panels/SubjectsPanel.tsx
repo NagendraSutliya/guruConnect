@@ -5,6 +5,7 @@ import type { Subject } from "../../../types/admin/subject";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
 import Toast from "../../../components/Toast";
+import UpdateSubjectModal from "../modals/admin/UpdateSubjectModal";
 
 const SubjectsPanel = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -17,6 +18,7 @@ const SubjectsPanel = () => {
   const [toast, setToast] = useState<{ message: string; type?: string } | null>(
     null
   );
+  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
 
   // Pagination & Search
   const [currentPage, setCurrentPage] = useState(1);
@@ -121,11 +123,15 @@ const SubjectsPanel = () => {
     }
   };
 
+  // const editSubject = (s: Subject) => {
+  //   setName(s.name);
+  //   setSelectedClass(s.classId._id);
+  //   setSelectedSection(s.sectionId?._id || "");
+  //   setEditId(s._id);
+  // };
+
   const editSubject = (s: Subject) => {
-    setName(s.name);
-    setSelectedClass(s.classId._id);
-    setSelectedSection(s.sectionId?._id || "");
-    setEditId(s._id);
+    setEditingSubject(s);
   };
 
   const deleteSubject = async (id: string) => {
@@ -224,9 +230,9 @@ const SubjectsPanel = () => {
         <div className="md:self-end">
           <button
             onClick={saveSubject}
-            className="w-28 bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
+            className="w-fit bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
           >
-            {editId ? "Update" : "Create"}
+            {editId ? "Loading..." : "Add Subject"}
           </button>
         </div>
       </div>
@@ -271,10 +277,12 @@ const SubjectsPanel = () => {
                     <td className="p-3">
                       {(currentPage - 1) * itemsPerPage + idx + 1}
                     </td>
-                    <td className="p-3">{s.classId.name}</td>
-                    <td className="p-3">{s.sectionId?.name || "All"}</td>
-                    <td className="p-3">{s.code}</td>
-                    <td className="p-3">{s.name}</td>
+                    <td className="p-3 text-sm">{s.classId.name}</td>
+                    <td className="p-3 text-sm">
+                      {s.sectionId?.name || "All"}
+                    </td>
+                    <td className="p-3 text-sm">{s.code}</td>
+                    <td className="p-3 text-sm">{s.name}</td>
                     <td className="p-3 flex justify-center gap-3">
                       <button
                         onClick={() => editSubject(s)}
@@ -349,6 +357,17 @@ const SubjectsPanel = () => {
           </div>
         </div>
       </div>
+      {editingSubject && (
+        <UpdateSubjectModal
+          subject={editingSubject}
+          classes={classes}
+          sections={sections}
+          onClose={() => setEditingSubject(null)}
+          onUpdated={() => {
+            loadData();
+          }}
+        />
+      )}
     </div>
   );
 };

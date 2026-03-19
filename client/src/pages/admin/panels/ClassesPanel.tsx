@@ -2,25 +2,33 @@ import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import Toast from "../../../components/Toast";
-import type { AcademicYear } from "../../../types/admin/academicYear";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
+import type { AcademicYear } from "../../../types/admin/academicYear";
+import UpdateClassModal from "../modals/admin/UpdateClassModal";
 
 const ClassesPanel = () => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
-  const [academicYearId, setAcademicYearId] = useState("");
-  const [name, setName] = useState("");
-  const [editId, setEditId] = useState<string | null>(null);
   const [years, setYears] = useState<AcademicYear[]>([]);
-  const [toast, setToast] = useState<{ message: string; type?: string } | null>(
-    null
-  );
+  const [loading, setLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState<any>(null);
+  // const [teacherId, setTeacherId] = useState("");
   const [search, setSearch] = useState("");
 
-  // Pagination states
+  // Add class form state
+  const [name, setName] = useState("");
+  const [academicYearId, setAcademicYearId] = useState("");
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Edit modal
+  const [editingClass, setEditingClass] = useState<Class | null>(null);
+
+  const showToast = (message: string, type = "info") =>
+    setToastMessage({ message, type });
 
   // Load academic years
   useEffect(() => {
@@ -34,17 +42,19 @@ const ClassesPanel = () => {
       .catch((err) => console.log(err.response?.data));
   }, []);
 
-  // Load classes
+  // Load classes and sections
   const loadClasses = async () => {
+    setLoading(true);
     try {
       const res = await api.get("/classes");
       setClasses(res.data.data);
     } catch (err) {
-      console.log(err);
+      showToast("Failed to load", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Load sections
   const loadSections = async () => {
     try {
       const res = await api.get("/sections");
@@ -59,29 +69,25 @@ const ClassesPanel = () => {
     loadSections();
   }, []);
 
-  // Create or update class
-  const handleSubmit = async () => {
+  // Add new class
+  const handleAddClass = async () => {
     if (!name || !academicYearId) {
-      setToast({ message: "All fields required", type: "warn" });
+      setToastMessage({ message: "All fields required", type: "warn" });
       return;
     }
 
     try {
-      if (editId) {
-        await api.put(`/classes/${editId}`, { name, academicYearId });
-        setToast({ message: "Class updated successfully", type: "success" });
-      } else {
-        await api.post("/classes", { name, academicYearId });
-        setToast({ message: "Class created successfully", type: "success" });
-      }
-
+      await api.post("/classes", { name, academicYearId });
+      setToastMessage({
+        message: "Class created successfully",
+        type: "success",
+      });
       setName("");
-      setEditId(null);
       loadClasses();
       loadSections();
-    } catch (err: any) {
-      console.log(err.response?.data);
-      setToast({ message: "Operation failed", type: "error" });
+    } catch (err) {
+      setToastMessage({ message: "Failed to create class", type: "error" });
+      console.log(err);
     }
   };
 
@@ -90,23 +96,18 @@ const ClassesPanel = () => {
     if (!confirm("Are you sure you want to delete this class?")) return;
     try {
       await api.delete(`/classes/${id}`);
-      setToast({ message: "Class deleted", type: "success" });
+      setToastMessage({ message: "Class deleted", type: "success" });
       loadClasses();
       loadSections();
     } catch {
-      setToast({ message: "Failed to delete class", type: "error" });
+      setToastMessage({ message: "Failed to delete class", type: "error" });
     }
   };
 
-  // Edit class
-  const editClass = (cls: Class) => {
-    setName(cls.name);
-    setAcademicYearId(cls.academicYearId?._id || "");
-    setEditId(cls._id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  // Open edit modal
+  const editClass = (cls: Class) => setEditingClass(cls);
 
-  // Filter classes by search
+  // Filter & paginate
   const filteredClasses = useMemo(() => {
     return classes.filter(
       (c) =>
@@ -115,27 +116,27 @@ const ClassesPanel = () => {
     );
   }, [classes, search]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredClasses.length / itemsPerPage);
   const paginatedClasses = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return filteredClasses.slice(start, end);
+    return filteredClasses.slice(start, start + itemsPerPage);
   }, [filteredClasses, currentPage, itemsPerPage]);
 
   return (
     <div className="p-6 space-y-6">
-      {toast && (
+      {/* Toast */}
+
+      {toastMessage && (
         <Toast
-          message={toast.message}
-          type={toast.type as any}
-          onClose={() => setToast(null)}
+          message={toastMessage.message}
+          type={toastMessage.type}
+          onClose={() => setToastMessage(null)}
         />
       )}
 
       <h2 className="text-2xl font-bold text-gray-800">Classes</h2>
 
-      {/* Form */}
+      {/* Add Class Form */}
       <div className="bg-white shadow rounded p-4 flex flex-col md:flex-row md:items-end gap-4">
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -169,15 +170,15 @@ const ClassesPanel = () => {
 
         <div className="md:self-end">
           <button
-            onClick={handleSubmit}
-            className="w-28 bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
+            onClick={handleAddClass}
+            className="w-fit bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
           >
-            {editId ? "Update" : "Create"}
+            {loading ? "Loading..." : "Add Class"}
           </button>
         </div>
       </div>
 
-      {/* Classes Table */}
+      {/* Search & Table */}
       <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Classes</h3>
@@ -186,7 +187,7 @@ const ClassesPanel = () => {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setCurrentPage(1); // reset to first page on search
+              setCurrentPage(1);
             }}
             className="w-64 px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
           />
@@ -208,16 +209,10 @@ const ClassesPanel = () => {
                   const classSections = sections.filter(
                     (s) => s.classId?._id === c._id
                   );
-
                   return (
                     <tr key={c._id} className="border-t hover:bg-gray-50">
-                      {/* Academic Year */}
                       <td className="p-3">{c.academicYearId?.name}</td>
-
-                      {/* Class Name */}
-                      <td className="p-3">{c.name}</td>
-
-                      {/* Sections */}
+                      <td className="p-3 text-sm">{c.name}</td>
                       <td className="p-3">
                         {classSections.length > 0 ? (
                           <div className="flex flex-wrap justify-center gap-1 w-full">
@@ -238,8 +233,6 @@ const ClassesPanel = () => {
                           </div>
                         )}
                       </td>
-
-                      {/* Actions */}
                       <td className="p-3 flex justify-end gap-2">
                         <button
                           onClick={() => editClass(c)}
@@ -268,7 +261,7 @@ const ClassesPanel = () => {
           </table>
         </div>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         <div className="flex justify-between items-center mt-4">
           <div>
             <label className="mr-2 text-gray-700 text-sm">
@@ -315,6 +308,19 @@ const ClassesPanel = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Class Modal */}
+      {editingClass && (
+        <UpdateClassModal
+          cls={editingClass}
+          years={years}
+          onClose={() => setEditingClass(null)}
+          onUpdated={() => {
+            loadClasses();
+            loadSections();
+          }}
+        />
+      )}
     </div>
   );
 };

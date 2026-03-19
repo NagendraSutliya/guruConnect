@@ -2,24 +2,36 @@ import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 
+import type {
+  Teacher,
+  Assignment,
+  FormState,
+} from "../../../types/admin/teacherassignment";
+import type { Class } from "../../../types/admin/class";
+import type { Section } from "../../../types/admin/section";
+import type { Subject } from "../../../types/admin/subject";
+import UpdateTeacherAssignmentModal from "../modals/admin/UpdateTeacherAssignmentModal";
+
 const TeacherAssignPanel = () => {
   /** --------------------- State Variables --------------------- **/
-  const [teachers, setTeachers] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
-  const [sections, setSections] = useState<any[]>([]);
-  const [subjects, setSubjects] = useState<any[]>([]);
-  const [assignments, setAssignments] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     teacherId: "",
     classId: "",
     sectionId: "",
     subjectId: "",
   });
 
-  const [editingAssignment, setEditingAssignment] = useState<any | null>(null);
+  const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(
+    null
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -51,7 +63,7 @@ const TeacherAssignPanel = () => {
   useEffect(() => {
     if (!form.classId) {
       setSections([]);
-      setForm({ ...form, sectionId: "" });
+      setForm((prev) => ({ ...prev, sectionId: "" }));
       return;
     }
 
@@ -80,17 +92,20 @@ const TeacherAssignPanel = () => {
     try {
       setLoading(true);
 
-      const payload: any = {
-        teacherId: form.teacherId,
-        classId: form.classId,
-        subjectId: form.subjectId,
+      const payload: Partial<Assignment> = {
+        teacherId: teachers.find((t) => t._id === form.teacherId),
+        classId: classes.find((c) => c._id === form.classId),
+        subjectId: subjects.find((s) => s._id === form.subjectId),
       };
-      if (form.sectionId) payload.sectionId = form.sectionId;
 
-      // await api.post("/teacher-assign", payload);
+      if (form.sectionId) {
+        payload.sectionId =
+          sections.find((s) => s._id === form.sectionId) || null;
+      }
+
       if (editingAssignment) {
         await api.put(`/teacher-assign/${editingAssignment._id}`, payload);
-        setEditingAssignment(null); // reset after update
+        setEditingAssignment(null);
       } else {
         await api.post("/teacher-assign", payload);
       }
@@ -121,14 +136,15 @@ const TeacherAssignPanel = () => {
   };
 
   /** --------------------- Helper Functions --------------------- **/
-  const getName = (field: any) => {
+  const getName = (
+    field: Teacher | Class | Section | Subject | null | undefined
+  ) => {
     if (!field) return "-";
-    if (typeof field === "string") return field;
     return field.name || "-";
   };
 
   /** --------------------- Filtered & Paginated Assignments --------------------- **/
-  const filteredAssignments = assignments.filter((a: any) =>
+  const filteredAssignments = assignments.filter((a) =>
     getName(a.teacherId).toLowerCase().includes(search.toLowerCase())
   );
 
@@ -146,6 +162,39 @@ const TeacherAssignPanel = () => {
 
   const isValid = form.teacherId && form.classId && form.subjectId;
 
+  /** --------------------- Update Assignment --------------------- **/
+  const updateAssignment = async () => {
+    if (!editingAssignment) return;
+
+    try {
+      setLoading(true);
+
+      const payload: Partial<Assignment> = {
+        teacherId: teachers.find(
+          (t) => t._id === editingAssignment.teacherId?._id
+        ),
+        classId: classes.find((c) => c._id === editingAssignment.classId?._id),
+        subjectId: subjects.find(
+          (s) => s._id === editingAssignment.subjectId?._id
+        ),
+      };
+
+      if (editingAssignment.sectionId) {
+        payload.sectionId =
+          sections.find((s) => s._id === editingAssignment.sectionId?._id) ||
+          null;
+      }
+
+      await api.put(`/teacher-assign/${editingAssignment._id}`, payload);
+      setEditingAssignment(null);
+      load();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   /** --------------------- Render --------------------- **/
   return (
     <div className="space-y-8">
@@ -154,16 +203,17 @@ const TeacherAssignPanel = () => {
           Assign Teacher
         </h2>
       </div>
+
       {/* ASSIGN FORM */}
       <div className="bg-white shadow-md rounded-xl p-6">
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid md:grid-cols-5 gap-4 items-end">
           {/* Teacher */}
-          <div>
-            <label className="text-sm text-gray-600">Teacher</label>
+          <div className="flex flex-col">
+            <label className="text-sm text-gray-600 mb-1">Teacher</label>
             <select
               value={form.teacherId}
               onChange={(e) => setForm({ ...form, teacherId: e.target.value })}
-              className="w-full border rounded p-2 mt-1"
+              className="w-full border rounded p-2"
             >
               <option value="">Select teacher</option>
               {teachers.map((t) => (
@@ -175,12 +225,12 @@ const TeacherAssignPanel = () => {
           </div>
 
           {/* Class */}
-          <div>
-            <label className="text-sm text-gray-600">Class</label>
+          <div className="flex flex-col">
+            <label className="text-sm text-gray-600 mb-1">Class</label>
             <select
               value={form.classId}
               onChange={(e) => setForm({ ...form, classId: e.target.value })}
-              className="w-full border rounded p-2 mt-1"
+              className="w-full border rounded p-2"
             >
               <option value="">Select class</option>
               {classes.map((c) => (
@@ -192,12 +242,14 @@ const TeacherAssignPanel = () => {
           </div>
 
           {/* Section */}
-          <div>
-            <label className="text-sm text-gray-600">Section (Optional)</label>
+          <div className="flex flex-col">
+            <label className="text-sm text-gray-600 mb-1">
+              Section (Optional)
+            </label>
             <select
               value={form.sectionId}
               onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
-              className="w-full border rounded p-2 mt-1"
+              className="w-full border rounded p-2"
             >
               <option value="">All / No Section</option>
               {sections.map((s) => (
@@ -209,12 +261,12 @@ const TeacherAssignPanel = () => {
           </div>
 
           {/* Subject */}
-          <div>
-            <label className="text-sm text-gray-600">Subject</label>
+          <div className="flex flex-col">
+            <label className="text-sm text-gray-600 mb-1">Subject</label>
             <select
               value={form.subjectId}
               onChange={(e) => setForm({ ...form, subjectId: e.target.value })}
-              className="w-full border rounded p-2 mt-1"
+              className="w-full border rounded p-2"
             >
               <option value="">Select subject</option>
               {subjects.map((s) => (
@@ -224,16 +276,17 @@ const TeacherAssignPanel = () => {
               ))}
             </select>
           </div>
-        </div>
 
-        <div className="flex justify-end mt-6">
-          <button
-            disabled={!isValid || loading}
-            onClick={assign}
-            className="bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? "Assigning..." : "Assign Teacher"}
-          </button>
+          {/* Button */}
+          <div className="flex">
+            <button
+              disabled={!isValid || loading}
+              onClick={assign}
+              className="w-full bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? "Assigning..." : "Assign Teacher"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -250,7 +303,7 @@ const TeacherAssignPanel = () => {
         </div>
 
         <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="w-full text-sm border">
+          <table className="w-full border">
             <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
               <tr>
                 <th className="p-3">Teacher</th>
@@ -268,8 +321,7 @@ const TeacherAssignPanel = () => {
                   </td>
                 </tr>
               )}
-
-              {paginatedAssignments.map((a: any) => (
+              {paginatedAssignments.map((a) => (
                 <tr key={a._id} className="border-t hover:bg-gray-50">
                   <td className="p-3">{getName(a.teacherId)}</td>
                   <td className="p-3">{getName(a.classId)}</td>
@@ -277,22 +329,13 @@ const TeacherAssignPanel = () => {
                     {getName(a.sectionId) || "All / No Section"}
                   </td>
                   <td className="p-3">{getName(a.subjectId)}</td>
-                  <td className="p-3 mr-4 flex justify-end gap-1">
+                  <td className="p-3 flex justify-end gap-1">
                     <button
-                      onClick={() => {
-                        setForm({
-                          teacherId: a.teacherId?._id,
-                          classId: a.classId?._id,
-                          sectionId: a.sectionId?._id || "",
-                          subjectId: a.subjectId?._id,
-                        }),
-                          setEditingAssignment(a); // <-- track the assignment being edited
-                      }}
+                      onClick={() => setEditingAssignment(a)}
                       className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
                     >
                       <FiEdit />
                     </button>
-
                     <button
                       onClick={() => removeAssignment(a._id)}
                       className="text-red-600 p-1 rounded hover:bg-red-50"
@@ -348,6 +391,21 @@ const TeacherAssignPanel = () => {
           </div>
         </div>
       </div>
+
+      {/* EDIT MODAL */}
+      {editingAssignment && (
+        <UpdateTeacherAssignmentModal
+          assignment={editingAssignment}
+          teachers={teachers}
+          classes={classes}
+          sections={sections}
+          subjects={subjects}
+          loading={loading}
+          onClose={() => setEditingAssignment(null)}
+          onUpdate={setEditingAssignment} // updates state
+          updateAssignment={updateAssignment} // pass API function
+        />
+      )}
     </div>
   );
 };

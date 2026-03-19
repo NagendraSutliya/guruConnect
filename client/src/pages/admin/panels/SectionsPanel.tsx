@@ -1,27 +1,31 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
 import { FiTrash2, FiEdit } from "react-icons/fi";
+import Toast from "../../../components/Toast";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
-import Toast from "../../../components/Toast";
+import UpdateSectionModal from "../modals/admin/UpdateSectionModal";
 
 const SectionsPanel = () => {
   const [sections, setSections] = useState<Section[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
-  const [name, setName] = useState("");
-  const [classId, setClassId] = useState("");
-  const [toast, setToast] = useState<{ message: string; type?: string } | null>(
-    null
-  );
+  const [toastMessage, setToastMessage] = useState<any>(null);
   const [search, setSearch] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // --- Load Sections & Classes ---
+  // Edit modal
+  const [editingSection, setEditingSection] = useState<Section | null>(null);
+
+  const showToast = (message: string, type: string = "info") =>
+    setToastMessage({ message, type });
+
+  // Load sections and classes
   const load = async () => {
+    setLoading(true);
     try {
       const [s, c] = await Promise.all([
         api.get("/sections"),
@@ -30,7 +34,9 @@ const SectionsPanel = () => {
       setSections(s.data.data);
       setClasses(c.data.data);
     } catch {
-      setToast({ message: "Failed to load data", type: "error" });
+      showToast("Failed to load data", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,61 +44,43 @@ const SectionsPanel = () => {
     load();
   }, []);
 
-  // --- Create / Update Section ---
-  const saveSection = async () => {
+  // Create new section
+  const [name, setName] = useState("");
+  const [classId, setClassId] = useState("");
+
+  const handleAddSection = async () => {
     if (!name || !classId) {
-      setToast({
-        message: "Class and Section name are required",
-        type: "warn",
-      });
+      showToast("Class and Section name are required", "warn");
       return;
     }
 
     try {
-      if (editingId) {
-        await api.put(`/sections/${editingId}`, { name, classId });
-        setToast({ message: "Section updated", type: "success" });
-      } else {
-        await api.post("/sections", { name, classId });
-        setToast({ message: "Section created", type: "success" });
-      }
+      await api.post("/sections", { name, classId });
+      showToast("Section created successfully", "success");
       setName("");
       setClassId("");
-      setEditingId(null);
       load();
-    } catch (err: any) {
-      setToast({
-        message: err.response?.data?.message || "Failed to save section",
-        type: "error",
-      });
+    } catch {
+      showToast("Failed to create section", "error");
     }
   };
 
-  // --- Edit Section ---
-  const editSection = (section: Section) => {
-    setName(section.name);
-    setClassId(section.classId?._id || "");
-    setEditingId(section._id);
-  };
-
-  // --- Delete Section ---
+  // Delete section
   const deleteSection = async (id: string) => {
     if (!confirm("Are you sure you want to delete this section?")) return;
     try {
       await api.delete(`/sections/${id}`);
-      setToast({ message: "Section deleted", type: "success" });
-      if (editingId === id) {
-        setEditingId(null);
-        setName("");
-        setClassId("");
-      }
+      showToast("Section deleted", "success");
       load();
     } catch {
-      setToast({ message: "Failed to delete section", type: "error" });
+      showToast("Failed to delete section", "error");
     }
   };
 
-  // --- Filtered and Paginated Sections ---
+  // Edit handler
+  const editSection = (section: Section) => setEditingSection(section);
+
+  // Filter & paginate
   const filteredSections = useMemo(() => {
     return sections.filter(
       (s) =>
@@ -109,17 +97,18 @@ const SectionsPanel = () => {
 
   return (
     <div className="p-6 space-y-6">
-      {toast && (
+      {/* Toast */}
+      {toastMessage && (
         <Toast
-          message={toast.message}
-          type={toast.type as any}
-          onClose={() => setToast(null)}
+          message={toastMessage.message}
+          type={toastMessage.type as any}
+          onClose={() => setToastMessage(null)}
         />
       )}
 
       <h2 className="text-2xl font-bold text-gray-800">Sections</h2>
 
-      {/* Form */}
+      {/* Add Section Form */}
       <div className="bg-white shadow rounded p-4 flex flex-col md:flex-row md:items-end gap-4">
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -153,10 +142,10 @@ const SectionsPanel = () => {
 
         <div className="md:self-end">
           <button
-            onClick={saveSection}
-            className="w-28 bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
+            onClick={handleAddSection}
+            className="w-fit bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
           >
-            {editingId ? "Update" : "Create"}
+            {loading ? "Loading..." : "Add Section"}
           </button>
         </div>
       </div>
@@ -175,6 +164,7 @@ const SectionsPanel = () => {
             className="w-64 px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
         <div className="overflow-x-auto bg-white shadow rounded">
           <table className="min-w-full divide-y divide-gray-200 text-center">
             <thead className="bg-green-100">
@@ -268,6 +258,16 @@ const SectionsPanel = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Section Modal */}
+      {editingSection && (
+        <UpdateSectionModal
+          section={editingSection}
+          classes={classes}
+          onClose={() => setEditingSection(null)}
+          onUpdated={load} // reload sections & classes
+        />
+      )}
     </div>
   );
 };

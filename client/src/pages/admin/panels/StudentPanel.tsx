@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import Toast from "../../../components/Toast";
-import { FiEdit, FiToggleLeft, FiToggleRight, FiTrash } from "react-icons/fi";
+import { FiEdit, FiToggleLeft, FiToggleRight, FiTrash2 } from "react-icons/fi";
 
 const StudentPanel = () => {
   const [students, setStudents] = useState<any[]>([]);
@@ -333,14 +333,6 @@ const StudentPanel = () => {
 
                       <td className="p-3 flex justify-end gap-1">
                         <button
-                          onClick={() => editStudent(s)}
-                          className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
-                          title="Edit"
-                        >
-                          <FiEdit />
-                        </button>
-
-                        <button
                           onClick={() => toggleStudent(s)}
                           disabled={isLoading}
                           className={`p-1 rounded transition ${
@@ -358,7 +350,13 @@ const StudentPanel = () => {
                             <FiToggleRight />
                           )}
                         </button>
-
+                        <button
+                          onClick={() => editStudent(s)}
+                          className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
+                          title="Edit"
+                        >
+                          <FiEdit />
+                        </button>
                         <button
                           onClick={() => deleteStudent(s)}
                           disabled={isLoading}
@@ -368,7 +366,7 @@ const StudentPanel = () => {
                           {isLoading ? (
                             <span className="text-xs">...</span>
                           ) : (
-                            <FiTrash />
+                            <FiTrash2 />
                           )}
                         </button>
                       </td>
