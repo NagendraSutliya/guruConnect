@@ -7,7 +7,7 @@ exports.getExams = async (req, res) => {
   try {
     const { classId, sectionId } = req.query;
 
-    const filter = {};
+    const filter = { instituteId: req.user.instituteId };
 
     // ✅ SAFE classId
     if (classId && mongoose.Types.ObjectId.isValid(classId)) {
@@ -19,7 +19,6 @@ exports.getExams = async (req, res) => {
       filter.$or = [{ sectionId: sectionId }, { sectionId: null }];
     }
 
-    console.log("FILTER =>", filter); // 🔥 debug
     const exams = await Exam.find(filter)
       .populate("classId", "name")
       .populate("sectionId", "name");
@@ -31,19 +30,14 @@ exports.getExams = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch exams",
-    });
+    res.status(500).json({ success: false, message: "Failed to fetch exams" });
   }
 };
 
 // ============ CREATE EXAMS ==============
 exports.createExam = async (req, res) => {
   try {
-    console.log("REQ USER =>", req.user); // debug
     const { name, classId, sectionId } = req.body;
-
     if (!name || !classId) {
       return errorResponse(res, "Missing required fields");
     }
@@ -65,9 +59,6 @@ exports.createExam = async (req, res) => {
 // ============ UPDATE EXAMS ==============
 exports.updateExam = async (req, res) => {
   try {
-    // const { name, classId, sectionId, subjectId, date, startTime, endTime } =
-    //   req.body;
-
     const { name, classId, sectionId } = req.body;
 
     const updatedExam = await Exam.findByIdAndUpdate(

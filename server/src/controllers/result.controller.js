@@ -1,30 +1,43 @@
+const mongoose = require("mongoose");
 const Result = require("../models/Result");
 const { updateOne } = require("../models/Student");
 const { errorResponse, successResponse } = require("../utils/response");
 
+// ============ ADMIN RESULT ==============
 exports.adminResults = async (req, res) => {
   try {
-    // const { examId, classId } = req.query;
-    const { examSubjectId, classId } = req.query;
+    const { examId, examSubjectId, classId } = req.query;
 
-    const filter = {};
+    const filter = {
+      instituteId: req.user.instituteId,
+    };
 
-    // if (examId) filter.examId = examId;
-    if (examSubjectId) filter.examSubjectId = examSubjectId;
+    if (examId && mongoose.Types.ObjectId.isValid(examId)) {
+      filter.examId = examId;
+    }
+
+    if (examSubjectId && mongoose.Types.ObjectId.isValid(examSubjectId)) {
+      filter.examSubjectId = examSubjectId;
+    }
 
     let results = await Result.find(filter)
       .populate({
         path: "studentId",
         select: "name classId",
-        match: classId ? { classId } : {},
+        match:
+          classId && mongoose.Types.ObjectId.isValid(classId)
+            ? { classId }
+            : {},
       })
-      // .populate("examId", "name");
       .populate({
         path: "examSubjectId",
-        populate: { path: "subjectId", select: "name" },
+        populate: [
+          { path: "subjectId", select: "name" },
+          { path: "examId", select: "name" },
+        ],
       });
 
-    results = results.filter((r) => r.studentId); // remove unmatched
+    results = results.filter((r) => r.studentId);
 
     const total = results.length;
     const sum = results.reduce((a, b) => a + b.marks, 0);
@@ -38,31 +51,44 @@ exports.adminResults = async (req, res) => {
       summary: { total, average, topper },
     });
   } catch (err) {
+    console.error("ADMIN RESULT ERROR:", err); // 🔥 ADD THIS
     res.status(500).json({ success: false });
   }
 };
 
+// ============ SAVE RESULT ==============
 exports.saveResults = async (req, res) => {
   try {
-    const records = req.body;
+    const { examId, examSubjectId, records } = req.body;
 
-    const ops = records.map((r) => ({
-      updateOne: {
-        filter: {
-          studentId: r.studentId,
-          // examId: r.examId,
-          examSubjectId: r.examSubjectId,
+    if (!examId || !examSubjectId || !records) {
+      return errorResponse(res, "Missing required fields");
+    }
+
+    const ops = records.map((r) => {
+      if (r.marks < 0) {
+        throw new Error("Marks cannot be negative");
+      }
+      return {
+        updateOne: {
+          filter: {
+            studentId: r.studentId,
+            examId: r.examId,
+            examSubjectId: r.examSubjectId,
+          },
+          update: {
+            $set: {
+              studentId: r.studentId,
+              examId: r.examId,
+              examSubjectId: r.examSubjectId,
+              marks: r.marks,
+              instituteId: req.user.instituteId,
+            },
+          },
+          upsert: true,
         },
-        update: {
-          studentId: r.studentId,
-          // examId: r.examId,
-          examSubjectId: r.examSubjectId,
-          marks: r.marks,
-          // maxMarks: r.maxMarks,
-        },
-        upsert: true,
-      },
-    }));
+      };
+    });
 
     await Result.bulkWrite(ops);
 
@@ -72,21 +98,25 @@ exports.saveResults = async (req, res) => {
   }
 };
 
+// ============ GET RESULT BY EXAM ==============
 exports.getResults = async (req, res) => {
   try {
-    // const { examId } = req.query;
-    const { examSubjectId } = req.query;
-
-    // const results = await Result.find({ examId }).populate(
-    //     "studentId",
-    //     "name rollNo"
-    //   );
-    const results = await Result.find({ examSubjectId })
+    const { examId } = req.query;
+    const results = await Result.find({
+      examId,
+      instituteId: req.user.instituteId,
+    })
       .populate("studentId", "name rollNo")
       .populate({
         path: "examSubjectId",
         populate: { path: "subjectId", select: "name" },
       });
+    // const results = await Result.find({ examSubjectId })
+    //   .populate("studentId", "name rollNo")
+    //   .populate({
+    //     path: "examSubjectId",
+    //     populate: { path: "subjectId", select: "name" },
+    //   });
 
     res.json({
       success: true,

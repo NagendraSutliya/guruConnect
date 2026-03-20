@@ -12,13 +12,18 @@ const resultSchema = new mongoose.Schema(
       ref: "Student",
       required: true,
     },
+    examId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Exam",
+      required: true,
+    },
     examSubjectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ExamSubject",
       required: true,
     },
     marks: { type: Number, required: true },
-    // maxMarks: { type: Number, required: true },
+    maxMarks: { type: Number },
   },
   { timestamps: true }
 );

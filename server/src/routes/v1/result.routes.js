@@ -4,9 +4,9 @@ const {
   saveResults,
   getResults,
 } = require("../../controllers/result.controller");
-const { requireTeacher } = require("../../middleware/auth");
+const { requireTeacher, requireAdmin } = require("../../middleware/auth");
 
-router.get("/admin", adminResults);
+router.get("/admin", requireAdmin, adminResults);
 
 router.post("/", requireTeacher, saveResults);
 router.get("/", requireTeacher, getResults);

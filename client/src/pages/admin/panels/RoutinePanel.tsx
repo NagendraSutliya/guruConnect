@@ -79,7 +79,9 @@ const RoutinePanel = () => {
     return assignments.filter(
       (a) =>
         a.classId._id === selectedClassId &&
-        a.sectionId?._id === selectedSectionId
+        a.sectionId?._id === selectedSectionId &&
+        a.subjectId &&
+        a.teacherId
     );
   }, [assignments, selectedClassId, selectedSectionId]);
 
@@ -171,33 +173,38 @@ const RoutinePanel = () => {
       <h2 className="text-2xl font-bold mb-6">Section Routine</h2>
 
       {/* FILTERS */}
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
-        <select
-          value={selectedClassId}
-          onChange={(e) => setSelectedClassId(e.target.value)}
-          className="border p-2"
-        >
-          <option value="">Select Class</option>
-          {classes.map((c) => (
-            <option key={c._id} value={c._id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={selectedSectionId}
-          onChange={(e) => setSelectedSectionId(e.target.value)}
-          className="border p-2"
-          disabled={!selectedClassId}
-        >
-          <option value="">Select Section</option>
-          {sections.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+      <div className="bg-white grid md:grid-cols-2 gap-4 mb-6 p-3 rounded-md">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm">Class</label>
+          <select
+            value={selectedClassId}
+            onChange={(e) => setSelectedClassId(e.target.value)}
+            className="border p-2 rounded-md shadow"
+          >
+            <option value="">Select Class</option>
+            {classes.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm">Section</label>
+          <select
+            value={selectedSectionId}
+            onChange={(e) => setSelectedSectionId(e.target.value)}
+            className="border p-2 rounded-md shadow"
+            disabled={!selectedClassId}
+          >
+            <option value="">Select Section</option>
+            {sections.map((s) => (
+              <option key={s._id} value={s._id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* EMPTY STATES */}

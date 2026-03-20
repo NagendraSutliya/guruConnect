@@ -25,9 +25,8 @@ const ResultPanel = () => {
   const [selectedClassId, setSelectedClassId] = useState("");
   const [selectedSectionId, setSelectedSectionId] = useState("");
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
-  // const [examType, setExamType] = useState("");
-  const [exams, setExams] = useState<any[]>([]);
   const [selectedExamId, setSelectedExamId] = useState("");
+  const [exams, setExams] = useState<any[]>([]);
   const [maxMarks, setMaxMarks] = useState(100);
   const [status, setStatus] = useState("");
   const [toast, setToast] = useState<any>(null);
@@ -37,7 +36,6 @@ const ResultPanel = () => {
     setToast({ message: msg, type });
 
   /* ================= LOAD TEACHER ASSIGNMENTS ================= */
-
   useEffect(() => {
     const loadAssignments = async () => {
       try {
@@ -47,7 +45,6 @@ const ResultPanel = () => {
         showToast("Failed to load assignments", "error");
       }
     };
-
     loadAssignments();
   }, []);
 
@@ -60,28 +57,17 @@ const ResultPanel = () => {
 
     const loadExams = async () => {
       try {
-        // 1️⃣ Try with class + section
         let res = await api.get("/exams", {
-          params: {
-            classId: selectedClassId,
-            sectionId: selectedSectionId,
-          },
+          params: { classId: selectedClassId, sectionId: selectedSectionId },
         });
 
         let examList = res.data.data || [];
 
-        // 2️⃣ 🔥 FALLBACK: if empty, retry WITHOUT section
+        // fallback without section
         if (examList.length === 0) {
-          console.warn(
-            "No exams found with section, retrying without section..."
-          );
-
           const fallbackRes = await api.get("/exams", {
-            params: {
-              classId: selectedClassId,
-            },
+            params: { classId: selectedClassId },
           });
-
           examList = fallbackRes.data.data || [];
         }
 
@@ -95,26 +81,16 @@ const ResultPanel = () => {
     loadExams();
   }, [selectedClassId, selectedSectionId]);
 
-  useEffect(() => {
-    setSelectedExamId("");
-  }, [selectedClassId, selectedSectionId]);
-
-  //  ================= LOAD RESULTS ================
-
-  const loadResults = async () => {
-    if (
-      !selectedClassId ||
-      !selectedSectionId ||
-      !selectedSubjectId
-      // || !examType
-    ) {
-      showToast("Please select all filters", "error");
+  /* ================= LOAD STUDENTS ================= */
+  const loadStudents = async () => {
+    if (!selectedClassId || !selectedSectionId) {
+      showToast("Please select class and section", "error");
       return;
     }
+
     setLoading(true);
 
     try {
-      /* ---------- Load Students ---------- */
       const studentRes = await api.get("/student/by-class", {
         params: { classId: selectedClassId, sectionId: selectedSectionId },
       });
@@ -125,47 +101,19 @@ const ResultPanel = () => {
         rollNo: s.rollNo,
         currentMarks: undefined,
         marks: "",
+        isEditing: false,
       }));
 
-      /* ---------- Load Existing Results ---------- */
-      const resultRes = await api.get("/results", {
-        // params: {
-        //   classId: selectedClassId,
-        //   sectionId: selectedSectionId,
-        //   subjectId: selectedSubjectId,
-        //   examType,
-        // },
-        params: { examId: selectedExamId },
-      });
-
-      const results = resultRes.data.data || [];
-
-      /* ---------- Merge Students + Results ---------- */
-      const merged = studentList.map((s: Student) => {
-        const r = results.find((x: any) => x.studentId._id === s._id);
-        return r
-          ? { ...s, currentMarks: r.marks, marks: r.marks, isEditing: false }
-          : { ...s, currentMarks: undefined, marks: "", isEditing: false };
-      });
-
-      setStudents(merged);
-
-      const selectedExam = exams.find((e) => e._id === selectedExamId);
-
-      if (results.length > 0) {
-        setStatus(`✔ ${selectedExam?.name} marks loaded`);
-      } else {
-        setStatus(`⚠ No marks uploaded yet`);
-      }
+      setStudents(studentList);
+      setStatus(`✔ ${studentList.length} students loaded`);
     } catch (err) {
-      showToast("Failed to load results", "error");
+      showToast("Failed to load students", "error");
     }
 
     setLoading(false);
   };
 
   /* ================= UPDATE MARK ================= */
-
   const updateMark = (id: string, value: number) => {
     if (value > maxMarks) {
       showToast(`Marks cannot exceed ${maxMarks}`, "error");
@@ -177,52 +125,13 @@ const ResultPanel = () => {
     );
   };
 
-  /* ================= SAVE MARKS ================= */
-
-  const saveMarks = async () => {
-    if (!selectedSubjectId) {
-      showToast("Select subject first", "error");
-      return;
-    }
-
-    try {
-      // const payload = students.map((s) => ({
-      //   studentId: s._id,
-      //   marks: s.marks,
-      //   maxMarks,
-      //   examId: selectedExamId,
-      //   // examType,
-      //   // subjectId: selectedSubjectId,
-      //   // classId: selectedClassId,
-      //   // sectionId: selectedSectionId,
-      // }));
-
-      const payload = students
-        .filter((s) => s.marks !== "")
-        .map((s) => ({
-          studentId: s._id,
-          marks: s.marks,
-          maxMarks,
-          examId: selectedExamId,
-        }));
-
-      await api.post("/results", payload);
-
-      setStatus("✔ Marks saved successfully");
-      showToast("Marks saved successfully", "success");
-    } catch (err) {
-      showToast("Failed to save marks", "error");
-    }
-  };
-
-  /* ================= DELETE MARKS ================= */
+  /* ================= EDIT / DELETE MARK ================= */
   const editMark = (id: string) => {
     setStudents((prev) =>
       prev.map((s) => (s._id === id ? { ...s, isEditing: true } : s))
     );
   };
 
-  /* ================= DELETE MARKS ================= */
   const deleteMark = (id: string) => {
     setStudents((prev) =>
       prev.map((s) =>
@@ -233,8 +142,39 @@ const ResultPanel = () => {
     );
   };
 
-  /* ================= FILTERS ================= */
+  /* ================= SAVE MARKS ================= */
+  const saveMarks = async () => {
+    if (!selectedExamId || !selectedSubjectId) {
+      showToast("Select exam and subject first", "error");
+      return;
+    }
 
+    try {
+      const payload = students
+        .filter((s) => s.marks !== "")
+        .map((s) => ({
+          studentId: s._id,
+          marks: s.marks,
+          maxMarks,
+          examId: selectedExamId, // Use examId directly
+          subjectId: selectedSubjectId, // Include subjectId
+          classId: selectedClassId,
+          sectionId: selectedSectionId,
+        }));
+
+      console.log("Saving payload:", payload);
+
+      await api.post("/results", payload);
+
+      setStatus("✔ Marks saved successfully");
+      showToast("Marks saved successfully", "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to save marks", "error");
+    }
+  };
+
+  /* ================= FILTERS ================= */
   const classes = Array.from(
     new Map(
       assignments
@@ -269,19 +209,18 @@ const ResultPanel = () => {
     ).values()
   );
 
+  /* ================= RESET STUDENTS ON FILTER CHANGE ================= */
   useEffect(() => {
     setStudents([]);
     setStatus("");
-  }, [selectedClassId, selectedSectionId, selectedSubjectId, selectedExamId]);
+  }, [selectedClassId, selectedSectionId]);
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Student Results</h2>
 
       {/* FILTERS */}
-
       <div className="bg-white p-4 rounded shadow mb-8 space-y-4">
-        {/* Row 1 */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <select
             className="border p-2 rounded"
@@ -325,9 +264,7 @@ const ResultPanel = () => {
           <select
             className="border p-2 rounded"
             value={selectedExamId}
-            onChange={(e) => {
-              setSelectedExamId(e.target.value);
-            }}
+            onChange={(e) => setSelectedExamId(e.target.value)}
           >
             <option value="">Select Exam</option>
             {exams.map((exam) => (
@@ -336,25 +273,13 @@ const ResultPanel = () => {
               </option>
             ))}
           </select>
-          {/* <select
-            className="border p-2 rounded"
-            value={examType}
-            onChange={(e) => setExamType(e.target.value)}
-          >
-            <option value="">Select Exam Type</option>
-            <option value="Unit Test">Unit Test</option>
-            <option value="Mid Term">Mid Term</option>
-            <option value="Final">Final</option>
-          </select> */}
         </div>
 
-        {/* Row 2 */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-600">
               Max Marks :
             </span>
-
             <input
               type="number"
               value={maxMarks}
@@ -364,22 +289,14 @@ const ResultPanel = () => {
           </div>
 
           <button
-            onClick={loadResults}
-            disabled={
-              !selectedClassId ||
-              !selectedSectionId ||
-              !selectedSubjectId ||
-              // !examType
-              !selectedExamId
-            }
+            onClick={loadStudents}
+            disabled={!selectedClassId || !selectedSectionId}
             className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
           >
             {loading ? "Loading..." : "Load Students"}
           </button>
         </div>
       </div>
-
-      {/* STATUS */}
 
       {status && (
         <div className="mb-3 text-sm text-indigo-600 font-medium">{status}</div>
@@ -397,6 +314,7 @@ const ResultPanel = () => {
           <span className="font-medium">Exam:</span>{" "}
           {exams.find((e) => e._id === selectedExamId)?.name}
         </div>
+
         <div className="bg-white rounded shadow overflow-hidden">
           {students.length === 0 ? (
             <div className="p-6 text-center text-gray-500">
@@ -414,7 +332,6 @@ const ResultPanel = () => {
                   <th>Action</th>
                 </tr>
               </thead>
-
               <tbody>
                 {students.map((s) => (
                   <tr key={s._id} className="border-t">
@@ -449,7 +366,6 @@ const ResultPanel = () => {
                         <span className="text-gray-400">Not Uploaded</span>
                       )}
                     </td>
-
                     <td className="p-3 flex gap-3 justify-center">
                       <button
                         onClick={() => editMark(s._id)}
@@ -475,12 +391,12 @@ const ResultPanel = () => {
         </div>
       </div>
 
-      {/* SAVE */}
-
+      {/* SAVE BUTTON */}
       {students.length > 0 && (
         <div className="flex justify-end mt-5">
           <button
             onClick={saveMarks}
+            disabled={!selectedExamId || !selectedSubjectId}
             className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
           >
             Save Marks

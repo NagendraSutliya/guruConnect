@@ -5,6 +5,7 @@ import { FiBookOpen, FiEdit, FiSearch, FiX, FiTrash2 } from "react-icons/fi";
 import type { Exam } from "../../../types/admin/exam";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
+import EditExamModal from "../modals/admin/UpdateExamModal";
 
 const ExamPanel = () => {
   const navigate = useNavigate();
@@ -219,7 +220,9 @@ const ExamPanel = () => {
           ))}
         </select>
 
-        <button className="bg-blue-600 text-white rounded">Create Exam</button>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4 py-2">
+          {loading ? "loading..." : "Create Exam"}
+        </button>
       </form>
 
       {/* Search */}
@@ -250,7 +253,7 @@ const ExamPanel = () => {
 
         {/* Table */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="w-full">
+          <table className="w-full table-fixed">
             <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase">
               <tr>
                 <th className="p-3 text-left">Exam</th>
@@ -280,22 +283,33 @@ const ExamPanel = () => {
                   <tr key={exam._id} className="border-t hover:bg-gray-50">
                     <td className="p-3">{exam.name}</td>
                     <td className="p-3">
-                      <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-sm">
-                        {exam.classId?.name}
-                      </span>
+                      {exam.classId?.name ? (
+                        <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-sm">
+                          {exam.classId.name}
+                        </span>
+                      ) : (
+                        <span>-</span>
+                      )}
                     </td>
                     <td className="p-3">{exam.sectionId?.name || "-"}</td>
                     <td className="p-3 text-center">
                       {exam.subjects?.length ? (
                         <div className="relative group inline-block">
-                          <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm cursor-pointer">
-                            {exam.subjects
-                              .slice(0, 2)
-                              .map((s: any) => s.subjectId?.name)
-                              .join(", ")}
-                            {exam.subjects.length > 2 &&
-                              ` +${exam.subjects.length - 2}`}
-                          </span>
+                          {exam.subjects?.some(
+                            (s: any) => s.subjectId?.name
+                          ) ? (
+                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm cursor-pointer">
+                              {exam.subjects
+                                .slice(0, 2)
+                                .map((s: any) => s.subjectId?.name)
+                                .filter(Boolean)
+                                .join(", ")}
+                              {exam.subjects.length > 2 &&
+                                ` +${exam.subjects.length - 2}`}
+                            </span>
+                          ) : (
+                            <span>-</span>
+                          )}
 
                           <div
                             className="absolute z-10 hidden group-hover:block bg-gray-800 
@@ -320,7 +334,7 @@ const ExamPanel = () => {
                         {getExamStatus(exam.subjects || [])}
                       </span>
                     </td>
-                    <td className="p-3 flex justify-center gap-1">
+                    <td className="p-3 flex items-center justify-center gap-1">
                       <button
                         onClick={() => examsubject(exam._id)}
                         className="text-blue-600 p-1 rounded"
@@ -398,34 +412,11 @@ const ExamPanel = () => {
       </div>
 
       {/* Edit Exam Modal */}
-      {editExam && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-96 space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold">Edit Exam</h3>
-              <FiX
-                className="cursor-pointer"
-                onClick={() => setEditExam(null)}
-              />
-            </div>
-
-            <input
-              value={editExam.name}
-              onChange={(e) =>
-                setEditExam({ ...editExam, name: e.target.value })
-              }
-              className="border p-2 rounded w-full"
-            />
-
-            <button
-              onClick={updateExam}
-              className="bg-blue-600 text-white px-4 py-2 rounded w-full"
-            >
-              Update
-            </button>
-          </div>
-        </div>
-      )}
+      <EditExamModal
+        editExam={editExam}
+        setEditExam={setEditExam}
+        updateExam={updateExam}
+      />
     </div>
   );
 };

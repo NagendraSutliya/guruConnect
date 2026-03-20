@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../../../api/axiosInstance";
+import { FiSearch, FiX } from "react-icons/fi";
 
 const AdminResultPanel = () => {
   const [exams, setExams] = useState<any[]>([]);
@@ -15,8 +16,11 @@ const AdminResultPanel = () => {
   const [examId, setExamId] = useState("");
   const [classId, setClassId] = useState("");
   const [sectionId, setSectionId] = useState("");
-  const [subjectId, setSubjectId] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Load filters
   const load = async () => {
     try {
       const [e, c, s, sub] = await Promise.all([
@@ -25,7 +29,6 @@ const AdminResultPanel = () => {
         api.get("/sections"),
         api.get("/subjects"),
       ]);
-
       setExams(e.data.data || []);
       setClasses(c.data.data || []);
       setSections(s.data.data || []);
@@ -35,19 +38,17 @@ const AdminResultPanel = () => {
     }
   };
 
+  // Load results
   const loadResults = async () => {
     try {
       setLoading(true);
+      const params: any = {};
 
-      const res = await api.get("/results/admin", {
-        params: {
-          examId,
-          classId,
-          sectionId,
-          subjectId,
-        },
-      });
+      if (examId) params.examId = examId;
+      if (classId) params.classId = classId;
+      if (sectionId) params.sectionId = sectionId;
 
+      const res = await api.get("/results/admin", { params });
       setResults(res.data.data || []);
       setSummary(res.data.summary || null);
     } catch (err) {
@@ -58,38 +59,100 @@ const AdminResultPanel = () => {
   };
 
   useEffect(() => {
-    load();
+    const fetchFilters = async () => await load();
+    fetchFilters();
   }, []);
 
   useEffect(() => {
-    loadResults();
-  }, [examId, classId, sectionId, subjectId]);
+    const fetchResults = async () => await loadResults();
+    fetchResults();
+  }, [examId, classId, sectionId]);
 
-  const filteredResults = results.filter((r) =>
-    r.studentId?.name?.toLowerCase().includes(search.toLowerCase())
-  );
+  // useEffect(() => {
+  //   console.log("API Results:", results);
+  // }, [results]);
 
+  // ✅ Consolidated results
+  const consolidatedResults = useMemo(() => {
+    const map: Record<string, any> = {};
+
+    results.forEach((r) => {
+      if (!r?.studentId?._id) return;
+
+      const key = r.studentId._id;
+
+      if (!map[key]) {
+        map[key] = {
+          studentName: r.studentId.name || "N/A",
+          examName: r.examSubjectId?.examId?.name || "N/A",
+          totalMarks: 0,
+          maxMarks: 0,
+          subjects: [],
+        };
+      }
+
+      const marks = Number(r.marks ?? 0);
+      const maxMarks = Number(r.maxMarks ?? 100);
+
+      map[key].totalMarks += marks;
+      map[key].maxMarks += maxMarks;
+
+      map[key].subjects.push({
+        name: r.examSubjectId?.subjectId?.name || "N/A",
+        marks,
+      });
+    });
+
+    return Object.values(map).map((item: any) => {
+      const percent = item.maxMarks
+        ? (item.totalMarks / item.maxMarks) * 100
+        : 0;
+
+      return {
+        ...item,
+        percentage: percent.toFixed(1),
+        status: percent >= 40 ? "Pass" : "Fail",
+      };
+    });
+  }, [results]);
+
+  // ✅ Search
+  const filteredResults = useMemo(() => {
+    return consolidatedResults.filter((r: any) =>
+      r.studentName.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [consolidatedResults, search]);
+
+  // ✅ Pagination
+  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
+
+  const paginatedResults = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredResults.slice(start, start + itemsPerPage);
+  }, [filteredResults, currentPage, itemsPerPage]);
+
+  // ✅ Export CSV
   const exportCSV = () => {
-    const rows = filteredResults.map((r) => ({
-      Student: r.studentId?.name,
-      Exam: r.examId?.name,
-      Subject: r.subjectId?.name,
-      Marks: r.marks,
-      Percentage: ((r.marks / r.maxMarks) * 100).toFixed(2) + "%",
+    const rows = filteredResults.map((r: any) => ({
+      Student: r.studentName,
+      Exam: r.examName,
+      Subjects: r.subjects.map((s: any) => `${s.name}: ${s.marks}`).join(" | "),
+      Total: r.totalMarks,
+      Percentage: r.percentage + "%",
+      Status: r.status,
     }));
 
     const csv =
-      "Student,Exam,Subject,Marks,Percentage\n" +
+      "Student,Exam,Subjects,Total,Percentage,Status\n" +
       rows
         .map(
-          (r) =>
-            `${r.Student},${r.Exam},${r.Subject},${r.Marks},${r.Percentage}`
+          (r: any) =>
+            `${r.Student},${r.Exam},${r.Subjects},${r.Total},${r.Percentage},${r.Status}`
         )
         .join("\n");
 
     const blob = new Blob([csv]);
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = "results.csv";
@@ -100,9 +163,7 @@ const AdminResultPanel = () => {
     <div className="space-y-6 pb-10">
       <h2 className="text-2xl font-bold text-gray-800">Result Dashboard</h2>
 
-      {/* Filters */}
-
-      <div className="grid md:grid-cols-5 gap-3 bg-white p-4 rounded shadow">
+      <div className="grid md:grid-cols-3 gap-3 bg-white p-4 rounded shadow">
         <select
           value={examId}
           onChange={(e) => setExamId(e.target.value)}
@@ -141,32 +202,11 @@ const AdminResultPanel = () => {
             </option>
           ))}
         </select>
-
-        <select
-          value={subjectId}
-          onChange={(e) => setSubjectId(e.target.value)}
-          className="border p-2 rounded"
-        >
-          <option value="">All Subjects</option>
-          {subjects.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-
-        <input
-          placeholder="Search student..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border p-2 rounded"
-        />
       </div>
 
-      {/* Summary Cards */}
-
+      {/* Summary */}
       {summary && (
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded shadow">
             <p className="text-gray-500 text-sm">Average Marks</p>
             <p className="text-2xl font-bold">{summary.average}</p>
@@ -181,90 +221,147 @@ const AdminResultPanel = () => {
             <p className="text-gray-500 text-sm">Total Students</p>
             <p className="text-2xl font-bold">{summary.total}</p>
           </div>
-
-          <div className="bg-white p-4 rounded shadow flex items-center justify-between">
-            <div>
-              <p className="text-gray-500 text-sm">Export Data</p>
-              <p className="text-sm">Download CSV</p>
-            </div>
-
-            <button
-              onClick={exportCSV}
-              className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
-            >
-              Export
-            </button>
-          </div>
         </div>
       )}
 
-      {/* Result Table */}
+      {/* Table */}
+      <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Results</h3>
 
-      <div className="bg-white rounded shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-green-100">
-            <tr>
-              <th className="p-3 text-left">Student</th>
-              <th className="p-3">Exam</th>
-              <th className="p-3">Subject</th>
-              <th className="p-3">Marks</th>
-              <th className="p-3">%</th>
-              <th className="p-3">Status</th>
-            </tr>
-          </thead>
+          <div className="flex gap-4">
+            <button
+              onClick={exportCSV}
+              title="Download the results in CSV"
+              className="bg-blue-600 text-white font-semibold px-4 py-2 rounded text-sm hover:bg-blue-700 transition"
+            >
+              Export CSV
+            </button>
 
-          <tbody>
-            {loading && (
+            <div className="flex items-center border rounded-lg overflow-hidden">
+              <FiSearch className="text-gray-400 ml-2" />
+              <input
+                placeholder="Search student..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-64 px-3 py-1.5 text-sm outline-none"
+              />
+              {search && (
+                <FiX
+                  className="text-gray-400 cursor-pointer mr-2"
+                  onClick={() => setSearch("")}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase">
               <tr>
-                <td colSpan={6} className="p-6 text-center text-gray-500">
-                  Loading results...
-                </td>
+                <th className="p-3 text-left">Student Name</th>
+                <th className="p-3">Exam</th>
+                {/* <th className="p-3">Subjects</th> */}
+                <th className="p-3">Total Marks</th>
+                <th className="p-3">Percentage %</th>
+                <th className="p-3">Result</th>
               </tr>
-            )}
+            </thead>
 
-            {!loading && filteredResults.length === 0 && (
-              <tr>
-                <td colSpan={6} className="p-6 text-center text-gray-500">
-                  No results found
-                </td>
-              </tr>
-            )}
+            <tbody>
+              {loading && (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center">
+                    Loading results...
+                  </td>
+                </tr>
+              )}
 
-            {!loading &&
-              filteredResults.map((r) => {
-                const marks = Number(r.marks);
-                const maxMarks = Number(r.maxMarks) || 100; // default to 100 if not provided
-                const percent = ((marks / maxMarks) * 100).toFixed(1);
-                const pass = Number(percent) >= 40; // determines pass/fail
+              {!loading && paginatedResults.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center">
+                    No results found
+                  </td>
+                </tr>
+              )}
 
-                return (
-                  <tr key={r._id} className="border-t hover:bg-gray-50">
-                    <td className="p-3 font-medium">{r.studentId?.name}</td>
-
-                    <td className="p-3 text-center">{r.examId?.name}</td>
-
-                    <td className="p-3 text-center">{r.subjectId?.name}</td>
-
-                    <td className="p-3 text-center font-semibold">{r.marks}</td>
-
-                    <td className="p-3 text-center">{percent}%</td>
-
-                    <td className="p-3 text-center">
+              {!loading &&
+                paginatedResults.map((r: any, index) => (
+                  <tr
+                    key={index}
+                    className="border-b hover:bg-gray-50 text-center"
+                  >
+                    <td className="p-3 text-left">{r.studentName}</td>
+                    <td className="p-3 text-sm">{r.examName}</td>
+                    {/* <td className="p-3 text-center text-xs">
+                      {r.subjects
+                        .map((s: any) => `${s.name}: ${s.marks}`)
+                        .join(", ")}
+                    </td> */}
+                    <td className="p-3">{r.totalMarks}</td>
+                    <td className="p-3">{r.percentage}%</td>
+                    <td className="p-3">
                       <span
-                        className={`px-2 py-1 rounded text-xs font-semibold ${
-                          pass
+                        className={`px-2 py-1 rounded text-sm font-semibold ${
+                          r.status === "Pass"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {pass ? "Pass" : "Fail"}
+                        {r.status}
                       </span>
                     </td>
                   </tr>
-                );
-              })}
-          </tbody>
-        </table>
+                ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-between items-center">
+          <div>
+            <label className="mr-2 text-sm">Items per page:</label>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border px-2 py-1 text-sm"
+            >
+              {[5, 10, 15, 20].map((n) => (
+                <option key={n}>{n}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            <span className="items-center text-sm">
+              Page {currentPage} of {totalPages || 1}
+            </span>
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
