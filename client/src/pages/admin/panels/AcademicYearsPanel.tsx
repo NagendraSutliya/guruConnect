@@ -3,7 +3,7 @@ import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2, FiToggleLeft, FiToggleRight } from "react-icons/fi";
 import Toast from "../../../components/Toast";
 import type { AcademicYear } from "../../../types/admin/academicYear";
-import UpdateAcademicYearModal from "../modals/admin/UpdateAcademicYearModal";
+import UpdateAcademicYearModal from "../../modals/admin/UpdateAcademicYearModal";
 
 // --- Helper: default session dates ---
 const getDefaultSessionDates = () => {

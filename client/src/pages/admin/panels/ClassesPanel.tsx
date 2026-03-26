@@ -5,7 +5,7 @@ import Toast from "../../../components/Toast";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import type { AcademicYear } from "../../../types/admin/academicYear";
-import UpdateClassModal from "../modals/admin/UpdateClassModal";
+import UpdateClassModal from "../../modals/admin/UpdateClassModal";
 
 const ClassesPanel = () => {
   const [classes, setClasses] = useState<Class[]>([]);

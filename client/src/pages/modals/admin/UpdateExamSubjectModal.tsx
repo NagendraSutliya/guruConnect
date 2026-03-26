@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FiX } from "react-icons/fi";
-import api from "../../../../api/axiosInstance";
+import api from "../../../api/axiosInstance";
 
 type Props = {
   editData: any;

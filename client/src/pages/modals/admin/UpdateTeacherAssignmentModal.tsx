@@ -1,12 +1,11 @@
 import { FiX } from "react-icons/fi";
-// import type { Teacher, Class, Section, Subject, Assignment }
 import type {
   Teacher,
   Assignment,
-} from "../../../../types/admin/teacherassignment";
-import type { Class } from "../../../../types/admin/class";
-import type { Section } from "../../../../types/admin/section";
-import type { Subject } from "../../../../types/admin/subject";
+} from "../../../types/admin/teacherassignment";
+import type { Class } from "../../../types/admin/class";
+import type { Section } from "../../../types/admin/section";
+import type { Subject } from "../../../types/admin/subject";
 
 type Props = {
   assignment: Assignment;

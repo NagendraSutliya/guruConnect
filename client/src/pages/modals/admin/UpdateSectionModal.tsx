@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FiX } from "react-icons/fi";
-import Toast from "../../../../components/Toast";
-import type { Section } from "../../../../types/admin/section";
-import type { Class } from "../../../../types/admin/class";
-import api from "../../../../api/axiosInstance";
+import Toast from "../../../components/Toast";
+import type { Section } from "../../../types/admin/section";
+import type { Class } from "../../../types/admin/class";
+import api from "../../../api/axiosInstance";
 
 type Props = {
   section: Section;

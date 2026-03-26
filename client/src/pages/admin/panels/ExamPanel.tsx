@@ -5,7 +5,7 @@ import { FiBookOpen, FiEdit, FiSearch, FiX, FiTrash2 } from "react-icons/fi";
 import type { Exam } from "../../../types/admin/exam";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
-import EditExamModal from "../modals/admin/UpdateExamModal";
+import EditExamModal from "../../modals/admin/UpdateExamModal";
 
 const ExamPanel = () => {
   const navigate = useNavigate();

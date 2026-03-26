@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Assignment } from "../../../../types/admin/teacherassignment";
-import type { Routine } from "../../../../types/admin/routine";
+import type { Assignment } from "../../../types/admin/teacherassignment";
+import type { Routine } from "../../../types/admin/routine";
 
 interface Props {
   open: boolean;

@@ -101,11 +101,20 @@ exports.saveResults = async (req, res) => {
 // ============ GET RESULT BY EXAM ==============
 exports.getResults = async (req, res) => {
   try {
-    const { examId } = req.query;
-    const results = await Result.find({
-      examId,
+    const { examId, examSubjectId } = req.query;
+    const filter = {
       instituteId: req.user.instituteId,
-    })
+    };
+
+    if (examId) filter.examId = examId;
+    if (examSubjectId) filter.examSubjectId = examSubjectId;
+
+    const results = await Result.find(filter)
+
+      // const results = await Result.find({
+      //   examId,
+      //   instituteId: req.user.instituteId,
+      // })
       .populate("studentId", "name rollNo")
       .populate({
         path: "examSubjectId",

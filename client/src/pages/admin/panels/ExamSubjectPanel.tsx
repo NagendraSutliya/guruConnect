@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FiEdit, FiTrash2, FiSearch } from "react-icons/fi";
 import api from "../../../api/axiosInstance";
 import Toast from "../../../components/Toast";
-import UpdateExamSubjectModal from "../modals/admin/UpdateExamSubjectModal";
+import UpdateExamSubjectModal from "../../modals/admin/UpdateExamSubjectModal";
 
 const ExamSubjectPanel = () => {
   const { examId } = useParams();

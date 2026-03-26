@@ -49,6 +49,8 @@ import StudentProfile from "../pages/student/StudentProfile";
 import StudentAttendance from "../pages/student/StudentAttendance";
 import AdminProfile from "../pages/admin/AdminProfile";
 import ExamSubjectPanel from "../pages/admin/panels/ExamSubjectPanel";
+import Results_test from "../pages/teacher/Result_test";
+import UploadMarksPage from "../pages/teacher/panels/UploadMarksPanel";
 
 export default function AppRoutes() {
   return (
@@ -108,6 +110,9 @@ export default function AppRoutes() {
         <Route path="results" element={<Result />} />
         <Route path="material" element={<StudyMaterial />} />
         <Route path="tests" element={<Tests />} />
+        <Route path="upload-marks" element={<UploadMarksPage />} />
+
+        <Route path="results_test" element={<Results_test />} />
       </Route>
 
       <Route

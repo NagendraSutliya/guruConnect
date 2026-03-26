@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../../../api/axiosInstance";
 import Toast from "../../../components/Toast";
-import RoutineModal from "../modals/admin/RoutineModal";
+import RoutineModal from "../../modals/admin/RoutineModal";
 import type { Assignment } from "../../../types/admin/teacherassignment";
 import type { Routine } from "../../../types/admin/routine";
 

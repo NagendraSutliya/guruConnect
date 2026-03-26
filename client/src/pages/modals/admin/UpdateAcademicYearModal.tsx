@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import api from "../../../../api/axiosInstance";
-import Toast from "../../../../components/Toast";
-import type { AcademicYear } from "../../../../types/admin/academicYear";
+import api from "../../../api/axiosInstance";
+import Toast from "../../../components/Toast";
+import type { AcademicYear } from "../../../types/admin/academicYear";
 
 interface UpdateAcademicYearModalProps {
   year: AcademicYear;

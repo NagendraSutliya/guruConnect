@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
-import Toast from "../../../../components/Toast";
-import api from "../../../../api/axiosInstance";
-import type { Subject } from "../../../../types/admin/subject";
-import type { Class } from "../../../../types/admin/class";
-import type { Section } from "../../../../types/admin/section";
+import Toast from "../../../components/Toast";
+import api from "../../../api/axiosInstance";
+import type { Subject } from "../../../types/admin/subject";
+import type { Class } from "../../../types/admin/class";
+import type { Section } from "../../../types/admin/section";
 
 type Props = {
   subject: Subject;

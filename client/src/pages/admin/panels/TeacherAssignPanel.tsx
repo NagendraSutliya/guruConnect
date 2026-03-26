@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-
 import type {
   Teacher,
   Assignment,
@@ -10,7 +9,7 @@ import type {
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import type { Subject } from "../../../types/admin/subject";
-import UpdateTeacherAssignmentModal from "../modals/admin/UpdateTeacherAssignmentModal";
+import UpdateTeacherAssignmentModal from "../../modals/admin/UpdateTeacherAssignmentModal";
 
 const TeacherAssignPanel = () => {
   /** --------------------- State Variables --------------------- **/

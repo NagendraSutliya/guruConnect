@@ -4,7 +4,7 @@ import { FiTrash2, FiEdit } from "react-icons/fi";
 import Toast from "../../../components/Toast";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
-import UpdateSectionModal from "../modals/admin/UpdateSectionModal";
+import UpdateSectionModal from "../../modals/admin/UpdateSectionModal";
 
 const SectionsPanel = () => {
   const [sections, setSections] = useState<Section[]>([]);

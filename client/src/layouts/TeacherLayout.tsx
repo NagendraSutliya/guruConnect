@@ -43,6 +43,7 @@ const TeacherLayout = () => {
         { name: "Attendance", path: "/teacher/attendance" },
         { name: "Tests", path: "/teacher/tests" },
         { name: "Results", path: "/teacher/results" },
+        // { name: "Results_test", path: "/teacher/results_test" },
       ],
     },
     {
