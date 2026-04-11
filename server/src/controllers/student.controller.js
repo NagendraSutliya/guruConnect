@@ -176,3 +176,56 @@ exports.getStudentsByClass = async (req, res) => {
     return errorResponse(res, "Failed to load students");
   }
 };
+
+/* ================= UPDATE STUDENT ================= */
+exports.updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, classId, sectionId } = req.body;
+
+    if (!name || !email || !classId) {
+      return errorResponse(res, "Missing required fields", 400);
+    }
+
+    const student = await Student.findById(id);
+    if (!student) {
+      return errorResponse(res, "Student not found", 404);
+    }
+
+    // prevent duplicate email
+    const exists = await Student.findOne({ email, _id: { $ne: id } });
+    if (exists) {
+      return errorResponse(res, "Email already exists", 400);
+    }
+
+    student.name = name;
+    student.email = email;
+    student.classId = classId;
+    student.sectionId = sectionId || null;
+
+    await student.save();
+
+    return successResponse(res, "Student updated", student);
+  } catch (err) {
+    console.log(err);
+    return errorResponse(res, "Failed to update student");
+  }
+};
+
+/* ================= DELETE STUDENT ================= */
+exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const student = await Student.findByIdAndDelete(id);
+
+    if (!student) {
+      return errorResponse(res, "Student not found", 404);
+    }
+
+    return successResponse(res, "Student deleted");
+  } catch (err) {
+    console.log(err);
+    return errorResponse(res, "Failed to delete student");
+  }
+};

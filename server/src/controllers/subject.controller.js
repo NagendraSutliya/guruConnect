@@ -56,6 +56,21 @@ exports.getSubjects = async (req, res) => {
   }
 };
 
+// GET SECTION BY CLASS
+exports.getSubjectsByClass = async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const subjects = await Subject.find({
+      classId,
+      instituteId: req.user.id,
+    }).populate("classId", "name");
+    return successResponse(res, "Subjects loaded", subjects);
+  } catch (err) {
+    console.log(err);
+    return errorResponse(res, "Failed to load subjects", 500);
+  }
+};
+
 // UPDATE SUBJECT
 exports.updateSubject = async (req, res) => {
   try {

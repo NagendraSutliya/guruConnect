@@ -1,33 +1,19 @@
 const jwt = require("jsonwebtoken");
 
-exports.requireAuth = (req, res, next) => {
+const verifyToken = (req) => {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json("No token");
+  if (!token) throw new Error("No token");
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch {
-    res.status(401).json("Invalid token");
-  }
+  return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-exports.requireAdmin = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json("No token");
-
+exports.requireAuth = (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // console.log("JWT PAYLOAD =>", decoded); // ADD THIS
-
-    if (decoded.role !== "admin") return res.status(403).json("Admins only");
-
+    const decoded = verifyToken(req);
     req.user = {
-      id: decoded.id,
+      id: decoded,
       role: decoded.role,
-      instituteId: decoded.instituteId, // ✅ add this
+      instituteId: decoded.instituteId,
     };
     next();
   } catch {
@@ -35,41 +21,50 @@ exports.requireAdmin = (req, res, next) => {
   }
 };
 
-exports.requireTeacher = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json("No token");
-
-  if (!token) {
-    // console.log("❌ No Authorization header");
-    return res.status(401).json("No token");
-  }
-
+exports.requireAdmin = (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log("TEACHER JWT =>", decoded); // 👈 TEMP
-    if (decoded.role !== "teacher") {
-      // console.log("❌ Role mismatch:", decoded.role);
-      return res.status(403).json("Teachers only");
+    const decoded = verifyToken(req);
+    if (decoded.role !== "admin") {
+      return res.status(403).json("Admins only");
     }
-
-    req.user = { id: decoded.id, role: decoded.role };
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+      instituteId: decoded.instituteId,
+    };
     next();
   } catch (err) {
-    // console.log("❌ JWT error:", err.message);
-    res.status(401).json("Invalid token");
+    return res.status(401).json("Invalid token");
+  }
+};
+
+exports.requireTeacher = (req, res, next) => {
+  try {
+    const decoded = verifyToken(req);
+    if (decoded.role !== "teacher") {
+      return res.status(403).json("Teachers only");
+    }
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+      instituteId: decoded.instituteId, // ✅ IMPORTANT FIX
+    };
+    next();
+  } catch (err) {
+    return res.status(401).json("Invalid token");
   }
 };
 
 exports.requireStudent = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json("No token");
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyToken(req);
     if (decoded.role !== "student")
       return res.status(403).json("Students only");
-
-    req.user = decoded;
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+      instituteId: decoded.instituteId,
+    };
     next();
   } catch {
     res.status(401).json("Invalid token");
@@ -78,25 +73,19 @@ exports.requireStudent = (req, res, next) => {
 
 exports.allowRoles = (...roles) => {
   return (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json("No token");
-
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+      const decoded = verifyToken(req);
       if (!roles.includes(decoded.role)) {
         return res.status(403).json("Access denied");
       }
-
       req.user = {
         id: decoded.id,
         role: decoded.role,
         instituteId: decoded.instituteId,
       };
-
       next();
-    } catch {
-      res.status(401).json("Invalid token");
+    } catch (err) {
+      return res.status(401).json("Invalid token");
     }
   };
 };

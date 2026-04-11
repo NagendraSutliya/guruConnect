@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FiEdit, FiTrash2, FiSearch } from "react-icons/fi";
 import api from "../../../api/axiosInstance";
 import Toast from "../../../components/Toast";
@@ -8,6 +8,8 @@ import UpdateExamSubjectModal from "../../modals/admin/UpdateExamSubjectModal";
 const ExamSubjectPanel = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const classId = location.state?.classId;
 
   const [subjects, setSubjects] = useState<any[]>([]);
   const [allSubjects, setAllSubjects] = useState<any[]>([]);
@@ -34,6 +36,10 @@ const ExamSubjectPanel = () => {
     message: string;
     type?: "success" | "error" | "info" | "warn";
   }) => setToastMessage(toast);
+
+  // if (!classId) {
+  //   showToast({ message: "Missing class info. Please go back.", type: "warn" });
+  // }
 
   // --- Fetch subjects for exam and all subjects ---
   const fetchData = async () => {
@@ -152,6 +158,14 @@ const ExamSubjectPanel = () => {
     return filtered.slice(start, start + itemsPerPage);
   }, [filtered, currentPage, itemsPerPage]);
 
+  const filteredSubjects = useMemo(() => {
+    if (!classId) return [];
+
+    return allSubjects.filter(
+      (s: any) => s.classId === classId || s.classId?._id === classId
+    );
+  }, [allSubjects, classId]);
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -173,7 +187,7 @@ const ExamSubjectPanel = () => {
           className="border p-2 rounded"
         >
           <option value="">Select Subject</option>
-          {allSubjects.map((s) => (
+          {filteredSubjects.map((s) => (
             <option key={s._id} value={s._id}>
               {s.name}
             </option>

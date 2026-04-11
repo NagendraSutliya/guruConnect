@@ -1,5 +1,5 @@
-import ResultPanel_test from "./panels/ResultPanel_test";
+import ResultPanel from "./panels/ResultPanel";
 
-export default function Results_test() {
-  return <ResultPanel_test />;
+export default function Results() {
+  return <ResultPanel />;
 }

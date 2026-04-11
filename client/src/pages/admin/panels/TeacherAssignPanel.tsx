@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiChevronDown, FiEdit, FiSearch, FiTrash2, FiX } from "react-icons/fi";
 import type {
   Teacher,
   Assignment,
@@ -10,6 +10,7 @@ import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import type { Subject } from "../../../types/admin/subject";
 import UpdateTeacherAssignmentModal from "../../modals/admin/UpdateTeacherAssignmentModal";
+import Toast from "../../../components/Toast";
 
 const TeacherAssignPanel = () => {
   /** --------------------- State Variables --------------------- **/
@@ -20,14 +21,17 @@ const TeacherAssignPanel = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "info" | "warn";
+  } | null>(null);
   const [form, setForm] = useState<FormState>({
     teacherId: "",
     classId: "",
     sectionId: "",
     subjectId: "",
   });
-
+  const [subjectsForClass, setSubjectsForClass] = useState<Subject[]>([]);
   const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(
     null
   );
@@ -35,11 +39,15 @@ const TeacherAssignPanel = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
+  const showToast = (message: string, type: any = "info") => {
+    setToast({ message, type });
+  };
+
   /** --------------------- Load Data --------------------- **/
   const load = async () => {
     try {
       const [tRes, cRes, subRes, aRes] = await Promise.all([
-        api.get("/admin/teachers"),
+        api.get("/admin/teachers?status=active"),
         api.get("/classes"),
         api.get("/subjects"),
         api.get("/teacher-assign"),
@@ -51,6 +59,7 @@ const TeacherAssignPanel = () => {
       setAssignments(aRes.data.data);
     } catch (err) {
       console.log(err);
+      showToast("Failed to load data ❌", "error");
     }
   };
 
@@ -58,33 +67,41 @@ const TeacherAssignPanel = () => {
     load();
   }, []);
 
+  const activeTeachers = teachers.filter((t) => t.status === "active");
+
   /** --------------------- Dynamic Sections --------------------- **/
   useEffect(() => {
     if (!form.classId) {
       setSections([]);
-      setForm((prev) => ({ ...prev, sectionId: "" }));
+      setSubjectsForClass([]);
+      setForm((prev) => ({ ...prev, sectionId: "", subjectId: "" }));
       return;
     }
 
-    const loadSections = async () => {
+    const loadSectionsAndSubjects = async () => {
       try {
-        const res = await api.get(`/sections/class/${form.classId}`);
-        setSections(res.data.data);
-        setForm((prev) => ({ ...prev, sectionId: "" }));
+        // Sections
+        const secRes = await api.get(`/sections/class/${form.classId}`);
+        setSections(secRes.data.data);
+
+        // Subkect for this class
+        const subRes = await api.get(`/subjects/class/${form.classId}`);
+        setSubjectsForClass(subRes.data.data);
+        setForm((prev) => ({ ...prev, sectionId: "", subjectId: "" }));
       } catch (err) {
         console.log(err);
-        setSections([]);
-        setForm((prev) => ({ ...prev, sectionId: "" }));
+        setSubjectsForClass([]);
+        setForm((prev) => ({ ...prev, sectionId: "", subjectId: "" }));
       }
     };
 
-    loadSections();
+    loadSectionsAndSubjects();
   }, [form.classId]);
 
   /** --------------------- Assign Teacher --------------------- **/
   const assign = async () => {
     if (!form.teacherId || !form.classId || !form.subjectId) {
-      alert("Teacher, Class, and Subject are required");
+      showToast("Teacher, Class, and Subject are required", "warn");
       return;
     }
 
@@ -104,15 +121,18 @@ const TeacherAssignPanel = () => {
 
       if (editingAssignment) {
         await api.put(`/teacher-assign/${editingAssignment._id}`, payload);
+        showToast("Assignment updated ✏️", "success");
         setEditingAssignment(null);
       } else {
         await api.post("/teacher-assign", payload);
+        showToast("Teacher assigned successfully ✅", "success");
       }
 
       setForm({ teacherId: "", classId: "", sectionId: "", subjectId: "" });
       load();
     } catch (err: any) {
       console.log(err.response?.data || err.message);
+      showToast("Assignment failed ❌", "error");
     } finally {
       setLoading(false);
     }
@@ -124,12 +144,13 @@ const TeacherAssignPanel = () => {
 
     try {
       await api.delete(`/teacher-assign/${id}`);
+      showToast("Assignment deleted 🗑️", "success");
       load();
     } catch (err: any) {
       console.log(err);
-      alert(
-        err.response?.data?.message ||
-          "Failed to delete assignment. Make sure the assignment exists."
+      showToast(
+        err.response?.data?.message || "Failed to delete assignment ❌",
+        "error"
       );
     }
   };
@@ -185,10 +206,12 @@ const TeacherAssignPanel = () => {
       }
 
       await api.put(`/teacher-assign/${editingAssignment._id}`, payload);
+      showToast("Assignment updated ✏️", "success");
       setEditingAssignment(null);
       load();
     } catch (err) {
       console.log(err);
+      showToast("Update failed ❌", "error");
     } finally {
       setLoading(false);
     }
@@ -196,8 +219,15 @@ const TeacherAssignPanel = () => {
 
   /** --------------------- Render --------------------- **/
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center mb-4">
+    <div className="space-y-4 pb-8">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
         <h2 className="text-2xl font-bold text-gray-800 py-2">
           Assign Teacher
         </h2>
@@ -208,72 +238,100 @@ const TeacherAssignPanel = () => {
         <div className="grid md:grid-cols-5 gap-4 items-end">
           {/* Teacher */}
           <div className="flex flex-col">
-            <label className="text-sm text-gray-600 mb-1">Teacher</label>
-            <select
-              value={form.teacherId}
-              onChange={(e) => setForm({ ...form, teacherId: e.target.value })}
-              className="w-full border rounded p-2"
-            >
-              <option value="">Select teacher</option>
-              {teachers.map((t) => (
-                <option key={t._id} value={t._id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
+            <label className="text-sm font-semibold text-gray-600 mb-1">
+              Teacher
+            </label>
+            <div className="relative">
+              <select
+                value={form.teacherId}
+                onChange={(e) =>
+                  setForm({ ...form, teacherId: e.target.value })
+                }
+                className="w-full border rounded-md p-2 pr-8 appearance-none shadow 
+                        focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+              >
+                <option value="">Select teacher</option>
+                {activeTeachers.map((t) => (
+                  <option key={t._id} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+            </div>
           </div>
 
           {/* Class */}
           <div className="flex flex-col">
-            <label className="text-sm text-gray-600 mb-1">Class</label>
-            <select
-              value={form.classId}
-              onChange={(e) => setForm({ ...form, classId: e.target.value })}
-              className="w-full border rounded p-2"
-            >
-              <option value="">Select class</option>
-              {classes.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            <label className="text-sm font-semibold text-gray-600 mb-1">
+              Class
+            </label>
+            <div className="relative">
+              <select
+                value={form.classId}
+                onChange={(e) => setForm({ ...form, classId: e.target.value })}
+                className="w-full border rounded-md p-2 pr-8 appearance-none shadow 
+                        focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+              >
+                <option value="">Select class</option>
+                {classes.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+            </div>
           </div>
 
           {/* Section */}
           <div className="flex flex-col">
-            <label className="text-sm text-gray-600 mb-1">
+            <label className="text-sm font-semibold text-gray-600 mb-1">
               Section (Optional)
             </label>
-            <select
-              value={form.sectionId}
-              onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
-              className="w-full border rounded p-2"
-            >
-              <option value="">All / No Section</option>
-              {sections.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={form.sectionId}
+                onChange={(e) =>
+                  setForm({ ...form, sectionId: e.target.value })
+                }
+                className="w-full border rounded-md p-2 pr-8 appearance-none shadow 
+                        focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+              >
+                <option value="">All / No Section</option>
+                {sections.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+            </div>
           </div>
 
           {/* Subject */}
           <div className="flex flex-col">
-            <label className="text-sm text-gray-600 mb-1">Subject</label>
-            <select
-              value={form.subjectId}
-              onChange={(e) => setForm({ ...form, subjectId: e.target.value })}
-              className="w-full border rounded p-2"
-            >
-              <option value="">Select subject</option>
-              {subjects.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+            <label className="text-sm font-semibold text-gray-600 mb-1">
+              Subject
+            </label>
+            <div className="relative">
+              <select
+                value={form.subjectId}
+                onChange={(e) =>
+                  setForm({ ...form, subjectId: e.target.value })
+                }
+                className="w-full border rounded-md p-2 pr-8 appearance-none shadow 
+                        focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+              >
+                <option value="">Select subject</option>
+                {subjectsForClass.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+            </div>
           </div>
 
           {/* Button */}
@@ -281,7 +339,7 @@ const TeacherAssignPanel = () => {
             <button
               disabled={!isValid || loading}
               onClick={assign}
-              className="w-full bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+              className="w-full bg-blue-600 text-sm lg:text-base text-white font-semibold px-3 py-1 lg:px-4 lg:py-2 rounded hover:bg-blue-700 disabled:opacity-50"
             >
               {loading ? "Assigning..." : "Assign Teacher"}
             </button>
@@ -293,12 +351,21 @@ const TeacherAssignPanel = () => {
       <div className="bg-white shadow-md rounded-xl p-6 space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Teacher Assignments</h3>
-          <input
-            placeholder="Search teacher..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border rounded p-2 text-sm"
-          />
+          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow-sm">
+            <FiSearch className="text-gray-400 ml-2" />
+            <input
+              placeholder="Search teacher..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="px-3 py-2 text-sm outline-none"
+            />
+            <FiX
+              className={`text-gray-400 cursor-pointer mr-2 ${
+                search ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              onClick={() => setSearch("")}
+            />
+          </div>
         </div>
 
         <div className="bg-white shadow rounded-lg overflow-hidden">

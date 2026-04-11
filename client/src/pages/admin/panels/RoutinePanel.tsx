@@ -4,6 +4,7 @@ import Toast from "../../../components/Toast";
 import RoutineModal from "../../modals/admin/RoutineModal";
 import type { Assignment } from "../../../types/admin/teacherassignment";
 import type { Routine } from "../../../types/admin/routine";
+import { FiChevronDown } from "react-icons/fi";
 
 const days = [
   "Monday",
@@ -169,41 +170,60 @@ const RoutinePanel = () => {
 
   /* ================= RENDER ================= */
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Section Routine</h2>
+    <div className="space-y-4 pb-8">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type as any}
+          onClose={() => setToast(null)}
+        />
+      )}
+      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
+        <h2 className="text-2xl font-bold mb-6">Section Routine</h2>
+      </div>
 
       {/* FILTERS */}
-      <div className="bg-white grid md:grid-cols-2 gap-4 mb-6 p-3 rounded-md">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm">Class</label>
-          <select
-            value={selectedClassId}
-            onChange={(e) => setSelectedClassId(e.target.value)}
-            className="border p-2 rounded-md shadow"
-          >
-            <option value="">Select Class</option>
-            {classes.map((c) => (
-              <option key={c._id} value={c._id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+      <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row md:items-end gap-4">
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Class
+          </label>
+          <div className="relative">
+            <select
+              value={selectedClassId}
+              onChange={(e) => setSelectedClassId(e.target.value)}
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+            focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">Select Class</option>
+              {classes.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex-1">
           <label className="text-sm">Section</label>
-          <select
-            value={selectedSectionId}
-            onChange={(e) => setSelectedSectionId(e.target.value)}
-            className="border p-2 rounded-md shadow"
-            disabled={!selectedClassId}
-          >
-            <option value="">Select Section</option>
-            {sections.map((s) => (
-              <option key={s._id} value={s._id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={selectedSectionId}
+              disabled={!selectedClassId}
+              onChange={(e) => setSelectedSectionId(e.target.value)}
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">Select Section</option>
+              {sections.map((s) => (
+                <option key={s._id} value={s._id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
         </div>
       </div>
 
@@ -327,15 +347,6 @@ const RoutinePanel = () => {
         subjects={subjects}
         initialData={editingSlot}
       />
-
-      {/* TOAST */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
     </div>
   );
 };

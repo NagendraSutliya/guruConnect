@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
-import { FiTrash2, FiEdit } from "react-icons/fi";
+import { FiTrash2, FiEdit, FiChevronDown, FiSearch, FiX } from "react-icons/fi";
 import Toast from "../../../components/Toast";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
@@ -12,6 +12,9 @@ const SectionsPanel = () => {
   const [toastMessage, setToastMessage] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  // Create new section
+  const [name, setName] = useState("");
+  const [classId, setClassId] = useState("");
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,10 +46,6 @@ const SectionsPanel = () => {
   useEffect(() => {
     load();
   }, []);
-
-  // Create new section
-  const [name, setName] = useState("");
-  const [classId, setClassId] = useState("");
 
   const handleAddSection = async () => {
     if (!name || !classId) {
@@ -96,7 +95,7 @@ const SectionsPanel = () => {
   }, [filteredSections, currentPage, itemsPerPage]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-4 pb-8">
       {/* Toast */}
       {toastMessage && (
         <Toast
@@ -106,26 +105,32 @@ const SectionsPanel = () => {
         />
       )}
 
-      <h2 className="text-2xl font-bold text-gray-800">Sections</h2>
+      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">Sections</h2>
+      </div>
 
       {/* Add Section Form */}
-      <div className="bg-white shadow rounded p-4 flex flex-col md:flex-row md:items-end gap-4">
+      <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row md:items-end gap-4">
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-600 mb-1">
             Class
           </label>
-          <select
-            value={classId}
-            onChange={(e) => setClassId(e.target.value)}
-            className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="">Select class</option>
-            {classes.map((c) => (
-              <option key={c._id} value={c._id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={classId}
+              onChange={(e) => setClassId(e.target.value)}
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">Select class</option>
+              {classes.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
         </div>
 
         <div className="flex-1">
@@ -136,14 +141,14 @@ const SectionsPanel = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter section name"
-            className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded-md shadow px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
         <div className="md:self-end">
           <button
             onClick={handleAddSection}
-            className="w-fit bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
+            className="w-fit bg-blue-600 text-white font-semibold px-4 py-2 rounded hover:bg-blue-700 transition"
           >
             {loading ? "Loading..." : "Add Section"}
           </button>
@@ -154,15 +159,24 @@ const SectionsPanel = () => {
       <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Sections</h3>
-          <input
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-64 px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
+            <FiSearch className="text-gray-400 ml-2" />
+            <input
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-3 py-2 text-sm outline-none"
+            />
+            <FiX
+              className={`text-gray-400 cursor-pointer mr-2 ${
+                search ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              onClick={() => setSearch("")}
+            />
+          </div>
         </div>
 
         <div className="overflow-x-auto bg-white shadow rounded">
@@ -202,7 +216,7 @@ const SectionsPanel = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="p-3 text-center text-gray-500">
+                  <td colSpan={3} className="p-6 text-center text-gray-500">
                     No sections found
                   </td>
                 </tr>

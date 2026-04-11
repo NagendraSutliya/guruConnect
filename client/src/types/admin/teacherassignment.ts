@@ -6,6 +6,7 @@ export interface Teacher {
   _id: string;
   name: string;
   email?: string;
+  status: "active" | "inactive";
 }
 
 export interface Assignment {

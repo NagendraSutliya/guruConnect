@@ -20,16 +20,6 @@ const TeacherLayout = () => {
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState<Set<string>>(new Set());
 
-  // const navItems = [
-  //   { name: "Dashboard", path: "/teacher/dashboard" },
-  //   { name: "Attendance", path: "/teacher/attendance" },
-  //   { name: "Marks", path: "/teacher/marks" },
-  //   { name: "Study Material", path: "/teacher/material" },
-  //   { name: "My Assignment", path: "/teacher/assignments" },
-  //   { name: "Tests", path: "/teacher/tests" },
-  //   { name: "My Feedback", path: "/teacher/feedback" },
-  // ];
-
   const menuItems: MenuItem[] = [
     {
       name: "Dashboard",
@@ -41,9 +31,8 @@ const TeacherLayout = () => {
       icon: <FaClipboardCheck size={16} />,
       children: [
         { name: "Attendance", path: "/teacher/attendance" },
-        { name: "Tests", path: "/teacher/tests" },
+        { name: "Exams", path: "/teacher/exams" },
         { name: "Results", path: "/teacher/results" },
-        // { name: "Results_test", path: "/teacher/results_test" },
       ],
     },
     {
@@ -61,7 +50,18 @@ const TeacherLayout = () => {
     },
   ];
 
-  // Toggle dropdown parent
+  // ✅ Robust route matcher
+  const isActiveRoute = (path: string) => {
+    return (
+      location.pathname === path || location.pathname.startsWith(path + "/")
+    );
+  };
+
+  // ✅ Check if any child is active
+  const isChildActive = (children?: MenuChild[]) =>
+    children?.some((c) => isActiveRoute(c.path));
+
+  // Toggle dropdown
   const toggleMenu = (name: string) => {
     setOpenMenus((prev) => {
       const next = new Set(prev);
@@ -70,25 +70,22 @@ const TeacherLayout = () => {
     });
   };
 
-  // When clicking child → keep only its parent open
+  // Keep only parent open when child clicked
   const handleChildClick = (parent: string) => {
     setOpenMenus(new Set([parent]));
   };
 
-  // When clicking single link → close all dropdowns
+  // Close all for single links
   const handleSingleClick = () => {
     setOpenMenus(new Set());
   };
-
-  const isChildActive = (children?: MenuChild[]) =>
-    children?.some((c) => location.pathname === c.path);
 
   return (
     <div className="flex flex-col h-screen bg-gray-100 overflow-hidden">
       <TeacherNavbar />
 
-      {/* Sidebar */}
       <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
         <aside className="w-56 bg-white border-r shadow-sm flex flex-col overflow-y-auto">
           <div className="px-6 py-5 border-b shrink-0">
             <h2 className="text-2xl font-bold text-orange-600">
@@ -98,28 +95,6 @@ const TeacherLayout = () => {
               Teacher Panel
             </p>
           </div>
-
-          {/* Navigation */}
-          {/* <nav className="flex-1 px-4 py-6 space-y-2">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition
-                ${
-                  isActive
-                    ? "bg-blue-50 text-blue-600 shadow-sm"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                }`
-                }
-              >
-                {/* Icon placeholder */}
-          {/* <span className="w-2 h-2 rounded-full bg-current opacity-70" />
-                {item.name}
-              </NavLink>
-            ))}
-          </nav>  */}
 
           <nav className="flex-1 px-3 py-4 space-y-1 text-sm">
             {menuItems.map((item) => {
@@ -133,10 +108,10 @@ const TeacherLayout = () => {
                     key={item.name}
                     to={item.path}
                     onClick={handleSingleClick}
-                    className={({ isActive }) =>
+                    className={() =>
                       `flex items-center gap-3 px-4 py-2 rounded-lg transition-all
                       ${
-                        isActive
+                        isActiveRoute(item.path!)
                           ? "bg-purple-100 text-purple-600 font-semibold scale-[1.02]"
                           : "text-gray-600 hover:bg-gray-100 hover:scale-[1.01]"
                       }`
@@ -152,7 +127,11 @@ const TeacherLayout = () => {
               return (
                 <div key={item.name}>
                   <button
-                    onClick={() => toggleMenu(item.name)}
+                    onClick={() => {
+                      if (!isChildActive(item.children)) {
+                        toggleMenu(item.name);
+                      }
+                    }}
                     className={`w-full flex items-center justify-between px-4 py-2 rounded-lg transition
                       ${
                         isOpen
@@ -173,14 +152,14 @@ const TeacherLayout = () => {
                     </span>
                   </button>
 
-                  {/* Children (no height limit issue) */}
+                  {/* Children */}
                   <div
                     className={`ml-1 overflow-hidden transition-all duration-300 ease-in-out
-                                ${
-                                  isOpen
-                                    ? "max-h-[1000px] opacity-100"
-                                    : "max-h-0 opacity-0"
-                                }`}
+                      ${
+                        isOpen
+                          ? "max-h-[500px] opacity-100"
+                          : "max-h-0 opacity-0"
+                      }`}
                   >
                     <div className="ml-9 mt-1 space-y-1">
                       {item.children?.map((child) => (
@@ -188,13 +167,12 @@ const TeacherLayout = () => {
                           key={child.path}
                           to={child.path}
                           onClick={() => handleChildClick(item.name)}
-                          className={({ isActive }) =>
-                            `block px-3 py-1.5 rounded-md transition
-                          ${
-                            isActive
-                              ? "bg-purple-100 text-purple-600 font-medium"
-                              : "text-gray-500 hover:bg-gray-100"
-                          }`
+                          className={() =>
+                            `block px-3 py-1.5 rounded-md transition ${
+                              isActiveRoute(child.path)
+                                ? "bg-purple-100 text-purple-600 font-medium"
+                                : "text-gray-500 hover:bg-gray-100"
+                            }`
                           }
                         >
                           {child.name}
@@ -209,8 +187,10 @@ const TeacherLayout = () => {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 p-6 overflow-y-auto">
-          <Outlet />
+        <main className="flex-1 px-6 mt-2 overflow-y-auto">
+          <div className="animate-fadeIn">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

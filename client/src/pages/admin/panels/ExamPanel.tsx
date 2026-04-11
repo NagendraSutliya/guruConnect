@@ -1,27 +1,53 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api/axiosInstance";
-import { FiBookOpen, FiEdit, FiSearch, FiX, FiTrash2 } from "react-icons/fi";
+import {
+  FiBookOpen,
+  FiEdit,
+  FiSearch,
+  FiX,
+  FiTrash2,
+  FiChevronDown,
+  FiUser,
+  FiAward,
+  FiBarChart2,
+} from "react-icons/fi";
 import type { Exam } from "../../../types/admin/exam";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import EditExamModal from "../../modals/admin/UpdateExamModal";
+import Toast from "../../../components/Toast";
+
+const Card = ({ title, value, color, icon }: any) => (
+  <div className="bg-white shadow rounded-xl p-5 flex items-center gap-4 flex-1">
+    <div
+      className={`p-3 rounded-full bg-${color}-100 text-${color}-600 text-xl flex items-center justify-center`}
+    >
+      {icon}
+    </div>
+    <div className="flex flex-col">
+      <p className="text-gray-500 font-medium">{title}</p>
+      <p className={`text-2xl font-bold text-${color}-600`}>{value}</p>
+    </div>
+  </div>
+);
 
 const ExamPanel = () => {
   const navigate = useNavigate();
-
   const [exams, setExams] = useState<Exam[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [search, setSearch] = useState("");
-
   const [form, setForm] = useState({
     name: "",
     classId: "",
     sectionId: "",
   });
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "info" | "warn";
+  } | null>(null);
 
   const [editExam, setEditExam] = useState<Exam | null>(null);
 
@@ -55,6 +81,7 @@ const ExamPanel = () => {
       setSections(sectionRes.data.data);
     } catch (err) {
       console.error("Loading error", err);
+      setToast({ message: "Failed to load data", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -69,12 +96,14 @@ const ExamPanel = () => {
 
     try {
       await api.post("/exams", form);
+      setToast({ message: "Exam created successfully", type: "success" });
 
       setForm({ name: "", classId: "", sectionId: "" });
       setCurrentPage(1);
       loadData();
     } catch (err) {
       console.error(err);
+      setToast({ message: "Failed to create exam", type: "error" });
     }
   };
 
@@ -83,9 +112,11 @@ const ExamPanel = () => {
 
     try {
       await api.delete(`/exams/${id}`);
+      setToast({ message: "Exam deleted successfully", type: "success" });
       loadData();
     } catch (err) {
       console.error(err);
+      setToast({ message: "Failed to delete exam", type: "error" });
     }
   };
 
@@ -94,17 +125,21 @@ const ExamPanel = () => {
 
     try {
       await api.put(`/exams/${editExam._id}`, editExam);
+      setToast({ message: "Exam updated successfully", type: "success" });
+
       setEditExam(null);
       loadData();
     } catch (err) {
       console.error(err);
+      setToast({ message: "Failed to update exam", type: "error" });
     }
   };
 
-  const examsubject = (id: string) => {
-    navigate(`/admin/exam-subjects/${id}`);
+  const examsubject = (exam: any) => {
+    navigate(`/admin/exam-subjects/${exam._id}`, {
+      state: { classId: exam.classId?._id || exam.classId },
+    });
   };
-
   const getExamStatus = (subjects: any[] = []) => {
     if (!subjects.length) return "upcoming";
 
@@ -157,73 +192,126 @@ const ExamPanel = () => {
     return filteredExams.slice(start, start + itemsPerPage);
   }, [filteredExams, currentPage, itemsPerPage]);
 
+  const filteredSections = useMemo(() => {
+    if (!form.classId) return [];
+
+    return sections.filter(
+      (s: any) => s.classId === form.classId || s.classId?._id === form.classId
+    );
+  }, [sections, form.classId]);
+
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-semibold">Exam Management</h2>
-
-      <div className="grid md:grid-cols-3 gap-4">
-        <div className="w-full flex items-center bg-white shadow rounded-lg p-5 mx-auto">
-          <p className="text-gray-500 text-lg font-semibold px-5">
-            Total Exams:
-          </p>
-          <h3 className="text-xl font-bold">{exams.length}</h3>
-        </div>
-
-        <div className="w-full flex items-center bg-white shadow rounded-lg p-5 mx-auto">
-          <p className="text-gray-500 text-lg font-semibold px-5">Classes:</p>
-          <h3 className="text-xl font-bold">{classes.length}</h3>
-        </div>
-
-        <div className="w-full flex items-center bg-white shadow rounded-lg p-5 mx-auto">
-          <p className="text-gray-500 text-lg font-semibold px-5">Sections:</p>
-          <h3 className="text-xl font-bold">{sections.length}</h3>
-        </div>
+    <div className="space-y-4 pb-8">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type as any}
+          onClose={() => setToast(null)}
+        />
+      )}
+      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
+        <h2 className="text-2xl font-semibold">Exam Management</h2>
       </div>
 
-      <form
-        onSubmit={submit}
-        className="bg-white shadow rounded-lg p-6 grid md:grid-cols-4 gap-4"
-      >
-        <input
-          type="text"
-          placeholder="Exam Name"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="border p-2 rounded"
-          required
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
+        <Card
+          title="Total Exams"
+          value={exams.length}
+          color="blue"
+          icon={<FiBookOpen />}
         />
+        <Card
+          title="Total Classes"
+          value={classes.length}
+          color="purple"
+          icon={<FiUser />}
+        />
+        <Card
+          title="Total Sections"
+          value={sections.length}
+          color="yellow"
+          icon={<FiAward />}
+        />
+        <Card
+          title="Active Exams"
+          value={
+            exams.filter((e) => getExamStatus(e.subjects || []) === "active")
+              .length
+          }
+          color="green"
+          icon={<FiBarChart2 />}
+        />
+      </div>
 
-        <select
-          value={form.classId}
-          onChange={(e) => setForm({ ...form, classId: e.target.value })}
-          className="border p-2 rounded"
-          required
+      <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row md:items-end gap-4">
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Exam Name
+          </label>
+          <input
+            type="text"
+            placeholder="Exam Name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            className="w-full border rounded-md shadow px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Class
+          </label>
+          <div className="relative">
+            <select
+              value={form.classId}
+              onChange={(e) =>
+                setForm({ ...form, classId: e.target.value, sectionId: "" })
+              }
+              required
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">Select Class</option>
+              {classes.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Section
+          </label>
+          <div className="relative">
+            <select
+              value={form.sectionId}
+              onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">Select Section</option>
+              {filteredSections.map((s) => (
+                <option key={s._id} value={s._id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
+
+        <button
+          onClick={submit}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4 py-2"
         >
-          <option value="">Select Class</option>
-          {classes.map((c) => (
-            <option key={c._id} value={c._id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={form.sectionId}
-          onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
-          className="border p-2 rounded"
-        >
-          <option value="">Select Section</option>
-          {sections.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4 py-2">
           {loading ? "loading..." : "Create Exam"}
         </button>
-      </form>
+      </div>
 
       {/* Search */}
       <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
@@ -242,17 +330,17 @@ const ExamPanel = () => {
                 setCurrentPage(1);
               }}
             />
-            {search && (
-              <FiX
-                className="text-gray-400 cursor-pointer mr-2"
-                onClick={() => setSearch("")}
-              />
-            )}
+            <FiX
+              className={`text-gray-400 cursor-pointer mr-2 ${
+                search ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              onClick={() => setSearch("")}
+            />
           </div>
         </div>
 
         {/* Table */}
-        <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="bg-white shadow rounded-lg overflow-visible">
           <table className="w-full table-fixed">
             <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase">
               <tr>
@@ -292,13 +380,13 @@ const ExamPanel = () => {
                       )}
                     </td>
                     <td className="p-3">{exam.sectionId?.name || "-"}</td>
-                    <td className="p-3 text-center">
+                    <td className="p-1 text-center">
                       {exam.subjects?.length ? (
                         <div className="relative group inline-block">
                           {exam.subjects?.some(
                             (s: any) => s.subjectId?.name
                           ) ? (
-                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm cursor-pointer">
+                            <span className="flex bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm cursor-pointer">
                               {exam.subjects
                                 .slice(0, 2)
                                 .map((s: any) => s.subjectId?.name)
@@ -312,9 +400,9 @@ const ExamPanel = () => {
                           )}
 
                           <div
-                            className="absolute z-10 hidden group-hover:block bg-gray-800 
-                                      text-white text-xs rounded px-3 py-2 mt-2 w-max max-w-xs 
-                                      left-1/2 -translate-x-1/2 shadow-lg"
+                            className="absolute z-50 hidden group-hover:block bg-gray-800 
+                                        text-white text-xs rounded px-3 py-2 mt-2 w-max max-w-xs 
+                                        left-1/2 -translate-x-1/2 shadow-lg whitespace-nowrap"
                           >
                             {exam.subjects
                               .map((s: any) => s.subjectId?.name)
@@ -336,7 +424,7 @@ const ExamPanel = () => {
                     </td>
                     <td className="p-3 flex items-center justify-center gap-1">
                       <button
-                        onClick={() => examsubject(exam._id)}
+                        onClick={() => examsubject(exam)}
                         className="text-blue-600 p-1 rounded"
                       >
                         <FiBookOpen />

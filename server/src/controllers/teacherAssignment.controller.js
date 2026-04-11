@@ -1,4 +1,5 @@
 const TeacherAssignment = require("../models/TeacherAssignment");
+const Teacher = require("../models/Teacher");
 const { successResponse, errorResponse } = require("../utils/response");
 
 exports.assignTeacher = async (req, res) => {
@@ -8,6 +9,16 @@ exports.assignTeacher = async (req, res) => {
     // Only require teacherId, classId, subjectId
     if (!teacherId || !classId || !subjectId) {
       return errorResponse(res, "Missing required fields", 400);
+    }
+
+    // ✅ Check if teacher is active
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return errorResponse(res, "Teacher not found", 404);
+    }
+
+    if (teacher.status !== "active") {
+      return errorResponse(res, "Cannot assign teacher", 400);
     }
 
     // Build payload dynamically
@@ -80,6 +91,17 @@ exports.updateAssignment = async (req, res) => {
 
     if (!teacherId || !classId || !subjectId) {
       return errorResponse(res, "Missing required fields", 400);
+    }
+
+    // ✅ Check teacher active
+    const teacher = await Teacher.findById(teacherId);
+
+    if (!teacher) {
+      return errorResponse(res, "Teacher not found", 404);
+    }
+
+    if (teacher.status !== "active") {
+      return errorResponse(res, "Cannot assign inactive teacher", 400);
     }
 
     const payload = { teacherId, classId, subjectId };

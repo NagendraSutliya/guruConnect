@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiChevronDown, FiEdit, FiSearch, FiTrash2, FiX } from "react-icons/fi";
 import Toast from "../../../components/Toast";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
@@ -123,7 +123,7 @@ const ClassesPanel = () => {
   }, [filteredClasses, currentPage, itemsPerPage]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-4 pb-8">
       {/* Toast */}
 
       {toastMessage && (
@@ -134,26 +134,32 @@ const ClassesPanel = () => {
         />
       )}
 
-      <h2 className="text-2xl font-bold text-gray-800">Classes</h2>
+      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">Classes</h2>
+      </div>
 
       {/* Add Class Form */}
-      <div className="bg-white shadow rounded p-4 flex flex-col md:flex-row md:items-end gap-4">
+      <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row md:items-end gap-4">
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-600 mb-1">
             Academic Year
           </label>
-          <select
-            value={academicYearId}
-            onChange={(e) => setAcademicYearId(e.target.value)}
-            className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="">Select academic year</option>
-            {years.map((y) => (
-              <option key={y._id} value={y._id}>
-                {y.name} {y.isActive ? "(Active)" : ""}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={academicYearId}
+              onChange={(e) => setAcademicYearId(e.target.value)}
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">Select academic year</option>
+              {years.map((y) => (
+                <option key={y._id} value={y._id}>
+                  {y.name} {y.isActive ? "(Active)" : ""}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
         </div>
 
         <div className="flex-1">
@@ -164,14 +170,14 @@ const ClassesPanel = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter class name"
-            className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded-md shadow px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
         <div className="md:self-end">
           <button
             onClick={handleAddClass}
-            className="w-fit bg-blue-600 text-white font-semibold px-6 py-2 rounded hover:bg-blue-700 transition"
+            className="w-fit bg-blue-600 text-white font-semibold px-4 py-2 rounded hover:bg-blue-700 transition"
           >
             {loading ? "Loading..." : "Add Class"}
           </button>
@@ -182,15 +188,24 @@ const ClassesPanel = () => {
       <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Classes</h3>
-          <input
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-64 px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
+            <FiSearch className="text-gray-400 ml-2" />
+            <input
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-3 py-2 text-sm outline-none"
+            />
+            <FiX
+              className={`text-gray-400 cursor-pointer mr-2 ${
+                search ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              onClick={() => setSearch("")}
+            />
+          </div>
         </div>
 
         <div className="bg-white shadow rounded-lg overflow-x-auto">
@@ -252,7 +267,7 @@ const ClassesPanel = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={4} className="p-3 text-center text-gray-500">
+                  <td colSpan={4} className="p-6 text-center text-gray-500">
                     No classes found
                   </td>
                 </tr>

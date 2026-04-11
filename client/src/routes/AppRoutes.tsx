@@ -30,7 +30,6 @@ import MyAssignments from "../pages/teacher/MyAssignments";
 import AttendanceTeacher from "../pages/teacher/Attendance";
 import Result from "../pages/teacher/Result";
 import StudyMaterial from "../pages/teacher/StudyMaterial";
-import Tests from "../pages/teacher/Tests";
 // import Students from "../pages/student/Students";
 import Attendance from "../pages/admin/student/Attendance";
 import Routine from "../pages/admin/academic/Routine";
@@ -51,6 +50,7 @@ import AdminProfile from "../pages/admin/AdminProfile";
 import ExamSubjectPanel from "../pages/admin/panels/ExamSubjectPanel";
 import Results_test from "../pages/teacher/Result_test";
 import UploadMarksPage from "../pages/teacher/panels/UploadMarksPanel";
+import ExamsTeacher from "../pages/teacher/ExamsTeacher";
 
 export default function AppRoutes() {
   return (
@@ -109,8 +109,8 @@ export default function AppRoutes() {
         <Route path="attendance" element={<AttendanceTeacher />} />
         <Route path="results" element={<Result />} />
         <Route path="material" element={<StudyMaterial />} />
-        <Route path="tests" element={<Tests />} />
-        <Route path="upload-marks" element={<UploadMarksPage />} />
+        <Route path="exams" element={<ExamsTeacher />} />
+        <Route path="results/upload-marks" element={<UploadMarksPage />} />
 
         <Route path="results_test" element={<Results_test />} />
       </Route>

@@ -1,29 +1,37 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
 import Papa from "papaparse";
-import { FiEdit, FiSearch, FiTrash2, FiX } from "react-icons/fi";
+import { FiChevronDown, FiEdit, FiSearch, FiTrash2, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import Toast from "../../../components/Toast";
+import type {
+  UploadMarksStudent,
+  UploadMarksClassAssignment,
+} from "../../../types/teacher/types";
 
-interface Student {
-  _id: string;
-  name: string;
-  rollNo: string;
-  marks?: number;
-  isEditing?: boolean;
-}
+// interface Student {
+//   _id: string;
+//   name: string;
+//   rollNo: string;
+//   marks?: number;
+//   isEditing?: boolean;
+// }
 
-interface Assignment {
-  classId?: { _id: string; name: string };
-  sectionId?: { _id: string; name: string };
-  subjectId?: { _id: string; name: string };
-}
+// interface Assignment {
+//   classId?: { _id: string; name: string };
+//   sectionId?: { _id: string; name: string };
+//   subjectId?: { _id: string; name: string };
+// }
 
 const UploadMarksPage = () => {
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
+  const [assignments, setAssignments] = useState<UploadMarksClassAssignment[]>(
+    []
+  );
+  const [students, setStudents] = useState<UploadMarksStudent[]>([]);
   const [exams, setExams] = useState<any[]>([]);
   const navigate = useNavigate();
   const [maxMarks, setMaxMarks] = useState(100);
+  const [toast, setToast] = useState<any>(null);
 
   const [selectedClassId, setSelectedClassId] = useState("");
   const [selectedSectionId, setSelectedSectionId] = useState("");
@@ -37,6 +45,9 @@ const UploadMarksPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
+  const showToast = (message: string, type = "info") =>
+    setToast({ message, type });
+
   const handleBack = () => {
     navigate("/teacher/results");
   };
@@ -47,12 +58,12 @@ const UploadMarksPage = () => {
       try {
         const res = await api.get("/teacher-assign/my");
         const clean = (res.data.data || []).filter(
-          (a: Assignment) =>
+          (a: UploadMarksClassAssignment) =>
             a.classId?._id && a.sectionId?._id && a.subjectId?._id
         );
         setAssignments(clean);
       } catch {
-        alert("Failed to load assignments");
+        showToast("Failed to load assignments", "error");
       }
     };
     loadAssignments();
@@ -100,7 +111,7 @@ const UploadMarksPage = () => {
         });
         setExams(res.data.data || []);
       } catch {
-        alert("Failed to load exams");
+        showToast("Failed to load exams", "error");
       }
     };
 
@@ -110,7 +121,7 @@ const UploadMarksPage = () => {
   /* ================= LOAD STUDENTS ================= */
   const loadStudents = async () => {
     if (!selectedClassId || !selectedSectionId) {
-      return alert("Select class & section");
+      return showToast("Select class & section", "error");
     }
 
     try {
@@ -124,13 +135,15 @@ const UploadMarksPage = () => {
         },
       });
 
-      let studentList: Student[] = studentRes.data.data.map((s: any) => ({
-        _id: s._id,
-        name: s.name,
-        rollNo: s.rollNo,
-        marks: undefined,
-        isEditing: false,
-      }));
+      let studentList: UploadMarksStudent[] = studentRes.data.data.map(
+        (s: any) => ({
+          _id: s._id,
+          name: s.name,
+          rollNo: s.rollNo,
+          marks: undefined,
+          isEditing: false,
+        })
+      );
 
       // 2. Load existing marks (IMPORTANT)
       if (selectedExamId && selectedSubjectId) {
@@ -157,7 +170,7 @@ const UploadMarksPage = () => {
       setStudents(studentList);
     } catch (err) {
       console.error(err);
-      alert("Failed to load students or marks");
+      showToast("Failed to load students or marks", "error");
     } finally {
       setLoadingStudents(false);
     }
@@ -199,7 +212,7 @@ const UploadMarksPage = () => {
 
   const downloadTemplate = () => {
     if (!students || students.length === 0) {
-      return alert("No student data available to download");
+      return showToast("No student data available to download", "error");
     }
 
     // Use the selected exam and subject names
@@ -241,10 +254,16 @@ const UploadMarksPage = () => {
   const saveMarks = async () => {
     try {
       if (!selectedClassId || !selectedSectionId) {
-        return alert("Please select Class and Section before saving marks.");
+        return showToast(
+          "Please select Class and Section before saving marks.",
+          "error"
+        );
       }
       if (!selectedExamId || !selectedSubjectId) {
-        return alert("Please select Exam and Subject before saving marks.");
+        return showToast(
+          "Please select Exam and Subject before saving marks.",
+          "error"
+        );
       }
 
       const payload = students
@@ -258,7 +277,7 @@ const UploadMarksPage = () => {
           sectionId: selectedSectionId,
         }));
 
-      if (!payload.length) return alert("No marks to save.");
+      if (!payload.length) return showToast("No marks to save.", "error");
 
       setSaving(true);
       const res = await api.post("/results", {
@@ -267,14 +286,43 @@ const UploadMarksPage = () => {
         records: payload,
       });
 
-      if (res.data.success) alert("Marks saved successfully!");
+      if (res.data.success) showToast("Marks saved successfully!", "success");
       else
-        alert("Failed to save marks: " + (res.data.message || "Unknown error"));
+        showToast(
+          "Failed to save marks: " + (res.data.message || "Unknown error"),
+          "error"
+        );
     } catch (err) {
       console.error(err);
-      alert("An error occurred while saving marks.");
+      showToast("An error occurred while saving marks.", "error");
     } finally {
       setSaving(false);
+    }
+  };
+
+  /* ================= DELETE ================= */
+  const deleteMark = async (studentId: string) => {
+    try {
+      if (!selectedExamId || !selectedSubjectId) {
+        return showToast("Select exam and subject first", "error");
+      }
+
+      await api.delete("/results", {
+        data: {
+          studentId,
+          examId: selectedExamId,
+          examSubjectId: selectedSubjectId,
+        },
+      });
+
+      // remove from UI immediately
+      setStudents((prev) =>
+        prev.map((s) => (s._id === studentId ? { ...s, marks: undefined } : s))
+      );
+      showToast("Mark deleted successfully", "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to delete mark", "error");
     }
   };
 
@@ -292,72 +340,116 @@ const UploadMarksPage = () => {
   );
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">Upload Marks</h1>
-        <button
-          onClick={handleBack}
-          className="bg-gray-200 px-4 py-1 rounded-lg hover:bg-gray-300"
-        >
-          ← Back
-        </button>
+    <div className="space-y-4 pb-8">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <div className="sticky top-0 z-20 bg-gray-100 py-1">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-2xl font-bold text-gray-800">Upload Marks</h2>
+
+          <div className="mt-4">
+            <button
+              onClick={handleBack}
+              className="bg-gray-300 px-4 py-1 font-semibold rounded-lg hover:bg-gray-500"
+            >
+              ← Back
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* ================= FILTERS ================= */}
-      <div className="bg-white shadow-lg rounded-xl p-5 mb-6">
+      <div className="bg-white p-4 rounded-xl shadow my-4">
         <div className="grid md:grid-cols-4 gap-3 mb-3">
-          <select
-            className="border p-2 rounded"
-            value={selectedClassId}
-            onChange={(e) => setSelectedClassId(e.target.value)}
-          >
-            <option value="">Select Class</option>
-            {classes.map((c) => (
-              <option key={c?._id} value={c?._id}>
-                {c?.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col">
+            <label className="block mb-1 font-semibold text-gray-600">
+              Class
+            </label>
+            <div className="relative">
+              <select
+                className="border p-2 rounded-lg shadow w-full appearance-none"
+                value={selectedClassId}
+                onChange={(e) => setSelectedClassId(e.target.value)}
+              >
+                <option value="">Select Class</option>
+                {classes.map((c) => (
+                  <option key={c?._id} value={c?._id}>
+                    {c?.name}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 pointer-events-none" />
+            </div>
+          </div>
 
-          <select
-            className="border p-2 rounded"
-            value={selectedSectionId}
-            onChange={(e) => setSelectedSectionId(e.target.value)}
-          >
-            <option value="">Section</option>
-            {sections.map((s) => (
-              <option key={s?._id} value={s?._id}>
-                {s?.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col">
+            <label className="block mb-1 font-semibold text-gray-600">
+              Section:
+            </label>
+            <div className="relative">
+              <select
+                className="border p-2 rounded-lg shadow w-full appearance-none"
+                value={selectedSectionId}
+                onChange={(e) => setSelectedSectionId(e.target.value)}
+              >
+                <option value="">Section</option>
+                {sections.map((s) => (
+                  <option key={s?._id} value={s?._id}>
+                    {s?.name}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 pointer-events-none" />
+            </div>
+          </div>
 
-          <select
-            className="border p-2 rounded"
-            value={selectedExamId}
-            onChange={(e) => setSelectedExamId(e.target.value)}
-          >
-            <option value="">Exam</option>
-            {exams.map((e) => (
-              <option key={e._id} value={e._id}>
-                {e.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col">
+            <label className="block mb-1 font-semibold text-gray-600">
+              Exam
+            </label>
+            <div className="relative">
+              <select
+                className="border p-2 rounded-lg shadow w-full appearance-none"
+                value={selectedExamId}
+                onChange={(e) => setSelectedExamId(e.target.value)}
+              >
+                <option value="">Exam</option>
+                {exams.map((e) => (
+                  <option key={e._id} value={e._id}>
+                    {e.name}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 pointer-events-none" />
+            </div>
+          </div>
 
-          <select
-            className="border p-2 rounded"
-            value={selectedSubjectId}
-            onChange={(e) => setSelectedSubjectId(e.target.value)}
-          >
-            <option value="">Subject</option>
-            {subjects.map((s) => (
-              <option key={s?._id} value={s?._id}>
-                {s?.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col">
+            <label className="block mb-1 font-semibold text-gray-600">
+              Subject
+            </label>
+            <div className="relative">
+              <select
+                className="border p-2 rounded-lg shadow w-full appearance-none"
+                value={selectedSubjectId}
+                onChange={(e) => setSelectedSubjectId(e.target.value)}
+              >
+                <option value="">Subject</option>
+                {subjects.map((s) => (
+                  <option key={s?._id} value={s?._id}>
+                    {s?.name}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 pointer-events-none" />
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center justify-between">
@@ -369,7 +461,7 @@ const UploadMarksPage = () => {
               type="number"
               value={maxMarks}
               onChange={(e) => setMaxMarks(Number(e.target.value))}
-              className="w-24 border px-2 py-1 rounded-lg shadow"
+              className="w-20 border px-2 py-1 text-center rounded-lg shadow-md"
             />
           </div>
           <button
@@ -393,7 +485,7 @@ const UploadMarksPage = () => {
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Results</h3>
 
-          <div className="flex items-center border rounded-lg overflow-hidden">
+          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
             <FiSearch className="text-gray-400 ml-2" />
             <input
               type="text"
@@ -405,12 +497,12 @@ const UploadMarksPage = () => {
                 setCurrentPage(1);
               }}
             />
-            {search && (
-              <FiX
-                className="text-gray-400 cursor-pointer mr-2"
-                onClick={() => setSearch("")}
-              />
-            )}
+            <FiX
+              className={`text-gray-400 cursor-pointer mr-2 ${
+                search ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              onClick={() => setSearch("")}
+            />
           </div>
         </div>
 
@@ -442,14 +534,14 @@ const UploadMarksPage = () => {
         {/* TABLE */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <table className="w-full table-fixed">
-            <thead className="bg-indigo-100 text-center">
+            <thead className="bg-indigo-100 text-left">
               <tr>
                 <th className="p-3">Roll No</th>
                 <th className="p-3">Name</th>
                 <th className="p-3">Exam</th>
                 <th className="p-3">Subject</th>
                 <th className="p-3">Marks</th>
-                <th className="p-3">Action</th>
+                <th className="py-3 pr-8 text-right">Action</th>
               </tr>
             </thead>
 
@@ -466,7 +558,7 @@ const UploadMarksPage = () => {
                 paginatedStudents.map((s) => (
                   <tr
                     key={s._id}
-                    className="border-t hover:bg-gray-50 transition text-center"
+                    className="border-t hover:bg-gray-50 transition"
                   >
                     <td className="p-3">{s.rollNo}</td>
                     <td className="p-3 font-medium">{s.name}</td>
@@ -478,7 +570,7 @@ const UploadMarksPage = () => {
                         ?.name || "-"}
                     </td>
                     <td className="p-3">
-                      <div className="w-24 flex justify-end">
+                      <div className="w-20">
                         {s.isEditing ? (
                           <input
                             type="number"
@@ -493,10 +585,10 @@ const UploadMarksPage = () => {
                                   : Number(e.target.value)
                               )
                             }
-                            className="w-12 border rounded-lg px-1 text-center focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            className="w-16 border rounded-lg px-1 text-center focus:outline-none focus:ring-2 focus:ring-indigo-400"
                           />
                         ) : s.marks !== undefined ? (
-                          <div className="w-16 text-center font-semibold text-green-600">
+                          <div className="w-12 text-center font-semibold text-green-600">
                             {s.marks}
                           </div>
                         ) : (
@@ -506,7 +598,7 @@ const UploadMarksPage = () => {
                         )}
                       </div>
                     </td>
-                    <td className="p-3 flex gap-1">
+                    <td className="py-3 pr-8 text-right">
                       <button
                         onClick={() =>
                           setStudents((prev) =>
@@ -523,15 +615,7 @@ const UploadMarksPage = () => {
                         <FiEdit />
                       </button>
                       <button
-                        onClick={() =>
-                          setStudents((prev) =>
-                            prev.map((stu) =>
-                              stu._id === s._id
-                                ? { ...stu, marks: undefined }
-                                : stu
-                            )
-                          )
-                        }
+                        onClick={() => deleteMark(s._id)}
                         disabled={saving}
                         className="text-red-600 p-1 rounded hover:bg-red-50"
                         title="Delete"

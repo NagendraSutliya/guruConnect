@@ -40,7 +40,7 @@ const ResultPanel = () => {
     setToast({ message, type });
 
   const handleUploadMarksClick = () => {
-    navigate("/teacher/upload-marks");
+    navigate("/teacher/results/upload-marks");
   };
 
   const filteredStudents = useMemo(() => {
@@ -222,7 +222,7 @@ const ResultPanel = () => {
             onClick={handleUploadMarksClick}
             className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700"
           >
-            Upload Marks
+            Upload Marks test
           </button>
         </div>
       </div>

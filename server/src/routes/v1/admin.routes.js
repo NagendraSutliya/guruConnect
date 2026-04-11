@@ -18,6 +18,8 @@ const {
   createStudent,
   deactivateStudent,
   activateStudent,
+  updateStudent,
+  deleteStudent,
 } = require("../../controllers/student.controller.js");
 const router = express.Router();
 
@@ -34,6 +36,8 @@ router.get("/students", requireAdmin, getStudents);
 router.post("/student", requireAdmin, createStudent);
 router.patch("/student/:id/deactivate", requireAdmin, deactivateStudent);
 router.patch("/student/:id/activate", requireAdmin, activateStudent);
+router.put("/student/:id", requireAdmin, updateStudent);
+router.delete("/student/:id", requireAdmin, deleteStudent);
 
 // Dashboard
 router.get("/stats", requireAdmin, getAdminStats);

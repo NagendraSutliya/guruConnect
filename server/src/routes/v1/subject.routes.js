@@ -5,10 +5,12 @@ const {
   getSubjects,
   updateSubject,
   deleteSubject,
+  getSubjectsByClass,
 } = require("../../controllers/subject.controller");
 
 router.post("/", requireAdmin, createSubject);
 router.get("/", requireAdmin, getSubjects);
+router.get("/class/:classId", requireAdmin, getSubjectsByClass);
 router.put("/:id", requireAdmin, updateSubject);
 router.delete("/:id", requireAdmin, deleteSubject);
 

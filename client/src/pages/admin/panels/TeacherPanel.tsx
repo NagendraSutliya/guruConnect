@@ -6,9 +6,11 @@ import Toast from "../../../components/Toast";
 import {
   FiEdit,
   FiEye,
+  FiSearch,
   FiToggleLeft,
   FiToggleRight,
   FiTrash2,
+  FiX,
 } from "react-icons/fi";
 
 const TeacherPanel = () => {
@@ -202,22 +204,28 @@ const TeacherPanel = () => {
         <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
           {/* Count */}
           <div className="flex items-center justify-start gap-2">
-            <p className="text-lg font-bold text-gray-700">Total Teachers</p>
-            <span className="text-blue-700 px-3 text-xl font-bold">
+            <p className="text-lg font-bold text-gray-700">Total Teachers :</p>
+            <span className="text-blue-700 px-1 text-xl font-bold">
               {teachers.length}
             </span>
           </div>
 
           {/* Search + Filter */}
           <div className="flex justify-between items-center mb-4">
-            {/* Search */}
-            <div className="flex-1 max-w-xs">
+            <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
+              <FiSearch className="text-gray-400 ml-2" />
               <input
                 type="text"
                 placeholder="Search teacher..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-1.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 text-sm outline-none"
+              />
+              <FiX
+                className={`text-gray-400 cursor-pointer mr-2 ${
+                  searchTerm ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+                onClick={() => setSearchTerm("")}
               />
             </div>
 
@@ -323,55 +331,60 @@ const TeacherPanel = () => {
                         </td>
 
                         {/* Actions */}
-                        <td className="p-3 flex justify-end gap-1">
-                          <button
-                            onClick={() => viewTeacher(teacher)}
-                            className="text-blue-600 p-1 rounded hover:bg-blue-50"
-                            title="View"
-                          >
-                            <FiEye />
-                          </button>
-                          <button
-                            onClick={() => toggleTeacher(teacher)}
-                            disabled={isLoading}
-                            className={`p-1 rounded transition ${
-                              teacher.status === "active"
-                                ? "text-red-600 hover:bg-red-50"
-                                : "text-green-600 hover:bg-green-50"
-                            }`}
-                            title={
-                              teacher.status === "active"
-                                ? "Deactivate"
-                                : "Activate"
-                            }
-                          >
-                            {isLoading ? (
-                              <span className="text-xs">...</span>
-                            ) : teacher.status === "active" ? (
-                              <FiToggleLeft />
-                            ) : (
-                              <FiToggleRight />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => editTeacher(teacher)}
-                            className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
-                            title="Edit"
-                          >
-                            <FiEdit />
-                          </button>
-                          <button
-                            onClick={() => deleteTeacher(teacher)}
-                            disabled={isLoading}
-                            className="text-red-600 p-1 rounded hover:bg-red-50"
-                            title="Delete"
-                          >
-                            {isLoading ? (
-                              <span className="text-xs">...</span>
-                            ) : (
-                              <FiTrash2 />
-                            )}
-                          </button>
+                        <td className="p-3">
+                          <div className="flex items-center justify-end gap-1 h-full">
+                            <button
+                              onClick={() => viewTeacher(teacher)}
+                              className="text-blue-600 p-1 rounded hover:bg-blue-50"
+                              title="View"
+                            >
+                              <FiEye />
+                            </button>
+
+                            <button
+                              onClick={() => toggleTeacher(teacher)}
+                              disabled={isLoading}
+                              className={`p-1 rounded transition ${
+                                teacher.status === "active"
+                                  ? "text-red-600 hover:bg-red-50"
+                                  : "text-green-600 hover:bg-green-50"
+                              }`}
+                              title={
+                                teacher.status === "active"
+                                  ? "Deactivate"
+                                  : "Activate"
+                              }
+                            >
+                              {isLoading ? (
+                                <span className="text-xs">...</span>
+                              ) : teacher.status === "active" ? (
+                                <FiToggleLeft />
+                              ) : (
+                                <FiToggleRight />
+                              )}
+                            </button>
+
+                            <button
+                              onClick={() => editTeacher(teacher)}
+                              className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
+                              title="Edit"
+                            >
+                              <FiEdit />
+                            </button>
+
+                            <button
+                              onClick={() => deleteTeacher(teacher)}
+                              disabled={isLoading}
+                              className="text-red-600 p-1 rounded hover:bg-red-50"
+                              title="Delete"
+                            >
+                              {isLoading ? (
+                                <span className="text-xs">...</span>
+                              ) : (
+                                <FiTrash2 />
+                              )}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

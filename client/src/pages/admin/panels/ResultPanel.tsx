@@ -1,12 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../../../api/axiosInstance";
-import { FiSearch, FiX } from "react-icons/fi";
+import {
+  FiAward,
+  FiBarChart2,
+  FiChevronDown,
+  FiSearch,
+  FiStar,
+  FiUsers,
+  FiX,
+} from "react-icons/fi";
+
+const ResultCard = ({ title, value, color, icon }: any) => (
+  <div className="bg-white shadow rounded-xl p-5 flex items-center gap-4 flex-1">
+    <div
+      className={`p-3 rounded-full bg-${color}-100 text-${color}-600 text-xl flex items-center justify-center`}
+    >
+      {icon}
+    </div>
+    <div className="flex flex-col">
+      <p className="text-gray-500 font-medium">{title}</p>
+      <p className={`text-2xl font-bold text-${color}-600`}>{value}</p>
+    </div>
+  </div>
+);
 
 const AdminResultPanel = () => {
   const [exams, setExams] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
-  const [subjects, setSubjects] = useState<any[]>([]);
   const [results, setResults] = useState<any[]>([]);
   const [summary, setSummary] = useState<any>(null);
 
@@ -20,19 +41,21 @@ const AdminResultPanel = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
+  useEffect(() => {
+    setSectionId(""); // ✅ reset section when class changes
+  }, [classId]);
+
   // Load filters
   const load = async () => {
     try {
-      const [e, c, s, sub] = await Promise.all([
+      const [e, c, s] = await Promise.all([
         api.get("/exams"),
         api.get("/classes"),
         api.get("/sections"),
-        api.get("/subjects"),
       ]);
       setExams(e.data.data || []);
       setClasses(c.data.data || []);
       setSections(s.data.data || []);
-      setSubjects(sub.data.data || []);
     } catch (err) {
       console.error("Failed loading filters");
     }
@@ -41,18 +64,27 @@ const AdminResultPanel = () => {
   // Load results
   const loadResults = async () => {
     try {
-      setLoading(true);
-      const params: any = {};
+      // Only fetch if all three filters are selected
+      if (!examId || !classId || !sectionId) {
+        setResults([]);
+        setSummary(null);
+        return; // Skip API call
+      }
 
-      if (examId) params.examId = examId;
-      if (classId) params.classId = classId;
-      if (sectionId) params.sectionId = sectionId;
+      setLoading(true);
+      const params: any = {
+        examId,
+        classId,
+        sectionId,
+      };
 
       const res = await api.get("/results/admin", { params });
       setResults(res.data.data || []);
       setSummary(res.data.summary || null);
     } catch (err) {
-      console.error("Failed loading results");
+      console.error("Failed loading results", err);
+      setResults([]);
+      setSummary(null);
     } finally {
       setLoading(false);
     }
@@ -71,6 +103,10 @@ const AdminResultPanel = () => {
   // useEffect(() => {
   //   console.log("API Results:", results);
   // }, [results]);
+
+  const selectedExamName = useMemo(() => {
+    return exams.find((e) => e._id === examId)?.name || "-";
+  }, [examId, exams]);
 
   // ✅ Consolidated results
   const consolidatedResults = useMemo(() => {
@@ -116,6 +152,16 @@ const AdminResultPanel = () => {
     });
   }, [results]);
 
+  const passPercentage = useMemo(() => {
+    if (!consolidatedResults.length) return 0;
+
+    const passed = consolidatedResults.filter(
+      (r: any) => r.status === "Pass"
+    ).length;
+
+    return ((passed / consolidatedResults.length) * 100).toFixed(1);
+  }, [consolidatedResults]);
+
   // ✅ Search
   const filteredResults = useMemo(() => {
     return consolidatedResults.filter((r: any) =>
@@ -160,69 +206,114 @@ const AdminResultPanel = () => {
   };
 
   return (
-    <div className="space-y-6 pb-10">
-      <h2 className="text-2xl font-bold text-gray-800">Result Dashboard</h2>
+    <div className="space-y-4 pb-8">
+      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">Result Dashboard</h2>
+      </div>
 
-      <div className="grid md:grid-cols-3 gap-3 bg-white p-4 rounded shadow">
-        <select
-          value={examId}
-          onChange={(e) => setExamId(e.target.value)}
-          className="border p-2 rounded"
-        >
-          <option value="">All Exams</option>
-          {exams.map((e) => (
-            <option key={e._id} value={e._id}>
-              {e.name}
-            </option>
-          ))}
-        </select>
+      <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row md:items-end gap-4">
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Exam
+          </label>
+          <div className="relative">
+            <select
+              value={examId}
+              onChange={(e) => setExamId(e.target.value)}
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">All Exams</option>
+              {exams.map((e) => (
+                <option key={e._id} value={e._id}>
+                  {e.name}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
 
-        <select
-          value={classId}
-          onChange={(e) => setClassId(e.target.value)}
-          className="border p-2 rounded"
-        >
-          <option value="">All Classes</option>
-          {classes.map((c) => (
-            <option key={c._id} value={c._id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Class
+          </label>
+          <div className="relative">
+            <select
+              value={classId}
+              onChange={(e) => setClassId(e.target.value)}
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">All Classes</option>
+              {classes.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
 
-        <select
-          value={sectionId}
-          onChange={(e) => setSectionId(e.target.value)}
-          className="border p-2 rounded"
-        >
-          <option value="">All Sections</option>
-          {sections.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Section
+          </label>
+          <div className="relative">
+            <select
+              value={sectionId}
+              onChange={(e) => setSectionId(e.target.value)}
+              disabled={!classId}
+              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
+              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
+            >
+              <option value="">
+                {classId ? "Select Section" : "Select Class First"}
+              </option>
+              {sections
+                .filter(
+                  (s) => s.classId?._id === classId || s.classId === classId
+                )
+                .map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name}
+                  </option>
+                ))}
+            </select>
+            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
       </div>
 
       {/* Summary */}
-      {summary && (
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded shadow">
-            <p className="text-gray-500 text-sm">Average Marks</p>
-            <p className="text-2xl font-bold">{summary.average}</p>
-          </div>
 
-          <div className="bg-white p-4 rounded shadow">
-            <p className="text-gray-500 text-sm">Topper</p>
-            <p className="text-lg font-bold">{summary.topper}</p>
-          </div>
-
-          <div className="bg-white p-4 rounded shadow">
-            <p className="text-gray-500 text-sm">Total Students</p>
-            <p className="text-2xl font-bold">{summary.total}</p>
-          </div>
-        </div>
-      )}
+      <div className="flex flex-col sm:flex-row justify-between gap-8">
+        <ResultCard
+          title="Total Students"
+          value={summary?.total || 0}
+          color="blue"
+          icon={<FiUsers />}
+        />
+        <ResultCard
+          title="Result %"
+          value={`${passPercentage}%`}
+          color="green"
+          icon={<FiBarChart2 />}
+        />
+        <ResultCard
+          title="Topper"
+          value={summary?.topper || "-"}
+          color="yellow"
+          icon={<FiAward />}
+        />
+        <ResultCard
+          title="Average Marks"
+          value={summary?.average || 0}
+          color="purple"
+          icon={<FiStar />}
+        />
+      </div>
 
       {/* Table */}
       <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-4">
@@ -249,12 +340,12 @@ const AdminResultPanel = () => {
                 }}
                 className="w-64 px-3 py-1.5 text-sm outline-none"
               />
-              {search && (
-                <FiX
-                  className="text-gray-400 cursor-pointer mr-2"
-                  onClick={() => setSearch("")}
-                />
-              )}
+              <FiX
+                className={`text-gray-400 cursor-pointer mr-2 ${
+                  search ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+                onClick={() => setSearch("")}
+              />
             </div>
           </div>
         </div>
@@ -276,7 +367,7 @@ const AdminResultPanel = () => {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center">
+                  <td colSpan={6} className="p-6 text-center text-gray-500">
                     Loading results...
                   </td>
                 </tr>
@@ -284,7 +375,7 @@ const AdminResultPanel = () => {
 
               {!loading && paginatedResults.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center">
+                  <td colSpan={6} className="p-6 text-center text-gray-500">
                     No results found
                   </td>
                 </tr>
@@ -297,7 +388,7 @@ const AdminResultPanel = () => {
                     className="border-b hover:bg-gray-50 text-center"
                   >
                     <td className="p-3 text-left">{r.studentName}</td>
-                    <td className="p-3 text-sm">{r.examName}</td>
+                    <td className="p-3 text-sm">{selectedExamName}</td>
                     {/* <td className="p-3 text-center text-xs">
                       {r.subjects
                         .map((s: any) => `${s.name}: ${s.marks}`)

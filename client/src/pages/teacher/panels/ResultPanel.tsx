@@ -3,25 +3,14 @@ import api from "../../../api/axiosInstance";
 import Toast from "../../../components/Toast";
 import { FiChevronDown, FiSearch, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-
-interface ClassAssignment {
-  _id: string;
-  classId: { _id: string; name: string };
-  sectionId: { _id: string; name: string };
-  subjectId: { _id: string; name: string };
-}
-
-interface Student {
-  _id: string;
-  name: string;
-  rollNo: string;
-  marks?: number;
-  isEditing?: boolean;
-}
+import type {
+  ResultStudent,
+  ResultClassAssignment,
+} from "../../../types/teacher/types";
 
 const ResultPanel = () => {
-  const [assignments, setAssignments] = useState<ClassAssignment[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
+  const [assignments, setAssignments] = useState<ResultClassAssignment[]>([]);
+  const [students, setStudents] = useState<ResultStudent[]>([]);
   const [exams, setExams] = useState<any[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [toast, setToast] = useState<any>(null);
@@ -40,7 +29,7 @@ const ResultPanel = () => {
     setToast({ message, type });
 
   const handleUploadMarksClick = () => {
-    navigate("/teacher/upload-marks");
+    navigate("/teacher/results/upload-marks");
   };
 
   const filteredStudents = useMemo(() => {
@@ -127,13 +116,15 @@ const ResultPanel = () => {
       const studentRes = await api.get("/student/by-class", {
         params: { classId: selectedClassId, sectionId: selectedSectionId },
       });
-      const studentList: Student[] = studentRes.data.data.map((s: any) => ({
-        _id: s._id,
-        name: s.name,
-        rollNo: s.rollNo,
-        marks: undefined,
-        isEditing: false,
-      }));
+      const studentList: ResultStudent[] = studentRes.data.data.map(
+        (s: any) => ({
+          _id: s._id,
+          name: s.name,
+          rollNo: s.rollNo,
+          marks: undefined,
+          isEditing: false,
+        })
+      );
       setStudents(studentList);
 
       if (selectedExamId && selectedSubjectId) {
@@ -183,7 +174,7 @@ const ResultPanel = () => {
       examName,
       subjectName,
       s.marks !== undefined ? s.marks : "",
-      s.marks !== undefined ? (s.marks >= maxMarks / 2 ? "Pass" : "Fail") : "",
+      s.marks !== undefined ? (s.marks >= maxMarks / 3 ? "Pass" : "Fail") : "",
     ]);
 
     // Build CSV string
@@ -214,16 +205,26 @@ const ResultPanel = () => {
   }, [filteredExams, currentPage, itemsPerPage]);
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between p-4">
-        <h2 className="text-2xl font-bold mb-4">Student Results</h2>
-        <div className="mt-4">
-          <button
-            onClick={handleUploadMarksClick}
-            className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Upload Marks
-          </button>
+    <div className="space-y-4 pb-8">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <div className="sticky top-0 z-20 bg-gray-100 py-1">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-800">Student Results</h2>
+          <div className="mt-6">
+            <button
+              onClick={handleUploadMarksClick}
+              className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold shadow hover:bg-blue-700 transition"
+            >
+              Upload Marks
+            </button>
+          </div>
         </div>
       </div>
 
@@ -339,7 +340,7 @@ const ResultPanel = () => {
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Results</h3>
 
-          <div className="flex items-center border rounded-lg overflow-hidden">
+          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
             <FiSearch className="text-gray-400 ml-2" />
             <input
               type="text"
@@ -351,17 +352,17 @@ const ResultPanel = () => {
                 setCurrentPage(1);
               }}
             />
-            {search && (
-              <FiX
-                className="text-gray-400 cursor-pointer mr-2"
-                onClick={() => setSearch("")}
-              />
-            )}
+            <FiX
+              className={`text-gray-400 cursor-pointer mr-2 ${
+                search ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              onClick={() => setSearch("")}
+            />
           </div>
         </div>
 
-        <div className="flex justify-between">
-          <div className="w-2/3 bg-gray-100 rounded-md shadow text-gray-700 border-b px-3 py-1">
+        <div className="flex justify-between bg-gray-100 rounded-md shadow ">
+          <div className="text-gray-700 border-b px-3 py-1">
             <span className="font-medium">Class:</span>{" "}
             {classes.find((c) => c._id === selectedClassId)?.name}
             {" | "}
@@ -378,7 +379,7 @@ const ResultPanel = () => {
           <button
             onClick={downloadTemplate}
             disabled={students.length === 0}
-            className="bg-gray-200 px-3 py-1 rounded-lg mr-2"
+            className="bg-green-200 font-semibold px-3 py-1 rounded-lg mr-2"
           >
             Download CSV
           </button>
@@ -443,12 +444,12 @@ const ResultPanel = () => {
                       {s.marks !== undefined ? (
                         <span
                           className={`px-2 py-1 rounded-lg font-semibold ${
-                            s.marks >= maxMarks / 2
+                            s.marks >= maxMarks / 3
                               ? "bg-green-200"
                               : "bg-red-200"
                           }`}
                         >
-                          {s.marks >= maxMarks / 2 ? "Pass" : "Fail"}
+                          {s.marks >= maxMarks / 3 ? "Pass" : "Fail"}
                         </span>
                       ) : (
                         <span className="text-gray-400">-</span>
@@ -508,14 +509,6 @@ const ResultPanel = () => {
           </div>
         </div>
       </div>
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
     </div>
   );
 };

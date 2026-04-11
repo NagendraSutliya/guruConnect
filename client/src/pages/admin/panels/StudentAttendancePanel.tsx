@@ -89,7 +89,11 @@ const StudentAttendancePanel = () => {
 
   return (
     <div className="space-y-6 pb-10">
-      <h2 className="text-2xl font-bold text-gray-800">Attendance Dashboard</h2>
+      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">
+          Attendance Dashboard
+        </h2>
+      </div>
 
       {/* ===== Today Summary ===== */}
       {today && (

@@ -1,37 +1,44 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import Toast from "../../../components/Toast";
-import { FiEdit, FiToggleLeft, FiToggleRight, FiTrash2 } from "react-icons/fi";
+import {
+  FiEdit,
+  FiSearch,
+  FiToggleLeft,
+  FiToggleRight,
+  FiTrash2,
+  FiX,
+} from "react-icons/fi";
 
 const StudentPanel = () => {
   const [students, setStudents] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
-
   const [showForm, setShowForm] = useState(false);
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
-
   const [form, setForm] = useState({
     name: "",
     email: "",
     classId: "",
     sectionId: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error" | "info" | "warn";
   } | null>(null);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "active" | "inactive"
   >(() => (localStorage.getItem("studentFilter") as any) || "all");
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const [newStudentCreds, setNewStudentCreds] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
 
   // Toast helper
   const showToast = (message: string, type: any = "info") => {
@@ -105,10 +112,15 @@ const StudentPanel = () => {
       } else {
         const res = await api.post("/admin/student", form);
         const creds = res.data.data;
-        showToast(
-          `Student created ✅ Email: ${creds.email}, Password: ${creds.password}`,
-          "success"
-        );
+
+        // Set the credentials instead of using toast
+        setNewStudentCreds({ email: creds.email, password: creds.password });
+
+        showToast("Student created successfully ✅", "success");
+        // showToast(
+        //   `Student created ✅ Email: ${creds.email}, Password: ${creds.password}`,
+        //   "success"
+        // );
       }
 
       setForm({ name: "", email: "", classId: "", sectionId: "" });
@@ -214,39 +226,80 @@ const StudentPanel = () => {
         />
       )}
 
+      {newStudentCreds && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded shadow mb-4 flex justify-between items-center">
+          <div>
+            <p className="font-semibold">New Student Credentials:</p>
+            <p>
+              Email: <span className="font-mono">{newStudentCreds.email}</span>
+            </p>
+            <p>
+              Password:{" "}
+              <span className="font-mono">{newStudentCreds.password}</span>
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `Email: ${newStudentCreds.email}, Password: ${newStudentCreds.password}`
+                );
+              }}
+              className="bg-green-600 text-white px-3 py-1 rounded"
+            >
+              Copy
+            </button>
+            <button
+              onClick={() => setNewStudentCreds(null)}
+              className="bg-gray-300 px-3 py-1 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800 py-2">Students</h2>
-        {!showForm && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold shadow hover:bg-blue-700 transition"
-          >
-            + Add Student
-          </button>
-        )}
+      <div className="sticky top-0 z-20 bg-gray-100 py-1">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800 py-2">Students</h2>
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold shadow hover:bg-blue-700 transition"
+            >
+              + Add Student
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Container */}
       <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
         {/* Count */}
         <div className="flex items-center justify-start gap-2">
-          <p className="text-lg font-bold text-gray-700">Total Students</p>
-          <span className="text-blue-700 px-3 text-xl font-bold">
+          <p className="text-lg font-bold text-gray-700">Total Students :</p>
+          <span className="text-blue-700 px-1 text-xl font-bold">
             {students.length}
           </span>
         </div>
 
         {/* Search + Filter */}
         <div className="flex justify-between items-center mb-4">
-          {/* Search Bar */}
-          <div className="flex-1 max-w-xs">
+          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
+            <FiSearch className="text-gray-400 ml-2" />
             <input
               type="text"
               placeholder="Search student..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-1.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 text-sm outline-none"
+            />
+            <FiX
+              className={`text-gray-400 cursor-pointer mr-2 ${
+                searchTerm ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              onClick={() => setSearchTerm("")}
             />
           </div>
 
@@ -272,30 +325,35 @@ const StudentPanel = () => {
         </div>
 
         {/* Student Table */}
-        {loading ? (
-          <div className="text-center py-10 text-gray-400">
-            Loading students...
-          </div>
-        ) : paginatedStudents.length === 0 ? (
-          <div className="text-center py-10 text-gray-400">
-            No students found
-          </div>
-        ) : (
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-            <table className="w-full table-fixed">
-              <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
-                <tr>
-                  <th className="p-3">Student</th>
-                  <th className="p-3">Email</th>
-                  <th className="p-3">Class</th>
-                  <th className="p-3">Section</th>
-                  <th className="p-3">Status</th>
-                  <th className="pr-10 text-right">Actions</th>
-                </tr>
-              </thead>
 
-              <tbody>
-                {paginatedStudents.map((s) => {
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <table className="w-full table-fixed">
+            <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
+              <tr>
+                <th className="p-3">Student</th>
+                <th className="p-3">Email</th>
+                <th className="p-3">Class</th>
+                <th className="p-3">Section</th>
+                <th className="p-3">Status</th>
+                <th className="pr-10 text-right">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center text-gray-500">
+                    Loading students...
+                  </td>
+                </tr>
+              ) : filteredStudents.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center text-gray-500">
+                    No students found
+                  </td>
+                </tr>
+              ) : (
+                paginatedStudents.map((s) => {
                   const isLoading = actionLoading === s._id;
 
                   return (
@@ -372,11 +430,11 @@ const StudentPanel = () => {
                       </td>
                     </tr>
                   );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {/* Pagination Controls */}
         <div className="flex justify-between items-center mt-4">
