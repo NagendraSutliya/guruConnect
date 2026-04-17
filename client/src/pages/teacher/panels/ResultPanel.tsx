@@ -215,12 +215,12 @@ const ResultPanel = () => {
       )}
 
       <div className="sticky top-0 z-20 bg-gray-100 py-1">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-0">
           <h2 className="text-2xl font-bold text-gray-800">Student Results</h2>
-          <div className="mt-6">
+          <div className="mt-4">
             <button
               onClick={handleUploadMarksClick}
-              className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold shadow hover:bg-blue-700 transition"
+              className="bg-blue-600 text-white px-4 py-1 rounded-lg text-sm font-semibold shadow hover:bg-blue-700 transition"
             >
               Upload Marks
             </button>
@@ -387,7 +387,7 @@ const ResultPanel = () => {
 
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <table className="w-full table-fixed">
-            <thead className="bg-indigo-100 text-left">
+            <thead className="bg-green-100 text-left">
               <tr>
                 <th className="p-3">Roll No</th>
                 <th className="p-3">Name</th>

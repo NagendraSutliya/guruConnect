@@ -1,5 +1,5 @@
 const express = require("express");
-const { requireAdmin } = require("../../middleware/auth.js");
+const { requireAdmin } = require("../../../middleware/auth.js");
 const {
   getTeachers,
   getAdminStats,
@@ -12,6 +12,7 @@ const {
   activateTeacher,
   updateTeacher,
   deleteTeacher,
+  getAdminProfile,
 } = require("../../controllers/admin.controller.js");
 const {
   getStudents,
@@ -20,9 +21,10 @@ const {
   activateStudent,
   updateStudent,
   deleteStudent,
-} = require("../../controllers/student.controller.js");
+} = require("../../../controllers/student.controller.js");
 const router = express.Router();
 
+router.get("/profile", requireAdmin, getAdminProfile);
 // Teachers
 router.get("/teachers", requireAdmin, getTeachers);
 router.post("/teacher", requireAdmin, createTeacher);

@@ -180,15 +180,25 @@ const AttendancePanel = () => {
   );
 
   return (
-    <div className="px-6">
+    <div className="space-y-4 pb-8">
+      {/* Toast */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-0">
-        <h2 className="text-2xl font-bold mb-4">Attendance</h2>
+      <div className="sticky top-0 z-20 bg-gray-100 py-1">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-0">
+          <h2 className="text-2xl font-bold mb-4">Attendance</h2>
 
-        <div className="mt-4">
-          <span className="bg-blue-200 text-blue-800 px-4 py-1 rounded-lg font-medium shadow-sm">
-            Total Students: {students.length}
-          </span>
+          <div className="mt-4">
+            <span className="bg-blue-200 text-blue-800 px-4 py-1 rounded-lg font-medium shadow-sm">
+              Total Students: {students.length}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -445,15 +455,6 @@ const AttendancePanel = () => {
             {saving ? "Saving..." : "💾 Save Attendance"}
           </button>
         </div>
-      )}
-
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
       )}
     </div>
   );

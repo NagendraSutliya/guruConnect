@@ -42,7 +42,7 @@ const UpdateAcademicYearModal: React.FC<UpdateAcademicYearModalProps> = ({
     setLoading(true);
     try {
       console.log("Updating AcademicYear ID:", year._id, "with form:", form);
-      await api.put(`/academic/academic-year/${year._id}`, form);
+      await api.put(`/admin/academic/academic-year/${year._id}`, form);
       showToast("Updated successfully", "success");
       onUpdated();
       onClose();

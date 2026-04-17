@@ -36,3 +36,13 @@ export interface ResultClassAssignment extends BaseClassAssignment {
 export type UploadMarksStudent = ResultStudent;
 
 export type UploadMarksClassAssignment = ResultClassAssignment;
+
+// ================= DASHBOARD ATTENDANCE =================
+export interface ClassAttendance {
+  name: string;
+  total: number;
+  present: number;
+  absent: number;
+  late: number;
+  classId: string;
+}

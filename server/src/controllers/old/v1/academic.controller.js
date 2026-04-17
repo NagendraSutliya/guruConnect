@@ -1,6 +1,6 @@
 /* ================= CREATE ACADEMIC YEAR ================= */
-const AcademicYear = require("../models/AcademicYear");
-const { successResponse, errorResponse } = require("../utils/response");
+const AcademicYear = require("../../../models/AcademicYear");
+const { successResponse, errorResponse } = require("../../../utils/response");
 
 exports.createAcademicYear = async (req, res) => {
   try {

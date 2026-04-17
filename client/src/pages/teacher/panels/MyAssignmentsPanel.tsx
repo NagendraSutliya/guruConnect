@@ -4,20 +4,37 @@ import {
   X,
   BookOpen,
   Layers,
-  Users,
   Table2,
   LayoutGrid,
   RefreshCcw,
+  Layers2,
 } from "lucide-react";
+import Toast, { type ToastProps } from "../../../components/Toast";
+import { FiSearch, FiX } from "react-icons/fi";
+
+const Card = ({ title, value, color, icon }: any) => (
+  <div className="bg-white shadow rounded-xl p-4 flex items-center gap-4 flex-1">
+    <div className={`p-3 text-${color}-600 flex items-center justify-center`}>
+      {icon}
+    </div>
+    <div className="flex flex-col">
+      <p className="text-gray-500 font-medium">{title}</p>
+      <p className={`text-xl font-bold text-${color}-600`}>{value}</p>
+    </div>
+  </div>
+);
 
 export default function MyAssignmentsPanel() {
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [toast, setToast] = useState<Omit<ToastProps, "onClose"> | null>(null);
 
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<any>(null);
   const [view, setView] = useState<"table" | "card">("table");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const load = async () => {
     try {
@@ -44,6 +61,8 @@ export default function MyAssignmentsPanel() {
     );
   }, [list, search]);
 
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+
   const stats = useMemo(() => {
     return {
       total: list.length,
@@ -52,12 +71,25 @@ export default function MyAssignmentsPanel() {
     };
   }, [list]);
 
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filtered.slice(start, start + itemsPerPage);
+  }, [filtered, currentPage, itemsPerPage]);
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="space-y-4 pb-8">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-3">
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-gray-800">
             📚 My Assignments
           </h1>
           <p className="text-gray-500 text-sm">
@@ -65,12 +97,12 @@ export default function MyAssignmentsPanel() {
           </p>
         </div>
 
-        <div className="flex gap-2 items-center">
-          {/* 🔄 REFRESH BUTTON (NEW) */}
+        <div className="flex gap-2 items-center mt-10">
+          {/* REFRESH */}
           <button
             onClick={load}
             disabled={loading}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl shadow transition
+            className={`flex items-center gap-2 px-4 py-1 rounded-lg shadow transition
               ${
                 loading
                   ? "bg-gray-300 cursor-not-allowed"
@@ -80,19 +112,29 @@ export default function MyAssignmentsPanel() {
             <RefreshCcw size={18} className={loading ? "animate-spin" : ""} />
             {loading ? "Refreshing..." : "Refresh"}
           </button>
+
           {/* SEARCH */}
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search class, subject..."
-            className="px-4 py-2 border rounded-xl w-full md:w-80 focus:ring-2 focus:ring-blue-400 outline-none bg-white"
-          />
+          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
+            <FiSearch className="text-gray-400 ml-2" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search class, subject..."
+              className="flex-grow px-2 py-1 outline-none"
+            />
+            <FiX
+              className={`text-gray-400 cursor-pointer mr-2 ${
+                search ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              onClick={() => setSearch("")}
+            />
+          </div>
 
           {/* VIEW SWITCH */}
-          <div className="flex bg-white border rounded-xl overflow-hidden shadow-sm">
+          <div className="flex bg-white border rounded-lg overflow-hidden shadow-sm">
             <button
               onClick={() => setView("table")}
-              className={`px-3 py-2 flex items-center gap-2 text-sm ${
+              className={`px-3 py-1 flex items-center gap-2 text-sm ${
                 view === "table"
                   ? "bg-blue-600 text-white"
                   : "hover:bg-gray-100"
@@ -104,7 +146,7 @@ export default function MyAssignmentsPanel() {
 
             <button
               onClick={() => setView("card")}
-              className={`px-3 py-2 flex items-center gap-2 text-sm ${
+              className={`px-3 py-1 flex items-center gap-2 text-sm ${
                 view === "card" ? "bg-blue-600 text-white" : "hover:bg-gray-100"
               }`}
             >
@@ -116,35 +158,30 @@ export default function MyAssignmentsPanel() {
       </div>
 
       {/* STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-xl p-4 shadow flex items-center gap-3">
-          <BookOpen className="text-blue-500" />
-          <div>
-            <p className="text-gray-500 text-sm">Total</p>
-            <p className="text-xl font-bold">{stats.total}</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 shadow flex items-center gap-3">
-          <Layers className="text-green-500" />
-          <div>
-            <p className="text-gray-500 text-sm">Classes</p>
-            <p className="text-xl font-bold">{stats.classes}</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 shadow flex items-center gap-3">
-          <Users className="text-purple-500" />
-          <div>
-            <p className="text-gray-500 text-sm">Subjects</p>
-            <p className="text-xl font-bold">{stats.subjects}</p>
-          </div>
-        </div>
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+        <Card
+          title="Total"
+          value={stats.total}
+          color="blue"
+          icon={<BookOpen />}
+        />
+        <Card
+          title="Classes"
+          value={stats.classes}
+          color="purple"
+          icon={<Layers />}
+        />
+        <Card
+          title="Subjects"
+          value={stats.subjects}
+          color="yellow"
+          icon={<Layers2 />}
+        />
       </div>
 
       {/* ERROR */}
       {error && (
-        <div className="bg-red-100 text-red-600 p-3 rounded mb-4">{error}</div>
+        <div className="bg-red-100 text-red-600 p-3 rounded">{error}</div>
       )}
 
       {/* LOADING */}
@@ -153,52 +190,66 @@ export default function MyAssignmentsPanel() {
       )}
 
       {/* TABLE VIEW */}
-      {!loading && view === "table" && filtered.length > 0 && (
-        <div className="bg-white rounded-xl shadow overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-gray-100 text-gray-600 text-sm">
-              <tr>
-                <th className="p-3">Class</th>
-                <th className="p-3">Section</th>
-                <th className="p-3">Subject</th>
-                <th className="p-3 text-right">Action</th>
-              </tr>
-            </thead>
+      {!loading && view === "table" && (
+        <div className="bg-white border rounded-2xl shadow-sm px-6 pt-4 pb-2 space-y-2 ">
+          <h3 className="text-lg font-semibold">Assignments</h3>
 
-            <tbody>
-              {filtered.map((a) => (
-                <tr
-                  key={a._id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  <td className="p-3 font-medium">{a.classId?.name}</td>
-                  <td className="p-3">{a.sectionId?.name}</td>
-                  <td className="p-3">{a.subjectId?.name}</td>
-                  <td className="p-3 text-right">
-                    <button
-                      onClick={() => setSelected(a)}
-                      className="text-blue-600 hover:underline"
-                    >
-                      View
-                    </button>
-                  </td>
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <table className="w-full table-fixed">
+              <thead className="bg-green-100 text-sm font-semibold text-gray-700 uppercase">
+                <tr>
+                  <th className="p-3">Class</th>
+                  <th className="p-3">Section</th>
+                  <th className="p-3">Subject</th>
+                  <th className="p-3">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {paginatedData.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center text-gray-500 p-8">
+                      {search
+                        ? "No assignments match your search."
+                        : "No assignments available."}
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedData.map((a) => (
+                    <tr
+                      key={a._id}
+                      className="border-b hover:bg-gray-50 text-center"
+                    >
+                      <td className="p-3">{a.classId?.name}</td>
+                      <td className="p-3">{a.sectionId?.name}</td>
+                      <td className="p-3">{a.subjectId?.name}</td>
+                      <td className="p-3">
+                        <button
+                          onClick={() => setSelected(a)}
+                          className="text-blue-600 hover:underline"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* CARD VIEW */}
-      {!loading && view === "card" && filtered.length > 0 && (
+      {!loading && view === "card" && paginatedData.length > 0 && (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((a) => (
+          {paginatedData.map((a) => (
             <div
               key={a._id}
               className="bg-white rounded-xl shadow hover:shadow-lg transition p-5 border"
             >
               <h3 className="text-lg font-bold text-gray-800 mb-2">
-                {a.classId?.name}
+                Class: {a.classId?.name}
               </h3>
 
               <p className="text-sm text-gray-600">
@@ -220,10 +271,59 @@ export default function MyAssignmentsPanel() {
         </div>
       )}
 
-      {/* EMPTY STATE */}
+      {/* EMPTY */}
       {!loading && filtered.length === 0 && (
         <div className="text-center py-20 bg-white rounded-xl shadow">
           <p className="text-gray-500 text-lg">No assignments found</p>
+        </div>
+      )}
+
+      {/* PAGINATION (SHARED) */}
+      {!loading && filtered.length > 0 && (
+        <div className="flex justify-between items-center py-4">
+          <div>
+            <label className="mr-2 text-gray-700 text-sm">
+              Items per page:
+            </label>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border rounded-md px-2 py-1 text-sm"
+            >
+              {[5, 10, 15, 20].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            <span className="text-sm">
+              Page {currentPage} of {totalPages || 1}
+            </span>
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="px-2 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 

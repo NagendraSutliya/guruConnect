@@ -1,11 +1,12 @@
 import { useState } from "react";
 import api from "../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-const Login = () => {
-  // const [form, setForm] = useState({ email: "", password: "" });
+const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setUser } = useAuth();
   const nav = useNavigate();
 
   const login = async (e: any) => {
@@ -13,15 +14,26 @@ const Login = () => {
     try {
       const res = await api.post("/auth/login", { email, password });
 
-      console.log("Login response:", res.data); // <-- ADD THIS
+      const data = res.data.data;
+      console.log("Login response:", data); // <-- ADD THIS
 
-      localStorage.setItem("adminToken", res.data.data.token);
       localStorage.setItem("role", "admin");
+      localStorage.setItem("adminToken", data.token);
 
+      // ✅ THIS IS YOUR REAL ADMIN USER
+      const adminUser = {
+        _id: data._id,
+        instituteName: data.instituteName,
+        email: data.email,
+      };
+      localStorage.setItem("admin", JSON.stringify(adminUser));
+      setUser(adminUser);
       // DEBUG: check if token is stored
       console.log("Stored token:", localStorage.getItem("adminToken"));
 
-      nav("/admin/dashboard");
+      setTimeout(() => {
+        nav("/admin/dashboard");
+      }, 0);
     } catch (err: any) {
       alert(err.response?.data || "Login failed");
     }
@@ -57,4 +69,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

@@ -71,7 +71,7 @@ const AcademicYearsPanel = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/academic/academic-year");
+      const res = await api.get("/admin/academic/academic-year");
       setYears(res.data.data);
     } catch {
       showToast("Failed to load", "error");
@@ -90,7 +90,7 @@ const AcademicYearsPanel = () => {
 
     setLoading(true);
     try {
-      await api.post("/academic/academic-year", form);
+      await api.post("/admin/academic/academic-year", form);
       showToast("Added", "success");
       setForm(defaultDates);
       load();
@@ -102,17 +102,17 @@ const AcademicYearsPanel = () => {
   };
 
   const activate = async (id: string) => {
-    await api.patch(`/academic/academic-year/${id}/activate`);
+    await api.patch(`/admin/academic/academic-year/${id}/activate`);
     load();
   };
 
   const deactivate = async (id: string) => {
-    await api.patch(`/academic/academic-year/${id}/deactivate`);
+    await api.patch(`/admin/academic/academic-year/${id}/deactivate`);
     load();
   };
 
   const remove = async (id: string) => {
-    await api.delete(`/academic/academic-year/${id}`);
+    await api.delete(`/admin/academic/academic-year/${id}`);
     load();
   };
 

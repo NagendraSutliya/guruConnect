@@ -2,6 +2,22 @@ const Feedback = require("../models/Feedback.js");
 const Class = require("../models/Class.js"); // make sure you import Class
 const Attendance = require("../models/Attendance.js"); // make sure you import Attendance
 const { successResponse, errorResponse } = require("../utils/response.js");
+const Teacher = require("../models/Teacher.js");
+
+/* ================= TEACHER PROFILE ================= */
+exports.getTeacherProfile = async (req, res) => {
+  try {
+    const teacher = await Teacher.findById(req.user.id).select("name email");
+
+    if (!teacher) {
+      return errorResponse(res, "Teacher not found", 404);
+    }
+
+    return successResponse(res, "Profile loaded", teacher);
+  } catch (err) {
+    return errorResponse(res, "Failed to load profile");
+  }
+};
 
 /* ================= DASHBOARD STATS ================= */
 exports.getTeacherStats = async (req, res) => {

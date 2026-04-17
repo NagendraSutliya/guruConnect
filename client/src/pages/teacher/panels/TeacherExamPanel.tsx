@@ -197,10 +197,10 @@ const TeacherExamPanel = () => {
           onClose={() => setToast(null)}
         />
       )}
-      <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row justify-between gap-4">
         <h2 className="text-2xl font-bold text-gray-800">📘 Exam Schedule</h2>
 
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center mt-6">
           <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
             <FiSearch className="text-gray-400 ml-2" />
             <input
@@ -208,7 +208,7 @@ const TeacherExamPanel = () => {
               placeholder="Search exam..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="px-3 py-2 text-sm outline-none"
+              className="px-3 py-1 text-sm outline-none"
             />
             <FiX
               className={`text-gray-400 cursor-pointer mr-2 ${
@@ -220,7 +220,7 @@ const TeacherExamPanel = () => {
 
           <div className="relative">
             <select
-              className="border px-3 py-2 text-sm rounded-lg appearance-none pr-8 bg-white shadow-sm"
+              className="border px-3 py-1 text-sm rounded-lg appearance-none pr-8 bg-white shadow-sm"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >

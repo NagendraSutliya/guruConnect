@@ -50,7 +50,7 @@ const TeacherAssignPanel = () => {
         api.get("/admin/teachers?status=active"),
         api.get("/classes"),
         api.get("/subjects"),
-        api.get("/teacher-assign"),
+        api.get("/admin/teacher-assign"),
       ]);
 
       setTeachers(tRes.data.data);

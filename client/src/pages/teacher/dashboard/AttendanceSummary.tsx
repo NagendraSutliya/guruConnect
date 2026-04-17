@@ -1,16 +1,7 @@
 import { useState, useEffect } from "react";
 import { CheckCircle, XCircle, Clock, Users } from "lucide-react";
 import api from "../../../api/axiosInstance";
-
-// Type for each class attendance
-interface ClassAttendance {
-  name: string;
-  total: number;
-  present: number;
-  absent: number;
-  late: number;
-  classId: string;
-}
+import type { ClassAttendance } from "../../../types/teacher/types";
 
 const AttendanceSummary: React.FC = () => {
   const [classesData, setClassesData] = useState<ClassAttendance[]>([]);

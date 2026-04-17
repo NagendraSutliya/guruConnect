@@ -1,5 +1,5 @@
-import MaterialPanel from "./panels/MaterialPanel";
+import StudyMaterialPanel from "./panels/StudyMaterialPanel";
 
 export default function StudyMaterial() {
-  return <MaterialPanel />;
+  return <StudyMaterialPanel />;
 }

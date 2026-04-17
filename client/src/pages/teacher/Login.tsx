@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import api from "../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
@@ -6,20 +7,33 @@ const TeacherLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const nav = useNavigate();
+  const { setUser } = useAuth();
 
   const login = async () => {
     try {
       const res = await api.post("/auth/teacher/login", { email, password });
 
-      console.log("Login response:", res.data.data); // <-- ADD THIS
+      const data = res.data.data;
+      console.log("Login response:", data); // <-- ADD THIS
 
-      localStorage.setItem("teacherToken", res.data.data.token);
       localStorage.setItem("role", "teacher");
+      localStorage.setItem("teacherToken", data.token);
+
+      const teacherUser = {
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+      };
+
+      localStorage.setItem("teacher", JSON.stringify(teacherUser));
+      setUser(teacherUser);
 
       // DEBUG: check if token is stored
       console.log("Stored token:", localStorage.getItem("teacherToken"));
 
-      nav("/teacher/dashboard");
+      setTimeout(() => {
+        nav("/teacher/dashboard");
+      }, 0);
     } catch {
       alert("Invalid login");
     }

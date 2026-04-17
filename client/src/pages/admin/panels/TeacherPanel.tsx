@@ -63,10 +63,10 @@ const TeacherPanel = () => {
       setActionLoading("save");
 
       if (editingTeacher) {
-        await api.put(`/admin/teacher/${editingTeacher._id}`, form);
+        await api.put(`/admin/teachers/${editingTeacher._id}`, form);
         showToast("Teacher updated ✏️", "success");
       } else {
-        await api.post("/admin/teacher", form);
+        await api.post("/admin/teachers", form);
         showToast("Teacher added successfully ✅", "success");
       }
 
@@ -89,7 +89,7 @@ const TeacherPanel = () => {
 
     try {
       setActionLoading(teacher._id);
-      await api.delete(`/admin/teacher/${teacher._id}`);
+      await api.delete(`/admin/teachers/${teacher._id}`);
       setTeachers((prev) => prev.filter((t) => t._id !== teacher._id));
       showToast("Teacher deleted 🗑️", "success");
     } catch (err) {
@@ -104,10 +104,10 @@ const TeacherPanel = () => {
       setActionLoading(teacher._id);
 
       if (teacher.status === "active") {
-        await api.patch(`/admin/teacher/${teacher._id}/deactivate`);
+        await api.patch(`/admin/teachers/${teacher._id}/deactivate`);
         showToast("Teacher deactivated", "info");
       } else {
-        await api.patch(`/admin/teacher/${teacher._id}/activate`);
+        await api.patch(`/admin/teachers/${teacher._id}/activate`);
         showToast("Teacher activated", "success");
       }
 
