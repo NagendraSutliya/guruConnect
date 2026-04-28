@@ -33,7 +33,7 @@ const UpdateClassModal = ({ cls, years, onClose, onUpdated }: Props) => {
 
     setLoading(true);
     try {
-      await api.put(`/classes/${cls._id}`, { name, academicYearId });
+      await api.put(`/admin/classes/${cls._id}`, { name, academicYearId });
       showToast("Class updated successfully", "success");
       onUpdated?.(); // refresh parent data if callback provided
       onClose(); // close modal

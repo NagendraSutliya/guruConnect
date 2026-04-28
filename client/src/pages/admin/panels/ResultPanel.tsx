@@ -49,9 +49,9 @@ const AdminResultPanel = () => {
   const load = async () => {
     try {
       const [e, c, s] = await Promise.all([
-        api.get("/exams"),
-        api.get("/classes"),
-        api.get("/sections"),
+        api.get("/admin/exams"),
+        api.get("/admin/classes"),
+        api.get("/admin/sections"),
       ]);
       setExams(e.data.data || []);
       setClasses(c.data.data || []);
@@ -78,7 +78,7 @@ const AdminResultPanel = () => {
         sectionId,
       };
 
-      const res = await api.get("/results/admin", { params });
+      const res = await api.get("/admin/results", { params });
       setResults(res.data.data || []);
       setSummary(res.data.summary || null);
     } catch (err) {

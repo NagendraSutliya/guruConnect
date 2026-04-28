@@ -6,7 +6,7 @@ const {
   getStudyMaterials,
   createStudyMaterial,
   deleteStudyMaterial,
-} = require("../../controllers/studyMaterial.controller");
+} = require("../../../controllers/teacher/StudyMaterialController");
 
 const storage = multer.diskStorage({
   destination: "uploads/",

@@ -64,10 +64,10 @@ const StudentAttendancePanel = () => {
 
   const load = async () => {
     try {
-      const todayRes = await api.get("/attendance/summary/today");
-      const classRes = await api.get("/attendance/summary/class");
-      const studentRes = await api.get("/attendance/summary/student");
-      const historyRes = await api.get("/attendance/history");
+      const todayRes = await api.get("/admin/attendance/summary/today");
+      const classRes = await api.get("/admin/attendance/summary/class");
+      const studentRes = await api.get("/admin/attendance/summary/student");
+      const historyRes = await api.get("/admin/attendance/history");
 
       setToday(todayRes.data.data);
       setClassSummary(classRes.data.data);

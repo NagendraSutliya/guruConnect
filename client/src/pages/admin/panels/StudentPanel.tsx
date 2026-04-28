@@ -62,7 +62,7 @@ const StudentPanel = () => {
   // Load classes and sections
   const loadClasses = async () => {
     try {
-      const res = await api.get("/classes");
+      const res = await api.get("/admin/classes");
       setClasses(res.data.data || []);
     } catch (err) {
       console.error(err);
@@ -84,7 +84,7 @@ const StudentPanel = () => {
 
     const loadSections = async () => {
       try {
-        const res = await api.get(`/sections/class/${form.classId}`);
+        const res = await api.get(`/admin/sections/class/${form.classId}`);
         setSections(res.data.data || []);
         setForm((prev) => ({ ...prev, sectionId: "" }));
       } catch (err) {
@@ -107,10 +107,10 @@ const StudentPanel = () => {
       setActionLoading("save");
 
       if (editingStudent) {
-        await api.put(`/admin/student/${editingStudent._id}`, form);
+        await api.put(`/admin/students/${editingStudent._id}`, form);
         showToast("Student updated ✏️", "success");
       } else {
-        const res = await api.post("/admin/student", form);
+        const res = await api.post("/admin/students", form);
         const creds = res.data.data;
 
         // Set the credentials instead of using toast
@@ -140,7 +140,7 @@ const StudentPanel = () => {
 
     try {
       setActionLoading(student._id);
-      await api.delete(`/admin/student/${student._id}`);
+      await api.delete(`/admin/students/${student._id}`);
       setStudents((prev) => prev.filter((s) => s._id !== student._id));
       showToast("Student deleted 🗑️", "success");
     } catch (err) {
@@ -156,10 +156,10 @@ const StudentPanel = () => {
       setActionLoading(student._id);
 
       if (student.isActive) {
-        await api.patch(`/admin/student/${student._id}/deactivate`);
+        await api.patch(`/admin/students/${student._id}/deactivate`);
         showToast("Student deactivated", "info");
       } else {
-        await api.patch(`/admin/student/${student._id}/activate`);
+        await api.patch(`/admin/students/${student._id}/activate`);
         showToast("Student activated", "success");
       }
 

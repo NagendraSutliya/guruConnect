@@ -29,10 +29,10 @@ const SubjectsPanel = () => {
   // --- Load classes and subjects ---
   const loadData = async () => {
     try {
-      const cRes = await api.get("/classes");
+      const cRes = await api.get("/admin/classes");
       setClasses(cRes.data.data);
 
-      const sRes = await api.get("/subjects");
+      const sRes = await api.get("/admin/subjects");
       setSubjects(sRes.data.data);
     } catch (err: any) {
       setToast({
@@ -55,7 +55,7 @@ const SubjectsPanel = () => {
         return;
       }
       try {
-        const res = await api.get(`/sections/class/${selectedClass}`);
+        const res = await api.get(`/admin/sections/class/${selectedClass}`);
         setSections(res.data.data);
         setSelectedSection("");
       } catch {
@@ -101,11 +101,11 @@ const SubjectsPanel = () => {
       };
 
       if (editId) {
-        await api.put(`/subjects/${editId}`, payload);
+        await api.put(`/admin/subjects/${editId}`, payload);
         setToast({ message: "Subject updated successfully", type: "success" });
         setEditId(null);
       } else {
-        await api.post("/subjects", payload);
+        await api.post("/admin/subjects", payload);
         setToast({
           message: `Subject created with code ${generatedCode}`,
           type: "success",
@@ -138,7 +138,7 @@ const SubjectsPanel = () => {
   const deleteSubject = async (id: string) => {
     if (!confirm("Are you sure you want to delete this subject?")) return;
     try {
-      await api.delete(`/subjects/${id}`);
+      await api.delete(`/admin/subjects/${id}`);
       setToast({ message: "Subject deleted", type: "success" });
       loadData();
     } catch {

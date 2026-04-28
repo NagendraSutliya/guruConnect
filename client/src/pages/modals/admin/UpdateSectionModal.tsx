@@ -37,7 +37,7 @@ const UpdateSectionModal = ({
 
     setLoading(true);
     try {
-      await api.put(`/sections/${section._id}`, { name, classId });
+      await api.put(`/admin/sections/${section._id}`, { name, classId });
 
       showToast("Section updated successfully", "success");
 

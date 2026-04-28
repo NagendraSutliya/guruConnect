@@ -33,7 +33,7 @@ const ClassesPanel = () => {
   // Load academic years
   useEffect(() => {
     api
-      .get("/academic/academic-year")
+      .get("/admin/academic/academic-year")
       .then((res) => {
         setYears(res.data.data);
         const activeYear = res.data.data.find((y: any) => y.isActive);
@@ -46,7 +46,7 @@ const ClassesPanel = () => {
   const loadClasses = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/classes");
+      const res = await api.get("/admin/classes");
       setClasses(res.data.data);
     } catch (err) {
       showToast("Failed to load", "error");
@@ -57,7 +57,7 @@ const ClassesPanel = () => {
 
   const loadSections = async () => {
     try {
-      const res = await api.get("/sections");
+      const res = await api.get("/admin/sections");
       setSections(res.data.data);
     } catch (err) {
       console.log(err);
@@ -77,7 +77,7 @@ const ClassesPanel = () => {
     }
 
     try {
-      await api.post("/classes", { name, academicYearId });
+      await api.post("/admin/classes", { name, academicYearId });
       setToastMessage({
         message: "Class created successfully",
         type: "success",
@@ -95,7 +95,7 @@ const ClassesPanel = () => {
   const deleteClass = async (id: string) => {
     if (!confirm("Are you sure you want to delete this class?")) return;
     try {
-      await api.delete(`/classes/${id}`);
+      await api.delete(`/admin/classes/${id}`);
       setToastMessage({ message: "Class deleted", type: "success" });
       loadClasses();
       loadSections();

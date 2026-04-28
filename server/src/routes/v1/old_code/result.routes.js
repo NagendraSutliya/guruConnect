@@ -5,7 +5,7 @@ const {
   getResults,
   deleteResult,
 } = require("../../controllers/result.controller");
-const { requireTeacher, requireAdmin } = require("../../middleware/auth");
+const { requireTeacher, requireAdmin } = require("../../../middleware/auth");
 
 router.get("/admin", requireAdmin, getAdminResults);
 

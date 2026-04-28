@@ -48,8 +48,8 @@ const TeacherAssignPanel = () => {
     try {
       const [tRes, cRes, subRes, aRes] = await Promise.all([
         api.get("/admin/teachers?status=active"),
-        api.get("/classes"),
-        api.get("/subjects"),
+        api.get("/admin/classes"),
+        api.get("/admin/subjects"),
         api.get("/admin/teacher-assign"),
       ]);
 
@@ -81,11 +81,11 @@ const TeacherAssignPanel = () => {
     const loadSectionsAndSubjects = async () => {
       try {
         // Sections
-        const secRes = await api.get(`/sections/class/${form.classId}`);
+        const secRes = await api.get(`/admin/sections/class/${form.classId}`);
         setSections(secRes.data.data);
 
         // Subkect for this class
-        const subRes = await api.get(`/subjects/class/${form.classId}`);
+        const subRes = await api.get(`/admin/subjects/class/${form.classId}`);
         setSubjectsForClass(subRes.data.data);
         setForm((prev) => ({ ...prev, sectionId: "", subjectId: "" }));
       } catch (err) {
@@ -120,11 +120,14 @@ const TeacherAssignPanel = () => {
       }
 
       if (editingAssignment) {
-        await api.put(`/teacher-assign/${editingAssignment._id}`, payload);
+        await api.put(
+          `/admin/teacher-assign/${editingAssignment._id}`,
+          payload
+        );
         showToast("Assignment updated ✏️", "success");
         setEditingAssignment(null);
       } else {
-        await api.post("/teacher-assign", payload);
+        await api.post("/admin/teacher-assign", payload);
         showToast("Teacher assigned successfully ✅", "success");
       }
 
@@ -143,7 +146,7 @@ const TeacherAssignPanel = () => {
     if (!confirm("Delete this assignment?")) return;
 
     try {
-      await api.delete(`/teacher-assign/${id}`);
+      await api.delete(`/admin/teacher-assign/${id}`);
       showToast("Assignment deleted 🗑️", "success");
       load();
     } catch (err: any) {
@@ -205,7 +208,7 @@ const TeacherAssignPanel = () => {
           null;
       }
 
-      await api.put(`/teacher-assign/${editingAssignment._id}`, payload);
+      await api.put(`/admin/teacher-assign/${editingAssignment._id}`, payload);
       showToast("Assignment updated ✏️", "success");
       setEditingAssignment(null);
       load();

@@ -41,7 +41,7 @@ const UpdateExamSubjectModal = ({
         maxMarks: localData.maxMarks,
       };
 
-      await api.put(`/exam-subjects/${localData._id}`, payload);
+      await api.put(`/admin/exam-subjects/${localData._id}`, payload);
 
       setToast({
         message: "Exam subject updated successfully",

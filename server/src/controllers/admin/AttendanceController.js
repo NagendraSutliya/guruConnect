@@ -1,5 +1,5 @@
-const Attendance = require("../models/Attendance");
-const { successResponse, errorResponse } = require("../utils/response");
+const Attendance = require("../../models/Attendance");
+const { successResponse, errorResponse } = require("../../utils/response");
 
 /* ================= SAVE ATTENDANCE (bulk) ================= */
 exports.saveAttendance = async (req, res) => {

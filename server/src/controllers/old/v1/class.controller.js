@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const Class = require("../models/Class");
-const { successResponse, errorResponse } = require("../utils/response");
+const Class = require("../../../models/Class");
+const { successResponse, errorResponse } = require("../../../utils/response");
 
 // ================= CREATE CLASS =================
 exports.createClass = async (req, res) => {

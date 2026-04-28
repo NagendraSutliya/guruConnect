@@ -1,5 +1,5 @@
-const Section = require("../models/Section");
-const { successResponse, errorResponse } = require("../utils/response");
+const Section = require("../../../models/Section");
+const { successResponse, errorResponse } = require("../../../utils/response");
 
 /* CREATE SECTION */
 exports.createSection = async (req, res) => {

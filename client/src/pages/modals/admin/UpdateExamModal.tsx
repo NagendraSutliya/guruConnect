@@ -1,5 +1,5 @@
 import { FiX } from "react-icons/fi";
-import type { Exam } from "../../../../types/admin/exam";
+import type { Exam } from "../../../types/admin/exam";
 
 type Props = {
   editExam: Exam | null;

@@ -1,5 +1,5 @@
-const ExamSubject = require("../models/ExamSubject");
-const { successResponse, errorResponse } = require("../utils/response");
+const ExamSubject = require("../../models/ExamSubject");
+const { successResponse, errorResponse } = require("../../utils/response");
 
 // ============ CREATE EXAMS ==============
 exports.createExamSubject = async (req, res) => {

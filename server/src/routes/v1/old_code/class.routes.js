@@ -1,11 +1,11 @@
 const express = require("express");
-const { requireAdmin } = require("../../middleware/auth");
+const { requireAdmin } = require("../../../middleware/auth");
 const {
   createClass,
   getClasses,
   updateClass,
   deleteClass,
-} = require("../../controllers/class.controller");
+} = require("../../../controllers/old/v1/class.controller");
 
 const router = express.Router();
 

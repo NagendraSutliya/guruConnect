@@ -1,15 +1,10 @@
 const router = require("express").Router();
-const { requireAdmin, requireTeacher } = require("../../middleware/auth");
+const { requireAdmin, requireTeacher } = require("../../../middleware/auth");
 const {
-  assignTeacher,
-  getAssignments,
   getMyAssignments,
   deleteAssignment,
   updateAssignment,
-} = require("../../controllers/teacherAssignment.controller");
-
-router.post("/", requireAdmin, assignTeacher);
-router.get("/", requireAdmin, getAssignments);
+} = require("../../../controllers/old/v1/teacherAssignment.controller");
 
 router.get("/my", requireTeacher, getMyAssignments);
 router.delete("/:id", requireAdmin, deleteAssignment); // <-- DELETE route

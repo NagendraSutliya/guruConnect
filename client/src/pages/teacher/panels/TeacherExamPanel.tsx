@@ -66,7 +66,7 @@ const TeacherExamPanel = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const res = await api.get("/exams/full");
+        const res = await api.get("/teacher/exams/full");
         setExams(res.data.data || []);
       } catch (err) {
         console.error(err);

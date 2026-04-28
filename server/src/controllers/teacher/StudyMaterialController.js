@@ -1,5 +1,5 @@
-const StudyMaterial = require("../models/StudyMaterial");
-const { successResponse, errorResponse } = require("../utils/response");
+const StudyMaterial = require("../../models/StudyMaterial");
+const { successResponse, errorResponse } = require("../../utils/response");
 
 // GET all materials
 exports.getStudyMaterials = async (req, res) => {

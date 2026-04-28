@@ -1,6 +1,6 @@
-const TeacherAssignment = require("../models/TeacherAssignment");
-const Teacher = require("../models/Teacher");
-const { successResponse, errorResponse } = require("../utils/response");
+const TeacherAssignment = require("../../../models/TeacherAssignment");
+const Teacher = require("../../../models/Teacher");
+const { successResponse, errorResponse } = require("../../../utils/response");
 
 exports.assignTeacher = async (req, res) => {
   try {

@@ -30,7 +30,7 @@ const StudyMaterialPanel = () => {
 
   const fetchMaterials = async () => {
     try {
-      const res = await api.get("/study-material");
+      const res = await api.get("/teacher/study-material");
       const data = Array.isArray(res.data)
         ? res.data
         : Array.isArray(res.data.data)
@@ -44,8 +44,10 @@ const StudyMaterialPanel = () => {
 
   const fetchAssignments = async () => {
     try {
-      const res = await api.get("/teacher-assign/my");
-      setAssignments(res.data.data || []);
+      const res = await api.get("/teacher/study-material");
+      const data = res.data?.data ?? res.data?.assignments ?? res.data ?? [];
+
+      setAssignments(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
     }

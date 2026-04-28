@@ -53,7 +53,7 @@ const UpdateSubjectModal = ({
 
     setLoading(true);
     try {
-      await api.put(`/subjects/${subject._id}`, {
+      await api.put(`/admin/subjects/${subject._id}`, {
         name,
         classId: selectedClass,
         sectionId: selectedSection || undefined,

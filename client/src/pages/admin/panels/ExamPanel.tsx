@@ -60,10 +60,10 @@ const ExamPanel = () => {
       setLoading(true);
 
       const [examsRes, classRes, sectionRes, examSubRes] = await Promise.all([
-        api.get("/exams"),
-        api.get("/classes"),
-        api.get("/sections"),
-        api.get("/exam-subjects"),
+        api.get("/admin/exams"),
+        api.get("/admin/classes"),
+        api.get("/admin/sections"),
+        api.get("/admin/exam-subjects"),
       ]);
 
       const examData = examsRes.data.data;
@@ -95,7 +95,7 @@ const ExamPanel = () => {
     e.preventDefault();
 
     try {
-      await api.post("/exams", form);
+      await api.post("/admin/exams", form);
       setToast({ message: "Exam created successfully", type: "success" });
 
       setForm({ name: "", classId: "", sectionId: "" });
@@ -111,7 +111,7 @@ const ExamPanel = () => {
     if (!window.confirm("Delete exam?")) return;
 
     try {
-      await api.delete(`/exams/${id}`);
+      await api.delete(`/admin/exams/${id}`);
       setToast({ message: "Exam deleted successfully", type: "success" });
       loadData();
     } catch (err) {
@@ -124,7 +124,7 @@ const ExamPanel = () => {
     if (!editExam) return;
 
     try {
-      await api.put(`/exams/${editExam._id}`, editExam);
+      await api.put(`/admin/exams/${editExam._id}`, editExam);
       setToast({ message: "Exam updated successfully", type: "success" });
 
       setEditExam(null);

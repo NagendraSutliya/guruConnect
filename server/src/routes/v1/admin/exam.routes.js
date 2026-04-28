@@ -5,8 +5,8 @@ const {
   deleteExam,
   updateExam,
   getFullExams,
-} = require("../../controllers/exam.controller");
-const { requireAdmin, allowRoles } = require("../../middleware/auth");
+} = require("../../../controllers/admin/ExamController");
+const { requireAdmin, allowRoles } = require("../../../middleware/auth");
 
 router.get("/", allowRoles("admin", "teacher"), getExams);
 router.get("/full", allowRoles("admin", "teacher"), getFullExams);

@@ -42,7 +42,7 @@ const ResultPanel = () => {
   useEffect(() => {
     const loadAssignments = async () => {
       try {
-        const res = await api.get("/teacher-assign/my");
+        const res = await api.get("/teacher/results");
         setAssignments(res.data.data || []);
       } catch (err) {
         showToast("Failed to load assignments", "error");
@@ -57,13 +57,13 @@ const ResultPanel = () => {
 
     const loadExams = async () => {
       try {
-        let res = await api.get("/exams", {
+        let res = await api.get("/teacher/exams", {
           params: { classId: selectedClassId, sectionId: selectedSectionId },
         });
         let examList = res.data.data || [];
 
         if (examList.length === 0) {
-          const fallbackRes = await api.get("/exams", {
+          const fallbackRes = await api.get("/teacher/exams", {
             params: { classId: selectedClassId },
           });
           examList = fallbackRes.data.data || [];
@@ -78,25 +78,31 @@ const ResultPanel = () => {
 
   /* ================= FILTER OPTIONS ================= */
   const classes = Array.from(
-    new Map(assignments.map((a) => [a.classId._id, a.classId])).values()
+    new Map(
+      assignments
+        .filter((a) => a.classId?._id)
+        .map((a) => [a.classId._id, a.classId])
+    ).values()
   );
+
   const sections = Array.from(
     new Map(
       assignments
-        .filter((a) => a.classId._id === selectedClassId && a.sectionId?._id)
-        .map((a) => [a.sectionId!._id, a.sectionId!])
+        .filter((a) => a.classId?._id === selectedClassId && a.sectionId?._id)
+        .map((a) => [a.sectionId._id, a.sectionId])
     ).values()
   );
+
   const subjects = Array.from(
     new Map(
       assignments
         .filter(
           (a) =>
-            a.classId._id === selectedClassId &&
+            a.classId?._id === selectedClassId &&
             a.sectionId?._id === selectedSectionId &&
             a.subjectId?._id
         )
-        .map((a) => [a.subjectId!._id, a.subjectId!])
+        .map((a) => [a.subjectId._id, a.subjectId])
     ).values()
   );
 
@@ -128,7 +134,7 @@ const ResultPanel = () => {
       setStudents(studentList);
 
       if (selectedExamId && selectedSubjectId) {
-        const marksRes = await api.get("/results", {
+        const marksRes = await api.get("/teacher/results", {
           params: { examId: selectedExamId, examSubjectId: selectedSubjectId },
         });
         const marksList: any[] = marksRes.data.data || [];

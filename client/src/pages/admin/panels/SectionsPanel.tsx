@@ -31,8 +31,8 @@ const SectionsPanel = () => {
     setLoading(true);
     try {
       const [s, c] = await Promise.all([
-        api.get("/sections"),
-        api.get("/classes"),
+        api.get("/admin/sections"),
+        api.get("/admin/classes"),
       ]);
       setSections(s.data.data);
       setClasses(c.data.data);
@@ -54,7 +54,7 @@ const SectionsPanel = () => {
     }
 
     try {
-      await api.post("/sections", { name, classId });
+      await api.post("/admin/sections", { name, classId });
       showToast("Section created successfully", "success");
       setName("");
       setClassId("");
@@ -68,7 +68,7 @@ const SectionsPanel = () => {
   const deleteSection = async (id: string) => {
     if (!confirm("Are you sure you want to delete this section?")) return;
     try {
-      await api.delete(`/sections/${id}`);
+      await api.delete(`/admin/sections/${id}`);
       showToast("Section deleted", "success");
       load();
     } catch {

@@ -43,7 +43,7 @@ const RoutinePanel = () => {
   /* ================= LOAD ================= */
   useEffect(() => {
     api
-      .get("/teacher-assign")
+      .get("/admin/teacher-assign")
       .then((res) => setAssignments(res.data.data || []))
       .catch(() => showToast("Failed to load assignments", "error"));
   }, []);
@@ -52,7 +52,7 @@ const RoutinePanel = () => {
     if (!selectedClassId || !selectedSectionId) return;
 
     api
-      .get("/routine", {
+      .get("/admin/routine", {
         params: { classId: selectedClassId, sectionId: selectedSectionId },
       })
       .then((res) => setRoutine(res.data.data || []))
@@ -123,16 +123,16 @@ const RoutinePanel = () => {
   const saveRoutine = async (form: Routine) => {
     try {
       if (form._id) {
-        await api.put(`/routine/${form._id}`, form);
+        await api.put(`/admin/routine/${form._id}`, form);
         showToast("Routine updated", "success");
       } else {
-        await api.post("/routine", [form]);
+        await api.post("/admin/routine", [form]);
         showToast("Routine added", "success");
       }
 
       setModalOpen(false);
 
-      const res = await api.get("/routine", {
+      const res = await api.get("/admin/routine", {
         params: { classId: selectedClassId, sectionId: selectedSectionId },
       });
 
@@ -147,7 +147,7 @@ const RoutinePanel = () => {
     if (!confirm("Delete this slot?")) return;
 
     try {
-      await api.delete(`/routine/${slot._id}`);
+      await api.delete(`/admin/routine/${slot._id}`);
       setRoutine((prev) => prev.filter((r) => r._id !== slot._id));
       showToast("Deleted", "success");
     } catch {

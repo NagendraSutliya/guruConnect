@@ -1,5 +1,5 @@
-const Subject = require("../models/Subject");
-const { successResponse, errorResponse } = require("../utils/response");
+const Subject = require("../../models/Subject");
+const { successResponse, errorResponse } = require("../../utils/response");
 
 // CREATE SUBJECT
 exports.createSubject = async (req, res) => {

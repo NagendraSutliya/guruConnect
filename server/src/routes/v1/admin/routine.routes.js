@@ -3,9 +3,9 @@ const {
   getRoutine,
   saveRoutine,
   deleteRoutine,
-} = require("../../controllers/routine.controller");
+} = require("../../../controllers/admin/RoutineController");
 
-const { requireAdmin, allowRoles } = require("../../middleware/auth");
+const { requireAdmin, allowRoles } = require("../../../middleware/auth");
 
 router.get("/", allowRoles("admin", "teacher"), getRoutine);
 router.post("/", requireAdmin, saveRoutine);

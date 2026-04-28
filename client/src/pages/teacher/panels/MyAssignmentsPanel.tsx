@@ -40,7 +40,7 @@ export default function MyAssignmentsPanel() {
     try {
       setLoading(true);
       setError("");
-      const res = await api.get("/teacher-assign/my");
+      const res = await api.get("/teacher/assignments/my");
       setList(res.data.data || []);
     } catch (e) {
       setError("Failed to load assignments");

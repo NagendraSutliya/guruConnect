@@ -6,8 +6,8 @@ const {
   getClassSummary,
   getStudentSummary,
   getAttendanceHistory,
-} = require("../../controllers/attendance.controller");
-const { requireAdmin, requireTeacher } = require("../../middleware/auth");
+} = require("../../../controllers/admin/AttendanceController");
+const { requireAdmin, requireTeacher } = require("../../../middleware/auth");
 
 router.post("/", requireTeacher, saveAttendance);
 router.get("/", requireTeacher, getAttendance);

@@ -37,7 +37,7 @@ const AttendancePanel = () => {
     const loadAssignments = async () => {
       try {
         setLoadingAssignments(true);
-        const res = await api.get("/teacher-assign/my");
+        const res = await api.get("/teacher/attendance/my");
         setAssignments(res.data.data || []);
       } catch (err) {
         console.error(err);
@@ -60,11 +60,11 @@ const AttendancePanel = () => {
       try {
         setLoadingStudents(true);
 
-        const res = await api.get("/student/by-class", {
+        const res = await api.get("/teacher/attendance/by-class", {
           params: { classId: selectedClassId, sectionId: selectedSectionId },
         });
 
-        const attendanceRes = await api.get("/attendance", {
+        const attendanceRes = await api.get("/teacher/attendance", {
           params: {
             classId: selectedClassId,
             sectionId: selectedSectionId,

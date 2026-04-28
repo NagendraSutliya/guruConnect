@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
-const Exam = require("../models/Exam");
-const { successResponse, errorResponse } = require("../utils/response");
-const ExamSubject = require("../models/ExamSubject");
-const TeacherAssignment = require("../models/TeacherAssignment");
-const { getExamStatus } = require("../utils/examStatus");
+const Exam = require("../../../models/Exam");
+const { successResponse, errorResponse } = require("../../../utils/response");
+const ExamSubject = require("../../../models/ExamSubject");
+const TeacherAssignment = require("../../../models/TeacherAssignment");
+const { getExamStatus } = require("../../../utils/examStatus");
 
 // ============ GET EXAMS ==============
 exports.getExams = async (req, res) => {

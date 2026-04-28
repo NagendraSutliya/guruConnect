@@ -48,8 +48,8 @@ const ExamSubjectPanel = () => {
     try {
       setLoading(true);
       const [subRes, allSubRes] = await Promise.all([
-        api.get(`/exam-subjects/${examId}`),
-        api.get("/subjects"),
+        api.get(`/admin/exam-subjects/${examId}`),
+        api.get("/admin/subjects"),
       ]);
 
       setSubjects(subRes.data.data || []);
@@ -76,7 +76,7 @@ const ExamSubjectPanel = () => {
     }
 
     try {
-      await api.post("/exam-subjects", {
+      await api.post("/admin/exam-subjects", {
         examId,
         ...form,
       });
@@ -106,7 +106,7 @@ const ExamSubjectPanel = () => {
     if (!window.confirm("Delete this subject?")) return;
 
     try {
-      await api.delete(`/exam-subjects/${id}`);
+      await api.delete(`/admin/exam-subjects/${id}`);
       fetchData();
       showToast({ message: "Exam subject deleted", type: "success" });
     } catch (err) {
