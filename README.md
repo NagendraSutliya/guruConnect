@@ -1,3 +1,8 @@
+IMS_AI = Institute_Management_System_AI
+
+
+
+
 # guruConnect
 
 MASTER FLOW CHART (MERMAID FORMAT)
