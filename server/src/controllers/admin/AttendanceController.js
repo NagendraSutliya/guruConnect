@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Attendance = require("../../models/Attendance");
 const { successResponse, errorResponse } = require("../../utils/response");
 
@@ -6,7 +7,7 @@ exports.saveAttendance = async (req, res) => {
   try {
     const { classId, sectionId, date, records } = req.body;
 
-    const instituteId = req.user.id;
+    const instituteId = req.user.instituteId;
 
     if (!Array.isArray(records) || records.length === 0) {
       return errorResponse(res, "Invalid attendance payload", 400);
@@ -72,16 +73,19 @@ exports.getAttendance = async (req, res) => {
 /* ================= GET ATTENDANCE TODAY SUMMARY ================= */
 exports.getTodaySummary = async (req, res) => {
   try {
-    const instituteId = req.user.id;
+    const { date } = req.query;
+    const instituteId = req.user.instituteId;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const queryDate = date ? new Date(date) : new Date();
+    queryDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(queryDate);
+    endDate.setHours(23, 59, 59, 999);
 
     const data = await Attendance.aggregate([
       {
         $match: {
-          instituteId,
-          date: { $gte: today },
+          instituteId: new mongoose.Types.ObjectId(instituteId),
+          date: { $gte: queryDate, $lte: endDate },
         },
       },
       {
@@ -103,12 +107,13 @@ exports.getTodaySummary = async (req, res) => {
     const total = present + absent;
     const rate = total ? Math.round((present / total) * 100) : 0;
 
-    return successResponse(res, "Today summary", {
+    return successResponse(res, "Attendance summary", {
       present,
       absent,
       rate,
     });
   } catch (err) {
+    console.log(err);
     return errorResponse(res, "Summary failed");
   }
 };
@@ -116,28 +121,67 @@ exports.getTodaySummary = async (req, res) => {
 /* ================= GET ATTENDANCE CLASS SUMMARY ================= */
 exports.getClassSummary = async (req, res) => {
   try {
-    const instituteId = req.user.id;
+    const { date } = req.query;
+    const instituteId = req.user.instituteId;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const queryDate = date ? new Date(date) : new Date();
+    queryDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(queryDate);
+    endDate.setHours(23, 59, 59, 999);
 
     const data = await Attendance.aggregate([
       {
         $match: {
-          instituteId,
-          date: { $gte: today },
+          instituteId: new mongoose.Types.ObjectId(instituteId),
+          date: { $gte: queryDate, $lte: endDate },
         },
       },
       {
         $group: {
-          _id: { classId: "$classId", status: "$status" },
-          count: { $sum: 1 },
+          _id: "$classId",
+          present: { $sum: { $cond: [{ $eq: ["$status", "present"] }, 1, 0] } },
+          absent: { $sum: { $cond: [{ $eq: ["$status", "absent"] }, 1, 0] } },
         },
       },
+      {
+        $lookup: {
+          from: "classes",
+          localField: "_id",
+          foreignField: "_id",
+          as: "classInfo",
+        },
+      },
+      { $unwind: "$classInfo" },
+      {
+        $project: {
+          class: "$classInfo.name",
+          present: 1,
+          absent: 1,
+          total: { $add: ["$present", "$absent"] },
+          rate: {
+            $round: [
+              {
+                $multiply: [
+                  {
+                    $divide: [
+                      "$present",
+                      { $cond: [{ $eq: [{ $add: ["$present", "$absent"] }, 0] }, 1, { $add: ["$present", "$absent"] }] }
+                    ],
+                  },
+                  100,
+                ],
+              },
+              0,
+            ],
+          },
+        },
+      },
+      { $sort: { class: 1 } }
     ]);
 
     return successResponse(res, "Class summary", data);
   } catch (err) {
+    console.log(err);
     return errorResponse(res, "Class summary failed");
   }
 };
@@ -145,23 +189,45 @@ exports.getClassSummary = async (req, res) => {
 /* ================= GET ATTENDANCE STUDENT SUMMARY ================= */
 exports.getStudentSummary = async (req, res) => {
   try {
-    const instituteId = req.user.id;
+    const instituteId = req.user.instituteId;
 
     const data = await Attendance.aggregate([
-      { $match: { instituteId } },
+      { $match: { instituteId: new mongoose.Types.ObjectId(instituteId) } },
       {
         $group: {
           _id: "$studentId",
-          present: {
-            $sum: { $cond: [{ $eq: ["$status", "present"] }, 1, 0] },
-          },
+          present: { $sum: { $cond: [{ $eq: ["$status", "present"] }, 1, 0] } },
+          absent: { $sum: { $cond: [{ $eq: ["$status", "absent"] }, 1, 0] } },
           total: { $sum: 1 },
         },
       },
+      {
+        $lookup: {
+          from: "students",
+          localField: "_id",
+          foreignField: "_id",
+          as: "studentInfo",
+        },
+      },
+      { $unwind: "$studentInfo" },
+      {
+        $project: {
+          name: "$studentInfo.name",
+          rollNo: "$studentInfo.rollNo",
+          present: 1,
+          total: 1,
+          percentage: {
+            $round: [{ $multiply: [{ $divide: ["$present", "$total"] }, 100] }, 0],
+          },
+        },
+      },
+      { $sort: { percentage: -1 } },
+      { $limit: 10 } // Top 10 persistent students
     ]);
 
     return successResponse(res, "Student summary", data);
   } catch (err) {
+    console.log(err);
     return errorResponse(res, "Student summary failed");
   }
 };
@@ -169,7 +235,7 @@ exports.getStudentSummary = async (req, res) => {
 /* ================= HISTORY ================= */
 exports.getAttendanceHistory = async (req, res) => {
   try {
-    const instituteId = req.user.id;
+    const instituteId = req.user.instituteId;
 
     const list = await Attendance.find({ instituteId })
       .populate("studentId", "name rollNo")

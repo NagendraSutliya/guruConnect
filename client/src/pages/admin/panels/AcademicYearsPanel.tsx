@@ -5,14 +5,14 @@ import {
   FiTrash2,
   FiToggleLeft,
   FiToggleRight,
-  FiSearch,
-  FiX,
+  FiSearch,  
+  FiPlus,
+  FiCalendar,
 } from "react-icons/fi";
 import Toast from "../../../components/Toast";
 import type { AcademicYear } from "../../../types/admin/academicYear";
 import UpdateAcademicYearModal from "../../modals/admin/UpdateAcademicYearModal";
 
-// --- Helper: default session dates ---
 const getDefaultSessionDates = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -41,13 +41,9 @@ const getDefaultSessionDates = () => {
   };
 };
 
-// --- Date Format MM-DD-YYYY for display ---
 const formatDate = (date: string) => {
   const d = new Date(date);
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${mm}-${dd}-${yyyy}`;
+  return d.toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
 const AcademicYearsPanel = () => {
@@ -61,9 +57,8 @@ const AcademicYearsPanel = () => {
 
   const [editingYear, setEditingYear] = useState<AcademicYear | null>(null);
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const showToast = (message: string, type = "info") =>
     setToastMessage({ message, type });
@@ -91,11 +86,11 @@ const AcademicYearsPanel = () => {
     setLoading(true);
     try {
       await api.post("/admin/academic/academic-year", form);
-      showToast("Added", "success");
+      showToast("Academic year added", "success");
       setForm(defaultDates);
       load();
     } catch {
-      showToast("Error", "error");
+      showToast("Error creating academic year", "error");
     } finally {
       setLoading(false);
     }
@@ -112,6 +107,7 @@ const AcademicYearsPanel = () => {
   };
 
   const remove = async (id: string) => {
+    if(!confirm("Are you sure?")) return;
     await api.delete(`/admin/academic/academic-year/${id}`);
     load();
   };
@@ -120,7 +116,6 @@ const AcademicYearsPanel = () => {
     setEditingYear(y);
   };
 
-  // Filter + paginate
   const filtered = years.filter(
     (y) =>
       y.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -134,7 +129,7 @@ const AcademicYearsPanel = () => {
   );
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="space-y-6 pb-12 animate-fadeIn">
       {toastMessage && (
         <Toast
           message={toastMessage.message}
@@ -143,208 +138,216 @@ const AcademicYearsPanel = () => {
         />
       )}
 
-      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">Academic Years</h2>
-      </div>
-
-      {/* Add New Year Form */}
-      <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row md:items-end gap-4">
-        <div className="flex-grow flex flex-col gap-1">
-          <label className="text-sm font-semibold text-gray-600">Year</label>
-          <input
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="border rounded-md shadow px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Year (e.g. 2025-2026)"
-          />
+      {/* Header Section */}
+      <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Academic Timeline</h2>
+          <p className="text-slate-500 text-sm font-medium mt-1">Define and manage academic sessions and active school years.</p>
         </div>
-        <div className="flex-grow flex flex-col gap-1">
-          <label className="text-sm font-semibold text-gray-600">
-            Session Start
-          </label>
-          <input
-            type="date"
-            value={form.startDate}
-            onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-            className="border rounded-md shadow px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <div className="flex-grow flex flex-col gap-1">
-          <label className="text-sm font-semibold text-gray-600">
-            Session End
-          </label>
-          <input
-            type="date"
-            value={form.endDate}
-            onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-            className="border rounded-md shadow px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <div className="flex-1 flex items-end">
+        <div className="flex items-center gap-3">
           <button
-            onClick={handleSubmit}
-            className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow whitespace-nowrap"
+            onClick={load}
+            className="flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl font-bold shadow-sm transition-all active:scale-95 text-sm"
           >
-            {loading ? "Loading..." : "Add Session"}
+            <FiCalendar />
+            <span>Sync Years</span>
           </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Years</h3>
-          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
-            <FiSearch className="text-gray-400 ml-2" />
-            <input
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="px-3 py-2 text-sm outline-none"
-            />
-            <FiX
-              className={`text-gray-400 cursor-pointer mr-2 ${
-                search ? "opacity-100" : "opacity-0 pointer-events-none"
-              }`}
-              onClick={() => setSearch("")}
-            />
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        {/* Left: Configuration Sidebar */}
+        <div className="xl:col-span-1">
+          <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/20 shadow-sm sticky top-32 space-y-6">
+            <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
+               <div className="p-1 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-200">
+                 <FiPlus className="text-white" />
+               </div>
+               New Session
+            </h3>
+
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Session Name</label>
+                <input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="e.g. 2026-2027"
+                  className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Start Date</label>
+                <input
+                  type="date"
+                  value={form.startDate}
+                  onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                  className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">End Date</label>
+                <input
+                  type="date"
+                  value={form.endDate}
+                  onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                  className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+                />
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-black text-sm shadow-xl shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
+              >
+                {loading ? "Processing..." : "Create Session"}
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="w-full table-fixed">
-            <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
-              <tr>
-                <th className="p-3 ">Name</th>
-                <th className="p-3 ">Start</th>
-                <th className="p-3 ">End</th>
-                <th className="p-3 ">Status</th>
-                <th className="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={5} className="p-6 text-center text-gray-500">
-                    Loading academic years...
-                  </td>
-                </tr>
-              ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="p-6 text-center text-gray-500">
-                    No academic years found
-                  </td>
-                </tr>
-              ) : (
-                paginated.map((y) => (
-                  <tr key={y._id} className="border-t hover:bg-gray-50">
-                    <td className="p-3">{y.name}</td>
-                    <td className="p-3 text-sm">{formatDate(y.startDate)}</td>
-                    <td className="p-3 text-sm">{formatDate(y.endDate)}</td>
-                    <td className="p-3">
-                      <span
-                        className={`px-2 py-1 rounded text-sm ${
-                          y.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-200 text-gray-600"
-                        }`}
-                      >
-                        {y.isActive ? "active" : "inactive"}
-                      </span>
-                    </td>
-                    <td className="p-3 flex justify-end gap-1">
-                      <button
-                        onClick={() =>
-                          y.isActive ? deactivate(y._id) : activate(y._id)
-                        }
-                        className={`p-1 rounded ${
-                          y.isActive
-                            ? "text-red-600 hover:bg-red-50"
-                            : "text-green-600 hover:bg-green-50"
-                        }`}
-                        title={y.isActive ? "Deactivate" : "Activate"}
-                      >
-                        {y.isActive ? <FiToggleLeft /> : <FiToggleRight />}
-                      </button>
+        {/* Right: Timeline View */}
+        <div className="xl:col-span-3">
+           <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] border border-white/20 shadow-sm overflow-hidden flex flex-col">
+              <div className="p-8 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                 <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                   <div className="w-2 h-8 bg-indigo-600 rounded-full" />
+                   Academic Sessions
+                 </h3>
+                 <div className="relative w-full sm:w-80">
+                   <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                   <input
+                     placeholder="Search sessions..."
+                     value={search}
+                     onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+                     className="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+                   />
+                 </div>
+              </div>
 
-                      <button
-                        onClick={() => edit(y)}
-                        className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
-                      >
-                        <FiEdit />
-                      </button>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/50 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] border-b border-slate-100">
+                      <th className="px-8 py-5">Session Year</th>
+                      <th className="px-8 py-5">Duration</th>
+                      <th className="px-8 py-5">Status</th>
+                      <th className="px-8 py-5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {paginated.length > 0 ? (
+                      paginated.map((y) => (
+                        <tr key={y._id} className="group hover:bg-slate-50/50 transition-colors duration-300">
+                          <td className="px-8 py-4">
+                            <p className="text-sm font-black text-slate-800 group-hover:text-indigo-600 transition-colors">{y.name}</p>
+                          </td>
+                          <td className="px-8 py-4">
+                            <div className="flex items-center gap-3">
+                               <div className="flex flex-col">
+                                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Starts</span>
+                                  <span className="text-xs font-bold text-slate-600">{formatDate(y.startDate)}</span>
+                               </div>
+                               <div className="h-6 w-px bg-slate-200" />
+                               <div className="flex flex-col">
+                                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Ends</span>
+                                  <span className="text-xs font-bold text-slate-600">{formatDate(y.endDate)}</span>
+                               </div>
+                            </div>
+                          </td>
+                          <td className="px-8 py-4">
+                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                               y.isActive ? "bg-emerald-100 text-emerald-600 shadow-sm border border-emerald-200/50" : "bg-slate-100 text-slate-500"
+                             }`}>
+                               {y.isActive ? "Active Session" : "Inactive"}
+                             </span>
+                          </td>
+                          <td className="px-8 py-4 text-right">
+                             <div className="flex items-center justify-end gap-1">
+                               <button
+                                 onClick={() => y.isActive ? deactivate(y._id) : activate(y._id)}
+                                 className={`p-2.5 rounded-xl transition-all ${
+                                   y.isActive ? "text-slate-400 hover:text-rose-600 hover:bg-rose-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                                 }`}
+                                 title={y.isActive ? "Deactivate Session" : "Set as Active"}
+                               >
+                                 {y.isActive ? <FiToggleLeft size={18} /> : <FiToggleRight size={18} />}
+                               </button>
+                               <button
+                                 onClick={() => edit(y)}
+                                 className="p-2.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all"
+                               >
+                                 <FiEdit size={18} />
+                               </button>
+                               <button
+                                 onClick={() => remove(y._id)}
+                                 className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                               >
+                                 <FiTrash2 size={18} />
+                               </button>
+                             </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="p-16 text-center">
+                          <div className="flex flex-col items-center opacity-30">
+                            <FiCalendar size={48} className="mb-3" />
+                            <p className="text-sm font-black uppercase tracking-widest">No academic years defined</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-                      <button
-                        onClick={() => remove(y._id)}
-                        className="text-red-600 p-1 rounded hover:bg-red-50"
+              {/* Pagination */}
+              {!loading && filtered.length > 0 && (
+                <div className="p-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                   <div className="flex items-center gap-4">
+                      <span>Sessions per page</span>
+                      <select
+                        value={itemsPerPage}
+                        onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                        className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 outline-none"
                       >
-                        <FiTrash2 />
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                        {[5, 10, 20].map(n => <option key={n} value={n}>{n}</option>)}
+                      </select>
+                   </div>
+                   <div className="flex items-center gap-6">
+                      <span>Page <span className="text-indigo-600 font-black">{currentPage}</span> of {totalPages || 1}</span>
+                      <div className="flex gap-2">
+                         <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-4 py-2 hover:bg-white hover:shadow-md rounded-xl transition-all disabled:opacity-30">Prev</button>
+                         <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages || totalPages === 0} className="px-4 py-2 hover:bg-white hover:shadow-md rounded-xl transition-all disabled:opacity-30">Next</button>
+                      </div>
+                   </div>
+                </div>
               )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <div>
-            <label className="mr-2 text-gray-700 text-sm">
-              Items per page:
-            </label>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => {
-                setItemsPerPage(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="border rounded px-2 py-1 text-sm"
-            >
-              {[5, 10, 15, 20].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-2 py-1 border rounded disabled:opacity-50"
-            >
-              Prev
-            </button>
-            <span className="text-sm">
-              Page {currentPage} of {totalPages || 1}
-            </span>
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages || totalPages === 0}
-              className="px-2 py-1 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+           </div>
         </div>
       </div>
 
-      {/* Modal */}
       {editingYear && (
         <UpdateAcademicYearModal
           year={editingYear}
           onClose={() => setEditingYear(null)}
-          onUpdated={load} // refresh table after update
+          onUpdated={load}
         />
       )}
+
+      <style>{`
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

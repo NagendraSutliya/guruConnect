@@ -5,8 +5,9 @@ const {
   registerInstitute,
   verifyInstitute,
   loginInstitute,
-  loginTeacher,
-} = require("../../controllers/auth.controller");
+} = require("../../controllers/auth/AdminAuthController");
+
+const { loginTeacher } = require("../../controllers/auth/TeacherAuthController");
 
 /* Institute Auth */
 router.post("/register", registerInstitute);

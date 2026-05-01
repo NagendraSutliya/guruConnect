@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const { studentLogin } = require("../../controllers/auth.controller");
+const { studentLogin } = require("../../../controllers/auth/StudentAuthController");
 const {
   getStudentOverview,
   changeStudentPassword,
   getStudentsByClass,
-} = require("../../controllers/student.controller");
-const { requireStudent } = require("../../middleware/auth");
+} = require("../../../controllers/student/StudentController");
+const { requireStudent } = require("../../../middleware/auth");
 
 // auth
 router.post("/login", studentLogin);

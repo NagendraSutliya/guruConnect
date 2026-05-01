@@ -13,6 +13,9 @@ exports.getAdminStats = async (req, res) => {
 
     const institute = await Institute.findById(instituteId).select("plan");
 
+    const classes = await require("../../models/Class.js").find({ instituteId }).select("_id");
+    const classIds = classes.map((c) => c._id);
+
     const [
       teachers,
       students,
@@ -22,7 +25,7 @@ exports.getAdminStats = async (req, res) => {
       newTeachersToday,
     ] = await Promise.all([
       Teacher.countDocuments({ instituteId }),
-      Student.countDocuments({ instituteId }), // ✅ FIXED
+      Student.countDocuments({ classId: { $in: classIds } }),
       Feedback.countDocuments({ instituteId }),
       Feedback.countDocuments({
         instituteId,
@@ -38,6 +41,35 @@ exports.getAdminStats = async (req, res) => {
       }),
     ]);
 
+    // --- Trend Data (Last 7 Days) ---
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const getDailyTrend = async (model, filter = {}) => {
+      const trend = await model.aggregate([
+        {
+          $match: {
+            ...filter,
+            createdAt: { $gte: sevenDaysAgo },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+      return trend;
+    };
+
+    const [teacherTrend, feedbackTrend, studentTrend] = await Promise.all([
+      getDailyTrend(Teacher, { instituteId }),
+      getDailyTrend(Feedback, { instituteId }),
+      getDailyTrend(Student, { classId: { $in: classIds } }),
+    ]);
+
     return successResponse(res, "Admin stats loaded", {
       teachers,
       students,
@@ -46,6 +78,11 @@ exports.getAdminStats = async (req, res) => {
       avgRating: avgRating[0]?.avg || 0,
       newTeachersToday,
       plan: institute?.plan || "free",
+      trends: {
+        teachers: teacherTrend,
+        students: studentTrend,
+        feedback: feedbackTrend,
+      },
     });
   } catch (err) {
     return errorResponse(res, "Failed to load stats");

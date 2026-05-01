@@ -5,13 +5,101 @@ import {
   FaSignOutAlt,
   FaUserCircle,
   FaUserShield,
+  FaCheckDouble,
+  FaTrashAlt,
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../api/axiosInstance";
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  timestamp: Date;
+  isRead: boolean;
+  type: "info" | "warning" | "success";
+}
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const notificationRef = useRef<HTMLDivElement | null>(null);
+
+  const [adminEmail, setAdminEmail] = useState(() => {
+    if (user?.email && user.email !== "admin@guruconnect.com") return user.email;
+    const saved = localStorage.getItem("admin");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.email && parsed.email !== "admin@guruconnect.com") return parsed.email;
+    }
+    return "";
+  });
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+
+  const fetchRealNotifications = async () => {
+    setLoadingNotifications(true);
+    try {
+      const [feedbackRes, teachersRes] = await Promise.all([
+        api.get("/admin/feedback"),
+        api.get("/admin/teachers"),
+      ]);
+
+      const feedbackData = feedbackRes.data.data || [];
+      const teachersData = teachersRes.data.data || [];
+
+      const formattedNotifications: Notification[] = [
+        ...feedbackData.map((f: any) => ({
+          id: f._id,
+          title: "New Feedback",
+          message: `Feedback from ${f.studentName || f.studentId?.name || "Student"} for ${f.teacherName || f.teacherId?.name || "Teacher"}: "${f.message.substring(0, 40)}..."`,
+          time: formatTime(f.createdAt),
+          timestamp: new Date(f.createdAt),
+          isRead: true, // Assuming old ones are read for now, or you could track this
+          type: "info" as const,
+        })),
+        ...teachersData.map((t: any) => ({
+          id: t._id,
+          title: "New Teacher Joined",
+          message: `${t.name} has registered as a new faculty member.`,
+          time: formatTime(t.createdAt),
+          timestamp: new Date(t.createdAt),
+          isRead: true,
+          type: "success" as const,
+        })),
+      ];
+
+      // Sort by newest first
+      formattedNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+      // Only show last 10
+      setNotifications(formattedNotifications.slice(0, 10));
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInMins = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInMins < 60) return `${diffInMins} mins ago`;
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+    return `${diffInDays} days ago`;
+  };
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const goToProfile = () => {
     setShowProfileDropdown(false);
@@ -26,10 +114,51 @@ const AdminNavbar = () => {
   const logout = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("adminToken");
+    localStorage.removeItem("admin");
     navigate("/");
   };
 
+  const markAllAsRead = () => {
+    setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
+  };
+
+  const clearNotifications = () => {
+    setNotifications([]);
+  };
+
+  const markAsRead = (id: string) => {
+    setNotifications(
+      notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+    );
+  };
+
   useEffect(() => {
+    fetchRealNotifications();
+
+    // Fetch email if missing or if it's the dummy one
+    const isDummyEmail = !user?.email || user?.email === "admin@guruconnect.com";
+    if (user && isDummyEmail) {
+      api.get("/admin/profile")
+        .then(res => {
+          const realEmail = res.data.data?.email;
+          if (realEmail) {
+            setAdminEmail(realEmail);
+            // Update local storage for persistence
+            const updatedUser = { ...user, email: realEmail };
+            localStorage.setItem("admin", JSON.stringify(updatedUser));
+          } else {
+            // Fallback if no email found in response
+            setAdminEmail(user?.email || "No email set");
+          }
+        })
+        .catch(err => {
+          console.error("Profile fetch error:", err);
+          setAdminEmail(user?.email || "Email unavailable");
+        });
+    } else if (user?.email) {
+      setAdminEmail(user.email);
+    }
+
     const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -37,95 +166,252 @@ const AdminNavbar = () => {
       ) {
         setShowProfileDropdown(false);
       }
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [user]);
 
   return (
-    <header className="flex items-center justify-between bg-gray-50 shadow-md px-6 py-2">
-      <Link to="/" className="flex items-center gap-2">
+    <header className="sticky top-0 z-50 flex items-center justify-between bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm px-6 py-2">
+      <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
         <img
           src="/guruconnect-logo.png"
           alt="GuruConnect Logo"
-          className="w-20 h-20"
+          className="w-14 h-14 object-contain"
         />
+        <div className="hidden sm:block">
+          <h2 className="text-xl font-extrabold tracking-tight text-slate-800 leading-tight">
+            Guru<span className="text-indigo-600">Connect</span>
+          </h2>
+          <p className="text-[10px] font-bold text-slate-400 tracking-wide uppercase">
+            {user?.instituteName || "Admin Portal"}
+          </p>
+        </div>
       </Link>
 
-      <div className="flex items-center gap-3">
-        <FaUserShield className="text-blue-600" size={26} />
-        <h1 className="text-lg font-semibold text-gray-800">
-          Admin <span className="text-gray-500 font-medium">Dashboard</span>
+      <div className="flex items-center gap-3 bg-indigo-50/50 px-4 py-1.5 rounded-full border border-indigo-100/50">
+        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-200">
+          <FaUserShield className="text-white" size={16} />
+        </div>
+        <h1 className="text-sm font-bold text-slate-700">
+          Admin <span className="text-indigo-500 font-medium ml-1">Dashboard</span>
         </h1>
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Notification */}
-        <button className="text-gray-500 hover:text-gray-700">
-          <FaBell size={20} />
-        </button>
-        {/* Divider */}
-        <div className="h-6 w-px bg-gray-300" />
-        {/* <Link
-          to="/admin/dashboard"
-          className="flex items-center gap-1 px-3 py-1 rounded hover:bg-gray-100 transition text-gray-700 font-medium"
-        >
-          <FaHome />
-          Home
-        </Link> */}
+      <div className="flex items-center gap-6">
+        {/* Notification Bell */}
+        <div className="relative" ref={notificationRef}>
+          <button
+            onClick={() => {
+              setShowNotifications(!showNotifications);
+              setShowProfileDropdown(false);
+            }}
+            className={`relative p-2 rounded-xl transition-all duration-300 ${
+              showNotifications
+                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200"
+                : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+            }`}
+          >
+            <FaBell size={20} className={unreadCount > 0 ? "animate-wiggle" : ""} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {showNotifications && (
+            <div className="absolute right-0 mt-3 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-dropdown origin-top-right">
+              <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+                <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                  Recent Activity
+                  <span className="bg-indigo-100 text-indigo-600 text-[10px] px-2 py-0.5 rounded-full">
+                    {notifications.length}
+                  </span>
+                </h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={markAllAsRead}
+                    className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    title="Mark all as read"
+                  >
+                    <FaCheckDouble size={14} />
+                  </button>
+                  <button
+                    onClick={clearNotifications}
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                    title="Clear all"
+                  >
+                    <FaTrashAlt size={14} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                {loadingNotifications ? (
+                  <div className="p-8 text-center flex flex-col items-center gap-2">
+                    <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-xs text-slate-500 font-medium">Syncing live data...</p>
+                  </div>
+                ) : notifications.length > 0 ? (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={() => markAsRead(n.id)}
+                      className={`p-4 border-b border-slate-50 cursor-pointer transition-colors hover:bg-slate-50 ${
+                        !n.isRead ? "bg-indigo-50/30" : ""
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-1">
+                        <span
+                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                            n.type === "success"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : n.type === "warning"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-blue-100 text-blue-700"
+                          }`}
+                        >
+                          {n.title}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {n.time}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        {n.message}
+                      </p>
+                      {!n.isRead && (
+                        <div className="mt-2 w-1.5 h-1.5 rounded-full bg-indigo-600" />
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-8 text-center">
+                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <FaBell className="text-slate-300" size={24} />
+                    </div>
+                    <p className="text-slate-400 text-sm">No activity recorded yet</p>
+                  </div>
+                )}
+              </div>
+
+              {notifications.length > 0 && (
+                <div className="p-3 bg-slate-50/50 text-center border-t border-slate-50">
+                  <button 
+                    onClick={() => navigate("/admin/dashboard")}
+                    className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+                  >
+                    View detailed activity
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
-            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-            className="flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100 transition"
+            onClick={() => {
+              setShowProfileDropdown(!showProfileDropdown);
+              setShowNotifications(false);
+            }}
+            className={`flex items-center gap-3 p-1 pr-3 rounded-full transition-all duration-300 border ${
+              showProfileDropdown
+                ? "bg-white border-indigo-200 shadow-md"
+                : "bg-slate-50 border-transparent hover:border-slate-200"
+            }`}
           >
-            <FaUserCircle className="text-2xl text-gray-600" />
-            <span className="font-medium text-gray-700">Admin</span>
+            <div className="relative">
+              <FaUserCircle className="text-3xl text-slate-400" />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
+            </div>
+            <div className="text-left hidden md:block">
+              <p className="text-xs font-bold text-slate-800 leading-tight">
+                {user?.instituteName || "Admin"}
+              </p>
+              <p className="text-[10px] font-medium text-slate-500">Super Admin</p>
+            </div>
           </button>
 
           {showProfileDropdown && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 animate-dropdown">
-              <button
-                onClick={goToProfile}
-                className="flex items-center w-full gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
-              >
-                <FaUserCircle />
-                Profile
-              </button>
+            <div className="absolute right-0 mt-3 w-56 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-dropdown origin-top-right">
+              <div className="p-4 bg-gradient-to-br from-indigo-600 to-purple-600 text-white">
+                <p className="font-bold text-sm">{user?.instituteName || "Admin User"}</p>
+                <p className="text-[10px] opacity-80 font-medium truncate">{adminEmail || user?.email || "admin@guruconnect.com"}</p>
+              </div>
+              
+              <div className="p-2">
+                <button
+                  onClick={goToProfile}
+                  className="flex items-center w-full gap-3 px-3 py-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all font-medium text-sm"
+                >
+                  <FaUserCircle size={16} />
+                  My Profile
+                </button>
 
-              <button
-                onClick={goToSettings}
-                className="flex items-center w-full gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
-              >
-                <FaCog />
-                Settings
-              </button>
-              <button
-                onClick={logout}
-                className="flex items-center w-full gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
-              >
-                <FaSignOutAlt />
-                Logout
-              </button>
+                <button
+                  onClick={goToSettings}
+                  className="flex items-center w-full gap-3 px-3 py-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all font-medium text-sm"
+                >
+                  <FaCog size={16} />
+                  Account Settings
+                </button>
+                
+                <div className="h-px bg-slate-100 my-2 mx-2" />
+
+                <button
+                  onClick={logout}
+                  className="flex items-center w-full gap-3 px-3 py-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all font-bold text-sm"
+                >
+                  <FaSignOutAlt size={16} />
+                  Logout
+                </button>
+              </div>
             </div>
           )}
-        </div>{" "}
+        </div>
       </div>
 
-      {/* Dropdown animation */}
       <style>
         {`
           .animate-dropdown {
-            animation: dropdown 0.15s ease-out forwards;
+            animation: dropdown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           }
           @keyframes dropdown {
             from {
               opacity: 0;
-              transform: translateY(-5px) scale(0.95);
+              transform: translateY(-10px) scale(0.95);
             }
             to {
               opacity: 1;
               transform: translateY(0) scale(1);
             }
+          }
+          @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+          }
+          .animate-wiggle {
+            animation: wiggle 0.5s ease-in-out infinite;
+          }
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #e2e8f0;
+            border-radius: 20px;
           }
         `}
       </style>
@@ -134,3 +420,5 @@ const AdminNavbar = () => {
 };
 
 export default AdminNavbar;
+
+

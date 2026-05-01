@@ -26,11 +26,19 @@ export const AuthProvider = ({ children }: any) => {
         }
       }
 
-      // ✅ TEACHER SUPPORT (new system)
+      // ✅ TEACHER SUPPORT
       if (savedRole === "teacher") {
         const teacher = localStorage.getItem("teacher");
         if (teacher && teacher !== "undefined") {
           setUser(JSON.parse(teacher));
+        }
+      }
+
+      // ✅ STUDENT SUPPORT
+      if (savedRole === "student") {
+        const student = localStorage.getItem("student");
+        if (student && student !== "undefined") {
+          setUser(JSON.parse(student));
         }
       }
     } catch (err) {

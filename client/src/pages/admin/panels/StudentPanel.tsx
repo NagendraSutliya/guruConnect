@@ -3,12 +3,20 @@ import api from "../../../api/axiosInstance";
 import Toast from "../../../components/Toast";
 import {
   FiEdit,
+  FiEye,
   FiSearch,
   FiToggleLeft,
   FiToggleRight,
   FiTrash2,
   FiX,
+  FiUserPlus,
+  FiDownload,
+  FiCopy,
+  FiCheckCircle,
 } from "react-icons/fi";
+import {  FaUserCheck, FaUserTimes, FaUsers } from "react-icons/fa";
+import AddStudentModal from "../../modals/admin/AddStudentModal";
+import ViewStudentModal from "../../../components/admin/ViewStudentModal";
 
 const StudentPanel = () => {
   const [students, setStudents] = useState<any[]>([]);
@@ -19,11 +27,20 @@ const StudentPanel = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    password: "",
+    rollNo: "",
     classId: "",
     sectionId: "",
+    phone: "",
+    parentName: "",
+    dob: "",
+    admissionDate: "",
+    address: "",
   });
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error" | "info" | "warn";
@@ -33,7 +50,7 @@ const StudentPanel = () => {
     "all" | "active" | "inactive"
   >(() => (localStorage.getItem("studentFilter") as any) || "all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [newStudentCreds, setNewStudentCreds] = useState<{
     email: string;
@@ -44,6 +61,18 @@ const StudentPanel = () => {
   const showToast = (message: string, type: any = "info") => {
     setToast({ message, type });
   };
+
+  useEffect(() => {
+  if (showForm || showViewModal) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+
+  return () => {
+    document.body.style.overflow = "auto";
+  };
+}, [showForm, showViewModal]);
 
   // Load students
   const loadStudents = async () => {
@@ -86,6 +115,7 @@ const StudentPanel = () => {
       try {
         const res = await api.get(`/admin/sections/class/${form.classId}`);
         setSections(res.data.data || []);
+        // Only reset sectionId if the current one isn't in the new list
         setForm((prev) => ({ ...prev, sectionId: "" }));
       } catch (err) {
         setSections([]);
@@ -112,18 +142,23 @@ const StudentPanel = () => {
       } else {
         const res = await api.post("/admin/students", form);
         const creds = res.data.data;
-
-        // Set the credentials instead of using toast
         setNewStudentCreds({ email: creds.email, password: creds.password });
-
         showToast("Student created successfully ✅", "success");
-        // showToast(
-        //   `Student created ✅ Email: ${creds.email}, Password: ${creds.password}`,
-        //   "success"
-        // );
       }
 
-      setForm({ name: "", email: "", classId: "", sectionId: "" });
+      setForm({
+        name: "",
+        email: "",
+        password: "",
+        rollNo: "",
+        classId: "",
+        sectionId: "",
+        phone: "",
+        parentName: "",
+        dob: "",
+        admissionDate: "",
+        address: "",
+      });
       setEditingStudent(null);
       setShowForm(false);
       loadStudents();
@@ -171,19 +206,43 @@ const StudentPanel = () => {
     }
   };
 
+  const viewStudent = (student: any) => {
+    setSelectedStudent(student);
+    setShowViewModal(true);
+  };
+
   const editStudent = (student: any) => {
     setEditingStudent(student);
     setForm({
       name: student.name,
-      email: student.email,
-      classId: student.classId?._id || "",
-      sectionId: student.sectionId?._id || "",
+      email: student.email || "",
+      password: "",
+      rollNo: student.rollNo || "",
+      classId: student.classId?._id || student.classId || "",
+      sectionId: student.sectionId?._id || student.sectionId || "",
+      phone: student.phone || "",
+      parentName: student.parentName || "",
+      dob: student.dob ? new Date(student.dob).toISOString().split('T')[0] : "",
+      admissionDate: student.admissionDate ? new Date(student.admissionDate).toISOString().split('T')[0] : "",
+      address: student.address || "",
     });
     setShowForm(true);
   };
 
   const closeForm = () => {
-    setForm({ name: "", email: "", classId: "", sectionId: "" });
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      rollNo: "",
+      classId: "",
+      sectionId: "",
+      phone: "",
+      parentName: "",
+      dob: "",
+      admissionDate: "",
+      address: "",
+    });
     setEditingStudent(null);
     setShowForm(false);
   };
@@ -216,7 +275,7 @@ const StudentPanel = () => {
   }, [statusFilter, searchTerm, itemsPerPage]);
 
   return (
-    <div className="space-y-1 pb-8">
+    <div className="space-y-6 pb-8 animate-fadeIn">
       {/* Toast */}
       {toast && (
         <Toast
@@ -226,207 +285,271 @@ const StudentPanel = () => {
         />
       )}
 
+      {/* Credentials Banner */}
       {newStudentCreds && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded shadow mb-4 flex justify-between items-center">
-          <div>
-            <p className="font-semibold">New Student Credentials:</p>
-            <p>
-              Email: <span className="font-mono">{newStudentCreds.email}</span>
-            </p>
-            <p>
-              Password:{" "}
-              <span className="font-mono">{newStudentCreds.password}</span>
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `Email: ${newStudentCreds.email}, Password: ${newStudentCreds.password}`
-                );
-              }}
-              className="bg-green-600 text-white px-3 py-1 rounded"
-            >
-              Copy
-            </button>
-            <button
-              onClick={() => setNewStudentCreds(null)}
-              className="bg-gray-300 px-3 py-1 rounded"
-            >
-              Close
-            </button>
-          </div>
+        <div className="bg-indigo-600 rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h3 className="text-xl font-black tracking-tight mb-2 flex items-center gap-2">
+                        <FiCheckCircle className="text-emerald-400" /> 
+                        Student Credentials Generated
+                    </h3>
+                    <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                        <div className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md rounded-2xl px-4 py-2 border border-white/20">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Email Address :</p>
+                            <p className="font-mono font-bold">{newStudentCreds.email}</p>
+                        </div>
+                        <div className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md rounded-2xl px-4 py-2 border border-white/20">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Temporary Password :</p>
+                            <p className="font-mono font-bold">{newStudentCreds.password}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => {
+                            navigator.clipboard.writeText(`Email: ${newStudentCreds.email}\nPassword: ${newStudentCreds.password}`);
+                            showToast("Copied to clipboard!", "success");
+                        }}
+                        className="flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-2xl font-black shadow-xl hover:scale-105 transition-transform active:scale-95"
+                    >
+                        <FiCopy /> Copy Both
+                    </button>
+                    <button
+                        onClick={() => setNewStudentCreds(null)}
+                        className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl border border-white/20 transition-colors"
+                    >
+                        <FiX size={20} />
+                    </button>
+                </div>
+            </div>
         </div>
       )}
 
-      {/* Header */}
-      <div className="sticky top-0 z-20 bg-gray-100 py-1">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-800 py-2">Students</h2>
+      {/* Header Section */}
+      <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Student Enrollment</h2>
+          <p className="text-slate-500 text-sm font-medium mt-1">Manage student records, classes, and portal access.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl font-bold shadow-sm transition-all active:scale-95 text-sm">
+            <FiDownload />
+            <span>Export</span>
+          </button>
           {!showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold shadow hover:bg-blue-700 transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-5 py-2 rounded-xl font-bold shadow-md shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:scale-95 text-sm"
             >
-              + Add Student
+              <FiUserPlus />
+              <span>Add Student</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Container */}
-      <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
-        {/* Count */}
-        <div className="flex items-center justify-start gap-2">
-          <p className="text-lg font-bold text-gray-700">Total Students :</p>
-          <span className="text-blue-700 px-1 text-xl font-bold">
-            {students.length}
-          </span>
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+         <div className="bg-gradient-to-br from-white to-blue-50/50 rounded-2xl p-5 shadow-sm border border-blue-100/60 flex items-center gap-4 transition-all hover:shadow-[0_8px_30px_rgb(59,130,246,0.1)] hover:-translate-y-1 duration-300 group">
+          <div className="w-12 h-12 rounded-xl bg-blue-100/80 flex items-center justify-center text-blue-600 text-xl shadow-inner group-hover:scale-110 transition-transform">
+            <FaUsers />
+          </div>
+           <div>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Enrolled</p>
+             <h3 className="text-3xl font-black text-slate-800">{counts.all}</h3>
+           </div>
+        </div>
+        
+         <div className="bg-gradient-to-br from-white to-emerald-50/50 rounded-2xl p-5 shadow-sm border border-emerald-100/60 flex items-center gap-4 transition-all hover:shadow-[0_8px_30px_rgb(16,185,129,0.1)] hover:-translate-y-1 duration-300 group">
+          <div className="w-12 h-12 rounded-xl bg-emerald-100/80 flex items-center justify-center text-emerald-600 text-xl shadow-inner group-hover:scale-110 transition-transform">
+            <FaUserCheck />
+          </div>
+           <div>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Students</p>
+             <h3 className="text-3xl font-black text-slate-800">{counts.active}</h3>
+           </div>
         </div>
 
-        {/* Search + Filter */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
-            <FiSearch className="text-gray-400 ml-2" />
+         <div className="bg-gradient-to-br from-white to-rose-50/50 rounded-2xl p-5 shadow-sm border border-rose-100/60 flex items-center gap-4 transition-all hover:shadow-[0_8px_30px_rgb(244,63,94,0.1)] hover:-translate-y-1 duration-300 group">
+          <div className="w-12 h-12 rounded-xl bg-rose-100/80 flex items-center justify-center text-rose-600 text-xl shadow-inner group-hover:scale-110 transition-transform">
+            <FaUserTimes />
+          </div>
+           <div>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Inactive / Left</p>
+             <h3 className="text-3xl font-black text-slate-800">{counts.inactive}</h3>
+           </div>
+        </div>
+      </div>
+
+      {/* Main Table Section */}
+     <div className="bg-white rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] border border-slate-200 overflow-hidden flex flex-col">
+        {/* Toolbar */}
+        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-50/50">
+             <div className="relative w-full sm:w-72">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FiSearch className="text-slate-400" />
+            </div>
             <input
               type="text"
-              placeholder="Search student..."
+              placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-3 py-2 text-sm outline-none"
+              className="w-full pl-9 pr-9 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-shadow shadow-sm"
             />
-            <FiX
-              className={`text-gray-400 cursor-pointer mr-2 ${
-                searchTerm ? "opacity-100" : "opacity-0 pointer-events-none"
-              }`}
-              onClick={() => setSearchTerm("")}
-            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+              >
+                <FiX />
+              </button>
+            )}
           </div>
 
-          {/* Status Filters */}
-          <div className="inline-flex bg-gray-100 rounded-full">
+ <div className="flex bg-slate-100/80 p-1 rounded-lg w-full sm:w-auto">
             {(["all", "active", "inactive"] as const).map((status) => {
               const isActive = statusFilter === status;
               return (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
-                  className={`px-4 py-1 rounded-full text-sm font-semibold transition ${
+                  className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition-all duration-200 capitalize ${
                     isActive
-                      ? "bg-green-600 text-white shadow"
-                      : "text-gray-600 hover:bg-gray-200"
+                      ? "bg-white text-blue-600 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
                   }`}
                 >
-                  {status} ({counts[status]})
+                  {status}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Student Table */}
-
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="w-full table-fixed">
-            <thead className="bg-green-100 text-xs font-semibold text-gray-700 uppercase text-left">
-              <tr>
-                <th className="p-3">Student</th>
-                <th className="p-3">Email</th>
-                <th className="p-3">Class</th>
-                <th className="p-3">Section</th>
-                <th className="p-3">Status</th>
-                <th className="pr-10 text-right">Actions</th>
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+               <tr className="bg-slate-50/80 text-slate-600 text-[11px] uppercase tracking-wider font-black border-b border-slate-100">
+                <th className="px-5 py-3">Student Info</th>
+                <th className="px-5 py-3">Contact</th>
+                <th className="px-5 py-3">Academic Info</th>
+                <th className="px-5 py-3 text-center">Status</th>
+                <th className="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-
-            <tbody>
+            <tbody className="divide-y divide-slate-50">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center text-gray-500">
-                    Loading students...
+                  <td colSpan={4} className="p-8 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                      <p className="text-sm font-bold text-slate-500">Syncing Student Data...</p>
+                    </div>
                   </td>
                 </tr>
-              ) : filteredStudents.length === 0 ? (
+              ) : paginatedStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center text-gray-500">
-                    No students found
+                  <td colSpan={4} className="p-8 text-center text-slate-500">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                      <FiSearch size={24} className="text-slate-300" />
+                    </div>
+                    <p className="text-lg font-black text-slate-700">No students found</p>
+                    <p className="text-sm font-medium mt-1">Try a different search term or filter.</p>
                   </td>
                 </tr>
               ) : (
                 paginatedStudents.map((s) => {
                   const isLoading = actionLoading === s._id;
+                  const initials = s.name?.substring(0, 2).toUpperCase() || "??";
 
                   return (
-                    <tr
-                      key={s._id}
-                      className="border-t hover:bg-gray-50 transition"
-                    >
-                      <td className="p-3 flex items-center gap-3">
-                        <div>
-                          <p className="font-medium text-gray-800">
-                            {s.name || "Unnamed"}
-                          </p>
+                    <tr key={s._id} className="group hover:bg-slate-50/50 transition-colors duration-200">
+                      {/* Student Info */}
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-[10px] shadow-sm">
+                            {initials}
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">
+                              {s.name || "Unnamed Student"}
+                            </p>
+                            <p className="text-[10px] text-slate-400 font-medium">
+                              ID: {s._id?.slice(-6).toUpperCase()}
+                            </p>
+                          </div>
                         </div>
                       </td>
 
-                      <td className="p-3 text-sm text-gray-600">{s.email}</td>
-                      <td className="p-3 text-sm text-gray-600">
-                        {s.classId?.name}
-                      </td>
-                      <td className="p-3 text-sm text-gray-600">
-                        {s.sectionId?.name || "-"}
+                      {/* Contact */}
+                      <td className="px-5 py-3">
+                        <span className="text-xs text-slate-600 font-medium">{s.email}</span>
                       </td>
 
-                      <td className="px-3 text-left">
-                        <span
-                          className={`px-2 py-1 rounded text-sm font-semibold ${
-                            s.isActive
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-200 text-gray-600"
-                          }`}
-                        >
-                          {s.isActive ? "active" : "inactive"}
+                      {/* Academic Info */}
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-2">
+                           <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                             Class {s.classId?.name || "N/A"}
+                           </span>
+                           {s.sectionId && (
+                             <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                               Sec {s.sectionId?.name}
+                             </span>
+                           )}
+                        </div>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-5 py-3 text-center">
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
+                          s.isActive ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-500"
+                        }`}>
+                          {s.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
 
-                      <td className="p-3 flex justify-end gap-1">
-                        <button
-                          onClick={() => toggleStudent(s)}
-                          disabled={isLoading}
-                          className={`p-1 rounded transition ${
-                            s.isActive
-                              ? "text-red-600 hover:bg-red-50"
-                              : "text-green-600 hover:bg-green-50"
-                          }`}
-                          title={s.isActive ? "Deactivate" : "Activate"}
-                        >
-                          {isLoading ? (
-                            <span className="text-xs">...</span>
-                          ) : s.isActive ? (
-                            <FiToggleLeft />
-                          ) : (
-                            <FiToggleRight />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => editStudent(s)}
-                          className="text-yellow-600 p-1 rounded hover:bg-yellow-50"
-                          title="Edit"
-                        >
-                          <FiEdit />
-                        </button>
-                        <button
-                          onClick={() => deleteStudent(s)}
-                          disabled={isLoading}
-                          className="text-red-600 p-1 rounded hover:bg-red-50"
-                          title="Delete"
-                        >
-                          {isLoading ? (
-                            <span className="text-xs">...</span>
-                          ) : (
-                            <FiTrash2 />
-                          )}
-                        </button>
+                      {/* Actions */}
+                      <td className="px-5 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => viewStudent(s)}
+                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                            title="View Profile"
+                          >
+                            <FiEye size={16} />
+                          </button>
+
+                          <button
+                            onClick={() => editStudent(s)}
+                            className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
+                            title="Edit Record"
+                          >
+                            <FiEdit size={16} />
+                          </button>
+
+                          <button
+                            onClick={() => toggleStudent(s)}
+                            disabled={isLoading}
+                            className={`p-1.5 rounded-lg transition-all ${
+                              s.isActive ? "text-slate-400 hover:text-rose-600 hover:bg-rose-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                            }`}
+                            title={s.isActive ? "Deactivate Account" : "Activate Account"}
+                          >
+                            {isLoading ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : s.isActive ? <FiToggleLeft size={16} /> : <FiToggleRight size={16} />}
+                          </button>
+
+                          <button
+                            onClick={() => deleteStudent(s)}
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                            title="Delete Student"
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -436,128 +559,67 @@ const StudentPanel = () => {
           </table>
         </div>
 
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center mt-4">
-          {/* Items per page selector */}
-          <div>
-            <label className="mr-2 text-gray-700 text-sm">
-              Items per page:
-            </label>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => setItemsPerPage(Number(e.target.value))}
-              className="border rounded px-2 py-1 text-sm"
-            >
-              {[5, 10, 15, 20].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Page navigation */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-2 py-1 border rounded disabled:opacity-50"
-            >
-              Prev
-            </button>
-
-            <span className="text-sm">
-              Page {currentPage} of {totalPages || 1}
-            </span>
-
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages || totalPages === 0}
-              className="px-2 py-1 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Add/Edit Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-[420px] space-y-4">
-            <h3 className="text-lg font-semibold">
-              {editingStudent ? "Edit Student" : "Add Student"}
-            </h3>
-
-            <input
-              className="border w-full p-2 rounded"
-              placeholder="Student name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-
-            <input
-              className="border w-full p-2 rounded"
-              placeholder="Email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-
-            <select
-              className="border w-full p-2 rounded"
-              value={form.classId}
-              onChange={(e) =>
-                setForm({ ...form, classId: e.target.value, sectionId: "" })
-              }
-            >
-              <option value="">Select class</option>
-              {classes.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="border w-full p-2 rounded"
-              value={form.sectionId}
-              onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
-            >
-              <option value="">Select section</option>
-              {sections.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-
-            <div className="flex justify-between gap-3 pt-2">
-              <button
-                onClick={closeForm}
-                className="bg-gray-100 hover:bg-gray-200 text-black px-4 py-2 rounded-lg font-semibold"
+        {/* Pagination */}
+        {!loading && filteredStudents.length > 0 && (
+          <div className="p-6 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-50/30">
+            <div className="flex items-center gap-3">
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Rows per page</p>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="bg-white border border-slate-200 text-slate-800 text-xs font-black rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20"
               >
-                Cancel
-              </button>
+                {[5, 10, 25, 50].map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
 
-              <button
-                onClick={saveStudent}
-                disabled={actionLoading === "save"}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold"
-              >
-                {actionLoading === "save"
-                  ? editingStudent
-                    ? "Updating..."
-                    : "Creating..."
-                  : editingStudent
-                  ? "Update Student"
-                  : "Create Student"}
-              </button>
+            <div className="flex items-center gap-6">
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                Page <span className="text-indigo-600">{currentPage}</span> of {totalPages || 1}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all disabled:opacity-30 enabled:hover:bg-white enabled:hover:shadow-md"
+                >
+                  Prev
+                </button>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all disabled:opacity-30 enabled:hover:bg-white enabled:hover:shadow-md"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+      </div>
+
+      {/* Modals */}
+      {showForm && (
+        <AddStudentModal
+          form={form}
+          setForm={setForm}
+          onSave={saveStudent}
+          onClose={closeForm}
+          loading={actionLoading === "save"}
+          isEdit={!!editingStudent}
+          classes={classes}
+          sections={sections}
+        />
       )}
+
+      {showViewModal && selectedStudent && (
+        <ViewStudentModal
+          student={selectedStudent}
+          onClose={() => setShowViewModal(false)}
+        />
+      )}
+
+   
     </div>
   );
 };

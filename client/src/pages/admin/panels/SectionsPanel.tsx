@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
-import { FiTrash2, FiEdit, FiChevronDown, FiSearch, FiX } from "react-icons/fi";
+import { FiTrash2, FiEdit, FiChevronDown, FiSearch, FiX, FiPlus, FiLayers } from "react-icons/fi";
 import Toast from "../../../components/Toast";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
@@ -12,21 +12,16 @@ const SectionsPanel = () => {
   const [toastMessage, setToastMessage] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  // Create new section
   const [name, setName] = useState("");
   const [classId, setClassId] = useState("");
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-
-  // Edit modal
   const [editingSection, setEditingSection] = useState<Section | null>(null);
 
   const showToast = (message: string, type: string = "info") =>
     setToastMessage({ message, type });
 
-  // Load sections and classes
   const load = async () => {
     setLoading(true);
     try {
@@ -64,7 +59,6 @@ const SectionsPanel = () => {
     }
   };
 
-  // Delete section
   const deleteSection = async (id: string) => {
     if (!confirm("Are you sure you want to delete this section?")) return;
     try {
@@ -76,10 +70,8 @@ const SectionsPanel = () => {
     }
   };
 
-  // Edit handler
   const editSection = (section: Section) => setEditingSection(section);
 
-  // Filter & paginate
   const filteredSections = useMemo(() => {
     return sections.filter(
       (s) =>
@@ -95,8 +87,7 @@ const SectionsPanel = () => {
   }, [filteredSections, currentPage, itemsPerPage]);
 
   return (
-    <div className="space-y-4 pb-8">
-      {/* Toast */}
+    <div className="space-y-6 pb-12 animate-fadeIn">
       {toastMessage && (
         <Toast
           message={toastMessage.message}
@@ -105,183 +96,187 @@ const SectionsPanel = () => {
         />
       )}
 
-      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">Sections</h2>
-      </div>
-
-      {/* Add Section Form */}
-      <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row md:items-end gap-4">
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            Class
-          </label>
-          <div className="relative">
-            <select
-              value={classId}
-              onChange={(e) => setClassId(e.target.value)}
-              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
-              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
-            >
-              <option value="">Select class</option>
-              {classes.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
-          </div>
+      {/* Header Section */}
+      <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Section Management</h2>
+          <p className="text-slate-500 text-sm font-medium mt-1">Organize classes into smaller sections for better student distribution.</p>
         </div>
-
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            Section Name
-          </label>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter section name"
-            className="w-full border rounded-md shadow px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-
-        <div className="md:self-end">
+        <div className="flex items-center gap-3">
           <button
-            onClick={handleAddSection}
-            className="w-fit bg-blue-600 text-white font-semibold px-4 py-2 rounded hover:bg-blue-700 transition"
+            onClick={load}
+            className="flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl font-bold shadow-sm transition-all active:scale-95 text-sm"
           >
-            {loading ? "Loading..." : "Add Section"}
+            <FiLayers />
+            <span>Sync Sections</span>
           </button>
         </div>
       </div>
 
-      {/* Sections Table */}
-      <div className="bg-white border rounded-2xl shadow-sm px-6 py-4 space-y-6">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Sections</h3>
-          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
-            <FiSearch className="text-gray-400 ml-2" />
-            <input
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="px-3 py-2 text-sm outline-none"
-            />
-            <FiX
-              className={`text-gray-400 cursor-pointer mr-2 ${
-                search ? "opacity-100" : "opacity-0 pointer-events-none"
-              }`}
-              onClick={() => setSearch("")}
-            />
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        {/* Left: Configuration Sidebar */}
+        <div className="xl:col-span-1">
+          <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/20 shadow-sm sticky top-32 space-y-6">
+            <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
+               <div className="p-2 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-200">
+                 <FiPlus className="text-white" />
+               </div>
+               New Section
+            </h3>
+
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Parent Class</label>
+                <div className="relative">
+                  <select
+                    value={classId}
+                    onChange={(e) => setClassId(e.target.value)}
+                    className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="">Select class</option>
+                    {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                  </select>
+                  <FiChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Section Identifier</label>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Section A"
+                  className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+                />
+              </div>
+
+              <button
+                onClick={handleAddSection}
+                disabled={loading}
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-black text-sm shadow-xl shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
+              >
+                {loading ? "Processing..." : "Add Section"}
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto bg-white shadow rounded">
-          <table className="min-w-full divide-y divide-gray-200 text-center">
-            <thead className="bg-green-100">
-              <tr>
-                <th className="p-3 text-sm font-medium text-gray-700">Class</th>
-                <th className="p-3 text-sm font-medium text-gray-700">
-                  Section
-                </th>
-                <th className="p-3 text-sm font-medium text-gray-700">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {paginatedSections.length > 0 ? (
-                paginatedSections.map((s) => (
-                  <tr key={s._id} className="hover:bg-gray-50">
-                    <td className="p-3">{s.classId?.name || "N/A"}</td>
-                    <td className="p-3">{s.name}</td>
-                    <td className="p-3 flex justify-center gap-2">
-                      <button
-                        onClick={() => editSection(s)}
-                        className="text-yellow-600 hover:underline flex items-center gap-1"
-                      >
-                        <FiEdit size={16} />
-                      </button>
-                      <button
-                        onClick={() => deleteSection(s._id)}
-                        className="text-red-600 hover:underline flex items-center gap-1"
-                      >
-                        <FiTrash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={3} className="p-6 text-center text-gray-500">
-                    No sections found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {/* Right: Table View */}
+        <div className="xl:col-span-2">
+          <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] border border-white/20 shadow-sm overflow-hidden">
+             <div className="p-8 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                 <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                   <div className="w-2 h-8 bg-indigo-600 rounded-full" />
+                   Active Sections
+                 </h3>
+                <div className="relative w-full sm:w-64">
+                   <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                   <input
+                     placeholder="Search sections..."
+                     value={search}
+                     onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+                     className="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+                   />
+                </div>
+             </div>
 
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center mt-4">
-          <div>
-            <label className="mr-2 text-gray-700 text-sm">
-              Items per page:
-            </label>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => {
-                setItemsPerPage(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="border rounded px-2 py-1 text-sm"
-            >
-              {[5, 10, 15, 20].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div>
+             <div className="overflow-x-auto">
+               <table className="w-full text-left border-collapse">
+                 <thead>
+                    <tr className="bg-slate-50/50 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] border-b border-slate-100">
+                     <th className="px-8 py-5">Parent Class</th>
+                     <th className="px-8 py-5">Section Name</th>
+                     <th className="px-8 py-5 text-right">Actions</th>
+                   </tr>
+                 </thead>
+                 <tbody className="divide-y divide-slate-50">
+                   {filteredSections.length > 0 ? (
+                     paginatedSections.map((s) => (
+                       <tr key={s._id} className="group hover:bg-slate-50/50 transition-colors duration-300">
+                         <td className="px-8 py-4">
+                            <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[11px] font-black uppercase tracking-wider border border-indigo-100/50">
+                             {s.classId?.name || "N/A"}
+                            </span>
+                         </td>
+                         <td className="px-8 py-4">
+                           <p className="text-sm font-black text-slate-800 group-hover:text-indigo-600 transition-colors">{s.name}</p>
+                         </td>
+                         <td className="px-8 py-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                               <button
+                                 onClick={() => editSection(s)}
+                                 className="p-2.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all"
+                               >
+                                 <FiEdit size={16} />
+                               </button>
+                               <button
+                                 onClick={() => deleteSection(s._id)}
+                                 className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                               >
+                                 <FiTrash2 size={16} />
+                               </button>
+                            </div>
+                         </td>
+                       </tr>
+                     ))
+                   ) : (
+                     <tr>
+                       <td colSpan={3} className="p-16 text-center">
+                          <div className="flex flex-col items-center opacity-30">
+                            <FiLayers size={48} className="mb-3" />
+                            <p className="text-sm font-black uppercase tracking-widest">No sections found</p>
+                          </div>
+                       </td>
+                     </tr>
+                   )}
+                 </tbody>
+               </table>
+             </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-2 py-1 border rounded disabled:opacity-50"
-            >
-              Prev
-            </button>
-
-            <span className="text-sm">
-              Page {currentPage} of {totalPages || 1}
-            </span>
-
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages || totalPages === 0}
-              className="px-2 py-1 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
+             {/* Pagination */}
+             {!loading && filteredSections.length > 0 && (
+               <div className="p-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30 text-[11px] font-black uppercase tracking-widest text-slate-600">
+                  <div className="flex items-center gap-4">
+                     <span>Show</span>
+                     <select
+                        value={itemsPerPage}
+                        onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                        className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                     >
+                       {[5, 10, 25].map(n => <option key={n} value={n}>{n}</option>)}
+                     </select>
+                  </div>
+                  <div className="flex items-center gap-6">
+                     <span>Page <span className="text-indigo-600 font-black">{currentPage}</span> of {totalPages || 1}</span>
+                     <div className="flex gap-2">
+                        <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-4 py-2 hover:bg-white hover:shadow-md rounded-xl transition-all disabled:opacity-30">Prev</button>
+                        <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages || totalPages === 0} className="px-4 py-2 hover:bg-white hover:shadow-md rounded-xl transition-all disabled:opacity-30">Next</button>
+                     </div>
+                  </div>
+               </div>
+             )}
           </div>
         </div>
       </div>
 
-      {/* Edit Section Modal */}
       {editingSection && (
         <UpdateSectionModal
           section={editingSection}
           classes={classes}
           onClose={() => setEditingSection(null)}
-          onUpdated={load} // reload sections & classes
+          onUpdated={load}
         />
       )}
+
+      <style>{`
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

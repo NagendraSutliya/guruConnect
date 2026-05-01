@@ -1,14 +1,11 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const Institute = require("../models/Institute");
-const Teacher = require("../models/Teacher");
-const { generateVerificationCode } = require("../utils/verificationCode");
-const { sendVerificationCode } = require("../utils/mailer");
-const { successResponse, errorResponse } = require("../utils/response");
-const Student = require("../models/Student");
+const Institute = require("../../models/Institute");
+const { generateVerificationCode } = require("../../utils/verificationCode");
+const { sendVerificationCode } = require("../../utils/mailer");
+const { successResponse, errorResponse } = require("../../utils/response");
 
 /* ================= INSTITUTE REGISTER ================= */
-
 exports.registerInstitute = async (req, res) => {
   try {
     const { instituteName, instituteType, email, password } = req.body;
@@ -51,7 +48,6 @@ exports.registerInstitute = async (req, res) => {
 };
 
 /* ================= INSTITUTE VERIFY ================= */
-
 exports.verifyInstitute = async (req, res) => {
   try {
     const { email, code } = req.body;
@@ -85,7 +81,6 @@ exports.verifyInstitute = async (req, res) => {
 };
 
 /* ================= INSTITUTE LOGIN ================= */
-
 exports.loginInstitute = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -115,84 +110,10 @@ exports.loginInstitute = async (req, res) => {
       role: "admin",
       instituteId: inst._id,
       instituteName: inst.instituteName,
+      email: inst.email,
     });
   } catch (err) {
     console.error(err);
-    return errorResponse(res, "Login failed");
-  }
-};
-
-/* ================= TEACHER LOGIN ================= */
-
-exports.loginTeacher = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return errorResponse(res, "Missing credentials", 400);
-    }
-
-    const teacher = await Teacher.findOne({ email });
-    if (!teacher) {
-      return errorResponse(res, "Invalid credentials", 401);
-    }
-
-    if (teacher.status === "inactive") {
-      return errorResponse(
-        res,
-        "Your account has been deactivated. Contact admin.",
-        403
-      );
-    }
-
-    const ok = await bcrypt.compare(password, teacher.password);
-    if (!ok) {
-      return errorResponse(res, "Invalid credentials", 401);
-    }
-
-    const token = jwt.sign(
-      {
-        id: teacher._id,
-        role: "teacher",
-        instituteId: teacher.instituteId,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-
-    return successResponse(res, "Login successful", {
-      token,
-      role: "teacher",
-      name: teacher.name,
-      email: teacher.email,
-    });
-  } catch (err) {
-    console.error(err);
-    return errorResponse(res, "Teacher login failed");
-  }
-};
-
-/* ================= STUDENT LOGIN ================= */
-exports.studentLogin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const student = await Student.findOne({ email });
-    if (!student) return errorResponse(res, "Student not found", 404);
-
-    if (!student.isActive) return errorResponse(res, "Account disabled", 403);
-
-    const ok = await bcrypt.compare(password, student.password);
-    if (!ok) return errorResponse(res, "Invalid credentials", 401);
-
-    const token = jwt.sign(
-      { id: student._id, role: "student" },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    return successResponse(res, "Login success", { token });
-  } catch (err) {
     return errorResponse(res, "Login failed");
   }
 };

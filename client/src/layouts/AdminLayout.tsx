@@ -7,6 +7,9 @@ import {
   MdFeedback,
   MdLink,
   MdSchool,
+  MdAttachMoney,
+  MdNotifications,
+  MdSettings,
 } from "react-icons/md";
 import { FaChalkboardTeacher, FaUserGraduate } from "react-icons/fa";
 
@@ -23,24 +26,7 @@ type MenuItem = {
 };
 
 const AdminLayout = () => {
-  // const location = useLocation();
-  // const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [openMenus, setOpenMenus] = useState<Set<string>>(new Set());
-
-  // const navItems = [
-  //   { name: "Dashboard", path: "/admin/dashboard" },
-  //   { name: "Teachers", path: "/admin/teachers" },
-  //   { name: "Feedback", path: "/admin/feedback" },
-
-  //   // NEW
-  //   { name: "Academic Years", path: "/admin/academic-years" },
-  //   { name: "Classes", path: "/admin/classes" },
-  //   { name: "Sections", path: "/admin/sections" },
-  //   { name: "Subjects", path: "/admin/subjects" },
-  //   { name: "Teacher Assign", path: "/admin/teacher-assign" },
-
-  //   { name: "Public Links", path: "/admin/link" },
-  // ];
 
   const menuItems: MenuItem[] = [
     {
@@ -64,7 +50,6 @@ const AdminLayout = () => {
         { name: "Attendance", path: "/admin/attendance" },
       ],
     },
-
     {
       name: "Academic",
       icon: <MdSchool size={18} />,
@@ -85,12 +70,36 @@ const AdminLayout = () => {
       ],
     },
     {
+      name: "Finance",
+      icon: <MdAttachMoney size={18} />,
+      children: [
+        { name: "Fee Setup", path: "/admin/fee-setup" },
+        { name: "Collect Fees", path: "/admin/collect-fees" },
+        { name: "Invoices", path: "/admin/invoices" },
+      ],
+    },
+    {
+      name: "Communication",
+      icon: <MdNotifications size={18} />,
+      children: [
+        { name: "Notice Board", path: "/admin/notices" },
+        { name: "Send Message", path: "/admin/send-message" },
+      ],
+    },
+    {
       name: "Feedback",
       icon: <MdFeedback size={18} />,
       path: "/admin/feedback",
     },
-
     { name: "Public Links", icon: <MdLink size={18} />, path: "/admin/link" },
+    {
+      name: "System Settings",
+      icon: <MdSettings size={18} />,
+      children: [
+        { name: "Institute Setup", path: "/admin/settings/institute" },
+        { name: "Roles & Permissions", path: "/admin/settings/roles" },
+      ],
+    },
   ];
 
   // const isChildActive = (children?: MenuChild[]) =>
@@ -133,44 +142,33 @@ const AdminLayout = () => {
 
   return (
     <>
-      <div className="flex flex-col h-screen bg-gray-100 overflow-hidden">
+      <div className="flex flex-col h-screen bg-slate-50/50 overflow-hidden font-sans">
         <AdminNavbar />
 
-        {/* Sidebar */}
+        {/* Layout Body */}
         <div className="flex flex-1 overflow-hidden">
-          <aside className="w-60 bg-white border-r shadow-sm flex flex-col overflow-y-auto">
-            <div className="px-6 py-5 border-b shrink-0">
-              <h2 className="text-2xl font-bold text-orange-600">
-                Guru<span className="text-blue-600">Connect</span>
-              </h2>
-              <p className="text-sm font-semibold text-gray-600 mt-1">
-                Admin Panel
-              </p>
-            </div>
+          {/* Premium Sidebar */}
+          <aside className="w-64 bg-slate-950 bg-gradient-to-b from-slate-900 via-[#0f172a] to-[#1e1b4b] border-r border-slate-800 shadow-[4px_0_24px_rgba(0,0,0,0.2)] flex flex-col overflow-y-auto custom-scrollbar z-10 relative">
+            
+            {/* Sidebar Header */}
+            {/* <div className="px-5 py-5 border-b border-slate-100 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md shadow-orange-500/20">
+                  <span className="text-white font-black text-lg">G</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-orange-600 leading-tight">
+                    Guru<span className="text-blue-600">Connect</span>
+                  </h2>
+                  <p className="text-[10px] font-bold text-slate-400 tracking-wide uppercase mt-0.5">
+                    Admin Portal
+                  </p>
+                </div>
+              </div>
+            </div> */}
 
-            {/* Navigation */}
-            {/* <nav className="flex-1 px-4 py-6 space-y-2">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition
-                ${
-                  isActive
-                    ? "bg-blue-50 text-blue-600 shadow-sm"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                }`
-                  }
-                >
-                  {/* Icon placeholder */}
-            {/* <span className="w-2 h-2 rounded-full bg-current opacity-70" />
-                  {item.name}
-                </NavLink>
-              ))}
-            </nav>  */}
-
-            <nav className="flex-1 px-3 py-4 text-sm space-y-1">
+            {/* Navigation Menu */}
+            <nav className="flex-1 px-3 py-3 space-y-1">
               {menuItems.map((item) => {
                 const open = openMenus.has(item.name);
 
@@ -180,41 +178,48 @@ const AdminLayout = () => {
                       key={item.name}
                       to={item.path}
                       className={({ isActive }) =>
-                        `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ease-in-out
-           ${
-             isActive
-               ? "bg-purple-100 text-purple-600 font-semibold scale-[1.02]"
-               : "text-gray-600 hover:bg-gray-100 hover:scale-[1.01]"
-           }`
+                        `group flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 ease-out
+                        ${
+                          isActive
+                            ? "bg-indigo-500/20 text-indigo-300 font-bold shadow-sm border border-indigo-500/20"
+                            : "text-slate-400 font-medium hover:bg-white/5 hover:text-slate-100"
+                        }`
                       }
                       onClick={handleSingleClick} // close other dropdowns
                     >
-                      {item.icon}
-                      {item.name}
+                      {({ isActive }) => (
+                        <>
+                          <div className={`p-1.5 rounded-lg transition-colors ${isActive ? "bg-indigo-500/30 text-indigo-400 shadow-sm" : "bg-white/5 text-slate-500 group-hover:bg-white/10 group-hover:text-slate-300 group-hover:shadow-sm"}`}>
+                            {item.icon}
+                          </div>
+                          {item.name}
+                        </>
+                      )}
                     </NavLink>
                   );
                 }
 
                 // Dropdown parent
                 return (
-                  <div key={item.name}>
+                  <div key={item.name} className="pt-0.5">
                     <button
                       onClick={() => toggleMenu(item.name)}
-                      className={`w-full flex items-center justify-between px-4 py-2 rounded-lg transition-all 
-                                  duration-200 ease-in-out
-                ${
-                  open
-                    ? "bg-purple-50 text-purple-600"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
+                      className={`w-full group flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-300 ease-out
+                        ${
+                          open
+                            ? "bg-white/5 text-slate-100 font-bold shadow-sm border border-white/5"
+                            : "text-slate-400 font-medium hover:bg-white/5 hover:text-slate-100"
+                        }`}
                     >
                       <div className="flex items-center gap-3">
-                        {item.icon}
+                        <div className={`p-1.5 rounded-lg transition-colors ${open ? "bg-white/10 text-indigo-400 shadow-sm" : "bg-white/5 text-slate-500 group-hover:bg-white/10 group-hover:text-slate-300 group-hover:shadow-sm"}`}>
+                          {item.icon}
+                        </div>
                         {item.name}
                       </div>
                       <span
-                        className={`transition-transform duration-300 ease-in-out ${
-                          open ? "rotate-180" : ""
+                        className={`text-slate-500 transition-transform duration-300 ease-out ${
+                          open ? "rotate-180 text-slate-300" : ""
                         }`}
                       >
                         ▾
@@ -223,25 +228,33 @@ const AdminLayout = () => {
 
                     {/* Children */}
                     <div
-                      className={`ml-1 overflow-hidden transition-all duration-300 ease-in-out
-          ${open ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"}`}
+                      className={`overflow-hidden transition-all duration-300 ease-in-out
+                        ${open ? "max-h-[500px] opacity-100 mt-0.5 mb-1" : "max-h-0 opacity-0 m-0"}`}
                     >
-                      <div className="ml-9 mt-1 space-y-1">
+                      <div className="ml-5 pl-4 border-l-2 border-slate-800 space-y-0.5 relative">
                         {item.children?.map((child) => (
                           <NavLink
                             key={child.path}
                             to={child.path}
                             className={({ isActive }) =>
-                              `block px-3 py-1.5 rounded-md transition
-                 ${
-                   isActive
-                     ? "bg-purple-100 text-purple-600 font-medium"
-                     : "text-gray-500 hover:bg-gray-100"
-                 }`
+                              `relative block px-3 py-1.5 rounded-lg text-sm transition-all duration-200
+                               ${
+                                 isActive
+                                   ? "bg-indigo-500/20 text-indigo-300 font-bold"
+                                   : "text-slate-400 font-medium hover:bg-white/5 hover:text-slate-200"
+                               }`
                             }
                             onClick={() => handleChildClick(item.name)} // close all others
                           >
-                            {child.name}
+                            {({ isActive }) => (
+                              <>
+                                {/* Active indicator dot on the vertical line */}
+                                {isActive && (
+                                  <div className="absolute left-[calc(-16px-2px)] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-indigo-500 ring-4 ring-[#0f172a]" />
+                                )}
+                                {child.name}
+                              </>
+                            )}
                           </NavLink>
                         ))}
                       </div>
@@ -252,19 +265,35 @@ const AdminLayout = () => {
             </nav>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t text-xs text-gray-400">
-              © {new Date().getFullYear()} GuruConnect
+            <div className="p-4 mt-auto mb-2">
+              <div className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 rounded-2xl p-3 border border-indigo-500/20 shadow-inner text-center">
+                <p className="text-[9px] font-bold text-indigo-300 uppercase tracking-widest mb-0.5">GuruConnect</p>
+                <p className="text-[11px] text-indigo-400/70 font-medium">Enterprise v2.0</p>
+              </div>
             </div>
           </aside>
 
-          {/* Main Content */}
-          <main className="flex-1 px-6 mt-2 overflow-y-auto">
-            <div className="animate-fadeIn">
+          {/* Main Content Area */}
+          <main className="flex-1 px-8  overflow-y-auto bg-slate-50/30">
+            <div className="animate-fadeIn w-full max-w-[1400px] mx-auto">
               <Outlet />
             </div>
           </main>
         </div>
       </div>
+      
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #cbd5e1;
+          border-radius: 20px;
+        }
+      `}</style>
     </>
   );
 };

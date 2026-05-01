@@ -1,22 +1,38 @@
 import React from "react";
-import { FiX, FiUser, FiMail, FiLock, FiPhone, FiHash, FiBriefcase, FiBook, FiCalendar } from "react-icons/fi";
+import { FiX, FiUser, FiMail, FiLayers, FiGrid, FiHash, FiLock, FiPhone, FiCalendar, FiMapPin } from "react-icons/fi";
 
-interface AddTeacherModalProps {
-  form: any;
+interface AddStudentModalProps {
+  form: {
+    name: string;
+    email: string;
+    password?: string;
+    rollNo: string;
+    classId: string;
+    sectionId: string;
+    phone?: string;
+    parentName?: string;
+    dob?: string;
+    admissionDate?: string;
+    address?: string;
+  };
   setForm: (form: any) => void;
   onSave: () => void;
   onClose: () => void;
   loading?: boolean;
   isEdit?: boolean;
+  classes: any[];
+  sections: any[];
 }
 
-const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
+const AddStudentModal: React.FC<AddStudentModalProps> = ({
   form,
   setForm,
   onSave,
   onClose,
   loading = false,
   isEdit = false,
+  classes,
+  sections,
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
@@ -33,10 +49,10 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
           <div>
             <h3 className="text-xl font-black text-slate-800 tracking-tight">
-              {isEdit ? "Edit Faculty Profile" : "Add New Faculty"}
+              {isEdit ? "Update Student Profile" : "Enroll New Student"}
             </h3>
             <p className="text-xs font-medium text-slate-500 mt-0.5">
-              {isEdit ? "Update the details for this teacher." : "Enter the details to create a new teacher account."}
+              {isEdit ? "Modify the details for this student." : "Enter the details to create a new student account."}
             </p>
           </div>
           <button 
@@ -48,7 +64,7 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <div className="p-6">
+        <div className="p-6 max-h-[70vh] overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Name */}
             <div className="space-y-1">
@@ -84,6 +100,23 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
               </div>
             </div>
 
+            {/* Roll Number */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Roll Number <span className="text-rose-500">*</span></label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiHash size={14} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="e.g. 101"
+                  value={form.rollNo}
+                  onChange={(e) => setForm({ ...form, rollNo: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+
             {/* Password */}
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">
@@ -103,9 +136,26 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
               </div>
             </div>
 
+            {/* Parent Name */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Parent/Guardian Name</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiUser size={14} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Father/Mother Name"
+                  value={form.parentName}
+                  onChange={(e) => setForm({ ...form, parentName: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+
             {/* Phone */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Phone</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Phone Number</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <FiPhone size={14} />
@@ -113,76 +163,102 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
                 <input
                   type="text"
                   placeholder="+1 (555) 000"
-                  value={form.phone || ""}
+                  value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
                 />
               </div>
             </div>
 
-            {/* Teacher ID */}
+            {/* Class */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Teacher ID</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Assign Class <span className="text-rose-500">*</span></label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <FiHash size={14} />
+                  <FiLayers size={14} />
                 </div>
-                <input
-                  type="text"
-                  placeholder="TCH-001"
-                  value={form.teacherId || ""}
-                  onChange={(e) => setForm({ ...form, teacherId: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
-                />
+                <select
+                  value={form.classId}
+                  onChange={(e) => setForm({ ...form, classId: e.target.value, sectionId: "" })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm appearance-none cursor-pointer"
+                >
+                  <option value="">Select class</option>
+                  {classes.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            {/* Department */}
+            {/* Section */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Department</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Select Section</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <FiBriefcase size={14} />
+                  <FiGrid size={14} />
                 </div>
-                <input
-                  type="text"
-                  placeholder="Science"
-                  value={form.department || ""}
-                  onChange={(e) => setForm({ ...form, department: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
-                />
+                <select
+                  value={form.sectionId}
+                  disabled={!form.classId}
+                  onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm appearance-none cursor-pointer disabled:opacity-50"
+                >
+                  <option value="">Select section</option>
+                  {sections.map((s) => (
+                    <option key={s._id} value={s._id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            {/* Subjects */}
-            <div className="space-y-1 md:col-span-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Subjects (Comma Separated)</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <FiBook size={14} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Physics, Chemistry"
-                  value={form.subjects || ""}
-                  onChange={(e) => setForm({ ...form, subjects: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
-                />
-              </div>
-            </div>
-
-            {/* Joining Date */}
-            <div className="space-y-1 md:col-span-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Joining Date</label>
+            {/* DOB */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Date of Birth</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <FiCalendar size={14} />
                 </div>
                 <input
                   type="date"
-                  value={form.joiningDate || ""}
-                  onChange={(e) => setForm({ ...form, joiningDate: e.target.value })}
+                  value={form.dob}
+                  onChange={(e) => setForm({ ...form, dob: e.target.value })}
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+
+            {/* Admission Date */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Admission Date</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiCalendar size={14} />
+                </div>
+                <input
+                  type="date"
+                  value={form.admissionDate}
+                  onChange={(e) => setForm({ ...form, admissionDate: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="space-y-1 md:col-span-2">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Residential Address</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiMapPin size={14} />
+                </div>
+                <textarea
+                  placeholder="Street name, City, Zip Code"
+                  value={form.address}
+                  onChange={(e) => setForm({ ...form, address: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm min-h-[80px]"
                 />
               </div>
             </div>
@@ -211,7 +287,7 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
             ) : isEdit ? (
               "Update"
             ) : (
-              "Save Teacher"
+              "Confirm Enrollment"
             )}
           </button>
         </div>
@@ -220,4 +296,4 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
   );
 };
 
-export default AddTeacherModal;
+export default AddStudentModal;

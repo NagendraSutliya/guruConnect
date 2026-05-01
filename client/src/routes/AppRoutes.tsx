@@ -19,7 +19,6 @@ import FeedbackPanel from "../pages/admin/panels/FeedbackPanel";
 import LinksPanel from "../pages/admin/panels/LinksPanel";
 import TeacherLogin from "../pages/teacher/Login";
 import TeacherFeedback from "../pages/teacher/TeacherFeedback";
-// import PublicFeedback from "../pages/public/PublicFeedback";
 import FeedbackForm from "../pages/student/FeedbackForm";
 import AcademicYears from "../pages/admin/academic/AcademicYears";
 import Classes from "../pages/admin/academic/Classes";
@@ -30,7 +29,6 @@ import MyAssignments from "../pages/teacher/MyAssignments";
 import AttendanceTeacher from "../pages/teacher/Attendance";
 import Result from "../pages/teacher/Result";
 import StudyMaterial from "../pages/teacher/StudyMaterial";
-// import Students from "../pages/student/Students";
 import Attendance from "../pages/admin/student/Attendance";
 import Routine from "../pages/admin/academic/Routine";
 import Exams from "../pages/admin/exams/Exams";
@@ -48,7 +46,6 @@ import StudentProfile from "../pages/student/StudentProfile";
 import StudentAttendance from "../pages/student/StudentAttendance";
 import AdminProfile from "../pages/admin/AdminProfile";
 import ExamSubjectPanel from "../pages/admin/panels/ExamSubjectPanel";
-import Results_test from "../pages/teacher/Result_test";
 import UploadMarksPage from "../pages/teacher/panels/UploadMarksPanel";
 import ExamsTeacher from "../pages/teacher/ExamsTeacher";
 
@@ -112,7 +109,6 @@ export default function AppRoutes() {
         <Route path="exams" element={<ExamsTeacher />} />
         <Route path="results/upload-marks" element={<UploadMarksPage />} />
 
-        <Route path="results_test" element={<Results_test />} />
       </Route>
 
       <Route

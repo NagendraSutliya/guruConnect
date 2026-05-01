@@ -4,16 +4,9 @@ import Toast from "../../../components/Toast";
 import RoutineModal from "../../modals/admin/RoutineModal";
 import type { Assignment } from "../../../types/admin/teacherassignment";
 import type { Routine } from "../../../types/admin/routine";
-import { FiChevronDown } from "react-icons/fi";
+import { FiChevronDown, FiCalendar, FiClock, FiTrash2, FiPlus, FiFilter } from "react-icons/fi";
 
-const days = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const defaultTimeSlots = [
   "08:00-09:00",
@@ -34,13 +27,11 @@ const RoutinePanel = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSlot, setEditingSlot] = useState<Routine | null>(null);
-
   const [toast, setToast] = useState<any>(null);
 
   const showToast = (message: string, type = "info") =>
     setToast({ message, type });
 
-  /* ================= LOAD ================= */
   useEffect(() => {
     api
       .get("/admin/teacher-assign")
@@ -50,7 +41,6 @@ const RoutinePanel = () => {
 
   useEffect(() => {
     if (!selectedClassId || !selectedSectionId) return;
-
     api
       .get("/admin/routine", {
         params: { classId: selectedClassId, sectionId: selectedSectionId },
@@ -59,34 +49,21 @@ const RoutinePanel = () => {
       .catch(() => showToast("Failed to load routine", "error"));
   }, [selectedClassId, selectedSectionId]);
 
-  /* ================= FILTERS ================= */
   const classes = useMemo(() => {
-    return Array.from(
-      new Map(assignments.map((a) => [a.classId._id, a.classId])).values()
-    );
+    return Array.from(new Map(assignments.map((a) => [a.classId._id, a.classId])).values());
   }, [assignments]);
 
   const sections = useMemo(() => {
-    const filtered = assignments.filter(
-      (a) => a.classId._id === selectedClassId && a.sectionId
-    );
-
-    return Array.from(
-      new Map(filtered.map((a) => [a.sectionId!._id, a.sectionId!])).values()
-    );
+    const filtered = assignments.filter((a) => a.classId._id === selectedClassId && a.sectionId);
+    return Array.from(new Map(filtered.map((a) => [a.sectionId!._id, a.sectionId!])).values());
   }, [assignments, selectedClassId]);
 
   const subjects = useMemo(() => {
     return assignments.filter(
-      (a) =>
-        a.classId._id === selectedClassId &&
-        a.sectionId?._id === selectedSectionId &&
-        a.subjectId &&
-        a.teacherId
+      (a) => a.classId._id === selectedClassId && a.sectionId?._id === selectedSectionId && a.subjectId && a.teacherId
     );
   }, [assignments, selectedClassId, selectedSectionId]);
 
-  /* ================= TIME ================= */
   const timeSlots = useMemo(() => {
     return routine.length
       ? Array.from(new Set(routine.map((r) => `${r.startTime}-${r.endTime}`)))
@@ -95,12 +72,9 @@ const RoutinePanel = () => {
 
   const getSlot = (day: string, time: string) => {
     const [start, end] = time.split("-");
-    return routine.find(
-      (r) => r.day === day && r.startTime === start && r.endTime === end
-    );
+    return routine.find((r) => r.day === day && r.startTime === start && r.endTime === end);
   };
 
-  /* ================= MODAL ================= */
   const openModal = (day: string, time?: string, slot?: Routine) => {
     if (slot) {
       setEditingSlot(slot);
@@ -119,58 +93,46 @@ const RoutinePanel = () => {
     setModalOpen(true);
   };
 
-  /* ================= SAVE ================= */
   const saveRoutine = async (form: Routine) => {
     try {
       if (form._id) {
         await api.put(`/admin/routine/${form._id}`, form);
-        showToast("Routine updated", "success");
+        showToast("Routine updated successfully", "success");
       } else {
         await api.post("/admin/routine", [form]);
-        showToast("Routine added", "success");
+        showToast("Session added to routine", "success");
       }
-
       setModalOpen(false);
-
       const res = await api.get("/admin/routine", {
         params: { classId: selectedClassId, sectionId: selectedSectionId },
       });
-
       setRoutine(res.data.data || []);
     } catch {
-      showToast("Failed to save routine", "error");
+      showToast("Failed to save routine entry", "error");
     }
   };
 
-  /* ================= DELETE ================= */
   const deleteSlot = async (slot: Routine) => {
-    if (!confirm("Delete this slot?")) return;
-
+    if (!confirm("Remove this entry from the timetable?")) return;
     try {
       await api.delete(`/admin/routine/${slot._id}`);
       setRoutine((prev) => prev.filter((r) => r._id !== slot._id));
-      showToast("Deleted", "success");
+      showToast("Entry removed", "success");
     } catch {
-      showToast("Delete failed", "error");
+      showToast("Operation failed", "error");
     }
   };
 
   const subjectMap = useMemo(() => {
     const map: Record<string, { subject: string; teacher: string }> = {};
-
     subjects.forEach((s) => {
-      map[s.subjectId._id] = {
-        subject: s.subjectId.name,
-        teacher: s.teacherId.name,
-      };
+      map[s.subjectId._id] = { subject: s.subjectId.name, teacher: s.teacherId.name };
     });
-
     return map;
   }, [subjects]);
 
-  /* ================= RENDER ================= */
   return (
-    <div className="space-y-4 pb-8">
+    <div className="space-y-6 pb-12 animate-fadeIn">
       {toast && (
         <Toast
           message={toast.message}
@@ -178,168 +140,173 @@ const RoutinePanel = () => {
           onClose={() => setToast(null)}
         />
       )}
-      <div className="sticky flex justify-between items-center top-0 z-20 bg-gray-100 py-1 mb-4">
-        <h2 className="text-2xl font-bold mb-6">Section Routine</h2>
-      </div>
 
-      {/* FILTERS */}
-      <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row md:items-end gap-4">
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            Class
-          </label>
-          <div className="relative">
-            <select
-              value={selectedClassId}
-              onChange={(e) => setSelectedClassId(e.target.value)}
-              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
-            focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
-            >
-              <option value="">Select Class</option>
-              {classes.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
-          </div>
+      {/* Header Section */}
+      <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Academic Timetable</h2>
+          <p className="text-slate-500 text-sm font-medium mt-1">Configure weekly routines and class schedules for students.</p>
         </div>
-        <div className="flex-1">
-          <label className="text-sm">Section</label>
-          <div className="relative">
-            <select
-              value={selectedSectionId}
-              disabled={!selectedClassId}
-              onChange={(e) => setSelectedSectionId(e.target.value)}
-              className="w-full border rounded-md px-4 py-2 pr-8 appearance-none shadow 
-              focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-500"
-            >
-              <option value="">Select Section</option>
-              {sections.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            <FiChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
-          </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              if (!selectedClassId || !selectedSectionId) return;
+              api.get("/admin/routine", { params: { classId: selectedClassId, sectionId: selectedSectionId } }).then(res => setRoutine(res.data.data || []));
+            }}
+            disabled={!selectedClassId || !selectedSectionId}
+            className="flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl font-bold shadow-sm transition-all active:scale-95 text-sm disabled:opacity-50"
+          >
+            <FiClock />
+            <span>Sync Routine</span>
+          </button>
         </div>
       </div>
 
-      {/* EMPTY STATES */}
+      {/* Selection Bar */}
+      <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/20 shadow-sm flex flex-col md:flex-row items-center gap-6">
+         <div className="flex flex-col gap-1.5 w-full md:w-64">
+            <label className="text-[11px] font-black text-slate-600 uppercase tracking-widest ml-1">Academic Grade</label>
+           <div className="relative">
+              <select
+                value={selectedClassId}
+                onChange={(e) => {setSelectedClassId(e.target.value); setSelectedSectionId("");}}
+                className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border-none rounded-2xl text-xs font-black uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer"
+              >
+                <option value="">Select Class</option>
+                {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+              </select>
+              <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+           </div>
+        </div>
+
+         <div className="flex flex-col gap-1.5 w-full md:w-64">
+            <label className="text-[11px] font-black text-slate-600 uppercase tracking-widest ml-1">Class Section</label>
+           <div className="relative">
+              <select
+                value={selectedSectionId}
+                disabled={!selectedClassId}
+                onChange={(e) => setSelectedSectionId(e.target.value)}
+                className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border-none rounded-2xl text-xs font-black uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50"
+              >
+                <option value="">Select Section</option>
+                {sections.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
+              </select>
+              <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+           </div>
+        </div>
+
+        {selectedClassId && selectedSectionId && (
+          <div className="hidden lg:flex items-center gap-3 px-6 py-4 bg-indigo-50 rounded-3xl border border-indigo-100 ml-auto">
+             <div className="p-2 bg-indigo-600 rounded-xl text-white">
+                <FiCalendar />
+             </div>
+             <div>
+                <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">Active Schedule</p>
+                <p className="text-sm font-black text-indigo-600">Class {classes.find(c => c._id === selectedClassId)?.name} - {sections.find(s => s._id === selectedSectionId)?.name}</p>
+             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Grid Content */}
       {!selectedClassId || !selectedSectionId ? (
-        <div className="bg-white border rounded-2xl shadow-sm p-10 text-center">
-          {/* ICON */}
-          <div className="text-5xl mb-4">📅</div>
-
-          {/* TITLE */}
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">
-            No Routine Selected
-          </h3>
-
-          {/* DESCRIPTION */}
-          <p className="text-gray-500 mb-4">
-            Please select a{" "}
-            <span className="font-medium text-indigo-600">Class</span> and{" "}
-            <span className="font-medium text-indigo-600">Section</span> to view
-            or manage the timetable.
-          </p>
-
-          {/* HINT */}
-          <div className="text-sm text-gray-400">
-            💡 Tip: Start by choosing a class from the dropdown above
-          </div>
+        <div className="bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 py-32 text-center shadow-sm">
+           <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-slate-300">
+             <FiCalendar size={32} />
+           </div>
+           <h3 className="text-lg font-black text-slate-800">No Timetable Selected</h3>
+           <p className="text-slate-500 font-medium mt-2">Select a class and section above to manage their weekly schedule.</p>
         </div>
       ) : subjects.length === 0 ? (
-        <div className="bg-white border rounded-2xl shadow-sm p-10 text-center">
-          <div className="text-5xl mb-4">📚</div>
-
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">
-            No Assignments Found
-          </h3>
-
-          <p className="text-gray-500">
-            No subjects or teachers are assigned to this class and section yet.
-          </p>
-
-          <div className="text-sm text-gray-400 mt-3">
-            Assign subjects and teachers first to create a routine
-          </div>
+        <div className="bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 py-32 text-center shadow-sm">
+           <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-amber-300">
+             <FiFilter size={32} />
+           </div>
+           <h3 className="text-lg font-black text-slate-800">Prerequisites Missing</h3>
+           <p className="text-slate-500 font-medium mt-2">No subjects or teachers have been assigned to this section yet.</p>
+           <button className="mt-6 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-500 transition-all">Go to Assignments</button>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-lg overflow-x-auto border">
-          <table className="w-full border-collapse text-sm">
-            {/* HEADER */}
-            <thead>
-              <tr className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white">
-                <th className="p-4 border text-left">Time</th>
-                {days.map((d) => (
-                  <th key={d} className="p-4 border">
-                    {d}
+        <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] border border-white/20 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-slate-900 text-white">
+                  <th className="px-8 py-6 text-left border-r border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <FiClock className="text-indigo-400" />
+                      <span className="text-[11px] font-black uppercase tracking-widest">Time Slot</span>
+                    </div>
                   </th>
-                ))}
-              </tr>
-            </thead>
-
-            {/* BODY */}
-            <tbody>
-              {timeSlots.map((time) => (
-                <tr key={time} className="hover:bg-gray-50 transition">
-                  {/* TIME */}
-                  <td className="p-4 border font-semibold bg-gray-50 text-gray-700">
-                    {time}
-                  </td>
-
-                  {/* CELLS */}
-                  {days.map((day) => {
-                    const slot = getSlot(day, time);
-
-                    return (
-                      <td
-                        key={day}
-                        onClick={() => openModal(day, time, slot)}
-                        className="border p-2 h-12 align-top cursor-pointer group"
-                      >
-                        {slot ? (
-                          <div className="h-full flex flex-col justify-between rounded-xl bg-indigo-100 border border-indigo-300 p-2 hover:shadow-md transition">
-                            {/* SUBJECT */}
-                            <div className="font-semibold text-indigo-800 text-sm">
-                              {subjectMap[slot.subjectId]?.subject || "Unknown"}
-                            </div>
-
-                            {/* TEACHER */}
-                            <div className="text-xs text-gray-600">
-                              {subjectMap[slot.subjectId]?.teacher || ""}
-                            </div>
-
-                            {/* DELETE */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteSlot(slot);
-                              }}
-                              className="text-red-500 text-xs opacity-0 group-hover:opacity-100 transition"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="h-full flex items-center justify-center text-gray-300 text-xs border-2 border-dashed rounded-xl group-hover:border-indigo-400 group-hover:text-indigo-500 transition">
-                            + Add
-                          </div>
-                        )}
-                      </td>
-                    );
-                  })}
+                  {days.map((d) => (
+                    <th key={d} className="px-8 py-6 text-center min-w-[200px]">
+                      <span className="text-[11px] font-black uppercase tracking-[0.2em]">{d}</span>
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {timeSlots.map((time, idx) => (
+                  <tr key={time} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-8 py-6 bg-slate-50/50 border-r border-slate-100 font-black text-slate-400 text-xs text-center">
+                      {time}
+                    </td>
+                    {days.map((day) => {
+                      const slot = getSlot(day, time);
+                      const isLunch = time === "Lunch";
+
+                      return (
+                        <td
+                          key={day}
+                          onClick={() => !isLunch && openModal(day, time, slot)}
+                          className={`p-3 h-32 align-top transition-all duration-300 ${isLunch ? "bg-amber-50/30" : "cursor-pointer group relative hover:bg-indigo-50/30"}`}
+                        >
+                          {isLunch ? (
+                             <div className="h-full flex items-center justify-center">
+                                <span className="text-[10px] font-black text-amber-300 uppercase tracking-[0.4em] rotate-90">Lunch</span>
+                             </div>
+                          ) : slot ? (
+                            <div className="h-full flex flex-col justify-between rounded-3xl bg-white border border-slate-100 p-4 shadow-sm group-hover:shadow-xl group-hover:-translate-y-1 group-hover:border-indigo-200 transition-all duration-500">
+                               <div>
+                                  <div className="flex items-center justify-between mb-2">
+                                     <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[9px] font-black uppercase tracking-wider border border-indigo-100">Core</span>
+                                     <button
+                                        onClick={(e) => { e.stopPropagation(); deleteSlot(slot); }}
+                                        className="text-slate-300 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100"
+                                      >
+                                        <FiTrash2 size={14} />
+                                      </button>
+                                  </div>
+                                  <p className="text-xs font-black text-slate-800 leading-tight">
+                                    {subjectMap[slot.subjectId]?.subject || "N/A"}
+                                  </p>
+                               </div>
+                               <div className="flex items-center gap-2 pt-2 border-t border-slate-50">
+                                  <div className="w-5 h-5 rounded-lg bg-indigo-500 flex items-center justify-center text-[8px] font-black text-white">
+                                    {subjectMap[slot.subjectId]?.teacher?.charAt(0)}
+                                  </div>
+                                  <p className="text-[10px] font-bold text-slate-400 truncate">
+                                    {subjectMap[slot.subjectId]?.teacher || ""}
+                                  </p>
+                               </div>
+                            </div>
+                          ) : (
+                            <div className="h-full flex flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-slate-100 group-hover:border-indigo-300 group-hover:bg-white group-hover:shadow-inner transition-all duration-500 text-slate-200 group-hover:text-indigo-400">
+                               <FiPlus className="group-hover:scale-110 transition-transform" />
+                               <span className="text-[9px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100">Assign Slot</span>
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {/* MODAL */}
       <RoutineModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -347,6 +314,16 @@ const RoutinePanel = () => {
         subjects={subjects}
         initialData={editingSlot}
       />
+
+      <style>{`
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

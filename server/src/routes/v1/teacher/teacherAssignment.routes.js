@@ -4,7 +4,7 @@ const {
   getMyAssignments,
   deleteAssignment,
   updateAssignment,
-} = require("../../../controllers/old/v1/teacherAssignment.controller");
+} = require("../../../controllers/teacher/TeacherAssignmentController");
 
 router.get("/my", requireTeacher, getMyAssignments);
 router.delete("/:id", requireAdmin, deleteAssignment); // <-- DELETE route

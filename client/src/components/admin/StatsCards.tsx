@@ -1,214 +1,110 @@
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
-import api from "../../api/axiosInstance";
 import {
-  FaUser,
   FaChalkboardTeacher,
   FaComments,
   FaStar,
   FaUsers,
   FaChartLine,
+  FaUserShield,
+  FaClock,
 } from "react-icons/fa";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-} from "recharts";
 
 type StatCardProps = {
   title: string;
   value: string | number;
-  icon?: ReactNode;
+  icon: React.ReactNode;
+  trend?: { value: string; positive: boolean };
+  color: string;
   onClick?: () => void;
 };
 
-const StatCard = ({ title, value, icon, onClick }: StatCardProps) => {
+const StatCard = ({ title, value, icon, trend, color, onClick }: StatCardProps) => {
   return (
-    <div
+    <div 
       onClick={onClick}
-      className={`bg-white rounded-xl p-6 shadow flex items-center gap-4 transition cursor-pointer hover:shadow-lg ${
-        onClick ? "hover:bg-gray-50" : ""
-      }`}
+      className={`bg-white/70 backdrop-blur-md rounded-2xl p-5 border border-slate-100 hover:border-indigo-200 transition-all hover:shadow-xl group ${onClick ? 'cursor-pointer' : ''}`}
     >
-      {icon && <div className="text-green-600 text-3xl">{icon}</div>}
-      <div>
-        <p className="text-gray-500">{title}</p>
-        <h2 className="text-3xl font-bold">{value || 0}</h2>
-      </div>
-    </div>
-  );
-};
-
-const StatsCards = () => {
-  const [stats, setStats] = useState<any>({});
-  const [activeChart, setActiveChart] = useState<string | null>(null);
-  const [chartType, setChartType] = useState<"line" | "pie" | "bar">("line");
-
-  useEffect(() => {
-    api
-      .get("/admin/stats", {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("adminToken"),
-        },
-      })
-      .then((res) => setStats(res.data.data))
-      .catch((err) => console.error("Failed to load stats:", err));
-  }, []);
-
-  const COLORS = ["#4ade80", "#22d3ee"]; // colors for PieChart
-
-  // Only define chart data for cards where a chart is meaningful
-  const chartDataMap: Record<string, { date: string; value: number }[]> = {
-    teachers: [
-      { date: "Total Teachers", value: stats.teachers || 0 },
-      { date: "New Today", value: stats.newTeachersToday || 0 },
-    ],
-    feedback: [
-      { date: "Total Feedback", value: stats.totalFeedback || 0 },
-      { date: "Today", value: stats.feedbackToday || 0 },
-    ],
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Stats Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-        {/* Cards with charts */}
-        <StatCard
-          title="Total Teachers"
-          value={stats.teachers}
-          icon={<FaChalkboardTeacher />}
-          onClick={() => setActiveChart("teachers")}
-        />
-        <StatCard
-          title="Total Feedback"
-          value={stats.totalFeedback}
-          icon={<FaComments />}
-          onClick={() => setActiveChart("feedback")}
-        />
-
-        {/* Cards without charts */}
-        <StatCard
-          title="Total Students"
-          value={stats.students}
-          icon={<FaUsers />}
-        />
-        <StatCard
-          title="Feedback Today"
-          value={stats.feedbackToday}
-          icon={<FaComments />}
-        />
-        <StatCard
-          title="Average Rating"
-          value={stats.avgRating?.toFixed(1) || "0"}
-          icon={<FaStar />}
-        />
-        <StatCard
-          title="New Teachers Today"
-          value={stats.newTeachersToday}
-          icon={<FaUser />}
-        />
-        <StatCard title="Plan" value={stats.plan} icon={<FaChartLine />} />
-      </div>
-
-      {/* Chart Section */}
-      <div className="bg-white rounded-xl shadow p-6 text-center text-gray-400">
-        {!activeChart && <p>Click on a card with a chart to view data here.</p>}
-        {activeChart && chartDataMap[activeChart]?.length > 0 ? (
-          <>
-            {/* Chart type selector UI */}
-            {/* Chart Type Selector */}
-            <div className="mb-4 flex justify-start gap-4">
-              {(["line", "pie", "bar"] as const).map((type) => (
-                <button
-                  key={type}
-                  className={`px-3 py-1 rounded ${
-                    chartType === type
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-200"
-                  }`}
-                  onClick={() => setChartType(type)}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
-              ))}
-            </div>
-            <h3 className="mb-4 text-lg font-semibold">
-              {activeChart === "teachers"
-                ? "Teachers Trend"
-                : activeChart === "feedback"
-                ? "Feedback Trend"
-                : activeChart.charAt(0).toUpperCase() +
-                  activeChart.slice(1) +
-                  " Trend"}
-            </h3>
-            {/* // Render chart dynamically based on selected type */}
-            <ResponsiveContainer width="100%" height={300}>
-              {chartType === "line" && (
-                <LineChart data={chartDataMap[activeChart]}>
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#4ade80" />
-                </LineChart>
-              )}
-
-              {chartType === "pie" && (
-                <PieChart>
-                  <Pie
-                    data={chartDataMap[activeChart]}
-                    dataKey="value"
-                    nameKey="date"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#4ade80"
-                    label
-                  >
-                    {chartDataMap[activeChart].map((index: any) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              )}
-
-              {chartType === "bar" && (
-                <BarChart data={chartDataMap[activeChart]}>
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#4ade80" />
-                </BarChart>
-              )}
-            </ResponsiveContainer>
-            ;
-            {/* <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartDataMap[activeChart]}>
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="value" stroke="#4ade80" />
-              </LineChart>
-            </ResponsiveContainer> */}
-          </>
-        ) : (
-          activeChart && <p>No chart available for this card.</p>
+      <div className="flex justify-between items-start mb-4">
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-${color}-50 text-${color}-600 group-hover:scale-110 transition-transform`}>
+          {icon}
+        </div>
+        {trend && (
+          <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black tracking-tight ${
+            trend.positive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+          }`}>
+            {trend.positive ? <FaArrowUp size={8} /> : <FaArrowDown size={8} />}
+            {trend.value}
+          </div>
         )}
       </div>
+      <div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">{title}</p>
+        <h2 className="text-3xl font-black text-slate-800 tracking-tighter">
+          {value ?? 0}
+        </h2>
+      </div>
     </div>
   );
 };
 
-export default StatsCards;
+const FaArrowUp = ({ size }: { size: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+);
+const FaArrowDown = ({ size }: { size: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+);
+
+export default function StatsCards({ stats, onCardClick }: { stats: any, onCardClick?: (category: string) => void }) {
+  const safeStats = stats || {};
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <StatCard
+        title="Total Faculty"
+        value={safeStats.teachers}
+        icon={<FaChalkboardTeacher />}
+        trend={{ value: "Live", positive: true }}
+        color="indigo"
+        onClick={() => onCardClick?.("teachers")}
+      />
+      <StatCard
+        title="Total Feedback"
+        value={safeStats.totalFeedback}
+        icon={<FaComments />}
+        trend={{ value: "Latest", positive: true }}
+        color="purple"
+        onClick={() => onCardClick?.("feedback")}
+      />
+      <StatCard
+        title="Total Students"
+        value={safeStats.students}
+        icon={<FaUsers />}
+        trend={{ value: "Active", positive: true }}
+        color="blue"
+      />
+       <StatCard
+        title="Avg Rating"
+        value={(safeStats.avgRating || 0).toFixed(1)}
+        icon={<FaStar />}
+        color="rose"
+      />
+      <StatCard
+        title="Feedback Today"
+        value={safeStats.feedbackToday}
+        icon={<FaClock />}
+        color="emerald"
+      />
+      <StatCard
+        title="Joined Today"
+        value={safeStats.newTeachersToday}
+        icon={<FaUserShield />}
+        color="orange"
+      />
+      <StatCard
+        title="Active Plan"
+        value={safeStats.plan}
+        icon={<FaChartLine />}
+        color="cyan"
+      />
+    </div>
+  );
+}
