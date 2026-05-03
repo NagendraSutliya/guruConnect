@@ -32,6 +32,7 @@ ADMIN_DASH --> ADM_STUDENTS[Manage Students]
 ADMIN_DASH --> ADM_ACADEMIC[Academic Setup]
 ADMIN_DASH --> ADM_ACCOUNTS[Accounts & Fees]
 ADMIN_DASH --> ADM_REPORTS[Reports & Analytics]
+ADMIN_DASH --> ADM_CMS[Website CMS]
 
 %% Admin → Teachers
 ADM_TEACHERS --> ADD_TEACHER[Add Teacher]
@@ -54,6 +55,11 @@ ADM_ACADEMIC --> ACADEMIC_YEAR[Academic Year Config]
 ADM_ACCOUNTS --> FEES[Fee Structure]
 ADM_ACCOUNTS --> PAY_STATUS[Payment Status]
 ADM_ACCOUNTS --> NOTIFICATIONS[Fee Notifications]
+
+%% Admin → Website CMS
+ADM_CMS --> CMS_HERO[Hero Banner Configuration]
+ADM_CMS --> CMS_PAGES[Dynamic Pages Content]
+ADM_CMS --> CMS_GALLERY[Gallery & Media Management]
 
 %% =====================
 %% TEACHER FLOW
@@ -137,3 +143,8 @@ END([System Stable & Scalable])
     2.Notifications
     3.Admin analytics
     4.Reports
+🔹 Phase 5 – Public Website & CMS
+    1.Separate Public Website Architecture
+    2.Hero Banner CMS
+    3.Dynamic Pages (About, Academics, Admissions)
+    4.Gallery & News Updates
