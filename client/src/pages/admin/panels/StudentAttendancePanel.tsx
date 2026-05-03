@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { FiCheckCircle, FiXCircle, FiTrendingUp, FiActivity, FiUsers, FiClock, FiSearch } from "react-icons/fi";
+import { useToast } from "../../../context/ToastContext";
 
 const MetricCard = ({ title, value, icon, gradient }: any) => (
   <div className="bg-white/70 backdrop-blur-md p-6 rounded-[2rem] border border-white/20 shadow-sm flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
@@ -15,6 +16,7 @@ const MetricCard = ({ title, value, icon, gradient }: any) => (
 );
 
 const StudentAttendancePanel = () => {
+  const { showToast } = useToast();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [today, setToday] = useState<any>(null);
   const [classSummary, setClassSummary] = useState<any[]>([]);
@@ -37,8 +39,11 @@ const StudentAttendancePanel = () => {
       setClassSummary(classRes.data.data);
       setStudentSummary(studentRes.data.data);
       setHistory(historyRes.data.data);
+      if (selectedDate !== new Date().toISOString().split('T')[0]) {
+         showToast(`Attendance synchronized for ${selectedDate}`, "success");
+      }
     } catch (err) {
-      console.error(err);
+      showToast("Failed to sync attendance intelligence", "error");
     } finally {
       setLoading(false);
     }
@@ -226,15 +231,16 @@ const StudentAttendancePanel = () => {
          </div>
       </div>
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/30 backdrop-blur-[2px] transition-all">
+          <div className="flex flex-col items-center gap-3 p-8 bg-white/90 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-white/50">
+            <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] animate-pulse">Syncing Intel...</p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FiX } from "react-icons/fi";
-import Toast from "../../../components/Toast";
+import api from "../../../api/axiosInstance";
+import { useToast } from "../../../context/ToastContext";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
-import api from "../../../api/axiosInstance";
 
 type Props = {
   section: Section;
@@ -18,16 +18,10 @@ const UpdateSectionModal = ({
   onClose,
   onUpdated,
 }: Props) => {
+  const { showToast } = useToast();
   const [name, setName] = useState(section.name);
   const [classId, setClassId] = useState(section.classId?._id || "");
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type?: string } | null>(
-    null
-  );
-
-  // ✅ SAME helper as your class modal
-  const showToast = (message: string, type: string = "info") =>
-    setToast({ message, type });
 
   const handleSave = async () => {
     if (!name || !classId) {
@@ -54,14 +48,6 @@ const UpdateSectionModal = ({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-[500px] max-h-[90vh] overflow-auto space-y-4">
-        {/* ✅ SAME Toast placement */}
-        {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type as any}
-            onClose={() => setToast(null)}
-          />
-        )}
 
         {/* Header */}
         <div className="flex justify-between items-center">

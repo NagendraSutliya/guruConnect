@@ -5,6 +5,7 @@ const InstituteSchema = new mongoose.Schema({
   instituteCode: { type: String, default: null, index: true },
   instituteType: { type: String, enum: ["school", "tuition"], required: true },
   email: { type: String, unique: true, required: true },
+  phone: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   isVerified: { type: Boolean, default: false },
   verificationCode: String,

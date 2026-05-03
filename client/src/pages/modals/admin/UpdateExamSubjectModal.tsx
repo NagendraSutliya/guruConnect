@@ -1,23 +1,20 @@
 import { useState } from "react";
 import { FiX } from "react-icons/fi";
 import api from "../../../api/axiosInstance";
+import { useToast } from "../../../context/ToastContext";
 
 type Props = {
   editData: any;
   setEditData: (data: any) => void;
   refreshList: () => void; // refresh parent table
-  setToast: (toast: {
-    message: string;
-    type?: "success" | "error" | "info" | "warn";
-  }) => void; // parent toast setter
 };
 
 const UpdateExamSubjectModal = ({
   editData,
   setEditData,
   refreshList,
-  setToast,
 }: Props) => {
+  const { showToast } = useToast();
   const [localData, setLocalData] = useState(editData);
   const [loading, setLoading] = useState(false);
 
@@ -26,10 +23,7 @@ const UpdateExamSubjectModal = ({
   // --- Update function ---
   const handleUpdate = async () => {
     if (!localData.startTime || !localData.endTime || !localData.date) {
-      return setToast({
-        message: "Date, start and end time are required",
-        type: "warn",
-      });
+      return showToast("Date, start and end time are required", "warn");
     }
 
     try {
@@ -42,18 +36,11 @@ const UpdateExamSubjectModal = ({
       };
 
       await api.put(`/admin/exam-subjects/${localData._id}`, payload);
-
-      setToast({
-        message: "Exam subject updated successfully",
-        type: "success",
-      });
+      showToast("Exam subject updated successfully", "success");
       setEditData(null);
       refreshList();
     } catch (err: any) {
-      setToast({
-        message: err.response?.data?.message || "Update failed",
-        type: "error",
-      });
+      showToast(err.response?.data?.message || "Update failed", "error");
     } finally {
       setLoading(false);
     }

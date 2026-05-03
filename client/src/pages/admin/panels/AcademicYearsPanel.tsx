@@ -9,7 +9,7 @@ import {
   FiPlus,
   FiCalendar,
 } from "react-icons/fi";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 import type { AcademicYear } from "../../../types/admin/academicYear";
 import UpdateAcademicYearModal from "../../modals/admin/UpdateAcademicYearModal";
 
@@ -47,21 +47,18 @@ const formatDate = (date: string) => {
 };
 
 const AcademicYearsPanel = () => {
+  const { showToast } = useToast();
   const defaultDates = getDefaultSessionDates();
 
   const [years, setYears] = useState<AcademicYear[]>([]);
   const [form, setForm] = useState(defaultDates);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [toastMessage, setToastMessage] = useState<any>(null);
 
   const [editingYear, setEditingYear] = useState<AcademicYear | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-
-  const showToast = (message: string, type = "info") =>
-    setToastMessage({ message, type });
 
   const load = async () => {
     setLoading(true);
@@ -130,14 +127,6 @@ const AcademicYearsPanel = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fadeIn">
-      {toastMessage && (
-        <Toast
-          message={toastMessage.message}
-          type={toastMessage.type}
-          onClose={() => setToastMessage(null)}
-        />
-      )}
-
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -339,15 +328,6 @@ const AcademicYearsPanel = () => {
         />
       )}
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

@@ -48,6 +48,21 @@ import AdminProfile from "../pages/admin/AdminProfile";
 import ExamSubjectPanel from "../pages/admin/panels/ExamSubjectPanel";
 import UploadMarksPage from "../pages/teacher/panels/UploadMarksPanel";
 import ExamsTeacher from "../pages/teacher/ExamsTeacher";
+import TeacherProfile from "../pages/teacher/TeacherProfile";
+import TeacherSettings from "../pages/teacher/TeacherSettings";
+import TeacherHelp from "../pages/teacher/TeacherHelp";
+
+import StudentsTeacher from "../pages/teacher/Students";
+import RoutineTeacher from "../pages/teacher/RoutineTeacher";
+import RoutineStudent from "../pages/student/RoutineStudent";
+import FeeStructure from "../pages/admin/finance/FeeStructure";
+import CollectFees from "../pages/admin/finance/CollectFees";
+import Invoices from "../pages/admin/finance/Invoices";
+import ComingSoon from "../pages/admin/ComingSoon";
+import InstituteSettings from "../pages/admin/settings/InstituteSettings";
+import RolesPermissions from "../pages/admin/settings/RolesPermissions";
+import AccountSettings from "../pages/admin/AccountSettings";
+import HeroCMS from "../pages/admin/cms/HeroCMS";
 
 export default function AppRoutes() {
   return (
@@ -76,16 +91,65 @@ export default function AppRoutes() {
         <Route path="feedback" element={<FeedbackPanel />} />
         <Route path="link" element={<LinksPanel />} />
 
-        {/* NEW */}
+        {/* ACADEMIC */}
         <Route path="academic-years" element={<AcademicYears />} />
         <Route path="classes" element={<Classes />} />
         <Route path="sections" element={<Sections />} />
         <Route path="subjects" element={<Subjects />} />
         <Route path="teacher-assign" element={<TeacherAssignPanel />} />
-
         <Route path="students" element={<Students />} />
         <Route path="attendance" element={<Attendance />} />
         <Route path="routine" element={<Routine />} />
+
+        {/* FINANCE */}
+        <Route path="fee-structure" element={<FeeStructure />} />
+        <Route path="collect-fees" element={<CollectFees />} />
+        <Route path="invoices" element={<Invoices />} />
+
+        {/* HR & PAYROLL */}
+        <Route path="staff" element={<ComingSoon featureName="Staff Management" />} />
+        <Route path="payroll" element={<ComingSoon featureName="Payroll System" />} />
+        <Route path="leaves" element={<ComingSoon featureName="Leave Management" />} />
+
+        {/* TRANSPORT */}
+        <Route path="transport/routes" element={<ComingSoon featureName="Transport Routes" />} />
+        <Route path="transport/vehicles" element={<ComingSoon featureName="Vehicle Tracking" />} />
+        <Route path="transport/drivers" element={<ComingSoon featureName="Driver Logs" />} />
+
+        {/* INVENTORY */}
+        <Route path="inventory/assets" element={<ComingSoon featureName="Asset Inventory" />} />
+        <Route path="inventory/suppliers" element={<ComingSoon featureName="Supplier Network" />} />
+        <Route path="inventory/purchase" element={<ComingSoon featureName="Purchase Orders" />} />
+
+        {/* LIBRARY */}
+        <Route path="library/books" element={<ComingSoon featureName="Library Catalog" />} />
+        <Route path="library/issue" element={<ComingSoon featureName="Book Circulation" />} />
+        <Route path="library/members" element={<ComingSoon featureName="Library Membership" />} />
+
+        {/* HOSTEL */}
+        <Route path="hostel/list" element={<ComingSoon featureName="Hostel Directory" />} />
+        <Route path="hostel/rooms" element={<ComingSoon featureName="Room Inventory" />} />
+        <Route path="hostel/allotment" element={<ComingSoon featureName="Hostel Allotment" />} />
+
+        {/* CERTIFICATES */}
+        <Route path="certificates/id-cards" element={<ComingSoon featureName="ID Card Generator" />} />
+        <Route path="certificates/tc" element={<ComingSoon featureName="Transfer Certificates" />} />
+        <Route path="certificates/transcripts" element={<ComingSoon featureName="Academic Transcripts" />} />
+
+        {/* COMMUNICATION */}
+        <Route path="notices" element={<ComingSoon featureName="Notice Board" />} />
+        <Route path="send-message" element={<ComingSoon featureName="Broadcast System" />} />
+
+        {/* SETTINGS */}
+        <Route path="settings/institute" element={<InstituteSettings />} />
+        <Route path="settings/roles" element={<RolesPermissions />} />
+        <Route path="settings" element={<AccountSettings />} />
+
+        {/* WEBSITE CMS */}
+        <Route path="cms/hero" element={<HeroCMS />} />
+        <Route path="cms/news" element={<ComingSoon featureName="News & Events CMS" />} />
+        <Route path="cms/gallery" element={<ComingSoon featureName="Photo Gallery CMS" />} />
+        <Route path="cms/about" element={<ComingSoon featureName="About Page CMS" />} />
 
         <Route path="exam" element={<Exams />} />
         <Route path="exam-subjects/:examId" element={<ExamSubjectPanel />} />
@@ -107,8 +171,12 @@ export default function AppRoutes() {
         <Route path="results" element={<Result />} />
         <Route path="material" element={<StudyMaterial />} />
         <Route path="exams" element={<ExamsTeacher />} />
+        <Route path="students" element={<StudentsTeacher />} />
+        <Route path="routine" element={<RoutineTeacher />} />
         <Route path="results/upload-marks" element={<UploadMarksPage />} />
-
+        <Route path="profile" element={<TeacherProfile />} />
+        <Route path="settings" element={<TeacherSettings />} />
+        <Route path="help" element={<TeacherHelp />} />
       </Route>
 
       <Route
@@ -124,9 +192,11 @@ export default function AppRoutes() {
         <Route path="results" element={<StudentResults />} />
         <Route path="material" element={<StudentMaterial />} />
         <Route path="tests" element={<StudentTests />} />
+        <Route path="routine" element={<RoutineStudent />} />
         <Route path="profile" element={<StudentProfile />} />
         <Route path="change-password" element={<ChangePassword />} />
       </Route>
+
     </Routes>
   );
 }

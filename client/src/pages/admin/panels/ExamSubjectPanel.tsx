@@ -2,10 +2,11 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FiEdit, FiTrash2, FiSearch, FiChevronLeft, FiPlus, FiClock, FiCalendar, FiTarget, FiActivity } from "react-icons/fi";
 import api from "../../../api/axiosInstance";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 import UpdateExamSubjectModal from "../../modals/admin/UpdateExamSubjectModal";
 
 const ExamSubjectPanel = () => {
+  const { showToast } = useToast();
   const { examId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,7 +16,6 @@ const ExamSubjectPanel = () => {
   const [allSubjects, setAllSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [toastMessage, setToastMessage] = useState<any>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -30,11 +30,6 @@ const ExamSubjectPanel = () => {
 
   const [editData, setEditData] = useState<any>(null);
 
-  const showToast = (toast: {
-    message: string;
-    type?: "success" | "error" | "info" | "warn";
-  }) => setToastMessage(toast);
-
   const fetchData = async () => {
     if (!examId) return;
     try {
@@ -46,7 +41,7 @@ const ExamSubjectPanel = () => {
       setSubjects(subRes.data.data || []);
       setAllSubjects(allSubRes.data.data || []);
     } catch (err) {
-      showToast({ message: "Failed to synchronize exam subjects", type: "error" });
+      showToast("Failed to synchronize exam subjects", "error");
     } finally {
       setLoading(false);
     }
@@ -58,15 +53,15 @@ const ExamSubjectPanel = () => {
 
   const handleAdd = async () => {
     if (!form.subjectId || !form.date) {
-      return showToast({ message: "Subject and Date are required", type: "warn" });
+      return showToast("Subject and Date are required", "warn");
     }
     try {
       await api.post("/admin/exam-subjects", { examId, ...form });
       setForm({ subjectId: "", date: "", startTime: "", endTime: "", maxMarks: 100 });
       fetchData();
-      showToast({ message: "Subject added to schedule", type: "success" });
+      showToast("Subject added to schedule", "success");
     } catch (err: any) {
-      showToast({ message: err.response?.data?.message || "Operation failed", type: "error" });
+      showToast(err.response?.data?.message || "Operation failed", "error");
     }
   };
 
@@ -75,9 +70,9 @@ const ExamSubjectPanel = () => {
     try {
       await api.delete(`/admin/exam-subjects/${id}`);
       fetchData();
-      showToast({ message: "Subject removed", type: "success" });
+      showToast("Subject removed", "success");
     } catch (err) {
-      showToast({ message: "Delete failed", type: "error" });
+      showToast("Delete failed", "error");
     }
   };
 
@@ -113,10 +108,6 @@ const ExamSubjectPanel = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fadeIn">
-      {toastMessage && (
-        <Toast message={toastMessage.message} type={toastMessage.type} onClose={() => setToastMessage(null)} />
-      )}
-
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -354,19 +345,10 @@ const ExamSubjectPanel = () => {
           editData={editData}
           setEditData={setEditData}
           refreshList={fetchData}
-          setToast={showToast}
         />
       )}
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      
     </div>
   );
 };

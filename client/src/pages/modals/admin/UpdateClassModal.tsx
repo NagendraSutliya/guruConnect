@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FiX } from "react-icons/fi";
-import Toast from "../../../components/Toast";
+import api from "../../../api/axiosInstance";
+import { useToast } from "../../../context/ToastContext";
 import type { Class } from "../../../types/admin/class";
 import type { AcademicYear } from "../../../types/admin/academicYear";
-import api from "../../../api/axiosInstance";
 
 type Props = {
   cls: Class;
@@ -13,17 +13,12 @@ type Props = {
 };
 
 const UpdateClassModal = ({ cls, years, onClose, onUpdated }: Props) => {
+  const { showToast } = useToast();
   const [name, setName] = useState(cls.name);
   const [academicYearId, setAcademicYearId] = useState(
     cls.academicYearId?._id || ""
   );
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type?: string } | null>(
-    null
-  );
-
-  const showToast = (message: string, type: string = "info") =>
-    setToast({ message, type });
 
   const handleSave = async () => {
     if (!name || !academicYearId) {
@@ -48,14 +43,6 @@ const UpdateClassModal = ({ cls, years, onClose, onUpdated }: Props) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-[500px] max-h-[90vh] overflow-auto space-y-4">
-        {/* Toast */}
-        {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type as any}
-            onClose={() => setToast(null)}
-          />
-        )}
 
         {/* Header */}
         <div className="flex justify-between items-center">

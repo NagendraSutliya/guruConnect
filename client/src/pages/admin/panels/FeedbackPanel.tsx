@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
 import type { Feedback } from "../../../types/admin/feedback";
 import { FiTrash2, FiSearch, FiFilter, FiSmile, FiMeh, FiFrown, FiCalendar, FiUser } from "react-icons/fi";
+import { useToast } from "../../../context/ToastContext";
 
 const MOOD_CONFIG: Record<
   Feedback["mood"],
@@ -13,6 +14,7 @@ const MOOD_CONFIG: Record<
 };
 
 const FeedbackPanel = () => {
+  const { showToast } = useToast();
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,8 +52,13 @@ const FeedbackPanel = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this feedback?")) return;
-    await api.delete(`/admin/feedback/${id}`, { headers });
-    setFeedback((prev) => prev.filter((f) => f._id !== id));
+    try {
+      await api.delete(`/admin/feedback/${id}`, { headers });
+      setFeedback((prev) => prev.filter((f) => f._id !== id));
+      showToast("Feedback response deleted", "success");
+    } catch {
+      showToast("Failed to delete feedback", "error");
+    }
   };
 
   return (
@@ -217,15 +224,6 @@ const FeedbackPanel = () => {
         </div>
       )}
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

@@ -6,6 +6,7 @@ const {
   getTeacherFeedback,
   getAttendanceSummary,
   getTeacherProfile,
+  updateTeacherProfile,
 } = require("../../../controllers/teacher/TeacherController");
 
 const router = express.Router();
@@ -13,6 +14,7 @@ const router = express.Router();
 router.use(requireTeacher);
 
 router.get("/profile", getTeacherProfile);
+router.put("/profile", updateTeacherProfile);
 router.get("/stats", getTeacherStats);
 router.get("/overview", getTeacherOverview);
 router.get("/feedback", getTeacherFeedback);

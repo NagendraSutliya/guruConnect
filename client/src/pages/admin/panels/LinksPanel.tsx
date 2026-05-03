@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import {  FiCopy, FiExternalLink, FiRefreshCw, FiCheck } from "react-icons/fi";
+import { useToast } from "../../../context/ToastContext";
 
 const LinksPanel = () => {
+  const { showToast } = useToast();
   const [link, setLink] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [copying, setCopying] = useState(false);
@@ -31,8 +33,9 @@ const LinksPanel = () => {
         }
       );
       setLink(res.data);
+      showToast("Access portal link generated successfully", "success");
     } catch (err) {
-      console.error("Link generation failed");
+      showToast("Link generation failed", "error");
     } finally {
       setLoading(false);
     }
@@ -41,6 +44,7 @@ const LinksPanel = () => {
   const copyLink = (url: string) => {
     navigator.clipboard.writeText(url);
     setCopying(true);
+    showToast("Link copied to clipboard", "success");
     setTimeout(() => setCopying(false), 2000);
   };
 
@@ -140,22 +144,6 @@ const LinksPanel = () => {
           )}
         </div>
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-spin-slow {
-          animation: spin 3s linear infinite;
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 };

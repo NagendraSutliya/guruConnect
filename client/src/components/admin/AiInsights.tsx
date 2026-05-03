@@ -1,4 +1,4 @@
-import { Sparkles, AlertTriangle, ArrowRight } from "lucide-react";
+import { Sparkles, AlertTriangle } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 export default function AiInsights() {

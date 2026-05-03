@@ -175,24 +175,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Dropdown animation */}
-      <style>
-        {`
-          .animate-dropdown {
-            animation: dropdown 0.15s ease-out forwards;
-          }
-          @keyframes dropdown {
-            from {
-              opacity: 0;
-              transform: translateY(-5px) scale(0.95);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0) scale(1);
-            }
-          }
-        `}
-      </style>
     </nav>
   );
 }

@@ -200,7 +200,7 @@ const AdminNavbar = () => {
           <FaUserShield className="text-white" size={16} />
         </div>
         <h1 className="text-sm font-bold text-slate-700">
-          Admin <span className="text-indigo-500 font-medium ml-1">Dashboard</span>
+          Admin <span className="text-indigo-500 font-medium ml-1">Portal</span>
         </h1>
       </div>
 
@@ -380,45 +380,8 @@ const AdminNavbar = () => {
         </div>
       </div>
 
-      <style>
-        {`
-          .animate-dropdown {
-            animation: dropdown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          }
-          @keyframes dropdown {
-            from {
-              opacity: 0;
-              transform: translateY(-10px) scale(0.95);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0) scale(1);
-            }
-          }
-          @keyframes wiggle {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(10deg); }
-            75% { transform: rotate(-10deg); }
-          }
-          .animate-wiggle {
-            animation: wiggle 0.5s ease-in-out infinite;
-          }
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #e2e8f0;
-            border-radius: 20px;
-          }
-        `}
-      </style>
     </header>
   );
 };
 
 export default AdminNavbar;
-
-

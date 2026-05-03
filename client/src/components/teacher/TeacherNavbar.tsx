@@ -1,148 +1,143 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  FaBell,
-  FaChevronDown,
-  FaGraduationCap,
-  FaSignOutAlt,
-  // FaUserCircle,
-} from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { FiSearch, FiBell, FiUser, FiHelpCircle, FiSettings, FiLogOut, FiMessageCircle } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
+import { useState, useEffect, useRef } from "react";
+import api from "../../api/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 const TeacherNavbar = () => {
+  const { user, logout } = useAuth();
+  const [institute, setInstitute] = useState<any>(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const [profileOpen, setProfileOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const logout = () => {
-    localStorage.removeItem("role");
-    localStorage.removeItem("teacherToken");
-    navigate("/");
-  };
-
-  // Close dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setProfileOpen(false);
+    if (user?.instituteId) {
+      api.get(`/public/institute/${user.instituteId}`).then(res => setInstitute(res.data.data)).catch(console.error);
+    }
+  }, [user]);
+
+  // Handle click outside and ESC key
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfile(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowProfile(false);
+      }
+    };
+
+    if (showProfile) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscKey);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [showProfile]);
+
+  const handleNav = (path: string) => {
+    navigate(path);
+    setShowProfile(false);
+  };
 
   return (
-    <header className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0">
-      {/* Left */}
-      <Link to="/" className="flex items-center gap-2">
-        <img
-          src="/guruconnect-logo.png"
-          alt="GuruConnect Logo"
-          className="w-20 h-20"
-        />
-      </Link>
-      <div className="flex items-center gap-3">
-        <FaGraduationCap className="text-blue-600" size={26} />
-        <h1 className="text-lg font-semibold text-gray-800">
-          Teacher <span className="text-gray-500 font-medium">Dashboard</span>
-        </h1>
+    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 sticky top-0 z-40">
+      
+      {/* Left: Section Indicator */}
+      <div className="flex items-center gap-4">
+         <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-slate-800">
+               Teacher Portal
+            </span>
+            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+            <span className="text-xs font-medium text-slate-400">
+               {institute?.instituteName || "Gyansthali"}
+            </span>
+         </div>
       </div>
 
-      {/* Right */}
-      <div className="flex items-center gap-5 relative" ref={dropdownRef}>
-        {/* Notification */}
-        <button className="text-gray-500 hover:text-gray-700">
-          <FaBell size={20} />
-        </button>
-
-        {/* Divider */}
-        <div className="h-6 w-px bg-gray-300" />
-
-        {/* Profile */}
-        <button
-          onClick={() => setProfileOpen(!profileOpen)}
-          className="flex items-center gap-2"
-        >
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="Profile"
-            className="w-8 h-8 rounded-full object-cover"
-          />
-          <FaChevronDown
-            className={`text-gray-500 transition ${
-              profileOpen ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-
-        {/* Dropdown */}
-        {profileOpen && (
-          <div className="absolute right-0 top-12 w-48 bg-white rounded-lg shadow-lg border z-50 animate-dropdown">
-            <div className="px-4 py-3 border-b text-sm font-medium text-gray-700">
-              Teacher
-            </div>
-
-            <Link
-              to="/teacher/profile"
-              className="flex w-full items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-              onClick={() => setProfileOpen(false)}
-            >
-              <FaGraduationCap />
-              Profile
-            </Link>
-
-            {/* Settings Option */}
-            <Link
-              to="/teacher/settings"
-              className="flex w-full items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-              onClick={() => setProfileOpen(false)}
-            >
-              <FaChevronDown />
-              Settings
-            </Link>
-
-            <Link
-              to="/teacher/help"
-              className="flex w-full items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-              onClick={() => setProfileOpen(false)}
-            >
-              <FaBell />
-              Help
-            </Link>
-
-            {/* Divider */}
-            <div className="border-t my-1" />
-            <button
-              onClick={logout}
-              className="flex w-full items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-            >
-              <FaSignOutAlt />
-              Logout
-            </button>
-          </div>
-        )}
+      {/* Center: Global Search (Compact) */}
+      <div className="hidden md:flex flex-1 max-w-md mx-8">
+         <div className="relative w-full">
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <input 
+               type="text" 
+               placeholder="Search registry, students, or documents..." 
+               className="w-full pl-9 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:bg-white focus:ring-4 focus:ring-[var(--primary)]/5 focus:border-[var(--primary)]/30 transition-all outline-none"
+            />
+         </div>
       </div>
 
-      {/* Dropdown animation */}
-      <style>
-        {`
-          .animate-dropdown {
-            animation: dropdown 0.15s ease-out forwards;
-          }
-          @keyframes dropdown {
-            from {
-              opacity: 0;
-              transform: translateY(-6px) scale(0.95);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0) scale(1);
-            }
-          }
-        `}
-      </style>
+      {/* Right: User Operations */}
+      <div className="flex items-center gap-4">
+        
+        <button className="p-2 text-slate-400 hover:text-[var(--primary)] hover:bg-slate-50 rounded-lg transition-all relative">
+           <FiMessageCircle size={18} />
+           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--primary)] rounded-full border-2 border-white" />
+        </button>
+
+        <button className="p-2 text-slate-400 hover:text-[var(--primary)] hover:bg-slate-50 rounded-lg transition-all">
+           <FiBell size={18} />
+        </button>
+
+        <div className="w-px h-8 bg-slate-200 mx-1" />
+
+        <div className="relative" ref={profileRef}>
+           <button 
+             onClick={() => setShowProfile(!showProfile)}
+             className="flex items-center gap-3 p-1 rounded-full hover:bg-slate-50 transition-all"
+           >
+              <div className="text-right hidden sm:block">
+                 <p className="text-xs font-bold text-slate-800 leading-none">{user?.name || "Faculty Member"}</p>
+                 <p className="text-[10px] font-medium text-slate-400 mt-1 uppercase tracking-wider">{user?.role || "Teacher"}</p>
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 border border-slate-200 shadow-sm overflow-hidden">
+                 {user?.avatar ? <img src={user.avatar} alt="User" /> : <FiUser size={16} />}
+              </div>
+           </button>
+
+           {showProfile && (
+             <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-2 animate-fade-in">
+                <div className="px-4 py-2 mb-2 border-b border-slate-50">
+                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Authenticated Account</p>
+                   <p className="text-xs font-bold text-slate-800 truncate">{user?.email}</p>
+                </div>
+                <button 
+                  onClick={() => handleNav("/teacher/profile")}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-[var(--primary)] transition-all"
+                >
+                   <FiUser size={14} /> Profile Settings
+                </button>
+                <button 
+                  onClick={() => handleNav("/teacher/settings")}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-[var(--primary)] transition-all"
+                >
+                   <FiSettings size={14} /> Node Configuration
+                </button>
+                <button 
+                  onClick={() => handleNav("/teacher/help")}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-[var(--primary)] transition-all"
+                >
+                   <FiHelpCircle size={14} /> Faculty Support
+                </button>
+                <div className="h-px bg-slate-50 my-2" />
+                <button 
+                  onClick={logout}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-all"
+                >
+                   <FiLogOut size={14} /> Logout
+                </button>
+             </div>
+           )}
+        </div>
+      </div>
     </header>
   );
 };

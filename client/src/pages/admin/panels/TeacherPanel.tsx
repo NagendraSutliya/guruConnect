@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import ViewTeacherModal from "../../../components/admin/ViewTeacherModal";
 import AddTeacherModal from "../../modals/admin/AddTeacherModal";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 import {
   FiEdit,
   FiEye,
@@ -17,16 +17,13 @@ import { FaUserPlus, FaUsers, FaUserCheck, FaUserTimes } from "react-icons/fa";
 
 const TeacherPanel = () => {
   /** --------------------- State Variables --------------------- **/
+  const { showToast } = useToast();
   const [teachers, setTeachers] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<any | null>(null);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error" | "info" | "warn";
-  } | null>(null);
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,9 +36,6 @@ const TeacherPanel = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   /** --------------------- Helper Functions --------------------- **/
-  const showToast = (message: string, type: any = "info") => {
-    setToast({ message, type });
-  };
 
   const loadTeachers = async () => {
     setLoading(true);
@@ -198,16 +192,6 @@ const TeacherPanel = () => {
   /** --------------------- Render --------------------- **/
   return (
     <div className="space-y-6 pb-8 animate-fadeIn">
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
-
-
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 import {
   FiEdit,
   FiEye,
@@ -19,6 +19,7 @@ import AddStudentModal from "../../modals/admin/AddStudentModal";
 import ViewStudentModal from "../../../components/admin/ViewStudentModal";
 
 const StudentPanel = () => {
+  const { showToast } = useToast();
   const [students, setStudents] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
@@ -41,10 +42,6 @@ const StudentPanel = () => {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error" | "info" | "warn";
-  } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "active" | "inactive"
@@ -57,10 +54,6 @@ const StudentPanel = () => {
     password: string;
   } | null>(null);
 
-  // Toast helper
-  const showToast = (message: string, type: any = "info") => {
-    setToast({ message, type });
-  };
 
   useEffect(() => {
   if (showForm || showViewModal) {
@@ -276,14 +269,6 @@ const StudentPanel = () => {
 
   return (
     <div className="space-y-6 pb-8 animate-fadeIn">
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
 
       {/* Credentials Banner */}
       {newStudentCreds && (

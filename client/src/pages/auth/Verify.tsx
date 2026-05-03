@@ -5,7 +5,7 @@ import {
   ShieldCheck, 
   ArrowLeft,
   Loader2,
-  MailOpen
+  Smartphone
 } from "lucide-react";
 
 const Verify = () => {
@@ -14,17 +14,17 @@ const Verify = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const nav = useNavigate();
-  const email = params.get("email") || "";
+  const phone = params.get("phone") || "";
 
   const verify = async () => {
     if (!code) return setError("Please enter your verification code");
     setError("");
     try {
       setLoading(true);
-      await api.post("/auth/verify", { email, code });
+      await api.post("/auth/verify", { phone, code });
       nav("/auth/login");
     } catch (err: any) {
-      setError(err.response?.data?.msg || "Invalid verification code. Please try again.");
+      setError(err.response?.data?.message || "Invalid verification code. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,12 +47,12 @@ const Verify = () => {
         <div className="bg-white p-10 md:p-12 rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-100">
           <div className="flex flex-col items-center text-center mb-10">
             <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-[30px] flex items-center justify-center mb-8 shadow-xl shadow-orange-100">
-              <MailOpen className="w-10 h-10" />
+              <Smartphone className="w-10 h-10" />
             </div>
-            <h2 className="text-3xl font-black text-slate-900 mb-3 tracking-tight">Verify Your Email</h2>
+            <h2 className="text-3xl font-black text-slate-900 mb-3 tracking-tight">Verify Your Phone</h2>
             <p className="text-slate-500 font-medium leading-relaxed px-4">
               We've sent a 6-digit verification code to <br />
-              <span className="text-slate-900 font-bold">{email}</span>
+              <span className="text-slate-900 font-bold">{phone}</span>
             </p>
           </div>
 
@@ -68,6 +68,7 @@ const Verify = () => {
               <input
                 value={code}
                 placeholder="000 000"
+                maxLength={6}
                 onChange={(e) => setCode(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 text-center text-3xl font-black text-slate-900 outline-none focus:border-orange-600 focus:bg-white focus:ring-8 focus:ring-orange-50 transition-all placeholder:text-slate-200 tracking-[0.5em]"
               />
@@ -94,7 +95,7 @@ const Verify = () => {
             <p className="text-center text-slate-500 font-medium pt-4">
               Didn't receive the code?{" "}
               <button className="text-orange-600 font-black hover:underline ml-1">
-                Resend Code
+                Resend SMS
               </button>
             </p>
           </div>

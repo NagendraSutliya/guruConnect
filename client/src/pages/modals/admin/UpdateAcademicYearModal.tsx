@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../../api/axiosInstance";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 import type { AcademicYear } from "../../../types/admin/academicYear";
 
 interface UpdateAcademicYearModalProps {
@@ -14,16 +14,13 @@ const UpdateAcademicYearModal: React.FC<UpdateAcademicYearModalProps> = ({
   onClose,
   onUpdated,
 }) => {
+  const { showToast } = useToast();
   const [form, setForm] = useState({
     name: "",
     startDate: "",
     endDate: "",
   });
   const [loading, setLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState<any>(null);
-
-  const showToast = (message: string, type = "info") =>
-    setToastMessage({ message, type });
 
   useEffect(() => {
     if (year) {
@@ -56,14 +53,6 @@ const UpdateAcademicYearModal: React.FC<UpdateAcademicYearModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      {toastMessage && (
-        <Toast
-          message={toastMessage.message}
-          type={toastMessage.type}
-          onClose={() => setToastMessage(null)}
-        />
-      )}
-
       <div className="bg-white rounded-lg p-6 w-fit">
         <h2 className="text-xl font-semibold mb-4">Update Academic Year</h2>
 

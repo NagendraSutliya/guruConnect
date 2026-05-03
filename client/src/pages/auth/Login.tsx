@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   Loader2,
   ShieldCheck,
-  Settings,
 } from "lucide-react";
 
 import PortalSlider from "../../components/PortalSlider";
@@ -53,74 +52,48 @@ const AdminLogin = () => {
 
   return (
     <div className="h-full bg-white flex overflow-hidden">
-      {/* ================= LEFT SIDE: ILLUSTRATION ================= */}
+      {/* ================= LEFT SIDE: VISUAL ANCHOR ================= */}
       <div className="hidden lg:flex lg:w-1/2 bg-slate-950 relative items-center justify-center p-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-orange-600/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-600/10 rounded-full blur-[120px]" />
-        </div>
+        {/* Deep Field Image */}
+        <img 
+          src="/images/admin_login.png" 
+          alt="Admin Command Center" 
+          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-110 blur-[2px]"
+        />
+        
+        {/* Dynamic Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-transparent" />
 
-        <div className="relative z-10 w-full px-12 xl:px-20">
-          <h2 className="text-3xl font-black text-white mb-4 leading-[1.1] tracking-tight">
+        <div className="relative z-10 w-full px-12 xl:px-20 mt-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-600/20 border border-orange-500/30 text-orange-400 text-[10px] font-black uppercase tracking-widest mb-6">
+             <ShieldCheck size={12} /> Institutional Command
+          </div>
+          
+          <h2 className="text-5xl font-black text-white mb-6 leading-[1.05] tracking-tighter">
             The Master Hub for Your <span className="text-orange-500">Institute.</span>
           </h2>
           
-          <p className="text-slate-400 text-lg mb-6 leading-relaxed font-medium">
-            Take total control of your academic ecosystem. Manage staff, oversee students, and drive growth.
+          <p className="text-slate-300 text-lg mb-10 leading-relaxed font-medium max-w-md">
+            Take total control of your academic ecosystem. Manage staff, oversee students, and drive institutional growth with precision.
           </p>
           
-          <div className="space-y-4">
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-white/10 flex items-start gap-4">
-              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center shrink-0 text-orange-500">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="font-bold text-white text-lg">Secure Administration</p>
-                <p className="text-slate-400 text-xs">Enterprise-grade control for your institute.</p>
-              </div>
+          <div className="grid grid-cols-2 gap-4 max-w-md">
+            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl p-5 border border-white/10 relative overflow-hidden group">
+              <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1 relative z-10">System Status</p>
+              <p className="text-xl font-bold text-white tracking-tight relative z-10">99.9% Operational</p>
+              <div className="absolute -right-2 -bottom-2 w-12 h-12 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-all" />
             </div>
-          </div>
-
-          <div className="mt-12 relative flex items-center justify-center h-[350px]">
-            {/* Abstract Command Center Illustration */}
-            <div className="relative w-full h-full flex items-center justify-center">
-              {/* Central Glowing Shield */}
-              <div className="absolute w-48 h-48 bg-orange-500/20 rounded-full blur-[60px] animate-pulse" />
-              <div className="relative z-10 w-64 h-80 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden flex flex-col justify-between group transition-transform hover:scale-105 duration-500">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-50" />
-                <div className="space-y-4">
-                  <div className="w-12 h-2 bg-white/10 rounded-full" />
-                  <div className="w-20 h-2 bg-white/10 rounded-full" />
-                  <div className="grid grid-cols-2 gap-3 pt-4">
-                    <div className="h-16 bg-white/5 rounded-2xl border border-white/5" />
-                    <div className="h-16 bg-white/5 rounded-2xl border border-white/5" />
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-900/50">
-                    <ShieldCheck className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="w-24 h-2 bg-white/20 rounded-full" />
-                    <div className="w-16 h-2 bg-white/10 rounded-full" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating Elements */}
-              <div className="absolute top-0 right-10 w-24 h-24 bg-blue-500/10 backdrop-blur-xl border border-white/5 rounded-3xl animate-float shadow-2xl flex items-center justify-center" style={{ animationDelay: '1s' }}>
-                <Settings className="w-8 h-8 text-blue-400 opacity-50" />
-              </div>
-              <div className="absolute bottom-10 left-10 w-20 h-20 bg-orange-500/10 backdrop-blur-xl border border-white/5 rounded-3xl animate-float-slow shadow-2xl flex items-center justify-center">
-                <Lock className="w-6 h-6 text-orange-400 opacity-50" />
-              </div>
-              
-              {/* Connection Lines (CSS) */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-white/5 rounded-full opacity-20 pointer-events-none" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] border border-white/5 rounded-full opacity-10 pointer-events-none" />
+            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl p-5 border border-white/10 relative overflow-hidden group">
+              <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1 relative z-10">Security Sync</p>
+              <p className="text-xl font-bold text-white tracking-tight relative z-10">Encrypted Nodes</p>
+              <div className="absolute -right-2 -bottom-2 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all" />
             </div>
           </div>
         </div>
+
+        {/* Decorative Element */}
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-orange-600/20 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       {/* ================= RIGHT SIDE: FORM ================= */}

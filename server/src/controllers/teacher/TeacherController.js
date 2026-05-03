@@ -19,6 +19,21 @@ exports.getTeacherProfile = async (req, res) => {
   }
 };
 
+exports.updateTeacherProfile = async (req, res) => {
+  try {
+    const { name, phone, address } = req.body;
+    const teacher = await Teacher.findByIdAndUpdate(
+      req.user.id,
+      { $set: { name, phone, address } },
+      { new: true }
+    ).select("-password");
+
+    return successResponse(res, "Profile updated successfully", teacher);
+  } catch (err) {
+    return errorResponse(res, "Failed to update profile");
+  }
+};
+
 /* ================= DASHBOARD STATS ================= */
 exports.getTeacherStats = async (req, res) => {
   try {

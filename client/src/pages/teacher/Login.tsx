@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   Loader2,
   GraduationCap,
-  Users
 } from "lucide-react";
 import PortalSlider from "../../components/PortalSlider";
 
@@ -34,9 +33,10 @@ const TeacherLogin = () => {
       localStorage.setItem("teacherToken", data.token);
 
       const teacherUser = {
-        _id: data._id,
+        _id: data.id || data._id,
         name: data.name,
         email: data.email,
+        instituteId: data.instituteId,
       };
 
       localStorage.setItem("teacher", JSON.stringify(teacherUser));
@@ -52,84 +52,46 @@ const TeacherLogin = () => {
 
   return (
     <div className="h-full bg-white flex overflow-hidden">
-      {/* ================= LEFT SIDE: ILLUSTRATION ================= */}
+      {/* ================= LEFT SIDE: VISUAL ANCHOR ================= */}
       <div className="hidden lg:flex lg:w-1/2 bg-blue-950 relative items-center justify-center p-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-orange-600/10 rounded-full blur-[120px]" />
-        </div>
+        {/* Educator Focus Image */}
+        <img 
+          src="/images/teacher_login.png" 
+          alt="Teacher Dashboard" 
+          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-105 blur-[1px]"
+        />
+        
+        {/* Atmospheric Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-blue-950/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-950 via-transparent to-transparent" />
 
-        <div className="relative z-10 w-full px-12 xl:px-20">
-          <h2 className="text-3xl font-black text-white mb-4 leading-[1.1] tracking-tight">
+        <div className="relative z-10 w-full px-12 xl:px-20 mt-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-400 text-[10px] font-black uppercase tracking-widest mb-6">
+             <GraduationCap size={12} /> Educator Hub
+          </div>
+          
+          <h2 className="text-5xl font-black text-white mb-6 leading-[1.05] tracking-tighter">
             Empower Your <span className="text-blue-500">Teaching</span> Journey.
           </h2>
           
-          <p className="text-slate-400 text-lg mb-6 leading-relaxed font-medium">
-            Join your digital classroom. Manage attendance, grade assignments, and communicate effortlessly.
+          <p className="text-slate-300 text-lg mb-10 leading-relaxed font-medium max-w-md">
+            Join your digital classroom. Manage attendance, grade assignments, and communicate with students effortlessly.
           </p>
           
-          <div className="space-y-4">
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-white/10 flex items-start gap-4">
-              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center shrink-0 text-blue-500">
-                <GraduationCap className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="font-bold text-white text-lg">Educator Hub</p>
-                <p className="text-slate-400 text-xs">Empowering teachers with smart tools.</p>
-              </div>
+          <div className="flex gap-4">
+            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl p-4 border border-white/10 flex-1">
+              <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Live Classes</p>
+              <p className="text-xl font-bold text-white tracking-tight">Active Now</p>
             </div>
-          </div>
-
-          <div className="mt-12 relative flex items-center justify-center h-[350px]">
-            {/* Abstract Educator Hub Illustration */}
-            <div className="relative w-full h-full flex items-center justify-center">
-              {/* Central Glowing Orb */}
-              <div className="absolute w-48 h-48 bg-blue-500/20 rounded-full blur-[60px] animate-pulse" />
-              
-              <div className="relative z-10 w-64 h-80 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden flex flex-col justify-between group transition-transform hover:scale-105 duration-500">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50" />
-                <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <div className="w-8 h-8 rounded-full bg-white/10" />
-                    <div className="w-8 h-8 rounded-full bg-white/10" />
-                    <div className="w-8 h-8 rounded-full bg-white/10" />
-                  </div>
-                  <div className="w-32 h-2 bg-white/10 rounded-full" />
-                  <div className="pt-4 space-y-3">
-                    <div className="h-10 bg-white/5 rounded-xl border border-white/5 flex items-center px-3 gap-2">
-                       <div className="w-4 h-4 rounded bg-blue-500/30" />
-                       <div className="w-16 h-1.5 bg-white/10 rounded-full" />
-                    </div>
-                    <div className="h-10 bg-white/5 rounded-xl border border-white/5 flex items-center px-3 gap-2">
-                       <div className="w-4 h-4 rounded bg-indigo-500/30" />
-                       <div className="w-20 h-1.5 bg-white/10 rounded-full" />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/50">
-                    <GraduationCap className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="w-24 h-2 bg-white/20 rounded-full" />
-                    <div className="w-16 h-2 bg-white/10 rounded-full" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating Classroom Elements */}
-              <div className="absolute -top-4 -left-4 w-20 h-20 bg-indigo-500/10 backdrop-blur-xl border border-white/5 rounded-3xl animate-float shadow-2xl flex items-center justify-center">
-                <Users className="w-7 h-7 text-indigo-400 opacity-50" />
-              </div>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-500/10 backdrop-blur-xl border border-white/5 rounded-3xl animate-float-slow shadow-2xl flex items-center justify-center" style={{ animationDelay: '1.5s' }}>
-                <Mail className="w-8 h-8 text-blue-400 opacity-50" />
-              </div>
-              
-              {/* Radial Grid */}
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[length:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
+            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl p-4 border border-white/10 flex-1">
+              <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Student Sync</p>
+              <p className="text-xl font-bold text-white tracking-tight">Real-time</p>
             </div>
           </div>
         </div>
+
+        {/* Decorative Light */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
       </div>
 
       {/* ================= RIGHT SIDE: FORM ================= */}

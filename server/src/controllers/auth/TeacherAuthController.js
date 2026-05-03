@@ -43,8 +43,10 @@ exports.loginTeacher = async (req, res) => {
     return successResponse(res, "Login successful", {
       token,
       role: "teacher",
+      id: teacher._id,
       name: teacher.name,
       email: teacher.email,
+      instituteId: teacher.instituteId,
     });
   } catch (err) {
     console.error(err);

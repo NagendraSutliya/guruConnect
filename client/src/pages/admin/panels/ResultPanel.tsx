@@ -11,6 +11,7 @@ import {
   FiDownload,
   FiFilter,
 } from "react-icons/fi";
+import { useToast } from "../../../context/ToastContext";
 
 const MetricCard = ({ title, value, icon, gradient }: any) => (
   <div className="bg-white/70 backdrop-blur-md p-6 rounded-[2rem] border border-white/20 shadow-sm flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
@@ -25,6 +26,7 @@ const MetricCard = ({ title, value, icon, gradient }: any) => (
 );
 
 const AdminResultPanel = () => {
+  const { showToast } = useToast();
   const [exams, setExams] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
@@ -56,7 +58,7 @@ const AdminResultPanel = () => {
       setClasses(c.data.data || []);
       setSections(s.data.data || []);
     } catch (err) {
-      console.error("Failed loading filters");
+      showToast("Failed to load filter criteria", "error");
     }
   };
 
@@ -154,6 +156,7 @@ const AdminResultPanel = () => {
     a.href = url;
     a.download = "academic_results.csv";
     a.click();
+    showToast("Report exported successfully", "success");
   };
 
   return (
@@ -357,15 +360,6 @@ const AdminResultPanel = () => {
         )}
       </div>
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

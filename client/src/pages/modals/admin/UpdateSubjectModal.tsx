@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
-import Toast from "../../../components/Toast";
 import api from "../../../api/axiosInstance";
+import { useToast } from "../../../context/ToastContext";
 import type { Subject } from "../../../types/admin/subject";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
@@ -21,18 +21,13 @@ const UpdateSubjectModal = ({
   onClose,
   onUpdated,
 }: Props) => {
+  const { showToast } = useToast();
   const [name, setName] = useState(subject.name);
   const [selectedClass, setSelectedClass] = useState(subject.classId._id);
   const [selectedSection, setSelectedSection] = useState(
     subject.sectionId?._id || ""
   );
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type?: string } | null>(
-    null
-  );
-
-  const showToast = (message: string, type: string = "info") =>
-    setToast({ message, type });
 
   // Load sections for selected class
   const [availableSections, setAvailableSections] = useState<Section[]>([]);
@@ -74,13 +69,6 @@ const UpdateSubjectModal = ({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-[500px] max-h-[90vh] overflow-auto space-y-4">
-        {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type as any}
-            onClose={() => setToast(null)}
-          />
-        )}
 
         {/* Header */}
         <div className="flex justify-between items-center">

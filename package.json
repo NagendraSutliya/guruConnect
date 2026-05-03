@@ -2,7 +2,7 @@
   "name": "guruconnect-root",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\""
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\" \"npm run dev --prefix school-website\""
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.18",

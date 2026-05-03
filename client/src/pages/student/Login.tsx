@@ -51,93 +51,46 @@ const StudentLogin = () => {
 
   return (
     <div className="h-full bg-white flex overflow-hidden">
-      {/* ================= LEFT SIDE: ILLUSTRATION ================= */}
+      {/* ================= LEFT SIDE: VISUAL ANCHOR ================= */}
       <div className="hidden lg:flex lg:w-1/2 bg-slate-900 relative items-center justify-center p-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-600/10 rounded-full blur-[120px]" />
-        </div>
+        {/* Student Focus Image */}
+        <img 
+          src="/images/student_login.png" 
+          alt="Student Hub" 
+          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-110 blur-[1px]"
+        />
+        
+        {/* Energetic Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-transparent to-transparent" />
 
-        <div className="relative z-10 w-full px-12 xl:px-20">
-          <h2 className="text-3xl font-black text-white mb-4 leading-[1.1] tracking-tight">
+        <div className="relative z-10 w-full px-12 xl:px-20 mt-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-600/20 border border-amber-500/30 text-amber-400 text-[10px] font-black uppercase tracking-widest mb-6">
+             <GraduationCap size={12} /> Student Workspace
+          </div>
+          
+          <h2 className="text-5xl font-black text-white mb-6 leading-[1.05] tracking-tighter">
             Unlock Your <span className="text-blue-500">Academic</span> Potential.
           </h2>
           
-          <p className="text-slate-400 text-lg mb-6 leading-relaxed font-medium">
-            Your journey to success starts here. Access your courses and stay connected with your educators.
+          <p className="text-slate-300 text-lg mb-10 leading-relaxed font-medium max-w-md">
+            Your journey to excellence starts here. Access your personalized dashboard, track progress, and stay synchronized with your institute.
           </p>
           
-          <div className="space-y-4">
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-white/10 flex items-start gap-4">
-              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center shrink-0 text-blue-500">
-                <GraduationCap className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="font-bold text-white text-lg">Student Portal</p>
-                <p className="text-slate-400 text-xs">Your digital workspace for success.</p>
-              </div>
+          <div className="flex gap-4">
+            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl p-4 border border-white/10 flex-1">
+              <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Performance</p>
+              <p className="text-xl font-bold text-white tracking-tight">Level Up</p>
             </div>
-          </div>
-
-          <div className="mt-12 relative flex items-center justify-center h-[350px]">
-            {/* Abstract Learning Journey Illustration */}
-            <div className="relative w-full h-full flex items-center justify-center">
-              {/* Central Glowing Aurora */}
-              <div className="absolute w-64 h-64 bg-purple-600/20 rounded-full blur-[80px] animate-pulse" />
-              
-              <div className="relative z-10 w-64 h-80 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden flex flex-col justify-between group transition-transform hover:scale-105 duration-500">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50" />
-                <div className="space-y-6">
-                  <div className="flex gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-purple-500" />
-                    <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                    <div className="w-2 h-2 rounded-full bg-blue-500" />
-                  </div>
-                  <div className="space-y-3">
-                    <div className="w-full h-2 bg-white/10 rounded-full" />
-                    <div className="w-3/4 h-2 bg-white/10 rounded-full" />
-                    <div className="w-1/2 h-2 bg-white/10 rounded-full" />
-                  </div>
-                  <div className="pt-4">
-                    <div className="w-full h-24 bg-gradient-to-br from-white/5 to-transparent rounded-2xl border border-white/5 flex items-center justify-center">
-                       <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
-                         <div className="w-6 h-6 bg-purple-500/20 rounded-full animate-ping" />
-                       </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-900/50">
-                    <GraduationCap className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="w-24 h-2 bg-white/20 rounded-full" />
-                    <div className="w-16 h-2 bg-white/10 rounded-full" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating Academic Elements */}
-              <div className="absolute top-0 left-10 w-16 h-16 bg-blue-500/10 backdrop-blur-xl border border-white/5 rounded-2xl animate-float shadow-2xl flex items-center justify-center">
-                <div className="w-8 h-8 rounded bg-blue-400/20 flex items-center justify-center">
-                  <div className="w-4 h-4 text-blue-400">★</div>
-                </div>
-              </div>
-              <div className="absolute bottom-10 right-10 w-20 h-20 bg-purple-500/10 backdrop-blur-xl border border-white/5 rounded-3xl animate-float-slow shadow-2xl flex items-center justify-center" style={{ animationDelay: '2s' }}>
-                <div className="w-10 h-10 rounded-full bg-purple-400/20 flex items-center justify-center">
-                  <div className="w-5 h-5 text-purple-400">✧</div>
-                </div>
-              </div>
-              
-              {/* Particle Field (CSS) */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                 <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-white rounded-full animate-pulse" />
-                 <div className="absolute top-3/4 left-1/2 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-                 <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-              </div>
+            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl p-4 border border-white/10 flex-1">
+              <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Resources</p>
+              <p className="text-xl font-bold text-white tracking-tight">Active Feed</p>
             </div>
           </div>
         </div>
+
+        {/* Dynamic Light Beam */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
       </div>
 
       {/* ================= RIGHT SIDE: FORM ================= */}

@@ -4,7 +4,6 @@ import { FiTrash2, FiEdit, FiChevronDown, FiSearch,  FiPlus, FiBookOpen } from "
 import type { Subject } from "../../../types/admin/subject";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
-import Toast from "../../../components/Toast";
 import UpdateSubjectModal from "../../modals/admin/UpdateSubjectModal";
 
 const SubjectsPanel = () => {
@@ -15,10 +14,6 @@ const SubjectsPanel = () => {
   const [selectedSection, setSelectedSection] = useState("");
   const [name, setName] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error" | "info" | "warn";
-  } | null>(null);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -35,10 +30,7 @@ const SubjectsPanel = () => {
       const sRes = await api.get("/admin/subjects");
       setSubjects(sRes.data.data);
     } catch (err: any) {
-      setToast({
-        message: err.response?.data?.message || "Failed to load data",
-        type: "error",
-      });
+     
     } finally {
       setLoading(false);
     }
@@ -78,10 +70,7 @@ const SubjectsPanel = () => {
 
   const saveSubject = async () => {
     if (!name.trim() || !selectedClass) {
-      setToast({
-        message: "Subject name and class are required",
-        type: "warn",
-      });
+     
       return;
     }
 
@@ -102,14 +91,11 @@ const SubjectsPanel = () => {
 
       if (editId) {
         await api.put(`/admin/subjects/${editId}`, payload);
-        setToast({ message: "Subject updated successfully", type: "success" });
+        
         setEditId(null);
       } else {
         await api.post("/admin/subjects", payload);
-        setToast({
-          message: `Subject created with code ${generatedCode}`,
-          type: "success",
-        });
+      ;
       }
 
       setName("");
@@ -117,10 +103,7 @@ const SubjectsPanel = () => {
       setSelectedSection("");
       loadData();
     } catch (err: any) {
-      setToast({
-        message: err.response?.data?.message || "Operation failed",
-        type: "error",
-      });
+     
     }
   };
 
@@ -132,10 +115,9 @@ const SubjectsPanel = () => {
     if (!confirm("Are you sure you want to delete this subject?")) return;
     try {
       await api.delete(`/admin/subjects/${id}`);
-      setToast({ message: "Subject deleted", type: "success" });
-      loadData();
+     
     } catch {
-      setToast({ message: "Failed to delete subject", type: "error" });
+      
     }
   };
 
@@ -157,14 +139,6 @@ const SubjectsPanel = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fadeIn">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type as any}
-          onClose={() => setToast(null)}
-        />
-      )}
-
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -363,15 +337,7 @@ const SubjectsPanel = () => {
         />
       )}
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+     
     </div>
   );
 };

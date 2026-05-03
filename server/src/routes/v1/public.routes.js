@@ -3,9 +3,23 @@ const router = express.Router();
 const PublicLink = require("../../models/PublicLink");
 const Feedback = require("../../models/Feedback");
 const Teacher = require("../../models/Teacher");
+const Institute = require("../../models/Institute");
+
+// Get institute details - PUBLIC
+router.get("/institute/:id", async (req, res) => {
+  try {
+    const institute = await Institute.findById(req.params.id).select(
+      "instituteName instituteType"
+    );
+    if (!institute) return res.status(404).json({ msg: "Institute not found" });
+    res.json({ data: institute });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Failed to load institute" });
+  }
+});
 
 // Get teachers using public link - PUBLIC
-
 router.get("/teachers/:code", async (req, res) => {
   try {
     const link = await PublicLink.findOne({ linkCode: req.params.code });

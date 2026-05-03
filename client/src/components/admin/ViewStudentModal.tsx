@@ -1,6 +1,5 @@
 import React from "react";
-import { FiX, FiMail, FiCalendar, FiLayers, FiGrid, FiHash, FiUser, FiPhone, FiMapPin } from "react-icons/fi";
-
+import { FiX, FiMail, FiLayers, FiUser, FiPhone, FiMapPin } from "react-icons/fi";
 interface Props {
   student: any;
   onClose: () => void;

@@ -11,8 +11,10 @@ import {
   FiSave,
   FiCheckCircle,
 } from "react-icons/fi";
+import { useToast } from "../../context/ToastContext";
 
 const AdminProfile = () => {
+  const { showToast } = useToast();
   const { user } = useAuth();
   
   const [admin, setAdmin] = useState({
@@ -46,7 +48,7 @@ const AdminProfile = () => {
 
   const handleSave = () => {
     console.log("Updated Profile:", admin);
-    alert("Profile changes archived successfully.");
+    showToast("Profile changes archived successfully", "success");
   };
 
   const avatarLetter = admin?.name?.charAt(0)?.toUpperCase();
@@ -54,12 +56,12 @@ const AdminProfile = () => {
   return (
     <div className="space-y-8 animate-fadeIn pb-12">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-md -mx-8 px-8 py-6 border-b border-slate-200/50">
+      {/* <div className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-md -mx-8 px-8 py-6 border-b border-slate-200/50">
         <h2 className="text-3xl font-black text-slate-800 tracking-tight">Identity & Security</h2>
         <p className="text-slate-500 text-sm font-medium mt-1">Manage your administrative credentials and institution profile.</p>
-      </div>
+      </div> */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-10">
         {/* Profile Visual Card */}
         <div className="lg:col-span-1 bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 shadow-xl overflow-hidden flex flex-col items-center py-12 px-8 text-center relative">
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -185,15 +187,7 @@ const AdminProfile = () => {
         </div>
       </div>
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+ 
     </div>
   );
 };

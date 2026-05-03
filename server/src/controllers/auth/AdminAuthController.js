@@ -2,21 +2,26 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Institute = require("../../models/Institute");
 const { generateVerificationCode } = require("../../utils/verificationCode");
-const { sendVerificationCode } = require("../../utils/mailer");
+const { sendOTP } = require("../../utils/smsService");
 const { successResponse, errorResponse } = require("../../utils/response");
 
 /* ================= INSTITUTE REGISTER ================= */
 exports.registerInstitute = async (req, res) => {
   try {
-    const { instituteName, instituteType, email, password } = req.body;
+    const { instituteName, instituteType, email, phone, password } = req.body;
 
-    if (!instituteName || !email || !password) {
+    if (!instituteName || !email || !phone || !password) {
       return errorResponse(res, "Missing required fields", 400);
     }
 
-    const exists = await Institute.findOne({ email });
-    if (exists) {
+    const emailExists = await Institute.findOne({ email });
+    if (emailExists) {
       return errorResponse(res, "Email already registered", 400);
+    }
+
+    const phoneExists = await Institute.findOne({ phone });
+    if (phoneExists) {
+      return errorResponse(res, "Phone number already registered", 400);
     }
 
     const hashed = await bcrypt.hash(password, 10);
@@ -32,15 +37,16 @@ exports.registerInstitute = async (req, res) => {
       instituteName,
       instituteType,
       email,
+      phone,
       password: hashed,
       instituteCode,
       verificationCode: code,
       verificationExpires: new Date(Date.now() + 10 * 60 * 1000),
     });
 
-    await sendVerificationCode(email, code);
+    await sendOTP(phone, code);
 
-    return successResponse(res, "Institute verification code sent to email");
+    return successResponse(res, "Institute verification code sent to your phone");
   } catch (err) {
     console.error(err);
     return errorResponse(res, "Registration failed");
@@ -50,9 +56,9 @@ exports.registerInstitute = async (req, res) => {
 /* ================= INSTITUTE VERIFY ================= */
 exports.verifyInstitute = async (req, res) => {
   try {
-    const { email, code } = req.body;
+    const { phone, code } = req.body;
 
-    const inst = await Institute.findOne({ email });
+    const inst = await Institute.findOne({ phone });
     if (!inst) {
       return errorResponse(res, "Institute not found", 404);
     }
@@ -91,7 +97,7 @@ exports.loginInstitute = async (req, res) => {
     }
 
     if (!inst.isVerified) {
-      return errorResponse(res, "Please verify your email first", 403);
+      return errorResponse(res, "Please verify your phone number first", 403);
     }
 
     const ok = await bcrypt.compare(password, inst.password);

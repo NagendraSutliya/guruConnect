@@ -8,7 +8,8 @@ import {
   ArrowRight, 
   ArrowLeft,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Phone
 } from "lucide-react";
 
 const Register = () => {
@@ -16,6 +17,7 @@ const Register = () => {
     instituteName: "",
     instituteType: "school",
     email: "",
+    phone: "",
     password: "",
     confirm: "",
   });
@@ -41,9 +43,10 @@ const Register = () => {
         instituteName: form.instituteName,
         instituteType: form.instituteType,
         email: form.email,
+        phone: form.phone,
         password: form.password,
       });
-      nav("/auth/verify?email=" + form.email);
+      nav("/auth/verify?phone=" + form.phone);
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -53,125 +56,147 @@ const Register = () => {
 
   return (
     <div className="h-full bg-white flex overflow-hidden">
-      {/* ================= LEFT SIDE: ILLUSTRATION ================= */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-950 relative items-center justify-center p-8 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-orange-600/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-600/10 rounded-full blur-[120px]" />
-        </div>
+      {/* ================= LEFT SIDE: VISUAL ANCHOR (40%) ================= */}
+      <div className="hidden lg:flex lg:w-[40%] bg-slate-950 relative items-center justify-center p-0 overflow-hidden h-full border-r border-white/5">
+        {/* Onboarding Visual */}
+        <img 
+          src="/images/register_bg.png" 
+          alt="Institute Onboarding" 
+          className="absolute inset-0 w-full h-full object-cover opacity-50 scale-105 blur-[1px]"
+        />
+        
+        {/* Deep Field Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-transparent" />
 
-        <div className="relative z-10 max-w-lg">
-          <h2 className="text-3xl font-black text-white mb-4 leading-[1.1] tracking-tight">
+        <div className="relative z-10 w-full px-12 xl:px-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-600/20 border border-orange-500/30 text-orange-400 text-[10px] font-black uppercase tracking-widest mb-8">
+             <CheckCircle2 size={12} /> Institutional Launch
+          </div>
+          
+          <h2 className="text-5xl font-black text-white mb-6 leading-[1.05] tracking-tighter">
             Launch Your Smart <span className="text-orange-500">Institute</span> Today.
           </h2>
           
-          <p className="text-slate-400 text-base mb-6 leading-relaxed font-medium">
-            Join the future of education management. Set up in minutes.
+          <p className="text-slate-300 text-lg mb-10 leading-relaxed font-medium max-w-sm">
+            Join the future of education management. Establish your digital presence with precision.
           </p>
           
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
-            <h3 className="text-white font-bold text-base mb-3">What you get:</h3>
-            <div className="space-y-2">
-              {[
-                "Master Administration",
-                "Advanced Staff Management",
-                "Lifecycle Tracking",
-              ].map((text, i) => (
-                <div key={i} className="flex items-center gap-2 text-slate-300">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-orange-500 flex-shrink-0" />
-                  <span className="font-medium text-xs">{text}</span>
+          <div className="space-y-3 max-w-sm">
+            {[
+              { label: "Master Administration", desc: "Full control over academic assets." },
+              { label: "Advanced Analytics", desc: "Deep insights into performance." },
+              { label: "Secure Data Nodes", desc: "Enterprise-grade encryption." }
+            ].map((item, i) => (
+              <div key={i} className="bg-white/5 backdrop-blur-2xl rounded-2xl p-4 border border-white/10 flex items-center gap-4 group hover:bg-white/10 transition-all cursor-default">
+                <div className="w-10 h-10 rounded-xl bg-orange-600/20 text-orange-500 flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                  <CheckCircle2 size={18} />
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <img 
-              src="/images/register.png" 
-              alt="Register Illustration" 
-              className="max-h-[150px] w-auto mx-auto drop-shadow-2xl animate-float opacity-80"
-            />
+                <div>
+                  <p className="text-xs font-bold text-white uppercase tracking-wide">{item.label}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">{item.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+
+        {/* Particle Glow */}
+        <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-orange-600/10 rounded-full blur-[120px] pointer-events-none" />
       </div>
 
-      {/* ================= RIGHT SIDE: FORM ================= */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 md:p-8 overflow-y-auto bg-slate-50/50">
-        <div className="w-full max-w-md py-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-orange-600 transition-all mb-6 group font-bold text-[10px] uppercase tracking-widest">
-            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
-          </Link>
-
-          <div className="mb-6">
-            <div className="flex items-center mb-3">
-              <img 
-                src="/guruconnect-logo.png" 
-                alt="guruConnect Logo" 
-                className="h-8 w-auto object-contain"
-              />
-              <span className="text-base font-black tracking-tighter ml-2">
-                <span className="text-orange-600">guru</span>
-                <span className="text-blue-600">Connect</span>
-              </span>
+      {/* ================= RIGHT SIDE: FORM (60%) ================= */}
+      <div className="w-full lg:w-[60%] flex flex-col items-center bg-slate-50/50 h-full overflow-y-auto custom-scrollbar px-6 md:px-12">
+        <div className="w-full max-w-2xl py-12 flex-1 flex flex-col justify-start">
+          
+        <Link to="/" className="absolute top-24 right-8 inline-flex items-center gap-2 text-slate-400 hover:text-orange-600 transition-all group font-bold text-[10px] uppercase tracking-widest z-10 mt-6">
+          <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+          Back to Home
+        </Link>
+          {/* Header Section */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
+            <div>
+              <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Register Institute</h1>
+              <p className="text-slate-500 font-medium text-base">Start your digital transformation today.</p>
             </div>
-            <h1 className="text-2xl font-black text-slate-900 mb-1 tracking-tight">Register Institute</h1>
-            <p className="text-slate-500 font-medium text-sm">Start your digital transformation.</p>
+          
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-2xl text-[10px] font-bold animate-shake">
+            <div className="mb-8 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-2xl text-[11px] font-black uppercase tracking-wider animate-shake">
               {error}
             </div>
           )}
 
-          <form onSubmit={submit} className="space-y-3">
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-700 ml-1 uppercase tracking-wider">Institute Name</label>
-              <div className="relative group">
-                <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
-                <input
-                  name="instituteName"
-                  type="text"
-                  placeholder="e.g. Green Valley High"
+          <form onSubmit={submit} className="space-y-4">
+            {/* Row 1: Basic Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Institute Name</label>
+                <div className="relative group">
+                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
+                  <input
+                    name="instituteName"
+                    type="text"
+                    placeholder="e.g. Green Valley High"
+                    onChange={handleChange}
+                    className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-300 text-sm shadow-sm"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Institution Type</label>
+                <select
+                  name="instituteType"
                   onChange={handleChange}
-                  className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-11 pr-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-400 text-sm"
-                  required
-                />
+                  className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 px-5 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 cursor-pointer text-sm shadow-sm"
+                >
+                  <option value="school">School / College</option>
+                  <option value="tuition">Coaching / Tuition Center</option>
+                  <option value="other">Other Educational Center</option>
+                </select>
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-700 ml-1 uppercase tracking-wider">Institution Type</label>
-              <select
-                name="instituteType"
-                onChange={handleChange}
-                className="w-full bg-white border border-slate-200 rounded-xl py-2.5 px-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 cursor-pointer text-sm"
-              >
-                <option value="school">School / College</option>
-                <option value="tuition">Coaching / Tuition Center</option>
-                <option value="other">Other Educational Center</option>
-              </select>
-            </div>
+            {/* Row 2: Contact Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Work Email Address</label>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="admin@institute.com"
+                    onChange={handleChange}
+                    className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-300 text-sm shadow-sm"
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-700 ml-1 uppercase tracking-wider">Work Email</label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="admin@institute.com"
-                  onChange={handleChange}
-                  className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-11 pr-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-400 text-sm"
-                  required
-                />
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Mobile Number</label>
+                <div className="relative group">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
+                  <input
+                    name="phone"
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    onChange={handleChange}
+                    className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-300 text-sm shadow-sm"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-700 ml-1 uppercase tracking-wider">Password</label>
+            {/* Row 3: Security */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Secure Password</label>
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
                   <input
@@ -179,46 +204,49 @@ const Register = () => {
                     type="password"
                     placeholder="••••••••"
                     onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-11 pr-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-400 text-sm"
+                    className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-300 text-sm shadow-sm"
                     required
                   />
                 </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-700 ml-1 uppercase tracking-wider">Confirm</label>
-                <input
-                  name="confirm"
-                  type="password"
-                  placeholder="••••••••"
-                  onChange={handleChange}
-                  className="w-full bg-white border border-slate-200 rounded-xl py-2.5 px-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-400 text-sm"
-                  required
-                />
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Confirm Password</label>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-orange-600 transition-colors opacity-30" />
+                  <input
+                    name="confirm"
+                    type="password"
+                    placeholder="••••••••"
+                    onChange={handleChange}
+                    className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-300 text-sm shadow-sm"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
             <button
               disabled={loading}
-              className="w-full bg-orange-600 text-white py-3 rounded-xl font-black text-sm hover:bg-orange-700 transition-all flex items-center justify-center gap-3 mt-4 active:scale-[0.98] disabled:opacity-70 shadow-2xl shadow-orange-200"
+              className="w-full bg-orange-600 text-white py-4 rounded-2xl font-black text-sm hover:bg-orange-700 transition-all flex items-center justify-center gap-3 mt-4 active:scale-[0.98] disabled:opacity-70 shadow-2xl shadow-orange-200 uppercase tracking-widest"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Creating...
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Finalizing Registration...
                 </>
               ) : (
                 <>
-                  Register Now
-                  <ArrowRight className="w-4 h-4" />
+                  Create Account
+                  <ArrowRight className="w-5 h-5" />
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-slate-100">
-            <p className="text-center text-slate-500 font-medium text-xs">
-              Already registered?{" "}
-              <Link to="/auth/login" className="text-orange-600 hover:underline font-black ml-1">
+          <div className="mt-12 pt-8 border-t border-slate-200/60">
+            <p className="text-center text-slate-500 font-medium text-sm">
+              Already have an institute registered?{" "}
+              <Link to="/auth/login" className="text-orange-600 hover:underline font-black ml-1 uppercase tracking-tighter">
                 Sign In
               </Link>
             </p>

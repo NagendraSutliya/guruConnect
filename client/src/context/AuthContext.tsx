@@ -49,8 +49,19 @@ export const AuthProvider = ({ children }: any) => {
     }
   }, []);
 
+  const logout = () => {
+    localStorage.removeItem("role");
+    localStorage.removeItem("admin");
+    localStorage.removeItem("teacher");
+    localStorage.removeItem("student");
+    localStorage.removeItem("token");
+    setUser(null);
+    setRole(null);
+    window.location.href = "/";
+  };
+
   return (
-    <AuthContext.Provider value={{ user, role, loading, setUser }}>
+    <AuthContext.Provider value={{ user, role, loading, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

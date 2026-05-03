@@ -1,15 +1,15 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
 import { FiTrash2, FiEdit, FiChevronDown, FiSearch, FiX, FiPlus, FiLayers } from "react-icons/fi";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
 import UpdateSectionModal from "../../modals/admin/UpdateSectionModal";
 
 const SectionsPanel = () => {
+  const { showToast } = useToast();
   const [sections, setSections] = useState<Section[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
-  const [toastMessage, setToastMessage] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
@@ -18,9 +18,6 @@ const SectionsPanel = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [editingSection, setEditingSection] = useState<Section | null>(null);
-
-  const showToast = (message: string, type: string = "info") =>
-    setToastMessage({ message, type });
 
   const load = async () => {
     setLoading(true);
@@ -88,14 +85,6 @@ const SectionsPanel = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fadeIn">
-      {toastMessage && (
-        <Toast
-          message={toastMessage.message}
-          type={toastMessage.type as any}
-          onClose={() => setToastMessage(null)}
-        />
-      )}
-
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -268,15 +257,6 @@ const SectionsPanel = () => {
         />
       )}
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

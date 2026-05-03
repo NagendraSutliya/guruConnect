@@ -5,6 +5,7 @@ const {
   changeStudentPassword,
   getStudentsByClass,
 } = require("../../../controllers/student/StudentController");
+const { getStudentRoutine } = require("../../../controllers/admin/RoutineController");
 const { requireStudent } = require("../../../middleware/auth");
 
 // auth
@@ -13,6 +14,7 @@ router.post("/login", studentLogin);
 // protected student routes
 router.get("/dashboard", requireStudent, getStudentOverview);
 router.post("/change-password", requireStudent, changeStudentPassword);
+router.get("/routine", requireStudent, getStudentRoutine);
 router.get("/by-class", getStudentsByClass);
 
 module.exports = router;

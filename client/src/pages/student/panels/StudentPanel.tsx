@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
+import { useToast } from "../../../context/ToastContext";
 
 const StudentPanel = () => {
+  const { showToast } = useToast();
   const [students, setStudents] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
@@ -43,7 +45,7 @@ const StudentPanel = () => {
 
   const create = async () => {
     if (!name || !email || !classId || !sectionId) {
-      return alert("Fill all fields");
+      return showToast("Fill all fields", "error");
     }
 
     try {
@@ -58,13 +60,9 @@ const StudentPanel = () => {
 
       const creds = res.data.data;
 
-      alert(
-        `Student Created ✅
-
-Email: ${creds.email}
-Password: ${creds.password}
-
-⚠ Save this password now — it won't be shown again.`
+      showToast(
+        `Student Created ✅ | Email: ${creds.email} | Password: ${creds.password}`,
+        "success"
       );
 
       setName("");
@@ -74,7 +72,7 @@ Password: ${creds.password}
 
       loadStudents();
     } catch {
-      alert("Failed to create student");
+      showToast("Failed to create student", "error");
     } finally {
       setSaving(false);
     }
@@ -92,7 +90,7 @@ Password: ${creds.password}
 
       loadStudents();
     } catch {
-      alert("Failed to update status");
+      showToast("Failed to update status", "error");
     }
   };
 

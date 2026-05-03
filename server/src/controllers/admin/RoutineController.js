@@ -22,6 +22,41 @@ exports.getRoutine = async (req, res) => {
   }
 };
 
+// ================= GET TEACHER ROUTINE =================
+exports.getTeacherRoutine = async (req, res) => {
+  try {
+    const teacherId = req.user._id;
+
+    const data = await Routine.find({ teacherId })
+      .populate("classId", "name")
+      .populate("sectionId", "name")
+      .populate("subjectId", "name")
+      .sort({ day: 1, startTime: 1 });
+
+    return successResponse(res, "Teacher routine fetched", data);
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, "Failed to fetch teacher routine");
+  }
+};
+
+// ================= GET STUDENT ROUTINE =================
+exports.getStudentRoutine = async (req, res) => {
+  try {
+    const { classId, sectionId } = req.user;
+
+    const data = await Routine.find({ classId, sectionId })
+      .populate("subjectId", "name")
+      .populate("teacherId", "name")
+      .sort({ day: 1, startTime: 1 });
+
+    return successResponse(res, "Student routine fetched", data);
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, "Failed to fetch student routine");
+  }
+};
+
 // ================= CREATE / UPDATE =================
 exports.saveRoutine = async (req, res) => {
   try {

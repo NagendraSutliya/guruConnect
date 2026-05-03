@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../../../api/axiosInstance";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 import RoutineModal from "../../modals/admin/RoutineModal";
 import type { Assignment } from "../../../types/admin/teacherassignment";
 import type { Routine } from "../../../types/admin/routine";
@@ -20,6 +20,7 @@ const defaultTimeSlots = [
 ];
 
 const RoutinePanel = () => {
+  const { showToast } = useToast();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [routine, setRoutine] = useState<Routine[]>([]);
   const [selectedClassId, setSelectedClassId] = useState("");
@@ -27,10 +28,6 @@ const RoutinePanel = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSlot, setEditingSlot] = useState<Routine | null>(null);
-  const [toast, setToast] = useState<any>(null);
-
-  const showToast = (message: string, type = "info") =>
-    setToast({ message, type });
 
   useEffect(() => {
     api
@@ -133,14 +130,6 @@ const RoutinePanel = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fadeIn">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type as any}
-          onClose={() => setToast(null)}
-        />
-      )}
-
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -315,15 +304,6 @@ const RoutinePanel = () => {
         initialData={editingSlot}
       />
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

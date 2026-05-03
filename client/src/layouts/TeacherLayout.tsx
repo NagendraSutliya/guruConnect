@@ -1,198 +1,105 @@
 import { Outlet, NavLink, useLocation } from "react-router-dom";
-import TeacherNavbar from "../components/teacher/TeacherNavbar";
+import { 
+  FiHome, 
+  FiUsers, 
+  FiCalendar, 
+  FiBarChart2, 
+  FiBookOpen, 
+  FiSettings, 
+  FiLogOut,
+  FiMenu,
+  FiChevronLeft,
+  FiClock,
+  FiFolder
+} from "react-icons/fi";
 import { useState } from "react";
-import { MdDashboard, MdFeedback } from "react-icons/md";
-import { FaBook, FaClipboardCheck } from "react-icons/fa";
-
-type MenuChild = {
-  name: string;
-  path: string;
-};
-
-type MenuItem = {
-  name: string;
-  icon: React.ReactNode;
-  path?: string;
-  children?: MenuChild[];
-};
+import TeacherNavbar from "../components/teacher/TeacherNavbar";
+import { useAuth } from "../context/AuthContext";
 
 const TeacherLayout = () => {
+  const { logout } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const [openMenus, setOpenMenus] = useState<Set<string>>(new Set());
 
-  const menuItems: MenuItem[] = [
-    {
-      name: "Dashboard",
-      icon: <MdDashboard size={18} />,
-      path: "/teacher/dashboard",
-    },
-    {
-      name: "Academics",
-      icon: <FaClipboardCheck size={16} />,
-      children: [
-        { name: "Attendance", path: "/teacher/attendance" },
-        { name: "Exams", path: "/teacher/exams" },
-        { name: "Results", path: "/teacher/results" },
-      ],
-    },
-    {
-      name: "Resources",
-      icon: <FaBook size={16} />,
-      children: [
-        { name: "Study Material", path: "/teacher/material" },
-        { name: "My Assignments", path: "/teacher/assignments" },
-      ],
-    },
-    {
-      name: "My Feedback",
-      icon: <MdFeedback size={18} />,
-      path: "/teacher/feedback",
-    },
+  const navItems = [
+    { icon: FiHome, label: "Dashboard", path: "/teacher/dashboard" },
+    { icon: FiUsers, label: "Students", path: "/teacher/students" },
+    { icon: FiCalendar, label: "Attendance", path: "/teacher/attendance" },
+    { icon: FiBookOpen, label: "Exams", path: "/teacher/exams" },
+    { icon: FiBarChart2, label: "Results", path: "/teacher/results" },
+    { icon: FiFolder, label: "Study Material", path: "/teacher/material" },
+    { icon: FiClock, label: "Schedule", path: "/teacher/routine" },
+    { icon: FiSettings, label: "Settings", path: "/teacher/settings" },
   ];
 
-  // ✅ Robust route matcher
-  const isActiveRoute = (path: string) => {
-    return (
-      location.pathname === path || location.pathname.startsWith(path + "/")
-    );
-  };
-
-  // ✅ Check if any child is active
-  const isChildActive = (children?: MenuChild[]) =>
-    children?.some((c) => isActiveRoute(c.path));
-
-  // Toggle dropdown
-  const toggleMenu = (name: string) => {
-    setOpenMenus((prev) => {
-      const next = new Set(prev);
-      next.has(name) ? next.delete(name) : next.add(name);
-      return next;
-    });
-  };
-
-  // Keep only parent open when child clicked
-  const handleChildClick = (parent: string) => {
-    setOpenMenus(new Set([parent]));
-  };
-
-  // Close all for single links
-  const handleSingleClick = () => {
-    setOpenMenus(new Set());
-  };
-
   return (
-    <div className="flex flex-col h-screen bg-gray-100 overflow-hidden">
-      <TeacherNavbar />
+    <div className="flex h-screen bg-[var(--bg-app)] overflow-hidden">
+      
+      {/* Professional Sidebar */}
+      <aside 
+        className={`${collapsed ? "w-20" : "w-64"} bg-[var(--bg-sidebar)] transition-all duration-300 flex flex-col z-50`}
+      >
+        {/* Sidebar Header */}
+        <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">
+          {!collapsed && (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center text-white font-bold">G</div>
+              <span className="text-white font-bold tracking-tight text-lg">GuruConnect</span>
+            </div>
+          )}
+          <button 
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+          >
+            {collapsed ? <FiMenu size={20} /> : <FiChevronLeft size={20} />}
+          </button>
+        </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-56 bg-white border-r shadow-sm flex flex-col overflow-y-auto">
-          <div className="px-6 py-5 border-b shrink-0">
-            <h2 className="text-2xl font-bold text-orange-600">
-              Guru<span className="text-blue-600">Connect</span>
-            </h2>
-            <p className="text-sm font-semibold text-gray-600 mt-1">
-              Teacher Panel
-            </p>
-          </div>
+        {/* Navigation Section */}
+        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+          <p className={`${collapsed ? "text-center" : "px-3"} text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-4`}>
+            {collapsed ? "•••" : "Main Menu"}
+          </p>
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${
+                  isActive 
+                    ? "bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20" 
+                    : "text-white/60 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                <item.icon size={20} className={isActive ? "text-white" : "text-white/40 group-hover:text-white transition-colors"} />
+                {!collapsed && <span className="text-sm font-medium tracking-wide">{item.label}</span>}
+              </NavLink>
+            );
+          })}
+        </nav>
 
-          <nav className="flex-1 px-3 py-4 space-y-1 text-sm">
-            {menuItems.map((item) => {
-              const isOpen =
-                openMenus.has(item.name) || isChildActive(item.children);
+        {/* Footer Section */}
+        <div className="p-4 border-t border-white/5">
+          <button 
+            onClick={logout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/60 hover:bg-rose-500/10 hover:text-rose-500 transition-all group"
+          >
+            <FiLogOut size={20} className="group-hover:text-rose-500" />
+            {!collapsed && <span className="text-sm font-medium">Logout</span>}
+          </button>
+        </div>
+      </aside>
 
-              // 🔹 Single link
-              if (item.path) {
-                return (
-                  <NavLink
-                    key={item.name}
-                    to={item.path}
-                    onClick={handleSingleClick}
-                    className={() =>
-                      `flex items-center gap-3 px-4 py-2 rounded-lg transition-all
-                      ${
-                        isActiveRoute(item.path!)
-                          ? "bg-purple-100 text-purple-600 font-semibold scale-[1.02]"
-                          : "text-gray-600 hover:bg-gray-100 hover:scale-[1.01]"
-                      }`
-                    }
-                  >
-                    {item.icon}
-                    {item.name}
-                  </NavLink>
-                );
-              }
-
-              // 🔹 Dropdown
-              return (
-                <div key={item.name}>
-                  <button
-                    onClick={() => {
-                      if (!isChildActive(item.children)) {
-                        toggleMenu(item.name);
-                      }
-                    }}
-                    className={`w-full flex items-center justify-between px-4 py-2 rounded-lg transition
-                      ${
-                        isOpen
-                          ? "bg-purple-50 text-purple-600"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      {item.name}
-                    </div>
-                    <span
-                      className={`transition-transform duration-300 ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    >
-                      ▾
-                    </span>
-                  </button>
-
-                  {/* Children */}
-                  <div
-                    className={`ml-1 overflow-hidden transition-all duration-300 ease-in-out
-                      ${
-                        isOpen
-                          ? "max-h-[500px] opacity-100"
-                          : "max-h-0 opacity-0"
-                      }`}
-                  >
-                    <div className="ml-9 mt-1 space-y-1">
-                      {item.children?.map((child) => (
-                        <NavLink
-                          key={child.path}
-                          to={child.path}
-                          onClick={() => handleChildClick(item.name)}
-                          className={() =>
-                            `block px-3 py-1.5 rounded-md transition ${
-                              isActiveRoute(child.path)
-                                ? "bg-purple-100 text-purple-600 font-medium"
-                                : "text-gray-500 hover:bg-gray-100"
-                            }`
-                          }
-                        >
-                          {child.name}
-                        </NavLink>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </nav>
-        </aside>
-
-        {/* Main */}
-        <main className="flex-1 px-6 mt-2 overflow-y-auto">
-          <div className="animate-fadeIn">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+      {/* Main Content Hub */}
+      <main className="flex-1 flex flex-col min-w-0 bg-[var(--bg-app)]">
+        <TeacherNavbar />
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+           <div className="max-w-7xl mx-auto animate-fade-in">
+              <Outlet />
+           </div>
+        </div>
+      </main>
     </div>
   );
 };

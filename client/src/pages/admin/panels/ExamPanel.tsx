@@ -5,7 +5,6 @@ import {
   FiBookOpen,
   FiEdit,
   FiSearch,
-  FiX,
   FiTrash2,
   FiChevronDown,
   FiUser,
@@ -19,7 +18,7 @@ import type { Exam } from "../../../types/admin/exam";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import EditExamModal from "../../modals/admin/UpdateExamModal";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 
 const MetricCard = ({ title, value, icon, gradient }: any) => (
   <div className="bg-white/70 backdrop-blur-md p-6 rounded-[2rem] border border-white/20 shadow-sm flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
@@ -35,6 +34,7 @@ const MetricCard = ({ title, value, icon, gradient }: any) => (
 
 const ExamPanel = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [exams, setExams] = useState<Exam[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
@@ -45,10 +45,6 @@ const ExamPanel = () => {
     classId: "",
     sectionId: "",
   });
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error" | "info" | "warn";
-  } | null>(null);
 
   const [editExam, setEditExam] = useState<Exam | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -78,7 +74,7 @@ const ExamPanel = () => {
       setClasses(classRes.data.data);
       setSections(sectionRes.data.data);
     } catch (err) {
-      setToast({ message: "Failed to load examination data", type: "error" });
+      showToast("Failed to load examination data", "error");
     } finally {
       setLoading(false);
     }
@@ -92,12 +88,12 @@ const ExamPanel = () => {
     e.preventDefault();
     try {
       await api.post("/admin/exams", form);
-      setToast({ message: "Examination schedule created", type: "success" });
+      showToast("Examination schedule created", "success");
       setForm({ name: "", classId: "", sectionId: "" });
       setCurrentPage(1);
       loadData();
     } catch (err) {
-      setToast({ message: "Failed to create examination", type: "error" });
+      showToast("Failed to create examination", "error");
     }
   };
 
@@ -105,10 +101,10 @@ const ExamPanel = () => {
     if (!window.confirm("Delete this examination? This will remove all associated subjects.")) return;
     try {
       await api.delete(`/admin/exams/${id}`);
-      setToast({ message: "Examination deleted", type: "success" });
+      showToast("Examination deleted", "success");
       loadData();
     } catch (err) {
-      setToast({ message: "Delete operation failed", type: "error" });
+      showToast("Delete operation failed", "error");
     }
   };
 
@@ -116,11 +112,11 @@ const ExamPanel = () => {
     if (!editExam) return;
     try {
       await api.put(`/admin/exams/${editExam._id}`, editExam);
-      setToast({ message: "Examination details updated", type: "success" });
+      showToast("Examination details updated", "success");
       setEditExam(null);
       loadData();
     } catch (err) {
-      setToast({ message: "Update operation failed", type: "error" });
+      showToast("Update operation failed", "error");
     }
   };
 
@@ -174,14 +170,6 @@ const ExamPanel = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fadeIn">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type as any}
-          onClose={() => setToast(null)}
-        />
-      )}
-
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -410,15 +398,7 @@ const ExamPanel = () => {
         />
       )}
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+     
     </div>
   );
 };

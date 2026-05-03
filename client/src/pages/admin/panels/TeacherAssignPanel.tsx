@@ -10,9 +10,10 @@ import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import type { Subject } from "../../../types/admin/subject";
 import UpdateTeacherAssignmentModal from "../../modals/admin/UpdateTeacherAssignmentModal";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 
 const TeacherAssignPanel = () => {
+  const { showToast } = useToast();
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
@@ -20,10 +21,6 @@ const TeacherAssignPanel = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error" | "info" | "warn";
-  } | null>(null);
   const [form, setForm] = useState<FormState>({
     teacherId: "",
     classId: "",
@@ -35,10 +32,6 @@ const TeacherAssignPanel = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-
-  const showToast = (message: string, type: any = "info") => {
-    setToast({ message, type });
-  };
 
   const load = async () => {
     try {
@@ -153,14 +146,6 @@ const TeacherAssignPanel = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fadeIn">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
-
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -181,7 +166,7 @@ const TeacherAssignPanel = () => {
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
         {/* Assignment Sidebar */}
         <div className="xl:col-span-1">
-          <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/20 shadow-sm sticky top-32 space-y-6">
+          <div className="bg-purple-100 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/20 shadow-sm sticky top-32 space-y-6">
             <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
                <div className="p-1 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-200">
                  <FiPlus className="text-white" />
@@ -392,15 +377,7 @@ const TeacherAssignPanel = () => {
         />
       )}
 
-      <style>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      
     </div>
   );
 };

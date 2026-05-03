@@ -1,11 +1,28 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import api from "../../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
-import { FiChevronDown, FiMoreVertical, FiSearch, FiX } from "react-icons/fi";
+import { 
+  FiChevronDown, 
+  FiMoreVertical, 
+  FiSearch, 
+  FiX, 
+  FiCalendar, 
+  FiClock, 
+  FiFilePlus, 
+  FiPenTool, 
+  FiTrendingUp, 
+  FiInfo, 
+  FiCheckCircle, 
+  FiUploadCloud, 
+  FiArrowRight,
+  FiBook,
+  FiActivity
+} from "react-icons/fi";
 import useClickOutside from "../../../hooks/useClickOutside";
-import Toast from "../../../components/Toast";
+import { useToast } from "../../../context/ToastContext";
 
 const TeacherExamPanel = () => {
+  const { showToast } = useToast();
   const [exams, setExams] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -19,19 +36,12 @@ const TeacherExamPanel = () => {
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [toast, setToast] = useState<any>(null);
 
-  const menuRefs = useRef<
-    Record<string, React.RefObject<HTMLDivElement | null>>
-  >({});
+  const menuRefs = useRef<Record<string, React.RefObject<HTMLDivElement | null>>>({});
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const navigate = useNavigate();
 
-  const showToast = (message: string, type = "info") =>
-    setToast({ message, type });
-
-  /* ================= CLICK OUTSIDE FOR MENU ================= */
   useEffect(() => {
     if (!openMenu) return;
     const currentRef = menuRefs.current[openMenu];
@@ -39,30 +49,23 @@ const TeacherExamPanel = () => {
 
     const handleClick = (event: MouseEvent) => {
       if (!currentRef.current) return;
-      if (!currentRef.current.contains(event.target as Node)) {
-        setOpenMenu(null);
-      }
+      if (!currentRef.current.contains(event.target as Node)) setOpenMenu(null);
     };
 
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpenMenu(null);
-      }
+      if (event.key === "Escape") setOpenMenu(null);
     };
 
     document.addEventListener("mousedown", handleClick);
     document.addEventListener("keydown", handleEsc);
-
     return () => {
       document.removeEventListener("mousedown", handleClick);
       document.removeEventListener("keydown", handleEsc);
     };
   }, [openMenu]);
 
-  /* ================= CLICK OUTSIDE FOR MODAL ================= */
   useClickOutside(modalRef, () => setPaperModal(false));
 
-  /* ================= LOAD DATA ================= */
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -76,14 +79,10 @@ const TeacherExamPanel = () => {
     loadData();
   }, []);
 
-  /* AUTO OPEN FIRST EXAM */
   useEffect(() => {
-    if (exams.length && !openExam) {
-      setOpenExam(exams[0]._id);
-    }
+    if (exams.length && !openExam) setOpenExam(exams[0]._id);
   }, [exams]);
 
-  /* ================= NAVIGATION ================= */
   const goToUploadMarks = (examId: string, subjectId: string) => {
     navigate("/teacher/results/upload-marks", { state: { examId, subjectId } });
   };
@@ -92,15 +91,8 @@ const TeacherExamPanel = () => {
     navigate("/teacher/results", { state: { examId, subjectId } });
   };
 
-  /* ================= FILE UPLOAD ================= */
-  const uploadFiles = async (
-    examId: string,
-    subjectId: string,
-    files: FileList,
-    type: "question" | "answer"
-  ) => {
+  const uploadFiles = async (examId: string, subjectId: string, files: FileList, type: "question" | "answer") => {
     if (uploading) return;
-
     try {
       setUploading(true);
       const formData = new FormData();
@@ -108,7 +100,6 @@ const TeacherExamPanel = () => {
       formData.append("examId", examId);
       formData.append("subjectId", subjectId);
       formData.append("type", type);
-
       await api.post("/exam-files/upload-multiple", formData);
       showToast("Files uploaded successfully ✅", "success");
     } catch (err) {
@@ -119,11 +110,8 @@ const TeacherExamPanel = () => {
     }
   };
 
-  /* ================= SAVE TYPED PAPER ================= */
   const saveTypedPaper = async () => {
-    if (!paperContent.trim())
-      return showToast("Paper cannot be empty ⚠️", "warning");
-
+    if (!paperContent.trim()) return showToast("Paper cannot be empty ⚠️", "warning");
     try {
       setSavingPaper(true);
       await api.post("/exam-files/save-typed-paper", {
@@ -131,7 +119,6 @@ const TeacherExamPanel = () => {
         subjectId: activeSubject,
         content: paperContent,
       });
-
       showToast("Paper saved successfully ✍️", "success");
       setPaperModal(false);
       setPaperContent("");
@@ -145,279 +132,217 @@ const TeacherExamPanel = () => {
     }
   };
 
-  /* ================= HELPERS ================= */
   const isToday = (date: string) => {
     const today = new Date();
     const d = new Date(date);
     return d.toDateString() === today.toDateString();
   };
 
-  const isUploadAllowed = (status: string, isSubmitted?: boolean) =>
-    status === "completed" && !isSubmitted;
+  const isUploadAllowed = (status: string, isSubmitted?: boolean) => status === "completed" && !isSubmitted;
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
-      case "ongoing":
-        return "bg-green-500 text-white animate-pulse";
-      case "upcoming":
-        return "bg-yellow-400 text-black";
-      case "completed":
-        return "bg-red-400 text-white";
-      default:
-        return "bg-gray-200";
+      case "ongoing": return "bg-emerald-50 text-emerald-600 border-emerald-100";
+      case "upcoming": return "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20";
+      case "completed": return "bg-slate-100 text-slate-400 border-slate-200";
+      default: return "bg-slate-50 text-slate-400 border-slate-100";
     }
   };
 
-  /* ================= FILTER ================= */
   const filteredExams = useMemo(() => {
     const filtered = exams.filter((exam) => {
-      const matchesSearch = exam.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
-      const matchesStatus =
-        statusFilter === "all" || exam.status === statusFilter;
+      const matchesSearch = exam.name.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = statusFilter === "all" || exam.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-
     const order: any = { ongoing: 1, upcoming: 2, completed: 3 };
     return [...filtered].sort((a, b) => order[a.status] - order[b.status]);
   }, [exams, search, statusFilter]);
 
-  /* ================= STATS ================= */
-  const total = exams.length;
-  const ongoing = exams.filter((e) => e.status === "ongoing").length;
-  const completed = exams.filter((e) => e.status === "completed").length;
-
   return (
-    <div className="space-y-4 pb-8">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
-      <div className="flex flex-col md:flex-row justify-between gap-4">
-        <h2 className="text-2xl font-bold text-gray-800">📘 Exam Schedule</h2>
+    <div className="space-y-6">
 
-        <div className="flex gap-3 items-center mt-6">
-          <div className="bg-white flex items-center border rounded-lg overflow-hidden shadow">
-            <FiSearch className="text-gray-400 ml-2" />
-            <input
-              type="text"
-              placeholder="Search exam..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="px-3 py-1 text-sm outline-none"
-            />
-            <FiX
-              className={`text-gray-400 cursor-pointer mr-2 ${
-                search ? "opacity-100" : "opacity-0 pointer-events-none"
-              }`}
-              onClick={() => setSearch("")}
-            />
-          </div>
-
-          <div className="relative">
-            <select
-              className="border px-3 py-1 text-sm rounded-lg appearance-none pr-8 bg-white shadow-sm"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">All</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="completed">Completed</option>
-            </select>
-            <FiChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" />
-          </div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Examination Ledger</h1>
+          <p className="text-sm text-slate-500 font-medium">Coordinate schedules, question papers, and result reporting.</p>
+        </div>
+        <div className="flex items-center gap-3">
+           <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-lg">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">{exams.filter(e => e.status === 'ongoing').length} Active Sessions</span>
+           </div>
         </div>
       </div>
 
-      {/* LIST */}
-      <div className="space-y-4">
-        {/* STATS */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-blue-200 p-4 rounded-lg shadow text-center">
-            Total Exams: <b>{total}</b>
-          </div>
-          <div className="bg-yellow-100 p-4 rounded-lg shadow text-center">
-            Ongoing: <b>{ongoing}</b>
-          </div>
-          <div className="bg-green-100 p-4 rounded-lg shadow text-center">
-            Completed: <b>{completed}</b>
-          </div>
+      {/* Professional Search & Filter */}
+      <div className="card-clean p-4 flex flex-col sm:flex-row gap-4 items-center">
+        <div className="relative flex-1 w-full">
+          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+          <input
+            type="text"
+            placeholder="Search exam series..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:bg-white focus:border-[var(--primary)] transition-all outline-none"
+          />
         </div>
+        <div className="relative w-full sm:w-48">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full pl-3 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:bg-white focus:border-[var(--primary)] transition-all appearance-none cursor-pointer"
+          >
+            <option value="all">All Series</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="ongoing">Active</option>
+            <option value="completed">Concluded</option>
+          </select>
+          <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+        </div>
+      </div>
 
+      {/* Series Collection */}
+      <div className="space-y-3">
         {filteredExams.map((exam) => (
-          <div key={exam._id} className="bg-white shadow rounded-xl p-5">
+          <div 
+            key={exam._id} 
+            className={`card-clean transition-all duration-300 ${
+              openExam === exam._id ? "border-[var(--primary)]/30 ring-4 ring-[var(--primary)]/5" : "hover:border-slate-300"
+            }`}
+          >
             <div
-              className="flex justify-between cursor-pointer"
-              onClick={() =>
-                setOpenExam(openExam === exam._id ? null : exam._id)
-              }
+              className={`p-4 flex items-center justify-between cursor-pointer ${
+                openExam === exam._id ? "bg-slate-50/50" : "hover:bg-slate-50/30"
+              }`}
+              onClick={() => setOpenExam(openExam === exam._id ? null : exam._id)}
             >
-              <div>
-                <h3 className="font-semibold">{exam.name}</h3>
-                <p className="text-sm text-gray-500">
-                  {exam.classId?.name} • {exam.sectionId?.name}
-                </p>
+              <div className="flex items-center gap-4">
+                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm shadow-sm ${
+                   exam.status === 'ongoing' ? 'bg-[var(--primary)] text-white' : 'bg-slate-100 text-slate-400'
+                 }`}>
+                   <FiBook size={18} />
+                 </div>
+                 <div>
+                    <h3 className="font-bold text-slate-800 text-sm tracking-tight">{exam.name}</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                      {exam.classId?.name} <span className="mx-2 opacity-30">|</span> {exam.sectionId?.name}
+                    </p>
+                 </div>
               </div>
 
-              <div className="mt-2">
-                <span
-                  className={`px-3 py-2 text-sm font-semibold rounded ${getStatusColor(
-                    exam.status
-                  )}`}
-                >
+              <div className="flex items-center gap-4">
+                <span className={`px-3 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full border ${getStatusStyle(exam.status)}`}>
                   {exam.status}
                 </span>
+                <FiChevronDown className={`text-slate-300 transition-transform duration-300 ${openExam === exam._id ? "rotate-180" : ""}`} size={16} />
               </div>
             </div>
 
             {openExam === exam._id && (
-              <div className="mt-4 space-y-3">
+              <div className="px-4 pb-4 pt-1 animate-fade-in divide-y divide-slate-50">
                 {exam.subjects?.map((sub: any) => {
-                  // initialize menu ref
-                  if (!menuRefs.current[sub._id]) {
-                    menuRefs.current[sub._id] = React.createRef();
-                  }
-
+                  if (!menuRefs.current[sub._id]) menuRefs.current[sub._id] = React.createRef();
+                  
                   return (
                     <div
                       key={sub._id}
-                      className="border rounded-lg p-3 flex justify-between"
+                      className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     >
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <p className="font-medium">{sub.subjectId?.name}</p>
-
-                        <p className="text-sm text-gray-500">
-                          {new Date(sub.date).toLocaleDateString()} •{" "}
-                          {sub.startTime} - {sub.endTime}
-                        </p>
-
-                        {isToday(sub.date) && (
-                          <span className="text-xs bg-blue-100 px-2 py-1 rounded">
-                            Today
-                          </span>
-                        )}
-
-                        {sub.isSubmitted && (
-                          <span className="text-xs bg-green-100 px-2 py-1 rounded">
-                            Submitted
-                          </span>
-                        )}
-
-                        {sub.hasTypedPaper && (
-                          <span className="text-xs bg-orange-100 px-2 py-1 rounded">
-                            Typed
-                          </span>
-                        )}
+                      <div className="flex items-center gap-4 flex-1">
+                         <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400">
+                            <FiActivity size={14} />
+                         </div>
+                         <div>
+                            <p className="font-bold text-slate-700 text-xs">{sub.subjectId?.name}</p>
+                            <div className="flex items-center gap-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                               <span className="flex items-center gap-1"><FiCalendar size={10} className="text-[var(--primary)]" /> {new Date(sub.date).toLocaleDateString()}</span>
+                               <span className="flex items-center gap-1"><FiClock size={10} className="text-[var(--primary)]" /> {sub.startTime} - {sub.endTime}</span>
+                            </div>
+                         </div>
                       </div>
 
-                      {/* MENU */}
-                      <div ref={menuRefs.current[sub._id]} className="relative">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenMenu(openMenu === sub._id ? null : sub._id);
-                          }}
-                          className="p-2 hover:bg-gray-200 rounded-full"
-                        >
-                          <FiMoreVertical />
-                        </button>
+                      <div className="flex items-center gap-3">
+                         {isToday(sub.date) && <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[8px] font-bold uppercase tracking-widest rounded border border-blue-100">Live Cycle</span>}
+                         {sub.isSubmitted && <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] font-bold uppercase tracking-widest rounded border border-emerald-100">Evaluated</span>}
+                         
+                         <div ref={menuRefs.current[sub._id]} className="relative ml-2">
+                           <button
+                             onClick={(e) => { e.stopPropagation(); setOpenMenu(openMenu === sub._id ? null : sub._id); }}
+                             className="p-1.5 hover:bg-slate-100 text-slate-400 rounded transition-colors"
+                           >
+                             <FiMoreVertical size={14} />
+                           </button>
 
-                        {openMenu === sub._id && (
-                          <div className="absolute w-56 right-0 bg-white border rounded-lg shadow-lg z-10 py-2">
-                            <label className="block p-2 hover:bg-gray-100 cursor-pointer">
-                              📄 Upload Question Paper
-                              <input
-                                type="file"
-                                hidden
-                                multiple
-                                onChange={(e) => {
-                                  if (!e.target.files) return;
+                           {openMenu === sub._id && (
+                             <div className="absolute w-64 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-xl z-50 py-2 animate-fade-in overflow-hidden">
+                               <div className="px-4 pb-2 mb-2 border-b border-slate-50">
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Subject Operations</p>
+                               </div>
+                               
+                               <label className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-600 transition-colors">
+                                 <FiFilePlus className="text-[var(--primary)]" />
+                                 <span>Upload Question Script</span>
+                                 <input
+                                   type="file"
+                                   hidden
+                                   multiple
+                                   onChange={(e) => {
+                                     if (!e.target.files) return;
+                                     const subjectIdSafe = sub.subjectId?._id;
+                                     if (!subjectIdSafe) return showToast("Subject missing ❌", "error");
+                                     uploadFiles(exam._id, subjectIdSafe, e.target.files, "question");
+                                     setOpenMenu(null);
+                                   }}
+                                 />
+                               </label>
 
-                                  const subjectIdSafe = sub.subjectId?._id;
-                                  if (!subjectIdSafe) {
-                                    return showToast(
-                                      "Subject ID missing ❌",
-                                      "error"
-                                    );
-                                  }
-                                  uploadFiles(
-                                    exam._id,
-                                    subjectIdSafe,
-                                    e.target.files,
-                                    "question"
-                                  );
-                                }}
-                              />
-                            </label>
+                               <button
+                                 onClick={() => { setActiveExam(exam._id); setActiveSubject(sub.subjectId?._id); setPaperModal(true); setOpenMenu(null); }}
+                                 className="w-full flex items-center gap-3 px-4 py-2 hover:bg-slate-50 text-xs font-semibold text-slate-600 transition-colors"
+                               >
+                                 <FiPenTool className="text-[var(--primary)]" />
+                                 <span>Author Digital Paper</span>
+                               </button>
 
-                            <button
-                              onClick={() => {
-                                setActiveExam(exam._id);
-                                setActiveSubject(sub.subjectId?._id);
-                                setPaperModal(true);
-                                setOpenMenu(null);
-                              }}
-                              className="block w-full text-left p-2 hover:bg-gray-100"
-                            >
-                              ✍️ Type Question Paper
-                            </button>
+                               <label className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-600 transition-colors">
+                                 <FiUploadCloud className="text-[var(--primary)]" />
+                                 <span>Batch Answer Upload</span>
+                                 <input
+                                   type="file"
+                                   hidden
+                                   multiple
+                                   onChange={(e) => {
+                                     if (!e.target.files) return;
+                                     const subjectIdSafe = sub.subjectId?._id;
+                                     if (!subjectIdSafe) return alert("Subject missing");
+                                     uploadFiles(exam._id, subjectIdSafe, e.target.files, "answer");
+                                     setOpenMenu(null);
+                                   }}
+                                 />
+                               </label>
 
-                            <label className="block p-2 hover:bg-gray-100 cursor-pointer">
-                              📤 Upload Answer Sheets
-                              <input
-                                type="file"
-                                hidden
-                                multiple
-                                onChange={(e) => {
-                                  if (!e.target.files) return;
+                               <button
+                                 disabled={!isUploadAllowed(exam.status, sub.isSubmitted)}
+                                 onClick={() => goToUploadMarks(exam._id, sub.subjectId?._id)}
+                                 className={`w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold transition-colors ${
+                                   isUploadAllowed(exam.status, sub.isSubmitted) ? "hover:bg-slate-50 text-slate-600" : "text-slate-300 cursor-not-allowed opacity-50"
+                                 }`}
+                               >
+                                 <FiTrendingUp className={isUploadAllowed(exam.status, sub.isSubmitted) ? "text-[var(--primary)]" : "text-slate-200"} />
+                                 <span>Input Evaluation Results</span>
+                               </button>
 
-                                  const subjectIdSafe = sub.subjectId?._id;
-                                  if (!subjectIdSafe) {
-                                    return alert(
-                                      "Subject ID missing, cannot upload files"
-                                    );
-                                  }
-                                  uploadFiles(
-                                    exam._id,
-                                    subjectIdSafe,
-                                    e.target.files,
-                                    "answer"
-                                  );
-                                }}
-                              />
-                            </label>
-
-                            <button
-                              disabled={
-                                !isUploadAllowed(exam.status, sub.isSubmitted)
-                              }
-                              onClick={() =>
-                                goToUploadMarks(exam._id, sub.subjectId?._id)
-                              }
-                              className={`block w-full text-left p-2 ${
-                                isUploadAllowed(exam.status, sub.isSubmitted)
-                                  ? "hover:bg-gray-100"
-                                  : "text-gray-400 cursor-not-allowed"
-                              }`}
-                            >
-                              📊 Upload Marks
-                            </button>
-
-                            <button
-                              onClick={() =>
-                                goToResult(exam._id, sub.subjectId?._id)
-                              }
-                              className="block w-full text-left p-2 hover:bg-gray-100"
-                            >
-                              📈 View Result
-                            </button>
-                          </div>
-                        )}
+                               <button
+                                 onClick={() => goToResult(exam._id, sub.subjectId?._id)}
+                                 className="w-full flex items-center gap-3 px-4 py-2 hover:bg-slate-50 text-xs font-semibold text-slate-600 transition-colors"
+                               >
+                                 <FiArrowRight className="text-[var(--primary)]" />
+                                 <span>View Performance Hub</span>
+                               </button>
+                             </div>
+                           )}
+                         </div>
                       </div>
                     </div>
                   );
@@ -428,54 +353,74 @@ const TeacherExamPanel = () => {
         ))}
       </div>
 
-      {/* MODAL */}
+      {/* Authoring Studio Modal */}
       {paperModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+          <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm" onClick={() => setPaperModal(false)} />
           <div
             ref={modalRef}
-            className="bg-white w-full max-w-3xl rounded-xl shadow-lg p-6 max-h-[90vh] overflow-auto"
+            className="relative bg-white w-full max-w-4xl rounded-xl shadow-2xl border border-slate-200 overflow-hidden animate-fade-in flex flex-col max-h-[90vh]"
           >
-            <h2 className="text-xl font-semibold mb-4">
-              ✍️ Create Question Paper
-            </h2>
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                  <FiPenTool className="text-[var(--primary)]" />
+                  Digital Paper Authoring
+                </h2>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Compose high-fidelity exam scripts</p>
+              </div>
+              <button onClick={() => setPaperModal(false)} className="p-2 hover:bg-slate-100 rounded-lg transition-all text-slate-400">
+                <FiX size={18} />
+              </button>
+            </div>
 
-            <textarea
-              value={paperContent}
-              onChange={(e) => setPaperContent(e.target.value)}
-              className="w-full h-64 border rounded-lg p-3"
-            />
+            <div className="p-6 flex-1 overflow-y-auto bg-slate-50/30">
+              <textarea
+                value={paperContent}
+                onChange={(e) => setPaperContent(e.target.value)}
+                placeholder="Commence authoring here..."
+                className="w-full h-[400px] bg-white border border-slate-200 rounded-lg p-6 text-sm font-medium text-slate-700 outline-none focus:border-[var(--primary)] transition-all shadow-inner resize-none leading-relaxed"
+              />
+            </div>
 
-            <div className="flex justify-end gap-3 mt-4">
+            <div className="p-6 border-t border-slate-100 flex justify-end gap-3 bg-white">
               <button
                 onClick={() => setPaperModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
+                className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
               >
-                Cancel
+                Cancel Draft
               </button>
-
               <button
                 onClick={saveTypedPaper}
                 disabled={savingPaper}
-                className="px-4 py-2 bg-orange-600 text-white rounded"
+                className="btn-primary"
               >
-                {savingPaper ? "Saving..." : "Save Paper"}
+                {savingPaper ? "Finalizing..." : "Commit Script"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* INFO PANEL */}
-      <div className="mt-6 bg-blue-100 border-l-4 border-blue-400 p-4 rounded-lg shadow-sm">
-        <h3 className="font-semibold text-blue-800 mb-2">
-          📌 Important Information
-        </h3>
-        <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
-          <li>Ensure all question papers are uploaded before the exam date.</li>
-          <li>Typed papers should be saved and verified for accuracy.</li>
-          <li>Upload marks only after students submit their answer sheets.</li>
-          <li>Check the "Today" tags for exams happening today.</li>
-        </ul>
+      {/* Operational Protocol */}
+      <div className="bg-slate-900 rounded-xl p-6 text-white flex gap-4">
+        <FiInfo className="text-[var(--primary)] shrink-0" size={20} />
+        <div>
+           <h3 className="font-bold text-sm mb-2">Examination Protocols</h3>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+              {[
+                "Question scripts must be finalized 48h prior to session.",
+                "Batch digitization of answer sheets is mandatory for archival.",
+                "Real-time session status indicators are synchronized with registry.",
+                "Evaluation input triggers post-session conclusion."
+              ].map((text, i) => (
+                 <div key={i} className="flex items-center gap-2 text-[11px] text-white/60 font-medium">
+                    <FiCheckCircle className="text-[var(--primary)]" size={12} />
+                    {text}
+                 </div>
+              ))}
+           </div>
+        </div>
       </div>
     </div>
   );
