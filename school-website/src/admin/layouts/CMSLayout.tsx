@@ -2,23 +2,24 @@ import { Outlet, NavLink } from "react-router-dom";
 import { 
   MdDashboard, 
   MdWeb, 
-  MdHistory, 
-  MdAssignment, 
+  MdLayers, 
+  MdTextFields, 
   MdSchool, 
-  MdStars, 
-  MdPhotoLibrary,
+  MdStar, 
+  MdImage,
   MdExitToApp,
   MdArrowBack
 } from "react-icons/md";
 
 const CMSLayout = () => {
   const menuItems = [
-    { name: "Hero Banner", path: "/cms-admin/hero", icon: <MdWeb size={20} /> },
-    { name: "About Content", path: "/cms-admin/about", icon: <MdHistory size={20} /> },
-    { name: "Admissions CMS", path: "/cms-admin/admissions", icon: <MdAssignment size={20} /> },
-    { name: "Academics CMS", path: "/cms-admin/academics", icon: <MdSchool size={20} /> },
-    { name: "Achievements CMS", path: "/cms-admin/achievements", icon: <MdStars size={20} /> },
-    { name: "Media Hub (Gallery)", path: "/cms-admin/gallery", icon: <MdPhotoLibrary size={20} /> },
+    { name: 'Dashboard', path: '/cms-admin', icon: <MdDashboard size={20} /> },
+    { name: 'Hero Banner', path: '/cms-admin/hero', icon: <MdWeb size={20} /> },
+    { name: 'About Content', path: '/cms-admin/about', icon: <MdLayers size={20} /> },
+    { name: 'Admissions', path: '/cms-admin/admissions', icon: <MdTextFields size={20} /> },
+    { name: 'Academics', path: '/cms-admin/academics', icon: <MdSchool size={20} /> },
+    { name: 'Achievements', path: '/cms-admin/achievements', icon: <MdStar size={20} /> },
+    { name: 'Photo Gallery', path: '/cms-admin/gallery', icon: <MdImage size={20} /> },
   ];
 
   return (

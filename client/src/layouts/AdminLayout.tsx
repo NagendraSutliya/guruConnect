@@ -156,6 +156,20 @@ const AdminLayout = () => {
     },
     { name: "Public Links", icon: <MdLink size={18} />, path: "/admin/link" },
     {
+      name: "Website CMS",
+      icon: <MdWeb size={18} />,
+      children: [
+        { name: "CMS Dashboard", path: "/admin/cms" },
+        { name: "Hero Banner", path: "/admin/cms/hero" },
+        { name: "About Content", path: "/admin/cms/about" },
+        { name: "Admissions", path: "/admin/cms/admissions" },
+        { name: "Academics", path: "/admin/cms/academics" },
+        { name: "Achievements", path: "/admin/cms/achievements" },
+        { name: "Photo Gallery", path: "/admin/cms/gallery" },
+        { name: "Live Preview", path: "http://localhost:5174", external: true },
+      ],
+    },
+    {
       name: "System Settings",
       icon: <MdSettings size={18} />,
       children: [

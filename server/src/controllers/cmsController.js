@@ -29,9 +29,9 @@ exports.getCMSSection = async (req, res) => {
     const cmsData = await WebsiteCMS.findOne({ section });
     
     if (!cmsData) {
-      return res.status(404).json({
-        success: false,
-        message: 'Section not found'
+      return res.status(200).json({
+        success: true,
+        data: null
       });
     }
 

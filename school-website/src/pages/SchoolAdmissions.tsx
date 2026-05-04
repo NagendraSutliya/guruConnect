@@ -12,12 +12,66 @@ import {
   MdAdd,
   MdGroups
 } from "react-icons/md";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../api/axiosInstance";
 
 const SchoolAdmissions = () => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [fetching, setFetching] = useState(true);
+  const [admissionsData, setAdmissionsData] = useState({
+    title: "Join Our Learning Community",
+    subtitle: "Secure your child's future by enrolling them in an environment that fosters intellectual curiosity, emotional intelligence, and technological fluency for the 2026-27 session.",
+    bannerImage: "/images/redesign/admissions_banner.png",
+    steps: [
+      { step: "01", title: "Online Inquiry", desc: "Begin by submitting the digital inquiry form to schedule a campus tour or virtual counseling." },
+      { step: "02", title: "Campus Interaction", desc: "A personalized meeting to understand your child's needs and our educational approach." },
+      { step: "03", title: "Application Review", desc: "Submission of documents and previous records for our pedagogical committee to review." },
+      { step: "04", title: "Final Enrollment", desc: "Confirmation of admission followed by an orientation session for parents and students." }
+    ],
+    faqs: [
+      { q: "What is the teacher-student ratio?", a: "We maintain a strict 1:20 ratio to ensure that every student receives individual attention and personalized guidance." },
+      { q: "Do you provide international curriculum options?", a: "Yes, we offer both CBSE and IGCSE pathways, allowing students to choose a curriculum that aligns with their future goals." },
+      { q: "Is transport available for all areas?", a: "Our GPS-enabled bus fleet covers a 20km radius from the campus, ensuring safe and timely pick-up/drop-off." },
+      { q: "What extracurricular activities are offered?", a: "From robotics and coding to classical dance and professional sports coaching, we offer over 30+ activity clubs." }
+    ]
+  });
 
-  const faqs = [
+  useEffect(() => {
+    const fetchAdmissionsData = async () => {
+      try {
+        setFetching(true);
+        const response = await api.get('/cms/admissions');
+        if (response.data.success && response.data.data) {
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          
+          Object.keys(incoming).forEach(key => {
+            const val = incoming[key];
+            if (Array.isArray(val)) {
+              const cleanArray = val.filter(item => {
+                if (typeof item === 'object') {
+                  return Object.values(item).some(v => v !== "" && v !== null);
+                }
+                return item !== "" && item !== null;
+              });
+              if (cleanArray.length > 0) cleanData[key] = cleanArray;
+            } else if (val && val !== "") {
+              cleanData[key] = val;
+            }
+          });
+          
+          setAdmissionsData(prev => ({ ...prev, ...cleanData }));
+        }
+      } catch (error) {
+        console.error("Error fetching admissions data:", error);
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchAdmissionsData();
+  }, []);
+
+  const faqs = admissionsData.faqs.length > 0 ? admissionsData.faqs : [
     { q: "What is the age criteria for Nursery?", a: "The child should be 3+ years old as of March 31st of the academic year." },
     { q: "Do you offer sibling discounts?", a: "Yes, we offer a 10% concession on tuition fees for the younger sibling." },
     { q: "Is there a transport facility available?", a: "Yes, we have a fleet of GPS-enabled buses covering a 15km radius." },
@@ -27,9 +81,9 @@ const SchoolAdmissions = () => {
   return (
     <div className="bg-[#020617] text-white overflow-hidden">
       <SchoolPageHeader 
-        title="Begin Your Journey" 
-        subtitle="Join a community dedicated to nurturing innovation, leadership, and academic excellence for the 2026-27 session."
-        bgImage="/images/redesign/admissions_banner.png"
+        title={admissionsData.title} 
+        subtitle={admissionsData.subtitle}
+        bgImage={admissionsData.bannerImage || "/images/redesign/admissions_banner.png"}
       />
 
       {/* Process Section */}
@@ -194,7 +248,7 @@ const SchoolAdmissions = () => {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="p-12 md:p-20 rounded-[4rem] bg-indigo-600 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+            <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
               <div className="space-y-4 max-w-xl">
                 <h2 className="text-4xl font-black text-white tracking-tight">Ready to join our community?</h2>

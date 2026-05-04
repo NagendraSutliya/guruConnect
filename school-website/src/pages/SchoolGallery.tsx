@@ -1,23 +1,55 @@
+import { useEffect, useState } from "react";
+import api from "../api/axiosInstance";
 import SchoolPageHeader from "../components/SchoolPageHeader";
-import { useState } from "react";
 import { MdImage, MdPhotoLibrary } from "react-icons/md";
 
 const SchoolGallery = () => {
   const [activeTab, setActiveTab] = useState("All");
+  const [fetching, setFetching] = useState(true);
+  const [galleryData, setGalleryData] = useState({
+    title: "Visual Journey",
+    subtitle: "Explore the vibrant life at Gyansthali through our lens—from infrastructure to historic achievements.",
+    bannerImage: "/images/redesign/about_banner.png",
+    items: [
+      { title: "Modern Science Lab", category: "Campus", img: "/images/redesign/academics_lab.png" },
+      { title: "Annual Day 2026 Celebration", category: "Events", img: "/images/redesign/gallery_event.png" },
+      { title: "Inter-School Basketball Finals", category: "Sports", img: "/images/redesign/gallery_sports.png" },
+      { title: "Academic Board Toppers 2026", category: "Toppers", img: "/images/redesign/achievements_banner.png" },
+      { title: "Majestic Campus Entrance", category: "Campus", img: "/images/redesign/about_banner.png" },
+      { title: "Digital Research Library", category: "Campus", img: "/images/redesign/about_insight.png" },
+      { title: "Parent Counseling Center", category: "Campus", img: "/images/redesign/admissions_banner.png" },
+      { title: "Smart Classroom 4.0", category: "Campus", img: "/images/redesign/classroom.png" },
+    ]
+  });
+
+  useEffect(() => {
+    const fetchGalleryData = async () => {
+      try {
+        setFetching(true);
+        const response = await api.get('/cms/gallery');
+        if (response.data.success && response.data.data) {
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          Object.keys(incoming).forEach(key => {
+            if (Array.isArray(incoming[key])) {
+              if (incoming[key].length > 0) cleanData[key] = incoming[key];
+            } else if (incoming[key] && incoming[key] !== "") {
+              cleanData[key] = incoming[key];
+            }
+          });
+          setGalleryData(prev => ({ ...prev, ...cleanData }));
+        }
+      } catch (error) {
+        console.error("Error fetching gallery data:", error);
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchGalleryData();
+  }, []);
 
   const categories = ["All", "Campus", "Events", "Sports", "Toppers"];
-
-  const items = [
-    { title: "Modern Science Lab", category: "Campus", img: "/images/redesign/academics_lab.png" },
-    { title: "Annual Day 2026", category: "Events", img: "/images/redesign/gallery_event.png" },
-    { title: "Inter-School Basketball", category: "Sports", img: "/images/redesign/gallery_sports.png" },
-    { title: "Board Toppers 2026", category: "Toppers", img: "/images/redesign/achievements_banner.png" },
-    { title: "Main Campus Entrance", category: "Campus", img: "/images/redesign/about_banner.png" },
-    { title: "High-Tech Library", category: "Campus", img: "/images/redesign/about_insight.png" },
-    { title: "Counseling Center", category: "Campus", img: "/images/redesign/admissions_banner.png" },
-    { title: "Digital Classroom", category: "Campus", img: "/images/redesign/classroom.png" },
-  ];
-
+  const items = galleryData?.items || [];
   const filteredItems = activeTab === "All" ? items : items.filter(item => item.category === activeTab);
 
   return (
@@ -92,7 +124,7 @@ const SchoolGallery = () => {
 
       {/* Experience Section */}
       <section className="py-24 bg-indigo-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+        <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
         <div className="max-w-4xl mx-auto px-6 relative z-10 text-center space-y-8">
            <h2 className="text-4xl font-black text-white tracking-tight leading-tight">Every Frame Tells a <br />Success Story</h2>
            <p className="text-indigo-100 font-medium leading-relaxed">

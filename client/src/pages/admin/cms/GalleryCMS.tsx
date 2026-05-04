@@ -10,7 +10,7 @@ import {
   MdPlayArrow,
   MdFilterList
 } from "react-icons/md";
-import api from "../../api/axiosInstance";
+import api from "../../../api/axiosInstance";
 
 export default function GalleryCMS() {
   const [loading, setLoading] = useState(false);

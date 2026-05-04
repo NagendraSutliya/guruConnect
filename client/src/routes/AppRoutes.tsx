@@ -62,6 +62,13 @@ import ComingSoon from "../pages/admin/ComingSoon";
 import InstituteSettings from "../pages/admin/settings/InstituteSettings";
 import RolesPermissions from "../pages/admin/settings/RolesPermissions";
 import AccountSettings from "../pages/admin/AccountSettings";
+import CMSDashboard from "../pages/admin/cms/CMSDashboard";
+import HeroCMS from "../pages/admin/cms/HeroCMS";
+import AboutCMS from "../pages/admin/cms/AboutCMS";
+import AdmissionsCMS from "../pages/admin/cms/AdmissionsCMS";
+import AcademicsCMS from "../pages/admin/cms/AcademicsCMS";
+import AchievementsCMS from "../pages/admin/cms/AchievementsCMS";
+import GalleryCMS from "../pages/admin/cms/GalleryCMS";
 
 export default function AppRoutes() {
   return (
@@ -143,6 +150,15 @@ export default function AppRoutes() {
         <Route path="settings/institute" element={<InstituteSettings />} />
         <Route path="settings/roles" element={<RolesPermissions />} />
         <Route path="settings" element={<AccountSettings />} />
+
+        {/* WEBSITE CMS (Synced with school-website) */}
+        <Route path="cms" element={<CMSDashboard />} />
+        <Route path="cms/hero" element={<HeroCMS />} />
+        <Route path="cms/about" element={<AboutCMS />} />
+        <Route path="cms/admissions" element={<AdmissionsCMS />} />
+        <Route path="cms/academics" element={<AcademicsCMS />} />
+        <Route path="cms/achievements" element={<AchievementsCMS />} />
+        <Route path="cms/gallery" element={<GalleryCMS />} />
 
 
         <Route path="exam" element={<Exams />} />

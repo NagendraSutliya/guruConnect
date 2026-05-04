@@ -37,11 +37,12 @@ const Typewriter = ({ texts }: { texts: string[] }) => {
 const SchoolLanding = () => {
   const [fetching, setFetching] = useState(true);
   const [heroData, setHeroData] = useState({
-    title: "",
-    subtitle: "",
-    button1: "",
-    button2: "",
-    announcement: ""
+    title: "Empowering Minds, Shaping Tomorrow's Leaders",
+    subtitle: "At Gyansthali Edu, we blend traditional values with cutting-edge digital innovation to provide a holistic learning experience that prepares students for the challenges of a global future.",
+    button1: "Apply for 2026-27",
+    button2: "Explore Campus",
+    announcement: "Now Enrolling: Academic Session 2026-27",
+    backgroundImage: "/images/redesign/hero.png"
   });
 
   useEffect(() => {
@@ -49,8 +50,15 @@ const SchoolLanding = () => {
       try {
         setFetching(true);
         const response = await api.get('/cms/hero');
-        if (response.data.success) {
-          setHeroData(response.data.data);
+        if (response.data.success && response.data.data) {
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          Object.keys(incoming).forEach(key => {
+            if (incoming[key] && incoming[key] !== "") {
+              cleanData[key] = incoming[key];
+            }
+          });
+          setHeroData(prev => ({ ...prev, ...cleanData }));
         }
       } catch (error) {
         console.error("Error fetching hero data:", error);
@@ -73,7 +81,7 @@ const SchoolLanding = () => {
       <section className="relative min-h-[85vh] flex items-center pt-16">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/images/redesign/hero.png" 
+            src={heroData.backgroundImage || "/images/redesign/hero.png"} 
             alt="School Hero" 
             className="w-full h-full object-cover opacity-20 scale-105 animate-slowZoom"
           />
@@ -217,7 +225,7 @@ const SchoolLanding = () => {
       </section>
 
             <section className="py-24 bg-indigo-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+        <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-12">
           <div className="space-y-4">
             <h2 className="text-4xl font-black text-white tracking-tight">Why Choose Gyansthali?</h2>

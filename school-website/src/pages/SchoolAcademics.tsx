@@ -12,13 +12,70 @@ import {
   MdMenuBook
 } from "react-icons/md";
 
+import { useEffect, useState } from "react";
+import api from "../api/axiosInstance";
+
 const SchoolAcademics = () => {
+  const [fetching, setFetching] = useState(true);
+  const [academicsData, setAcademicsData] = useState({
+    title: "A Future-Ready Curriculum",
+    subtitle: "We follow a research-backed instructional model that evolves with the student, from sensory-based discovery to advanced analytical specialization.",
+    bannerImage: "/images/redesign/academics_banner.png",
+    curriculum: [
+      { phase: "Phase 01", title: "The Foundation", years: "Nursery - KG", desc: "Focus on sensory exploration, motor skills, and social development through play-based immersion.", color: "emerald" },
+      { phase: "Phase 02", title: "Discovery & Grit", years: "Grade 1 - 5", desc: "Building strong foundations in literacy, numeracy, and environmental awareness with hands-on projects.", color: "amber" },
+      { phase: "Phase 03", title: "Analytical Minds", years: "Grade 6 - 8", desc: "Introduction to specialized sciences, logic, and critical thinking to bridge the gap to higher studies.", color: "indigo" },
+      { phase: "Phase 04", title: "Global Readiness", years: "Grade 9 - 12", desc: "Career-oriented focus with advanced science, commerce, and humanities pathways for university prep.", color: "rose" }
+    ],
+    departments: [
+      { name: "STEM & Robotics", icon: "MdComputer" },
+      { name: "Linguistic Arts", icon: "MdLanguage" },
+      { name: "Athletic Science", icon: "MdNaturePeople" },
+      { name: "Visual Arts Hub", icon: "MdBrush" }
+    ]
+  });
+
+  useEffect(() => {
+    const fetchAcademicsData = async () => {
+      try {
+        setFetching(true);
+        const response = await api.get('/cms/academics');
+        if (response.data.success && response.data.data) {
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          
+          Object.keys(incoming).forEach(key => {
+            const val = incoming[key];
+            if (Array.isArray(val)) {
+              const cleanArray = val.filter(item => {
+                if (typeof item === 'object') {
+                  return Object.values(item).some(v => v !== "" && v !== null);
+                }
+                return item !== "" && item !== null;
+              });
+              if (cleanArray.length > 0) cleanData[key] = cleanArray;
+            } else if (val && val !== "") {
+              cleanData[key] = val;
+            }
+          });
+          
+          setAcademicsData(prev => ({ ...prev, ...cleanData }));
+        }
+      } catch (error) {
+        console.error("Error fetching academics data:", error);
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchAcademicsData();
+  }, []);
+
   return (
     <div className="bg-[#020617] text-white overflow-hidden">
       <SchoolPageHeader 
-        title="Academic Excellence" 
-        subtitle="A future-ready curriculum designed to foster critical thinking, creativity, and a lifelong love for learning."
-        bgImage="/images/redesign/academics_banner.png"
+        title={academicsData.title} 
+        subtitle={academicsData.subtitle}
+        bgImage={academicsData.bannerImage || "/images/redesign/academics_banner.png"}
       />
 
       {/* Curriculum Narrative Section */}
@@ -139,7 +196,7 @@ const SchoolAcademics = () => {
       {/* Pedagogical Excellence */}
       <section className="py-24 max-w-7xl mx-auto px-6">
         <div className="bg-indigo-600 rounded-[4rem] p-12 md:p-20 relative overflow-hidden text-center md:text-left">
-           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+           <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
               <div className="max-w-xl space-y-6">
                  <h2 className="text-4xl font-black text-white tracking-tight leading-tight">Methodology That Works</h2>

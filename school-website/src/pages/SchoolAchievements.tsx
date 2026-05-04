@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import api from "../api/axiosInstance";
 import SchoolPageHeader from "../components/SchoolPageHeader";
 import { 
   MdEmojiEvents, 
@@ -10,12 +12,80 @@ import {
 } from "react-icons/md";
 
 const SchoolAchievements = () => {
+  const [fetching, setFetching] = useState(true);
+  const [achievementsData, setAchievementsData] = useState({
+    title: "Our Hall of Fame",
+    subtitle: "Celebrating the exceptional milestones of our students and the institution's commitment to excellence.",
+    bannerImage: "/images/redesign/achievements_banner.png",
+    stats: [
+      { label: "Board Results", val: "100%", sub: "Passing Rate", icon: "MdTrendingUp" },
+      { label: "State Toppers", val: "25+", sub: "In Last 5 Years", icon: "MdEmojiEvents" },
+      { label: "Sports Trophies", val: "150+", sub: "Inter-School Wins", icon: "MdStars" },
+      { label: "Global Alumni", val: "2.5k+", sub: "In Elite Universities", icon: "MdGroups" },
+    ],
+    toppers: [
+      { name: "Rahul Singh", score: "98.8%", class: "Class XII - Science", rank: "District Rank 1" },
+      { name: "Sanya Malhotra", score: "98.2%", class: "Class XII - Commerce", rank: "District Rank 3" },
+      { name: "Aryan Verma", score: "97.5%", class: "Class X", rank: "City Rank 1" },
+    ],
+    awards: [
+      { award: "Best Innovation in STEM", body: "National Edu Council 2025" },
+      { award: "Cleanest Campus Award", body: "City Municipal Board 2024" },
+      { award: "Excellence in Digital Learning", body: "Global Tech Summit 2026" },
+    ]
+  });
+
+  useEffect(() => {
+    const fetchAchievementsData = async () => {
+      try {
+        setFetching(true);
+        const response = await api.get('/cms/achievements');
+        if (response.data.success && response.data.data) {
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          
+          Object.keys(incoming).forEach(key => {
+            const val = incoming[key];
+            if (Array.isArray(val)) {
+              // Filter out empty objects in arrays
+              const cleanArray = val.filter(item => {
+                if (typeof item === 'object') {
+                  return Object.values(item).some(v => v !== "" && v !== null);
+                }
+                return item !== "" && item !== null;
+              });
+              if (cleanArray.length > 0) cleanData[key] = cleanArray;
+            } else if (val && val !== "") {
+              cleanData[key] = val;
+            }
+          });
+          
+          setAchievementsData(prev => ({ ...prev, ...cleanData }));
+        }
+      } catch (error) {
+        console.error("Error fetching achievements data:", error);
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchAchievementsData();
+  }, []);
+
+  const getIcon = (iconName: string) => {
+    switch(iconName) {
+      case 'MdTrendingUp': return <MdTrendingUp />;
+      case 'MdEmojiEvents': return <MdEmojiEvents />;
+      case 'MdStars': return <MdStars />;
+      case 'MdGroups': return <MdGroups />;
+      default: return <MdEmojiEvents />;
+    }
+  };
   return (
     <div className="bg-[#020617] text-white overflow-hidden">
       <SchoolPageHeader 
-        title="Our Hall of Fame" 
-        subtitle="Celebrating the exceptional milestones of our students and the institution's commitment to excellence."
-        bgImage="/images/redesign/achievements_banner.png"
+        title={achievementsData.title} 
+        subtitle={achievementsData.subtitle}
+        bgImage={achievementsData.bannerImage || "/images/redesign/achievements_banner.png"}
       />
 
       {/* Stats Summary Section */}
@@ -23,15 +93,10 @@ const SchoolAchievements = () => {
         <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { label: "Board Results", val: "100%", sub: "Passing Rate", icon: <MdTrendingUp /> },
-              { label: "State Toppers", val: "25+", sub: "In Last 5 Years", icon: <MdEmojiEvents /> },
-              { label: "Sports Trophies", val: "150+", sub: "Inter-School Wins", icon: <MdStars /> },
-              { label: "Global Alumni", val: "2.5k+", sub: "In Elite Universities", icon: <MdGroups /> },
-            ].map((stat, i) => (
+            {achievementsData.stats?.map((stat, i) => (
               <div key={i} className="p-8 rounded-[2.5rem] bg-white/5 border border-white/5 text-center group hover:bg-white/[0.08] transition-all">
                 <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 text-indigo-400 flex items-center justify-center text-2xl mx-auto mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                  {stat.icon}
+                  {getIcon(stat.icon)}
                 </div>
                 <h3 className="text-4xl font-black text-white mb-2 tracking-tighter">{stat.val}</h3>
                 <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">{stat.label}</p>
@@ -51,11 +116,7 @@ const SchoolAchievements = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {[
-              { name: "Rahul Singh", score: "98.8%", class: "Class XII - Science", rank: "District Rank 1" },
-              { name: "Sanya Malhotra", score: "98.2%", class: "Class XII - Commerce", rank: "District Rank 3" },
-              { name: "Aryan Verma", score: "97.5%", class: "Class X", rank: "City Rank 1" },
-            ].map((topper, i) => (
+            {achievementsData.toppers?.map((topper, i) => (
               <div key={i} className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition-all" />
                 <div className="relative p-10 rounded-[3rem] bg-slate-900 border border-white/5 space-y-6">
@@ -90,11 +151,7 @@ const SchoolAchievements = () => {
             </div>
 
             <div className="space-y-4">
-              {[
-                { award: "Best Innovation in STEM", body: "National Edu Council 2025" },
-                { award: "Cleanest Campus Award", body: "City Municipal Board 2024" },
-                { award: "Excellence in Digital Learning", body: "Global Tech Summit 2026" },
-              ].map((award, i) => (
+              {achievementsData.awards?.map((award, i) => (
                 <div key={i} className="flex items-center gap-6 p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all group">
                    <MdEmojiEvents className="text-indigo-500 text-3xl group-hover:scale-125 transition-transform" />
                    <div>
@@ -129,7 +186,7 @@ const SchoolAchievements = () => {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="p-12 md:p-20 rounded-[4rem] bg-indigo-600 text-white flex flex-col md:flex-row items-center justify-between gap-10 relative overflow-hidden">
-             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+             <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
              <div className="relative z-10 space-y-4 max-w-xl">
                 <h2 className="text-4xl font-black tracking-tight leading-tight">Be part of our next success story.</h2>
                 <p className="text-indigo-100 font-medium">Join an institution where your potential is nurtured into excellence.</p>

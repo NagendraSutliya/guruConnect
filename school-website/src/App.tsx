@@ -16,6 +16,7 @@ import AdmissionsCMS from './admin/cms/AdmissionsCMS'
 import AcademicsCMS from './admin/cms/AcademicsCMS'
 import AchievementsCMS from './admin/cms/AchievementsCMS'
 import GalleryCMS from './admin/cms/GalleryCMS'
+import CMSDashboard from './admin/cms/CMSDashboard'
 
 const App = () => {
   return (
@@ -32,7 +33,8 @@ const App = () => {
 
       {/* Separate CMS Portal */}
       <Route path="/cms-admin" element={<CMSLayout />}>
-        <Route index element={<HeroCMS />} />
+        <Route index element={<CMSDashboard />} />
+        <Route path="dashboard" element={<CMSDashboard />} />
         <Route path="hero" element={<HeroCMS />} />
         <Route path="about" element={<AboutCMS />} />
         <Route path="admissions" element={<AdmissionsCMS />} />

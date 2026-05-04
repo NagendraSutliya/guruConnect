@@ -8,18 +8,19 @@ import {
   MdLayers,
   MdPlayArrow
 } from "react-icons/md";
-import api from "../../api/axiosInstance";
+import api from "../../../api/axiosInstance";
 
 export default function HeroCMS() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
   const [heroData, setHeroData] = useState({
-    title: "",
-    subtitle: "",
-    button1: "",
-    button2: "",
-    announcement: ""
+    title: "Empowering Minds, Shaping Tomorrow's Leaders",
+    subtitle: "At Gyansthali Edu, we blend traditional values with cutting-edge digital innovation to provide a holistic learning experience that prepares students for the challenges of a global future.",
+    button1: "Apply Online",
+    button2: "Explore Campus",
+    announcement: "Now Enrolling for 2026-27",
+    backgroundImage: "/images/redesign/hero.png"
   });
 
   useEffect(() => {
@@ -27,8 +28,8 @@ export default function HeroCMS() {
       try {
         setFetching(true);
         const response = await api.get('/cms/hero');
-        if (response.data.success) {
-          setHeroData(response.data.data);
+        if (response.data.success && response.data.data) {
+          setHeroData(prev => ({ ...prev, ...response.data.data }));
         }
       } catch (error) {
         console.error("Error fetching hero data:", error);
