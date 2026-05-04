@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
-import ViewTeacherModal from "../../../components/admin/ViewTeacherModal";
-import AddTeacherModal from "../../modals/admin/AddTeacherModal";
+import ViewTeacherModal from "../../../components/admin/modals/ViewTeacherModal";
+import AddTeacherModal from "../../../components/admin/modals/AddTeacherModal";
 import { useToast } from "../../../context/ToastContext";
 import {
   FiEdit,

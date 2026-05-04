@@ -29,6 +29,14 @@ const Landing = () => {
     setCheckingSession(false);
   }, []);
 
+  const [heroData, setHeroData] = useState({
+    title: "Empowering Tomorrow's Leaders",
+    subtitle: "At Gyansthali, we blend traditional values with cutting-edge education technology.",
+    button1: "Apply Online",
+    button2: "Take a Virtual Tour",
+    announcement: "Now Enrolling for 2024-25"
+  });
+
   const getDashboardLink = () => {
     switch (userRole) {
       case "admin": return "/admin/dashboard";
@@ -131,13 +139,13 @@ const Landing = () => {
         </div>
       )}
       {/* ================= NAVIGATION ================= */}
-      <nav className="fixed top-0 w-full z-50 bg-white">
-        <div className="max-w-7xl mx-auto px-6 pt-4 h-20 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-50 bg-white shadow-sm border-b border-slate-50">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img 
               src="/guruconnect-logo.png" 
               alt="guruConnect Logo" 
-              className="h-20 w-auto object-contain"
+              className="h-14 w-auto object-contain"
             />
             <div className="flex flex-col justify-center">
               <span className="text-xl font-black tracking-tighter leading-none">
@@ -156,7 +164,7 @@ const Landing = () => {
             {!checkingSession && (
               userRole ? (
                 <Link to={getDashboardLink()}>
-                  <button className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-100 active:scale-95">
+                  <button className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95">
                     <LayoutDashboard className="w-4 h-4 text-orange-500" />
                     Go to Dashboard
                   </button>
@@ -183,7 +191,7 @@ const Landing = () => {
       </nav>
 
       {/* ================= HERO SECTION ================= */}
-      <section className="relative pt-12 pb-8 md:pt-16 md:pb-12 overflow-hidden">
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-24 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[120px] opacity-60" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-[120px] opacity-60" />
@@ -191,31 +199,42 @@ const Landing = () => {
 
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
           <div className="text-center lg:text-left">
-            <h1 className="text-4xl md:text-6xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
-              Elevate Your <span className="text-orange-600">Institute</span> <br />
-              with AI Intelligence
+            {heroData.announcement && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-100 rounded-full mb-8">
+                <Zap className="text-orange-600 w-4 h-4 fill-orange-600" />
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-orange-600">{heroData.announcement}</span>
+              </div>
+            )}
+            
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
+              {heroData.title}
             </h1>
 
             <p className="mt-8 text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              A comprehensive, role-based platform designed to bridge the gap between administrators, teachers, and students through seamless automation and deep insights.
+              {heroData.subtitle}
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
               {!checkingSession && (
                 userRole ? (
                   <Link to={getDashboardLink()} className="w-full sm:w-auto">
-                    <button className="w-full bg-orange-600 text-white p-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3 group">
+                    <button className="w-full bg-slate-900 text-white p-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-all shadow-xl flex items-center justify-center gap-3 group">
                       Back to My Dashboard
-                      <LayoutDashboard className="w-6 h-6 group-hover:rotate-12 transition-transform" />
+                      <LayoutDashboard className="w-6 h-6 text-orange-500 group-hover:rotate-12 transition-transform" />
                     </button>
                   </Link>
                 ) : (
-                  <Link to="/auth/register" className="w-full sm:w-auto">
-                    <button className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3 group">
-                      Get Started Today
-                      <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                  <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                    <Link to="/auth/register" className="w-full sm:w-auto">
+                      <button className="w-full bg-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3 group">
+                        {heroData.button1}
+                        <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                      </button>
+                    </Link>
+                    <button className="w-full sm:w-auto bg-white text-slate-900 border border-slate-200 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-3">
+                      {heroData.button2}
                     </button>
-                  </Link>
+                  </div>
                 )
               )}
               <div className="flex -space-x-3 mt-4 sm:mt-0 items-center">

@@ -4,7 +4,7 @@ import { FiTrash2, FiEdit, FiChevronDown, FiSearch,  FiPlus, FiBookOpen } from "
 import type { Subject } from "../../../types/admin/subject";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
-import UpdateSubjectModal from "../../modals/admin/UpdateSubjectModal";
+import UpdateSubjectModal from "../../../components/admin/modals/UpdateSubjectModal";
 
 const SubjectsPanel = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);

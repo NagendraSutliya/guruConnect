@@ -15,12 +15,12 @@ const ViewTeacherModal: React.FC<Props> = ({ teacher, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       ></div>
 
       {/* Modal Content */}
-      <div className="relative w-full max-w-lg bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden animate-fadeIn scale-100">
+      <div className="relative w-full max-w-lg max-h-[95vh] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl animate-fadeIn scale-100">
         
         {/* Top Header/Banner */}
         <div className="h-32 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 relative">

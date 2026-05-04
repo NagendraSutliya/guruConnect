@@ -9,7 +9,7 @@ import type {
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import type { Subject } from "../../../types/admin/subject";
-import UpdateTeacherAssignmentModal from "../../modals/admin/UpdateTeacherAssignmentModal";
+import UpdateTeacherAssignmentModal from "../../../components/admin/modals/UpdateTeacherAssignmentModal";
 import { useToast } from "../../../context/ToastContext";
 
 const TeacherAssignPanel = () => {

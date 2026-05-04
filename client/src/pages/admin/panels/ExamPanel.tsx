@@ -17,7 +17,7 @@ import {
 import type { Exam } from "../../../types/admin/exam";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
-import EditExamModal from "../../modals/admin/UpdateExamModal";
+import EditExamModal from "../../../components/admin/modals/UpdateExamModal";
 import { useToast } from "../../../context/ToastContext";
 
 const MetricCard = ({ title, value, icon, gradient }: any) => (

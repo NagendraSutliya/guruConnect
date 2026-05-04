@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
 import type { AcademicYear } from "../../../types/admin/academicYear";
-import UpdateAcademicYearModal from "../../modals/admin/UpdateAcademicYearModal";
+import UpdateAcademicYearModal from "../../../components/admin/modals/UpdateAcademicYearModal";
 
 const getDefaultSessionDates = () => {
   const today = new Date();

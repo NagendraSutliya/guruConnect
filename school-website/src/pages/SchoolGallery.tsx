@@ -1,60 +1,119 @@
 import SchoolPageHeader from "../components/SchoolPageHeader";
 import { useState } from "react";
+import { MdImage, MdPhotoLibrary } from "react-icons/md";
 
-export default function SchoolGallery() {
-  const [filter, setFilter] = useState("All");
+const SchoolGallery = () => {
+  const [activeTab, setActiveTab] = useState("All");
 
-  const images = [
-    { url: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop", cat: "Campus" },
-    { url: "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?q=80&w=2070&auto=format&fit=crop", cat: "Sports" },
-    { url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop", cat: "Events" },
-    { url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop", cat: "Academic" },
-    { url: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2070&auto=format&fit=crop", cat: "Campus" },
-    { url: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=2070&auto=format&fit=crop", cat: "Sports" },
+  const categories = ["All", "Campus", "Events", "Sports", "Toppers"];
+
+  const items = [
+    { title: "Modern Science Lab", category: "Campus", img: "/images/redesign/academics_lab.png" },
+    { title: "Annual Day 2026", category: "Events", img: "/images/redesign/gallery_event.png" },
+    { title: "Inter-School Basketball", category: "Sports", img: "/images/redesign/gallery_sports.png" },
+    { title: "Board Toppers 2026", category: "Toppers", img: "/images/redesign/achievements_banner.png" },
+    { title: "Main Campus Entrance", category: "Campus", img: "/images/redesign/about_banner.png" },
+    { title: "High-Tech Library", category: "Campus", img: "/images/redesign/about_insight.png" },
+    { title: "Counseling Center", category: "Campus", img: "/images/redesign/admissions_banner.png" },
+    { title: "Digital Classroom", category: "Campus", img: "/images/redesign/classroom.png" },
   ];
 
-  const filtered = filter === "All" ? images : images.filter(i => i.cat === filter);
+  const filteredItems = activeTab === "All" ? items : items.filter(item => item.category === activeTab);
 
   return (
-    <div className="animate-fadeIn">
+    <div className="bg-[#020617] text-white overflow-hidden">
       <SchoolPageHeader 
         title="Visual Journey" 
-        subtitle="A glimpse into the vibrant campus life and the memorable moments at Gyansthali."
-        bgImage="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop"
+        subtitle="Explore the vibrant life at Gyansthali through our lens—from infrastructure to historic achievements."
+        bgImage="/images/redesign/about_banner.png"
       />
 
       <section className="py-24 max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Moments of <span className="text-indigo-600">Growth</span></h2>
-          
-          <div className="flex bg-slate-100 p-1.5 rounded-2xl overflow-x-auto no-scrollbar">
-            {["All", "Campus", "Sports", "Events", "Academic"].map((f) => (
-              <button 
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                  filter === f ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
+        {/* Filter Tabs */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16 border-b border-white/5 pb-8">
+           <div className="flex items-center gap-3 text-indigo-400">
+              <MdPhotoLibrary size={24} />
+              <h2 className="text-2xl font-black text-white tracking-tight">Media Hub</h2>
+           </div>
+
+           <div className="flex flex-wrap justify-center gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveTab(cat)}
+                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                    activeTab === cat 
+                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" 
+                      : "bg-white/5 text-slate-500 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+           </div>
         </div>
 
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {filtered.map((img, i) => (
-            <div key={i} className="relative group rounded-[2.5rem] overflow-hidden bg-slate-100 shadow-sm transition-all hover:shadow-2xl hover:-translate-y-1">
-              <img src={img.url} className="w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <span className="text-[10px] font-black text-white uppercase tracking-[0.3em] border border-white/20 px-4 py-2 rounded-full backdrop-blur-md">
-                  View Large
-                </span>
+        {/* Gallery Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredItems.map((item, i) => (
+            <div 
+              key={i} 
+              className="group relative aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-white/5 animate-fadeIn"
+              style={{ animationDelay: `${i * 50}ms` }}
+            >
+              <img 
+                src={item.img} 
+                alt={item.title} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
+              
+              <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                <span className="text-[8px] font-black text-indigo-400 uppercase tracking-[0.2em]">{item.category}</span>
+                <h4 className="text-sm font-black text-white tracking-tight mt-1">{item.title}</h4>
+              </div>
+
+              <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100">
+                 <MdImage className="text-white" size={20} />
               </div>
             </div>
           ))}
         </div>
+
+        {filteredItems.length === 0 && (
+          <div className="py-40 text-center space-y-4">
+             <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto text-slate-700">
+                <MdImage size={40} />
+             </div>
+             <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">No images found in this category</p>
+          </div>
+        )}
+      </section>
+
+      {/* Experience Section */}
+      <section className="py-24 bg-indigo-600 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center space-y-8">
+           <h2 className="text-4xl font-black text-white tracking-tight leading-tight">Every Frame Tells a <br />Success Story</h2>
+           <p className="text-indigo-100 font-medium leading-relaxed">
+             Our gallery is more than just photos; it's a testament to the vibrant culture, academic rigor, and creative freedom that defines the Gyansthali experience.
+           </p>
+           <div className="flex justify-center gap-12 pt-8">
+              {[
+                { val: "500+", label: "Memories" },
+                { val: "50+", label: "Annual Events" },
+                { val: "25+", label: "Years Legacy" }
+              ].map((stat, i) => (
+                <div key={i} className="text-center">
+                   <p className="text-3xl font-black text-white mb-1">{stat.val}</p>
+                   <p className="text-[10px] font-black text-indigo-200 uppercase tracking-widest">{stat.label}</p>
+                </div>
+              ))}
+           </div>
+        </div>
       </section>
     </div>
   );
-}
+};
+
+export default SchoolGallery;

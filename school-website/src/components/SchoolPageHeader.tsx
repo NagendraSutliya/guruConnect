@@ -1,4 +1,4 @@
-import { MdArrowForward } from "react-icons/md";
+import { MdStar } from "react-icons/md";
 
 interface SchoolPageHeaderProps {
   title: string;
@@ -6,31 +6,39 @@ interface SchoolPageHeaderProps {
   bgImage?: string;
 }
 
-export default function SchoolPageHeader({ title, subtitle, bgImage }: SchoolPageHeaderProps) {
+const SchoolPageHeader = ({ title, subtitle, bgImage }: SchoolPageHeaderProps) => {
   return (
-    <section className="relative pt-48 pb-24 overflow-hidden bg-slate-900">
+    <section className="relative pt-32 pb-16 overflow-hidden bg-[#020617]">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px]" />
+      </div>
+
       {bgImage && (
         <img 
           src={bgImage} 
           alt={title} 
-          className="absolute inset-0 w-full h-full object-cover opacity-30 scale-105"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 scale-105"
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent" />
       
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         <div className="max-w-3xl space-y-4">
-          <div className="flex items-center gap-2 text-indigo-400 text-[10px] font-black uppercase tracking-[0.4em] mb-2 animate-fadeIn">
-            Institutional Gateway
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-[9px] font-black uppercase tracking-[0.3em] mb-2 animate-fadeIn">
+            <MdStar size={12} className="text-amber-400" />
+            Institutional Portal
           </div>
-          <h2 className="text-5xl md:text-7xl font-black text-white leading-tight tracking-tighter animate-slideDown">
+          <h2 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tighter animate-slideDown">
             {title}
           </h2>
-          <p className="text-lg text-white/50 font-medium leading-relaxed max-w-2xl animate-fadeInDelay">
+          <p className="text-base text-slate-400 font-medium leading-relaxed max-w-2xl animate-fadeInDelay">
             {subtitle}
           </p>
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default SchoolPageHeader;

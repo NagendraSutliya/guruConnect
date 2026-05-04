@@ -62,7 +62,6 @@ import ComingSoon from "../pages/admin/ComingSoon";
 import InstituteSettings from "../pages/admin/settings/InstituteSettings";
 import RolesPermissions from "../pages/admin/settings/RolesPermissions";
 import AccountSettings from "../pages/admin/AccountSettings";
-import HeroCMS from "../pages/admin/cms/HeroCMS";
 
 export default function AppRoutes() {
   return (
@@ -145,11 +144,6 @@ export default function AppRoutes() {
         <Route path="settings/roles" element={<RolesPermissions />} />
         <Route path="settings" element={<AccountSettings />} />
 
-        {/* WEBSITE CMS */}
-        <Route path="cms/hero" element={<HeroCMS />} />
-        <Route path="cms/news" element={<ComingSoon featureName="News & Events CMS" />} />
-        <Route path="cms/gallery" element={<ComingSoon featureName="Photo Gallery CMS" />} />
-        <Route path="cms/about" element={<ComingSoon featureName="About Page CMS" />} />
 
         <Route path="exam" element={<Exams />} />
         <Route path="exam-subjects/:examId" element={<ExamSubjectPanel />} />

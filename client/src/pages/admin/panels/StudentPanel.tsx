@@ -15,8 +15,8 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import {  FaUserCheck, FaUserTimes, FaUsers } from "react-icons/fa";
-import AddStudentModal from "../../modals/admin/AddStudentModal";
-import ViewStudentModal from "../../../components/admin/ViewStudentModal";
+import AddStudentModal from "../../../components/admin/modals/AddStudentModal";
+import ViewStudentModal from "../../../components/admin/modals/ViewStudentModal";
 
 const StudentPanel = () => {
   const { showToast } = useToast();

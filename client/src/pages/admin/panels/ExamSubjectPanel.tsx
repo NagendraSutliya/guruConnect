@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FiEdit, FiTrash2, FiSearch, FiChevronLeft, FiPlus, FiClock, FiCalendar, FiTarget, FiActivity } from "react-icons/fi";
 import api from "../../../api/axiosInstance";
 import { useToast } from "../../../context/ToastContext";
-import UpdateExamSubjectModal from "../../modals/admin/UpdateExamSubjectModal";
+import UpdateExamSubjectModal from "../../../components/admin/modals/UpdateExamSubjectModal";
 
 const ExamSubjectPanel = () => {
   const { showToast } = useToast();

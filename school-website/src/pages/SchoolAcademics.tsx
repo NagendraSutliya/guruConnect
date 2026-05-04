@@ -1,75 +1,193 @@
 import SchoolPageHeader from "../components/SchoolPageHeader";
-import { MdLibraryBooks, MdNaturePeople, MdLightbulb, MdLanguage } from "react-icons/md";
+import { 
+  MdLibraryBooks, 
+  MdNaturePeople, 
+  MdLightbulb, 
+  MdLanguage,
+  MdAutoGraph,
+  MdPsychology,
+  MdScience,
+  MdComputer,
+  MdBrush,
+  MdMenuBook
+} from "react-icons/md";
 
-export default function SchoolAcademics() {
+const SchoolAcademics = () => {
   return (
-    <div className="animate-fadeIn">
+    <div className="bg-[#020617] text-white overflow-hidden">
       <SchoolPageHeader 
         title="Academic Excellence" 
-        subtitle="A holistic curriculum designed to foster critical thinking, creativity, and a lifelong love for learning."
-        bgImage="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2070&auto=format&fit=crop"
+        subtitle="A future-ready curriculum designed to foster critical thinking, creativity, and a lifelong love for learning."
+        bgImage="/images/redesign/academics_banner.png"
       />
 
+      {/* Curriculum Narrative Section */}
       <section className="py-24 max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center mb-32">
-          <div className="space-y-8">
-            <h2 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">
-              Our <span className="text-indigo-600 italic">Curriculum</span> Framework
-            </h2>
-            <p className="text-slate-500 font-medium leading-relaxed">
-              We follow a balanced pedagogical approach that integrates the best of international standards with national requirements. Our focus is on 'learning by doing' rather than rote memorization.
-            </p>
-            <div className="space-y-4">
-              {[
-                { title: "Early Years (Pre-K to 2)", icon: <MdNaturePeople className="text-emerald-500" /> },
-                { title: "Primary Years (3 to 5)", icon: <MdLightbulb className="text-amber-500" /> },
-                { title: "Middle Years (6 to 8)", icon: <MdLibraryBooks className="text-indigo-500" /> },
-                { title: "High School (9 to 12)", icon: <MdLanguage className="text-rose-500" /> },
-              ].map((level, i) => (
-                <div key={i} className="flex items-center gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 group hover:bg-white hover:shadow-lg transition-all">
-                  <div className="text-2xl">{level.icon}</div>
-                  <span className="font-black text-slate-800 tracking-tight">{level.title}</span>
+        <div className="text-center mb-20 space-y-4">
+          <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">The Pedagogy</h5>
+          <h2 className="text-4xl font-black text-white tracking-tight leading-tight">
+            Our Journey of <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Continuous Growth</span>
+          </h2>
+          <p className="text-slate-500 max-w-2xl mx-auto font-medium">
+            We follow a balanced instructional model that evolves with the student, from sensory-based play to advanced analytical specialization.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[
+            { 
+              phase: "Phase 01", 
+              title: "Foundation", 
+              years: "Nursery - KG",
+              desc: "Focus on sensory exploration, motor skills, and social development through play-based learning.",
+              icon: <MdNaturePeople />,
+              color: "emerald"
+            },
+            { 
+              phase: "Phase 02", 
+              title: "Discovery", 
+              years: "Grade 1 - 5",
+              desc: "Building strong foundations in literacy, numeracy, and environmental awareness with hands-on projects.",
+              icon: <MdLightbulb />,
+              color: "amber"
+            },
+            { 
+              phase: "Phase 03", 
+              title: "Analysis", 
+              years: "Grade 6 - 8",
+              desc: "Introduction to specialized sciences, logic, and critical thinking to bridge the gap to higher studies.",
+              icon: <MdPsychology />,
+              color: "indigo"
+            },
+            { 
+              phase: "Phase 04", 
+              title: "Specialization", 
+              years: "Grade 9 - 12",
+              desc: "Career-oriented focus with advanced science, commerce, and humanities pathways for global readiness.",
+              icon: <MdAutoGraph />,
+              color: "rose"
+            },
+          ].map((step, i) => (
+            <div key={i} className="group p-8 rounded-[3rem] bg-white/5 border border-white/5 hover:bg-white/[0.08] transition-all duration-500 relative overflow-hidden">
+              <div className={`absolute top-0 right-0 w-24 h-24 bg-${step.color}-500/10 blur-2xl rounded-full transition-all group-hover:scale-150`} />
+              <div className="relative z-10 space-y-6">
+                <div className="flex justify-between items-start">
+                   <div className={`w-14 h-14 rounded-2xl bg-${step.color}-500/10 flex items-center justify-center text-2xl text-${step.color}-400 group-hover:bg-${step.color}-500 group-hover:text-white transition-all`}>
+                      {step.icon}
+                   </div>
+                   <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{step.phase}</span>
                 </div>
-              ))}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-6 pt-12">
-              <div className="aspect-[4/5] rounded-[2.5rem] bg-slate-100 overflow-hidden shadow-xl">
-                <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop" className="w-full h-full object-cover" />
-              </div>
-              <div className="aspect-square rounded-[2.5rem] bg-indigo-600 overflow-hidden shadow-xl flex items-center justify-center p-8 text-white">
-                <p className="text-xl font-black text-center leading-tight">Innovation is at our Core</p>
+                <div className="space-y-2">
+                  <h4 className="text-xl font-black text-white tracking-tight">{step.title}</h4>
+                  <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">{step.years}</p>
+                  <p className="text-xs text-slate-500 font-medium leading-relaxed">{step.desc}</p>
+                </div>
               </div>
             </div>
-            <div className="space-y-6">
-              <div className="aspect-square rounded-[2.5rem] bg-slate-900 overflow-hidden shadow-xl flex flex-col items-center justify-center p-8 text-white">
-                <p className="text-5xl font-black mb-2">12+</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Modern Labs</p>
+          ))}
+        </div>
+      </section>
+
+      {/* Beyond the Classroom */}
+      <section className="py-24 bg-slate-950/50 border-y border-white/5 relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="relative order-2 lg:order-1">
+              <div className="absolute -inset-10 bg-indigo-500/10 blur-[80px] rounded-full" />
+              <div className="relative aspect-[4/3] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
+                 <img src="/images/redesign/academics_lab.png" alt="Science Lab" className="w-full h-full object-cover" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent" />
               </div>
-              <div className="aspect-[4/5] rounded-[2.5rem] bg-slate-100 overflow-hidden shadow-xl">
-                <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover" />
+              <div className="absolute -bottom-6 -left-6 p-6 bg-slate-900 border border-white/5 rounded-3xl shadow-2xl">
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center"><MdScience size={20} /></div>
+                    <p className="text-xs font-black uppercase tracking-widest">Innovation Hub</p>
+                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-10 order-1 lg:order-2">
+              <div className="space-y-4">
+                <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">The Infrastructure</h5>
+                <h2 className="text-4xl font-black text-white tracking-tight leading-tight">Beyond the Textbook</h2>
+                <p className="text-slate-400 font-medium leading-relaxed">
+                  Learning at Gyansthali isn't confined to four walls. We provide an ecosystem where students apply theoretical knowledge in world-class facilities.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { title: "Smart Labs", desc: "Equipped with the latest STEM kits and AI tools.", icon: <MdComputer /> },
+                  { title: "Digital Library", desc: "Access to 10k+ e-books and international journals.", icon: <MdMenuBook /> },
+                  { title: "Creative Studios", desc: "Dedicated spaces for performing and visual arts.", icon: <MdBrush /> },
+                  { title: "Linguistic Lab", desc: "Enhancing communication skills through digital aid.", icon: <MdLanguage /> },
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-4 p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                    <div className="text-indigo-400 text-xl pt-1">{item.icon}</div>
+                    <div className="space-y-1">
+                      <h5 className="font-black text-xs uppercase tracking-wider">{item.title}</h5>
+                      <p className="text-[10px] text-slate-500 font-medium leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div className="bg-slate-950 rounded-[4rem] p-16 text-white text-center">
-          <h2 className="text-3xl font-black mb-16 tracking-tight">Specialized Departments</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+      {/* Pedagogical Excellence */}
+      <section className="py-24 max-w-7xl mx-auto px-6">
+        <div className="bg-indigo-600 rounded-[4rem] p-12 md:p-20 relative overflow-hidden text-center md:text-left">
+           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+              <div className="max-w-xl space-y-6">
+                 <h2 className="text-4xl font-black text-white tracking-tight leading-tight">Methodology That Works</h2>
+                 <p className="text-indigo-100 font-medium leading-relaxed">
+                   Our 'Inquiry-Based Learning' model encourages students to ask 'Why' before 'What'. This fosters a deep-rooted curiosity that stays with them long after they leave our campus.
+                 </p>
+                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                    {["Practical focus", "AI Integration", "Value Based", "Global Standards"].map((tag, i) => (
+                      <span key={i} className="px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white">{tag}</span>
+                    ))}
+                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 shrink-0">
+                 <div className="p-8 rounded-[2.5rem] bg-white/10 backdrop-blur-xl border border-white/10 text-center">
+                    <p className="text-3xl font-black text-white">1:25</p>
+                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-indigo-200">Teacher-Student Ratio</p>
+                 </div>
+                 <div className="p-8 rounded-[2.5rem] bg-white/10 backdrop-blur-xl border border-white/10 text-center">
+                    <p className="text-3xl font-black text-white">100%</p>
+                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-indigo-200">Digital Literacy</p>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* Specialized Departments */}
+      <section className="py-24 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16 space-y-4">
+             <h2 className="text-3xl font-black text-white tracking-tight">Specialized Departments</h2>
+             <p className="text-slate-500 text-sm font-medium">Expertise across diverse academic and creative domains.</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              "STEM Innovation",
-              "Linguistic Arts",
-              "Performing Arts",
-              "Athletic Science",
-              "Visual Arts",
-              "Global Studies",
-              "Digital Literacy",
-              "Value Education"
+              { name: "STEM Innovation", icon: <MdComputer /> },
+              { name: "Linguistic Arts", icon: <MdLanguage /> },
+              { name: "Performing Arts", icon: <MdBrush /> },
+              { name: "Athletic Science", icon: <MdNaturePeople /> },
+              { name: "Visual Arts", icon: <MdBrush /> },
+              { name: "Global Studies", icon: <MdLibraryBooks /> },
+              { name: "Digital Literacy", icon: <MdComputer /> },
+              { name: "Value Education", icon: <MdMenuBook /> }
             ].map((dept, i) => (
-              <div key={i} className="space-y-3">
-                <div className="w-12 h-1 bg-indigo-500 mx-auto rounded-full" />
-                <p className="font-bold text-white/60 text-sm tracking-wide">{dept}</p>
+              <div key={i} className="group p-6 rounded-3xl bg-white/5 border border-white/5 hover:border-indigo-500/50 transition-all text-center space-y-4">
+                <div className="text-indigo-400 text-2xl mx-auto group-hover:scale-125 transition-transform">{dept.icon}</div>
+                <p className="font-bold text-slate-400 text-[10px] uppercase tracking-widest group-hover:text-white transition-colors">{dept.name}</p>
               </div>
             ))}
           </div>
@@ -77,4 +195,6 @@ export default function SchoolAcademics() {
       </section>
     </div>
   );
-}
+};
+
+export default SchoolAcademics;

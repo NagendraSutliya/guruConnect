@@ -123,28 +123,37 @@ END([System Stable & Scalable])
 
 
 
-🧭 PHASE-WISE BREAKDOWN (FOR FUTURE YOU)
-🔹 Phase 1 – Foundation
-    1.Auth (Admin / Teacher / Student)
-    2.Teacher & Student management
-    3.Class, section, subject setup
-🔹 Phase 2 – Academic Core
-    1.Study materials
-    2.Attendance
-    3.Test creation
-    4.Marks upload
-🔹 Phase 3 – Student Experience
-    1.Test attempts
-    2.Marks visibility
-    3.Attendance visibility
-    4.Worksheets
-🔹 Phase 4 – Accounts & Control
-    1.Fees
-    2.Notifications
-    3.Admin analytics
-    4.Reports
-🔹 Phase 5 – Public Website & CMS
-    1.Separate Public Website Architecture
-    2.Hero Banner CMS
-    3.Dynamic Pages (About, Academics, Admissions)
-    4.Gallery & News Updates
+🧭 PHASE-WISE BREAKDOWN
+🔹 Phase 1 – Foundation (Complete)
+    1. Auth (Admin / Teacher / Student)
+    2. Teacher & Student management
+    3. Class, section, subject setup
+🔹 Phase 2 – Academic Core (Complete)
+    1. Study materials
+    2. Attendance
+    3. Test creation
+    4. Marks upload
+🔹 Phase 3 – Student Experience (In Progress)
+    1. Test attempts
+    2. Marks visibility
+    3. Attendance visibility
+    4. Worksheets
+🔹 Phase 4 – Accounts & Control (In Progress)
+    1. Fees
+    2. Notifications
+    3. Admin analytics
+    4. Reports
+🔹 Phase 5 – Public Website & CMS (Decoupled Architecture)
+    1. Separate `school-website` Project (React + Tailwind)
+    2. Integrated CMS Portal inside `school-website/src/admin`
+    3. Hero, About, Admissions, and Academics CMS Editors
+    4. Dynamic Content Sync between CMS and Public Pages
+
+---
+
+## 🏗 Project Structure
+
+- **/client**: The Institute Management System (IMS) Dashboard. Handles daily operations, staff, and students.
+- **/school-website**: The public-facing school website with its own internal CMS Portal (`/cms-admin`).
+- **/server**: Unified Node.js/Express backend serving both the IMS and the Website CMS.
+- **/common**: (Planned) Shared types and utilities across projects.

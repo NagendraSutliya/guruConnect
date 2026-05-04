@@ -4,7 +4,7 @@ import { FiTrash2, FiEdit, FiChevronDown, FiSearch, FiX, FiPlus, FiLayers } from
 import { useToast } from "../../../context/ToastContext";
 import type { Section } from "../../../types/admin/section";
 import type { Class } from "../../../types/admin/class";
-import UpdateSectionModal from "../../modals/admin/UpdateSectionModal";
+import UpdateSectionModal from "../../../components/admin/modals/UpdateSectionModal";
 
 const SectionsPanel = () => {
   const { showToast } = useToast();

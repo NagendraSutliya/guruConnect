@@ -156,17 +156,6 @@ const AdminLayout = () => {
     },
     { name: "Public Links", icon: <MdLink size={18} />, path: "/admin/link" },
     {
-      name: "Website CMS",
-      icon: <MdWeb size={18} />,
-      children: [
-        { name: "Hero Banner", path: "/admin/cms/hero" },
-        { name: "News & Events", path: "/admin/cms/news" },
-        { name: "Photo Gallery", path: "/admin/cms/gallery" },
-        { name: "About Content", path: "/admin/cms/about" },
-        { name: "Live Preview", path: "http://localhost:5174", external: true }, // Link to the public site
-      ],
-    },
-    {
       name: "System Settings",
       icon: <MdSettings size={18} />,
       children: [

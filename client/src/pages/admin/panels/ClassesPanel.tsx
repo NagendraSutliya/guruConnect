@@ -5,7 +5,7 @@ import { useToast } from "../../../context/ToastContext";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import type { AcademicYear } from "../../../types/admin/academicYear";
-import UpdateClassModal from "../../modals/admin/UpdateClassModal";
+import UpdateClassModal from "../../../components/admin/modals/UpdateClassModal";
 
 const ClassesPanel = () => {
   const { showToast } = useToast();
