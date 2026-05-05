@@ -14,14 +14,14 @@ import {
 const SchoolAchievements = () => {
   const [fetching, setFetching] = useState(true);
   const [achievementsData, setAchievementsData] = useState({
-    title: "Our Hall of Fame",
-    subtitle: "Celebrating the exceptional milestones of our students and the institution's commitment to excellence.",
+    bannerTitle: "Our Hall of Fame",
+    bannerSubtitle: "Celebrating the exceptional milestones of our students and the institution's commitment to excellence.",
     bannerImage: "/images/redesign/achievements_banner.png",
     stats: [
-      { label: "Board Results", val: "100%", sub: "Passing Rate", icon: "MdTrendingUp" },
-      { label: "State Toppers", val: "25+", sub: "In Last 5 Years", icon: "MdEmojiEvents" },
-      { label: "Sports Trophies", val: "150+", sub: "Inter-School Wins", icon: "MdStars" },
-      { label: "Global Alumni", val: "2.5k+", sub: "In Elite Universities", icon: "MdGroups" },
+      { label: "Board Results", value: "100%", sub: "Passing Rate", icon: "MdTrendingUp" },
+      { label: "State Toppers", value: "25+", sub: "In Last 5 Years", icon: "MdEmojiEvents" },
+      { label: "Sports Trophies", value: "150+", sub: "Inter-School Wins", icon: "MdStars" },
+      { label: "Global Alumni", value: "2.5k+", sub: "In Elite Universities", icon: "MdGroups" },
     ],
     toppers: [
       { name: "Rahul Singh", score: "98.8%", class: "Class XII - Science", rank: "District Rank 1" },
@@ -83,8 +83,8 @@ const SchoolAchievements = () => {
   return (
     <div className="bg-[#020617] text-white overflow-hidden">
       <SchoolPageHeader 
-        title={achievementsData.title} 
-        subtitle={achievementsData.subtitle}
+        title={achievementsData.bannerTitle} 
+        subtitle={achievementsData.bannerSubtitle}
         bgImage={achievementsData.bannerImage || "/images/redesign/achievements_banner.png"}
       />
 
@@ -93,12 +93,12 @@ const SchoolAchievements = () => {
         <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {achievementsData.stats?.map((stat, i) => (
-              <div key={i} className="p-8 rounded-[2.5rem] bg-white/5 border border-white/5 text-center group hover:bg-white/[0.08] transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 text-indigo-400 flex items-center justify-center text-2xl mx-auto mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+            {(achievementsData.stats || []).map((stat, i) => (
+              <div key={i} className="p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/5 text-center group hover:bg-white/[0.08] hover:border-indigo-500/30 transition-all duration-500 animate-fadeIn" style={{ animationDelay: `${i * 100}ms` }}>
+                <div className="w-14 h-14 rounded-2xl bg-indigo-600/10 text-indigo-400 flex items-center justify-center text-3xl mx-auto mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 shadow-xl">
                   {getIcon(stat.icon)}
                 </div>
-                <h3 className="text-4xl font-black text-white mb-2 tracking-tighter">{stat.val}</h3>
+                <h3 className="text-4xl font-black text-white mb-2 tracking-tighter group-hover:text-indigo-400 transition-colors">{stat.value}</h3>
                 <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">{stat.label}</p>
                 <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">{stat.sub}</p>
               </div>
@@ -115,20 +115,25 @@ const SchoolAchievements = () => {
              <h2 className="text-4xl font-black text-white tracking-tight">Board Exam Toppers 2026</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {achievementsData.toppers?.map((topper, i) => (
-              <div key={i} className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition-all" />
-                <div className="relative p-10 rounded-[3rem] bg-slate-900 border border-white/5 space-y-6">
-                  <div className="w-24 h-24 rounded-[2rem] bg-white/5 border border-white/5 mx-auto flex items-center justify-center overflow-hidden">
-                     <div className="text-4xl font-black text-indigo-500">{topper.name.charAt(0)}</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            {(achievementsData.toppers || []).map((topper, i) => (
+              <div key={i} className="relative group animate-fadeIn" style={{ animationDelay: `${i * 150}ms` }}>
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[3rem] blur opacity-10 group-hover:opacity-30 transition-all duration-700" />
+                <div className="relative p-10 rounded-[3.5rem] bg-white/[0.03] border border-white/10 group-hover:border-indigo-500/30 transition-all duration-500 space-y-8 text-center overflow-hidden">
+                  <div className="absolute top-0 right-0 p-8 text-indigo-500/5 pointer-events-none group-hover:text-indigo-500/10 transition-colors">
+                    <MdStars size={80} />
                   </div>
-                  <div className="text-center space-y-2">
-                    <h4 className="text-xl font-black text-white tracking-tight">{topper.name}</h4>
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{topper.class}</p>
-                    <div className="pt-4 border-t border-white/5">
-                       <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{topper.score}</p>
-                       <p className="text-[8px] font-black text-indigo-500 uppercase tracking-[0.2em]">{topper.rank}</p>
+                  
+                  <div className="w-28 h-28 rounded-[2.5rem] bg-indigo-600/10 border-2 border-indigo-600/20 mx-auto flex items-center justify-center overflow-hidden group-hover:scale-110 group-hover:border-indigo-500 transition-all duration-700 shadow-2xl relative z-10">
+                     <div className="text-5xl font-black text-indigo-400 group-hover:text-white transition-colors">{topper.name.charAt(0)}</div>
+                  </div>
+                  
+                  <div className="space-y-3 relative z-10">
+                    <h4 className="text-2xl font-black text-white tracking-tight">{topper.name}</h4>
+                    <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em]">{topper.class}</p>
+                    <div className="pt-6 mt-6 border-t border-white/5 space-y-1">
+                       <p className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{topper.score}</p>
+                       <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em]">{topper.rank}</p>
                     </div>
                   </div>
                 </div>

@@ -27,7 +27,11 @@ const SchoolAbout = () => {
       quote: "At Gyansthali, we don't just teach subjects; we cultivate curiosity. Our mission is to prepare students not just for exams, but for a life of purpose, leadership, and continuous growth in an ever-changing world."
     },
     bannerImage: "/images/redesign/about_banner.png",
-    directorImage: "/images/redesign/director.png"
+    directorImage: "/images/redesign/director.png",
+    stats: [
+      { label: "Global Alumni", value: "2,500+" },
+      { label: "Expert Educators", value: "150+" }
+    ]
   });
 
   useEffect(() => {
@@ -93,14 +97,12 @@ const SchoolAbout = () => {
                 {aboutData.description}
               </p>
               <div className="grid grid-cols-2 gap-8">
-                <div>
-                  <h4 className="text-3xl font-black text-white mb-1">2,500+</h4>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Global Alumni</p>
-                </div>
-                <div>
-                  <h4 className="text-3xl font-black text-white mb-1">150+</h4>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Expert Educators</p>
-                </div>
+                {(aboutData.stats || []).map((stat, i) => (
+                  <div key={i}>
+                    <h4 className="text-3xl font-black text-white mb-1">{stat.value}</h4>
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="relative group">

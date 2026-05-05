@@ -1,9 +1,10 @@
 import React from "react";
 import { FiX, FiUser, FiMail, FiLock, FiPhone, FiHash, FiBriefcase, FiBook, FiCalendar } from "react-icons/fi";
+import type { TeacherFormData } from "../../../types/admin/teacher";
 
 interface AddTeacherModalProps {
-  form: any;
-  setForm: (form: any) => void;
+  form: TeacherFormData;
+  setForm: (form: TeacherFormData) => void;
   onSave: () => void;
   onClose: () => void;
   loading?: boolean;
@@ -120,59 +121,129 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
               </div>
             </div>
 
-            {/* Teacher ID */}
+            {/* Employee ID */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Teacher ID</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Employee ID <span className="text-rose-500">*</span></label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <FiHash size={14} />
                 </div>
                 <input
                   type="text"
-                  placeholder="TCH-001"
-                  value={form.teacherId || ""}
-                  onChange={(e) => setForm({ ...form, teacherId: e.target.value })}
+                  placeholder="EMP-001"
+                  value={form.employeeId || ""}
+                  onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
                 />
               </div>
             </div>
 
-            {/* Department */}
+            {/* Designation */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Department</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Designation</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <FiBriefcase size={14} />
                 </div>
                 <input
                   type="text"
-                  placeholder="Science"
-                  value={form.department || ""}
-                  onChange={(e) => setForm({ ...form, department: e.target.value })}
+                  placeholder="PGT Mathematics"
+                  value={form.designation || ""}
+                  onChange={(e) => setForm({ ...form, designation: e.target.value })}
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
                 />
               </div>
             </div>
 
-            {/* Subjects */}
-            <div className="space-y-1 md:col-span-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Subjects (Comma Separated)</label>
+            {/* Qualification */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Qualification</label>
+              <input
+                type="text"
+                placeholder="M.Sc, B.Ed"
+                value={form.qualification || ""}
+                onChange={(e) => setForm({ ...form, qualification: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
+            </div>
+
+            {/* Specialization */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Specialization (Comma Separated)</label>
+              <input
+                type="text"
+                placeholder="Maths, Physics"
+                value={form.specialization || ""}
+                onChange={(e) => setForm({ ...form, specialization: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
+            </div>
+
+            {/* Emergency Phone */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Emergency Contact</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <FiBook size={14} />
+                  <FiPhone size={14} />
                 </div>
                 <input
                   type="text"
-                  placeholder="Physics, Chemistry"
-                  value={form.subjects || ""}
-                  onChange={(e) => setForm({ ...form, subjects: e.target.value })}
+                  placeholder="Emergency Phone"
+                  value={form.emergencyPhone || ""}
+                  onChange={(e) => setForm({ ...form, emergencyPhone: e.target.value })}
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
                 />
               </div>
             </div>
 
+            {/* PAN Number */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">PAN Number</label>
+              <input
+                type="text"
+                placeholder="ABCDE1234F"
+                value={form.panNo || ""}
+                onChange={(e) => setForm({ ...form, panNo: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
+            </div>
+
+            {/* Banking Info */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Bank Account No</label>
+              <input
+                type="text"
+                placeholder="Account Number"
+                value={form.bankAccountNo || ""}
+                onChange={(e) => setForm({ ...form, bankAccountNo: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">IFSC Code</label>
+              <input
+                type="text"
+                placeholder="IFSC Code"
+                value={form.ifscCode || ""}
+                onChange={(e) => setForm({ ...form, ifscCode: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Basic Salary</label>
+              <input
+                type="number"
+                placeholder="e.g. 45000"
+                value={form.basicSalary || ""}
+                onChange={(e) => setForm({ ...form, basicSalary: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
+            </div>
+
             {/* Joining Date */}
-            <div className="space-y-1 md:col-span-2">
+            <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Joining Date</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">

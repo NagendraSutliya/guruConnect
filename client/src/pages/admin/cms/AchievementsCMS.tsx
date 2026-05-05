@@ -5,28 +5,36 @@ import {
   MdTextFields, 
   MdStars,
   MdPlayArrow,
-  MdTrendingUp
+  MdTrendingUp,
+  MdEmojiEvents
 } from "react-icons/md";
 import api from "../../../api/axiosInstance";
+import type { AchievementData } from "../../../types/admin/cms";
 
 export default function AchievementsCMS() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
-  const [achievementsData, setAchievementsData] = useState({
-    bannerTitle: "",
-    bannerSubtitle: "",
+  const [achievementsData, setAchievementsData] = useState<AchievementData>({
+    bannerTitle: "Our Hall of Fame",
+    bannerSubtitle: "Celebrating the exceptional milestones of our students and the institution's commitment to excellence.",
     stats: [
-      { label: "", value: "", sub: "" },
-      { label: "", value: "", sub: "" },
-      { label: "", value: "", sub: "" },
-      { label: "", value: "", sub: "" }
+      { label: "Board Results", value: "100%", sub: "Passing Rate" },
+      { label: "State Toppers", value: "25+", sub: "In Last 5 Years" },
+      { label: "Sports Trophies", value: "150+", sub: "Inter-School Wins" },
+      { label: "Global Alumni", value: "2.5k+", sub: "In Elite Universities" }
     ],
     toppers: [
-      { name: "", score: "", class: "", rank: "" },
-      { name: "", score: "", class: "", rank: "" },
-      { name: "", score: "", class: "", rank: "" }
-    ]
+      { name: "Rahul Singh", score: "98.8%", class: "Class XII - Science", rank: "District Rank 1" },
+      { name: "Sanya Malhotra", score: "98.2%", class: "Class XII - Commerce", rank: "District Rank 3" },
+      { name: "Aryan Verma", score: "97.5%", class: "Class X", rank: "City Rank 1" }
+    ],
+    awards: [
+      { award: "Best Innovation in STEM", body: "National Edu Council 2025" },
+      { award: "Cleanest Campus Award", body: "City Municipal Board 2024" },
+      { award: "Excellence in Digital Learning", body: "Global Tech Summit 2026" },
+    ],
+    bannerImage: "/images/redesign/achievements_banner.png"
   });
 
   useEffect(() => {
@@ -34,8 +42,26 @@ export default function AchievementsCMS() {
       try {
         setFetching(true);
         const response = await api.get('/cms/achievements');
-        if (response.data.success) {
-          setAchievementsData(response.data.data);
+        if (response.data.success && response.data.data) {
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          
+          Object.keys(incoming).forEach(key => {
+            const val = incoming[key];
+            if (Array.isArray(val)) {
+              const cleanArray = val.filter(item => {
+                if (typeof item === 'object') {
+                  return Object.values(item).some(v => v !== "" && v !== null);
+                }
+                return item !== "" && item !== null;
+              });
+              if (cleanArray.length > 0) cleanData[key] = cleanArray;
+            } else if (val && val !== "") {
+              cleanData[key] = val;
+            }
+          });
+          
+          setAchievementsData(prev => ({ ...prev, ...cleanData }));
         }
       } catch (error) {
         console.error("Error fetching achievements data:", error);
@@ -126,7 +152,7 @@ export default function AchievementsCMS() {
             </div>
 
             <div className="grid grid-cols-2 gap-6">
-              {achievementsData.stats.map((stat, index) => (
+              {(achievementsData?.stats || []).map((stat, index) => (
                 <div key={index} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
                   <input 
                     value={stat.value}
@@ -158,6 +184,106 @@ export default function AchievementsCMS() {
                       }}
                       placeholder="Subtext"
                       className="w-full bg-transparent border-none outline-none font-medium text-slate-500 text-[9px] uppercase tracking-widest"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Academic Toppers */}
+          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
+            <div className="flex items-center gap-3 text-slate-800 font-bold uppercase tracking-widest text-[10px]">
+              <MdStars size={16} className="text-indigo-500" />
+              Academic Toppers (Hall of Fame)
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {(achievementsData.toppers || []).map((topper, index) => (
+                <div key={index} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
+                  <div className="w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-xl font-black text-indigo-500 mx-auto">
+                    {topper.name?.charAt(0)}
+                  </div>
+                  <div className="space-y-3">
+                    <input 
+                      value={topper.name}
+                      onChange={(e) => {
+                        const newToppers = [...achievementsData.toppers];
+                        newToppers[index].name = e.target.value;
+                        setAchievementsData({...achievementsData, toppers: newToppers});
+                      }}
+                      placeholder="Student Name"
+                      className="w-full bg-transparent border-none outline-none font-black text-slate-800 text-sm text-center"
+                    />
+                    <input 
+                      value={topper.score}
+                      onChange={(e) => {
+                        const newToppers = [...achievementsData.toppers];
+                        newToppers[index].score = e.target.value;
+                        setAchievementsData({...achievementsData, toppers: newToppers});
+                      }}
+                      placeholder="Score (e.g. 98%)"
+                      className="w-full bg-transparent border-none outline-none font-black text-indigo-600 text-lg text-center"
+                    />
+                    <div className="space-y-1">
+                      <input 
+                        value={topper.class}
+                        onChange={(e) => {
+                          const newToppers = [...achievementsData.toppers];
+                          newToppers[index].class = e.target.value;
+                          setAchievementsData({...achievementsData, toppers: newToppers});
+                        }}
+                        placeholder="Class/Stream"
+                        className="w-full bg-transparent border-none outline-none font-bold text-slate-500 text-[9px] uppercase tracking-widest text-center"
+                      />
+                      <input 
+                        value={topper.rank}
+                        onChange={(e) => {
+                          const newToppers = [...achievementsData.toppers];
+                          newToppers[index].rank = e.target.value;
+                          setAchievementsData({...achievementsData, toppers: newToppers});
+                        }}
+                        placeholder="Rank info"
+                        className="w-full bg-transparent border-none outline-none font-black text-indigo-400 text-[8px] uppercase tracking-widest text-center"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Institutional Awards */}
+          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
+            <div className="flex items-center gap-3 text-slate-800 font-bold uppercase tracking-widest text-[10px]">
+              <MdEmojiEvents size={16} className="text-indigo-500" />
+              Institutional Recognition
+            </div>
+
+            <div className="space-y-4">
+              {(achievementsData.awards || []).map((award, index) => (
+                <div key={index} className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 group">
+                  <MdEmojiEvents className="text-indigo-500 text-2xl shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <input 
+                      value={award.award}
+                      onChange={(e) => {
+                        const newAwards = [...achievementsData.awards];
+                        newAwards[index].award = e.target.value;
+                        setAchievementsData({...achievementsData, awards: newAwards});
+                      }}
+                      placeholder="Award Name"
+                      className="w-full bg-transparent border-none outline-none font-black text-slate-800 text-xs"
+                    />
+                    <input 
+                      value={award.body}
+                      onChange={(e) => {
+                        const newAwards = [...achievementsData.awards];
+                        newAwards[index].body = e.target.value;
+                        setAchievementsData({...achievementsData, awards: newAwards});
+                      }}
+                      placeholder="Awarding Body/Year"
+                      className="w-full bg-transparent border-none outline-none font-bold text-slate-500 text-[10px]"
                     />
                   </div>
                 </div>

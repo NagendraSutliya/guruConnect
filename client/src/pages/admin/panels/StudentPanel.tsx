@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { useToast } from "../../../context/ToastContext";
+import type { Student, StudentFormData } from "../../../types/admin/student";
 import {
   FiEdit,
   FiEye,
@@ -20,22 +21,32 @@ import ViewStudentModal from "../../../components/admin/modals/ViewStudentModal"
 
 const StudentPanel = () => {
   const { showToast } = useToast();
-  const [students, setStudents] = useState<any[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingStudent, setEditingStudent] = useState<any | null>(null);
-  const [form, setForm] = useState({
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [form, setForm] = useState<StudentFormData>({
     name: "",
     email: "",
     password: "",
     rollNo: "",
+    admissionNo: "",
+    enrollmentNo: "",
     classId: "",
     sectionId: "",
-    phone: "",
     parentName: "",
+    parentPhone: "",
+    phone: "",
     dob: "",
     admissionDate: "",
+    gender: "",
+    category: "",
+    religion: "",
+    nationality: "Indian",
+    bloodGroup: "",
+    previousSchool: "",
+    previousClass: "",
     address: "",
   });
   const [loading, setLoading] = useState(false);
@@ -144,12 +155,21 @@ const StudentPanel = () => {
         email: "",
         password: "",
         rollNo: "",
+        admissionNo: "",
+        enrollmentNo: "",
         classId: "",
         sectionId: "",
-        phone: "",
         parentName: "",
+        parentPhone: "",
         dob: "",
         admissionDate: "",
+        gender: "",
+        category: "",
+        religion: "",
+        nationality: "Indian",
+        bloodGroup: "",
+        previousSchool: "",
+        previousClass: "",
         address: "",
       });
       setEditingStudent(null);
@@ -163,7 +183,7 @@ const StudentPanel = () => {
   };
 
   // Delete student
-  const deleteStudent = async (student: any) => {
+  const deleteStudent = async (student: Student) => {
     if (!confirm(`Delete ${student.name}? This cannot be undone.`)) return;
 
     try {
@@ -179,7 +199,7 @@ const StudentPanel = () => {
   };
 
   // Toggle active/inactive
-  const toggleStudent = async (student: any) => {
+  const toggleStudent = async (student: Student) => {
     try {
       setActionLoading(student._id);
 
@@ -199,24 +219,34 @@ const StudentPanel = () => {
     }
   };
 
-  const viewStudent = (student: any) => {
+  const viewStudent = (student: Student) => {
     setSelectedStudent(student);
     setShowViewModal(true);
   };
 
-  const editStudent = (student: any) => {
+  const editStudent = (student: Student) => {
     setEditingStudent(student);
     setForm({
       name: student.name,
       email: student.email || "",
       password: "",
       rollNo: student.rollNo || "",
+      admissionNo: student.admissionNo || "",
+      enrollmentNo: student.enrollmentNo || "",
       classId: student.classId?._id || student.classId || "",
       sectionId: student.sectionId?._id || student.sectionId || "",
-      phone: student.phone || "",
       parentName: student.parentName || "",
+      parentPhone: student.parentPhone || "",
+      phone: student.phone || "",
       dob: student.dob ? new Date(student.dob).toISOString().split('T')[0] : "",
       admissionDate: student.admissionDate ? new Date(student.admissionDate).toISOString().split('T')[0] : "",
+      gender: student.gender || "",
+      category: student.category || "",
+      religion: student.religion || "",
+      nationality: student.nationality || "Indian",
+      bloodGroup: student.bloodGroup || "",
+      previousSchool: student.previousSchool || "",
+      previousClass: student.previousClass || "",
       address: student.address || "",
     });
     setShowForm(true);
@@ -228,12 +258,21 @@ const StudentPanel = () => {
       email: "",
       password: "",
       rollNo: "",
+      admissionNo: "",
+      enrollmentNo: "",
       classId: "",
       sectionId: "",
-      phone: "",
       parentName: "",
+      parentPhone: "",
       dob: "",
       admissionDate: "",
+      gender: "",
+      category: "",
+      religion: "",
+      nationality: "Indian",
+      bloodGroup: "",
+      previousSchool: "",
+      previousClass: "",
       address: "",
     });
     setEditingStudent(null);

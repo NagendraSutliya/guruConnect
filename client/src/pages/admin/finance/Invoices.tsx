@@ -41,7 +41,8 @@ export default function Invoices() {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    const s = status?.toLowerCase() || 'paid';
+    switch (s) {
       case 'paid': return 'text-emerald-500 bg-emerald-50';
       case 'pending': return 'text-orange-500 bg-orange-50';
       case 'cancelled': return 'text-red-500 bg-red-50';
@@ -120,41 +121,55 @@ export default function Invoices() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {invoices.map((inv) => (
-                <tr key={inv._id} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{inv.invoiceNo}</span>
-                    <p className="text-[10px] text-slate-400 font-medium">{inv.date}</p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-bold text-slate-700">{inv.studentName}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-black text-slate-900">₹{inv.amount}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-tighter">
-                      {inv.method}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${getStatusColor(inv.status)}`}>
-                      <MdFiberManualRecord size={8} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">{inv.status}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
-                        <MdPrint size={18} />
-                      </button>
-                      <button className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
-                        <MdDownload size={18} />
-                      </button>
-                    </div>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+                    Synchronizing Transactions...
                   </td>
                 </tr>
-              ))}
+              ) : invoices.length > 0 ? (
+                invoices.map((inv) => (
+                  <tr key={inv._id} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{inv.invoiceNo}</span>
+                      <p className="text-[10px] text-slate-400 font-medium">{new Date(inv.date).toLocaleDateString()}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-bold text-slate-700">{inv.studentId?.name || 'Unknown Student'}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-black text-slate-900">₹{inv.amount}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-tighter">
+                        {inv.method}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${getStatusColor(inv.status)}`}>
+                        <MdFiberManualRecord size={8} />
+                        <span className="text-[10px] font-black uppercase tracking-widest">{inv.status}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
+                          <MdPrint size={18} />
+                        </button>
+                        <button className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                          <MdDownload size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="px-6 py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+                    No transactions found in this cycle.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

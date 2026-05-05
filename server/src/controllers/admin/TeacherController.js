@@ -16,13 +16,30 @@ exports.getTeachers = async (req, res) => {
 
 exports.createTeacher = async (req, res) => {
   try {
-    const hashed = await bcrypt.hash(req.body.password, 10);
+    const { 
+      name, email, password, 
+      employeeId, designation, qualification, phone, address, specialization,
+      emergencyPhone, panNo, bankAccountNo, ifscCode, basicSalary
+    } = req.body;
+
+    const hashed = await bcrypt.hash(password, 10);
 
     const teacher = await Teacher.create({
-      name: req.body.name,
-      email: req.body.email,
+      name,
+      email,
       password: hashed,
       instituteId: req.user.id,
+      employeeId,
+      designation,
+      qualification,
+      phone,
+      address,
+      specialization,
+      emergencyPhone,
+      panNo,
+      bankAccountNo,
+      ifscCode,
+      basicSalary,
       role: "teacher",
     });
 
@@ -34,9 +51,16 @@ exports.createTeacher = async (req, res) => {
 
 exports.updateTeacher = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { 
+      name, email, password,
+      employeeId, designation, qualification, phone, address, specialization,
+      emergencyPhone, panNo, bankAccountNo, ifscCode, basicSalary
+    } = req.body;
 
-    const updateData = { name, email };
+    const updateData = { 
+      name, email, employeeId, designation, qualification, phone, address, specialization,
+      emergencyPhone, panNo, bankAccountNo, ifscCode, basicSalary
+    };
 
     if (password) {
       const hashed = await bcrypt.hash(password, 10);

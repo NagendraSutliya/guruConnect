@@ -29,12 +29,12 @@ const Landing = () => {
     setCheckingSession(false);
   }, []);
 
-  const [heroData, setHeroData] = useState({
+  const [heroData] = useState({
     title: "Empowering Tomorrow's Leaders",
     subtitle: "At Gyansthali, we blend traditional values with cutting-edge education technology.",
     button1: "Apply Online",
     button2: "Take a Virtual Tour",
-    announcement: "Now Enrolling for 2024-25"
+    announcement: "Now Enrolling for 2026-27"
   });
 
   const getDashboardLink = () => {
@@ -191,7 +191,7 @@ const Landing = () => {
       </nav>
 
       {/* ================= HERO SECTION ================= */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-24 overflow-hidden">
+      <section className="relative pt-10 pb-10 md:pt-12 md:pb-8 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[120px] opacity-60" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-[120px] opacity-60" />

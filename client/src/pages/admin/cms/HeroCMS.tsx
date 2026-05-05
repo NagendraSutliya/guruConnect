@@ -9,12 +9,13 @@ import {
   MdPlayArrow
 } from "react-icons/md";
 import api from "../../../api/axiosInstance";
+import type { HeroData } from "../../../types/admin/cms";
 
 export default function HeroCMS() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
-  const [heroData, setHeroData] = useState({
+  const [heroData, setHeroData] = useState<HeroData>({
     title: "Empowering Minds, Shaping Tomorrow's Leaders",
     subtitle: "At Gyansthali Edu, we blend traditional values with cutting-edge digital innovation to provide a holistic learning experience that prepares students for the challenges of a global future.",
     button1: "Apply Online",
@@ -29,7 +30,14 @@ export default function HeroCMS() {
         setFetching(true);
         const response = await api.get('/cms/hero');
         if (response.data.success && response.data.data) {
-          setHeroData(prev => ({ ...prev, ...response.data.data }));
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          Object.keys(incoming).forEach(key => {
+            if (incoming[key] && incoming[key] !== "") {
+              cleanData[key] = incoming[key];
+            }
+          });
+          setHeroData(prev => ({ ...prev, ...cleanData }));
         }
       } catch (error) {
         console.error("Error fetching hero data:", error);

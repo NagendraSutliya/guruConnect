@@ -13,9 +13,9 @@ import { Link } from "react-router-dom";
 
 export default function CMSDashboard() {
   const [stats] = useState({
-    totalSections: 6,
-    lastUpdate: "2 hours ago",
-    contentHealth: "98%",
+    totalSections: 7,
+    lastUpdate: "Just Now",
+    contentHealth: "100%",
     activePromotions: 1
   });
 
@@ -26,6 +26,7 @@ export default function CMSDashboard() {
     { name: "Academics", path: "/admin/cms/academics", status: "Published", lastEdit: "Today", completion: 100 },
     { name: "Achievements", path: "/admin/cms/achievements", status: "Published", lastEdit: "1 week ago", completion: 85 },
     { name: "Gallery", path: "/admin/cms/gallery", status: "Needs Update", lastEdit: "2 weeks ago", completion: 40 },
+    { name: "Contact", path: "/admin/cms/contact", status: "Published", lastEdit: "Today", completion: 100 },
   ];
 
   return (

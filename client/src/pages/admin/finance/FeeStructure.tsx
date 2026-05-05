@@ -14,7 +14,9 @@ import { useToast } from "../../../context/ToastContext";
 export default function FeeStructure() {
   const { showToast } = useToast();
   const [classes, setClasses] = useState<any[]>([]);
+  const [academicYears, setAcademicYears] = useState<any[]>([]);
   const [selectedClass, setSelectedClass] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
   const [feeHeads, setFeeHeads] = useState<{name: string, amount: number, type: string}[]>([
     { name: "Admission Fee", amount: 0, type: "one-time" },
     { name: "Tuition Fee", amount: 0, type: "monthly" }
@@ -26,6 +28,16 @@ export default function FeeStructure() {
     api.get("/admin/classes")
       .then(res => setClasses(res.data.data))
       .catch(err => console.error("Error fetching classes", err));
+
+    // Fetch academic years
+    api.get("/admin/academic/academic-year")
+      .then(res => {
+        const years = res.data.data || [];
+        setAcademicYears(years);
+        const active = years.find((y: any) => y.isActive);
+        if (active) setSelectedYear(active._id);
+      })
+      .catch(err => console.error("Error fetching years", err));
   }, []);
 
   const addHead = () => {
@@ -47,11 +59,16 @@ export default function FeeStructure() {
       showToast("Please select a class first", "error");
       return;
     }
+    if (!selectedYear) {
+      showToast("Please select an academic year", "error");
+      return;
+    }
     
     setLoading(true);
     try {
       await api.post("/admin/finance/fee-structure", {
         classId: selectedClass,
+        academicYearId: selectedYear,
         heads: feeHeads
       });
       showToast("Fee structure saved successfully!", "success");
@@ -115,7 +132,21 @@ export default function FeeStructure() {
               >
                 <option value="">Select a Class</option>
                 {classes.map(c => (
-                  <option key={c._id} value={c._id}>{c.className}</option>
+                  <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 ml-1">Academic Year / Session</label>
+              <select 
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 px-4 outline-none focus:border-indigo-500 focus:bg-white transition-all font-semibold text-slate-900"
+              >
+                <option value="">Select a Session</option>
+                {academicYears.map(y => (
+                  <option key={y._id} value={y._id}>{y.name} {y.isActive ? "(Active)" : ""}</option>
                 ))}
               </select>
             </div>

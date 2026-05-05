@@ -5,15 +5,17 @@ import {
   MdTextFields, 
   MdSchool,
   MdPlayArrow,
-  MdAutoGraph
+  MdAutoGraph,
+  MdWeb
 } from "react-icons/md";
 import api from "../../../api/axiosInstance";
+import type { AcademicsData } from "../../../types/admin/cms";
 
 export default function AcademicsCMS() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
-  const [academicsData, setAcademicsData] = useState({
+  const [academicsData, setAcademicsData] = useState<AcademicsData>({
     bannerTitle: "A Future-Ready Curriculum",
     bannerSubtitle: "We follow a research-backed instructional model that evolves with the student.",
     pedagogyTitle: "Our Journey of Continuous Growth",
@@ -24,8 +26,20 @@ export default function AcademicsCMS() {
       { phase: "Phase 03", title: "Analysis", years: "Grade 6 - 8", desc: "Logic and critical thinking skills.", color: "indigo" },
       { phase: "Phase 04", title: "Readiness", years: "Grade 9 - 12", desc: "Advanced science and humanities pathways.", color: "rose" }
     ],
-    infrastructureTitle: "Modern Learning Spaces",
-    infrastructureDesc: "Equipped with state-of-the-art labs and digital classrooms.",
+    infrastructureTitle: "Beyond the Textbook",
+    infrastructureDesc: "Learning at Gyansthali isn't confined to four walls. We provide an ecosystem where students apply theoretical knowledge in world-class facilities.",
+    infrastructureItems: [
+      { title: "Smart Labs", desc: "Equipped with the latest STEM kits and AI tools.", icon: "MdComputer" },
+      { title: "Digital Library", desc: "Access to 10k+ e-books and international journals.", icon: "MdMenuBook" },
+      { title: "Creative Studios", desc: "Dedicated spaces for performing and visual arts.", icon: "MdBrush" },
+      { title: "Linguistic Lab", desc: "Enhancing communication skills through digital aid.", icon: "MdLanguage" },
+    ],
+    departments: [
+      { name: "STEM Innovation", icon: "MdComputer" },
+      { name: "Linguistic Arts", icon: "MdLanguage" },
+      { name: "Performing Arts", icon: "MdBrush" },
+      { name: "Athletic Science", icon: "MdNaturePeople" }
+    ],
     bannerImage: "/images/redesign/academics_banner.png",
     labImage: "/images/redesign/academics_lab.png"
   });
@@ -36,7 +50,25 @@ export default function AcademicsCMS() {
         setFetching(true);
         const response = await api.get('/cms/academics');
         if (response.data.success && response.data.data) {
-          setAcademicsData(prev => ({ ...prev, ...response.data.data }));
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          
+          Object.keys(incoming).forEach(key => {
+            const val = incoming[key];
+            if (Array.isArray(val)) {
+              const cleanArray = val.filter(item => {
+                if (typeof item === 'object') {
+                  return Object.values(item).some(v => v !== "" && v !== null);
+                }
+                return item !== "" && item !== null;
+              });
+              if (cleanArray.length > 0) cleanData[key] = cleanArray;
+            } else if (val && val !== "") {
+              cleanData[key] = val;
+            }
+          });
+          
+          setAcademicsData(prev => ({ ...prev, ...cleanData }));
         }
       } catch (error) {
         console.error("Error fetching academics data:", error);
@@ -126,7 +158,7 @@ export default function AcademicsCMS() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {academicsData.phases.map((phase, index) => (
+              {(academicsData?.phases || []).map((phase, index) => (
                 <div key={index} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
                   <div className="flex items-center justify-between">
                     <span className={`px-3 py-1 rounded-lg bg-${phase.color}-100 text-${phase.color}-600 font-black text-[8px] uppercase tracking-widest`}>{phase.phase}</span>
@@ -161,6 +193,89 @@ export default function AcademicsCMS() {
                     placeholder="Brief outcome"
                     rows={2}
                     className="w-full bg-white border border-slate-100 rounded-xl py-3 px-4 font-bold text-slate-500 outline-none focus:border-indigo-500 transition-all text-[10px]"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Infrastructure Configuration */}
+          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
+            <div className="flex items-center gap-3 text-slate-800 font-bold uppercase tracking-widest text-[10px]">
+              <MdWeb size={16} className="text-indigo-500" />
+              Infrastructure (Beyond the Textbook)
+            </div>
+
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Headline</label>
+                  <input 
+                    value={academicsData.infrastructureTitle}
+                    onChange={(e) => setAcademicsData({...academicsData, infrastructureTitle: e.target.value})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3.5 px-6 font-black text-slate-900 outline-none focus:bg-white focus:border-indigo-500 transition-all text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Detail Description</label>
+                  <textarea 
+                    value={academicsData.infrastructureDesc}
+                    onChange={(e) => setAcademicsData({...academicsData, infrastructureDesc: e.target.value})}
+                    rows={2}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3.5 px-6 font-bold text-slate-600 outline-none focus:bg-white focus:border-indigo-500 transition-all text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {(academicsData.infrastructureItems || []).map((item, index) => (
+                  <div key={index} className="p-5 rounded-[2rem] bg-slate-50 border border-slate-100 space-y-3">
+                    <input 
+                      value={item.title}
+                      onChange={(e) => {
+                        const newItems = [...academicsData.infrastructureItems];
+                        newItems[index].title = e.target.value;
+                        setAcademicsData({...academicsData, infrastructureItems: newItems});
+                      }}
+                      placeholder="Feature Title"
+                      className="w-full bg-transparent border-none outline-none font-black text-slate-800 text-xs"
+                    />
+                    <textarea 
+                      value={item.desc}
+                      onChange={(e) => {
+                        const newItems = [...academicsData.infrastructureItems];
+                        newItems[index].desc = e.target.value;
+                        setAcademicsData({...academicsData, infrastructureItems: newItems});
+                      }}
+                      placeholder="Outcome/Detail"
+                      rows={2}
+                      className="w-full bg-white border border-slate-100 rounded-xl py-2 px-3 font-bold text-slate-500 outline-none focus:border-indigo-500 transition-all text-[10px]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Specialized Departments */}
+          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
+            <div className="flex items-center gap-3 text-slate-800 font-bold uppercase tracking-widest text-[10px]">
+              <MdSchool size={16} className="text-indigo-500" />
+              Specialized Departments
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {(academicsData.departments || []).map((dept, index) => (
+                <div key={index} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-3 text-center">
+                  <input 
+                    value={dept.name}
+                    onChange={(e) => {
+                      const newDepts = [...academicsData.departments];
+                      newDepts[index].name = e.target.value;
+                      setAcademicsData({...academicsData, departments: newDepts});
+                    }}
+                    placeholder="Dept Name"
+                    className="w-full bg-transparent border-none outline-none font-black text-slate-800 text-[10px] text-center"
                   />
                 </div>
               ))}

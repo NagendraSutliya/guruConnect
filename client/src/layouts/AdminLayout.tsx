@@ -166,6 +166,7 @@ const AdminLayout = () => {
         { name: "Academics", path: "/admin/cms/academics" },
         { name: "Achievements", path: "/admin/cms/achievements" },
         { name: "Photo Gallery", path: "/admin/cms/gallery" },
+        { name: "Contact Us", path: "/admin/cms/contact" },
         { name: "Live Preview", path: "http://localhost:5174", external: true },
       ],
     },

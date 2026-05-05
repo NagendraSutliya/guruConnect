@@ -81,7 +81,7 @@ const LinksPanel = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-2xl bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 shadow-2xl overflow-hidden relative">
+      <div className="w-full max-w-2xl mx-auto my-auto bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 shadow-2xl overflow-hidden relative">
 
           {(!link || !link.linkCode) ? (
             <div className="text-center py-8">

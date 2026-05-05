@@ -19,8 +19,8 @@ const SchoolAdmissions = () => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [fetching, setFetching] = useState(true);
   const [admissionsData, setAdmissionsData] = useState({
-    title: "Join Our Learning Community",
-    subtitle: "Secure your child's future by enrolling them in an environment that fosters intellectual curiosity, emotional intelligence, and technological fluency for the 2026-27 session.",
+    bannerTitle: "Join Our Learning Community",
+    bannerSubtitle: "Secure your child's future by enrolling them in an environment that fosters intellectual curiosity, emotional intelligence, and technological fluency for the 2026-27 session.",
     bannerImage: "/images/redesign/admissions_banner.png",
     steps: [
       { step: "01", title: "Online Inquiry", desc: "Begin by submitting the digital inquiry form to schedule a campus tour or virtual counseling." },
@@ -33,6 +33,24 @@ const SchoolAdmissions = () => {
       { q: "Do you provide international curriculum options?", a: "Yes, we offer both CBSE and IGCSE pathways, allowing students to choose a curriculum that aligns with their future goals." },
       { q: "Is transport available for all areas?", a: "Our GPS-enabled bus fleet covers a 20km radius from the campus, ensuring safe and timely pick-up/drop-off." },
       { q: "What extracurricular activities are offered?", a: "From robotics and coding to classical dance and professional sports coaching, we offer over 30+ activity clubs." }
+    ],
+    eligibilityTitle: "Grades & Age Matrix",
+    eligibilityDesc: "We follow a standardized age criteria to ensure that children are socially and emotionally ready for their respective grade levels.",
+    matrix: [
+      { grade: "Nursery - KG", age: "3 - 5 Years" },
+      { grade: "Grade 1 - 5", age: "6 - 10 Years" },
+      { grade: "Grade 6 - 8", age: "11 - 13 Years" },
+      { grade: "Grade 9 - 12", age: "14 - 17 Years" },
+    ],
+    documents: [
+      "Birth Certificate",
+      "Passport Size Photos (4)",
+      "Previous Report Cards",
+      "Transfer Certificate",
+      "Address Proof",
+      "Medical Fitness Record",
+      "Parent ID Proofs",
+      "Aadhar Card (Student)"
     ]
   });
 
@@ -81,40 +99,45 @@ const SchoolAdmissions = () => {
   return (
     <div className="bg-[#020617] text-white overflow-hidden">
       <SchoolPageHeader 
-        title={admissionsData.title} 
-        subtitle={admissionsData.subtitle}
+        title={admissionsData.bannerTitle} 
+        subtitle={admissionsData.bannerSubtitle}
         bgImage={admissionsData.bannerImage || "/images/redesign/admissions_banner.png"}
       />
 
       {/* Process Section */}
-      <section className="py-24 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20 space-y-4">
-          <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">The Pathway</h5>
-          <h2 className="text-4xl font-black text-white tracking-tight">Admission Process</h2>
-        </div>
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent hidden lg:block z-0" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-20 space-y-4">
+            <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.5em] animate-fadeIn">The Pathway</h5>
+            <h2 className="text-4xl md:text-3xl font-black text-white tracking-tighter">Streamlined Admission Cycle</h2>
+          </div>
 
-        <div className="relative">
-          {/* Connecting Line */}
-          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent hidden lg:block" />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-            {[
-              { step: "01", title: "Registration", desc: "Submit the online enquiry form and visit our digital campus.", icon: <MdAssignment /> },
-              { step: "02", title: "Interaction", desc: "A friendly meeting with the child and parents to understand mutual goals.", icon: <MdGroups /> },
-              { step: "03", title: "Documentation", desc: "Upload necessary records through our secure parent portal.", icon: <MdCloudUpload /> },
-              { step: "04", title: "Onboarding", desc: "Finalize the admission with fee payment and welcome kit.", icon: <MdVerified /> },
-            ].map((item, i) => (
-              <div key={i} className="relative group text-center space-y-6">
-                <div className="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/5 flex items-center justify-center text-3xl text-indigo-400 mx-auto group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 shadow-2xl relative z-10">
-                  {item.icon}
-                  <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center text-[10px] font-black text-indigo-500">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            {(admissionsData.steps || []).map((item, i) => (
+              <div key={i} className="group relative text-center space-y-8 animate-fadeIn" style={{ animationDelay: `${i * 150}ms` }}>
+                <div className="w-24 h-24 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center text-4xl text-indigo-400 mx-auto group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-110 transition-all duration-700 shadow-[0_0_50px_-12px_rgba(79,70,229,0.3)] relative z-10 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <MdAssignment className="relative z-10" />
+                  <div className="absolute -top-1 -right-1 w-10 h-10 rounded-full bg-slate-900 border-2 border-indigo-600/30 flex items-center justify-center text-[11px] font-black text-indigo-500 group-hover:text-white group-hover:border-white/50 transition-all">
                     {item.step}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <h4 className="text-xl font-black text-white tracking-tight">{item.title}</h4>
-                  <p className="text-xs text-slate-500 font-medium leading-relaxed px-4">{item.desc}</p>
+                
+                <div className="space-y-3 px-2">
+                  <h4 className="text-xl font-black text-white tracking-tight group-hover:text-indigo-400 transition-colors">{item.title}</h4>
+                  <p className="text-sm text-slate-500 font-bold leading-relaxed max-w-[220px] mx-auto opacity-80 group-hover:opacity-100 transition-opacity">
+                    {item.desc}
+                  </p>
                 </div>
+
+                {/* Mobile/Tablet Arrow Connector */}
+                {i < (admissionsData.steps?.length - 1) && (
+                  <div className="lg:hidden flex justify-center py-4 text-indigo-500/20">
+                    <MdArrowForward className="rotate-90 text-2xl" />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -134,16 +157,17 @@ const SchoolAdmissions = () => {
                 </p>
               </div>
 
-              <div className="space-y-4">
-                {[
-                  { grade: "Nursery - KG", age: "3 - 5 Years" },
-                  { grade: "Grade 1 - 5", age: "6 - 10 Years" },
-                  { grade: "Grade 6 - 8", age: "11 - 13 Years" },
-                  { grade: "Grade 9 - 12", age: "14 - 17 Years" },
-                ].map((row, i) => (
-                  <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-white/5 border border-white/5 hover:border-indigo-500/30 transition-all group">
-                    <span className="font-black text-sm uppercase tracking-wider group-hover:text-indigo-400 transition-colors">{row.grade}</span>
-                    <span className="text-xs font-bold text-slate-500">{row.age}</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {(admissionsData.matrix || []).map((row, i) => (
+                  <div key={i} className="flex items-center justify-between p-7 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:border-indigo-500/40 hover:bg-white/[0.05] transition-all duration-500 group">
+                    <div className="space-y-1">
+                      <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest opacity-60 group-hover:opacity-100">Grade Level</p>
+                      <span className="font-black text-base text-white tracking-tight uppercase">{row.grade}</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Age Criteria</p>
+                      <span className="text-sm font-black text-slate-400">{row.age}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -192,22 +216,13 @@ const SchoolAdmissions = () => {
               <h2 className="text-4xl font-black text-white tracking-tight">Required Documents</h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                "Birth Certificate",
-                "Passport Size Photos (4)",
-                "Previous Report Cards",
-                "Transfer Certificate",
-                "Address Proof",
-                "Medical Fitness Record",
-                "Parent ID Proofs",
-                "Aadhar Card (Student)"
-              ].map((doc, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-                    <MdCheckCircle size={14} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(admissionsData.documents || []).map((doc, i) => (
+                <div key={i} className="group flex items-center gap-5 p-5 rounded-[1.5rem] bg-white/[0.03] border border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] transition-all duration-500">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-lg shadow-emerald-500/5">
+                    <MdCheckCircle size={20} />
                   </div>
-                  <span className="text-xs font-bold text-slate-300">{doc}</span>
+                  <span className="text-[13px] font-black text-slate-300 group-hover:text-white transition-colors">{doc}</span>
                 </div>
               ))}
             </div>

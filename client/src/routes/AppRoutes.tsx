@@ -69,6 +69,7 @@ import AdmissionsCMS from "../pages/admin/cms/AdmissionsCMS";
 import AcademicsCMS from "../pages/admin/cms/AcademicsCMS";
 import AchievementsCMS from "../pages/admin/cms/AchievementsCMS";
 import GalleryCMS from "../pages/admin/cms/GalleryCMS";
+import ContactCMS from "../pages/admin/cms/ContactCMS";
 
 export default function AppRoutes() {
   return (
@@ -159,6 +160,7 @@ export default function AppRoutes() {
         <Route path="cms/academics" element={<AcademicsCMS />} />
         <Route path="cms/achievements" element={<AchievementsCMS />} />
         <Route path="cms/gallery" element={<GalleryCMS />} />
+        <Route path="cms/contact" element={<ContactCMS />} />
 
 
         <Route path="exam" element={<Exams />} />

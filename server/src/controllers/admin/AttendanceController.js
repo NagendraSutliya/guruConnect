@@ -62,6 +62,8 @@ exports.getAttendance = async (req, res) => {
 
     const list = await Attendance.find(filter)
       .populate("studentId", "name rollNo")
+      .populate("classId", "name")
+      .populate("sectionId", "name")
       .sort({ date: -1 });
 
     return successResponse(res, "Attendance loaded", list);
@@ -237,10 +239,14 @@ exports.getAttendanceHistory = async (req, res) => {
   try {
     const instituteId = req.user.instituteId;
 
-    const list = await Attendance.find({ instituteId })
+    const list = await Attendance.find({ 
+      instituteId: new mongoose.Types.ObjectId(instituteId) 
+    })
       .populate("studentId", "name rollNo")
+      .populate("classId", "name")
+      .populate("sectionId", "name")
       .sort({ date: -1 })
-      .limit(200); // safety limit
+      .limit(200); 
 
     return successResponse(res, "Attendance history", list);
   } catch (err) {

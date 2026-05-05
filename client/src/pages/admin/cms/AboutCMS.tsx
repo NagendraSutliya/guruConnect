@@ -8,15 +8,16 @@ import {
   MdPlayArrow
 } from "react-icons/md";
 import api from "../../../api/axiosInstance";
+import type { AboutData } from "../../../types/admin/cms";
 
 export default function AboutCMS() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
-  const [aboutData, setAboutData] = useState({
+  const [aboutData, setAboutData] = useState<AboutData>({
     bannerTitle: "Our Legacy of Excellence",
     bannerSubtitle: "A 25-year journey of nurturing innovation, fostering character, and building a foundation for the next generation of global citizens.",
-    establishedYear: "ESTABLISHED 2000",
+    establishedYear: "ESTABLISHED 2020",
     mainTitle: "Where Tradition Meets Digital Innovation.",
     mainSubtitle: "A holistic approach to education.",
     description: "Gyansthali Edu was founded with a singular purpose: to bridge the gap between traditional educational values and the rapidly evolving digital landscape. What started as a small experimental school in 2000 has now grown into a premier institution known for its pedagogical excellence.",
@@ -39,7 +40,22 @@ export default function AboutCMS() {
         setFetching(true);
         const response = await api.get('/cms/about');
         if (response.data.success && response.data.data) {
-          setAboutData(prev => ({ ...prev, ...response.data.data }));
+          const incoming = response.data.data;
+          
+          setAboutData(prev => {
+            const next = { ...prev };
+            (Object.keys(incoming) as any).forEach((key: string) => {
+              if (key === 'directorMessage' && incoming[key]) {
+                const dm = incoming[key] as any;
+                Object.keys(dm).forEach(subKey => {
+                  if (dm[subKey]) (next.directorMessage as any)[subKey] = dm[subKey];
+                });
+              } else if (incoming[key] && incoming[key] !== "") {
+                (next as any)[key] = incoming[key];
+              }
+            });
+            return next;
+          });
         }
       } catch (error) {
         console.error("Error fetching about data:", error);
@@ -166,6 +182,47 @@ export default function AboutCMS() {
             </div>
           </div>
 
+          {/* Growth Metrics Configuration */}
+          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
+            <div className="flex items-center gap-3 text-slate-800 font-bold uppercase tracking-widest text-[10px]">
+              <MdWeb size={16} className="text-indigo-500" />
+              Growth Metrics
+            </div>
+
+            <div className="grid grid-cols-2 gap-6">
+              {(aboutData.stats || []).map((stat, index) => (
+                <div key={index} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest ml-1">Metric Label</label>
+                    <input 
+                      value={stat.label}
+                      onChange={(e) => {
+                        const newStats = [...aboutData.stats];
+                        newStats[index].label = e.target.value;
+                        setAboutData({...aboutData, stats: newStats});
+                      }}
+                      placeholder="e.g. Global Alumni"
+                      className="w-full bg-white border border-slate-100 rounded-xl py-2.5 px-4 font-black text-slate-800 text-xs outline-none focus:border-indigo-500 transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest ml-1">Metric Value</label>
+                    <input 
+                      value={stat.value}
+                      onChange={(e) => {
+                        const newStats = [...aboutData.stats];
+                        newStats[index].value = e.target.value;
+                        setAboutData({...aboutData, stats: newStats});
+                      }}
+                      placeholder="e.g. 2,500+"
+                      className="w-full bg-white border border-slate-100 rounded-xl py-2.5 px-4 font-black text-indigo-600 text-lg outline-none focus:border-indigo-500 transition-all"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Director's Message Configuration */}
           <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
             <div className="flex items-center gap-3 text-slate-800 font-bold uppercase tracking-widest text-[10px]">
@@ -195,7 +252,7 @@ export default function AboutCMS() {
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Quote Message</label>
                 <textarea 
-                  value={aboutData.directorMessage.quote}
+                  value={aboutData.directorMessage?.quote || ""}
                   onChange={(e) => setAboutData({...aboutData, directorMessage: {...aboutData.directorMessage, quote: e.target.value}})}
                   rows={3}
                   className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-bold text-slate-600 outline-none focus:bg-white focus:border-indigo-500 transition-all text-sm leading-relaxed italic"

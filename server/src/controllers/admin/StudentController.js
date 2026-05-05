@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Student = require("../../models/Student");
 const { successResponse, errorResponse } = require("../../utils/response");
@@ -5,7 +6,12 @@ const { successResponse, errorResponse } = require("../../utils/response");
 /* ================= CREATE STUDENT ================= */
 exports.createStudent = async (req, res) => {
   try {
-    const { name, email, classId, sectionId } = req.body;
+    const { 
+      name, email, classId, sectionId, 
+      admissionNo, enrollmentNo, admissionDate,
+      parentName, parentPhone, dob, gender, address, bloodGroup,
+      aadharNo, category, religion, nationality, previousSchool, previousClass
+    } = req.body;
 
     if (!name || !email || !classId) {
       return errorResponse(res, "Missing required fields", 400);
@@ -28,11 +34,28 @@ exports.createStudent = async (req, res) => {
       name,
       email,
       password: hashed,
+      instituteId: req.user.instituteId || req.user.id,
       classId,
       rollNo: nextRoll,
     };
 
     if (sectionId) payload.sectionId = sectionId;
+    if (admissionNo) payload.admissionNo = admissionNo;
+    if (enrollmentNo) payload.enrollmentNo = enrollmentNo;
+    if (admissionDate) payload.admissionDate = admissionDate;
+    if (parentName) payload.parentName = parentName;
+    if (parentPhone) payload.parentPhone = parentPhone;
+    if (dob) payload.dob = dob;
+    if (gender) payload.gender = gender;
+    if (address) payload.address = address;
+    if (bloodGroup) payload.bloodGroup = bloodGroup;
+    if (aadharNo) payload.aadharNo = aadharNo;
+    if (category) payload.category = category;
+    if (religion) payload.religion = religion;
+    if (nationality) payload.nationality = nationality;
+    if (previousSchool) payload.previousSchool = previousSchool;
+    if (previousClass) payload.previousClass = previousClass;
+
     const student = await Student.create(payload);
 
     return successResponse(res, "Student created", {
@@ -49,7 +72,10 @@ exports.createStudent = async (req, res) => {
 /* ================= GET ALL STUDENTS ================= */
 exports.getStudents = async (req, res) => {
   try {
-    const list = await Student.find().populate("classId").populate("sectionId");
+    const instituteId = req.user.instituteId || req.user.id;
+    const list = await Student.find({ instituteId })
+      .populate("classId")
+      .populate("sectionId");
 
     return successResponse(res, "Students loaded", list);
   } catch (err) {
@@ -177,11 +203,43 @@ exports.getStudentsByClass = async (req, res) => {
   }
 };
 
+/* ================= SEARCH STUDENTS ================= */
+exports.searchStudents = async (req, res) => {
+  try {
+    const { q } = req.query;
+    const instituteId = req.user.instituteId || req.user.id;
+
+    if (!q) {
+      return successResponse(res, "Search query required", []);
+    }
+
+    const students = await Student.find({
+      instituteId: new mongoose.Types.ObjectId(instituteId),
+      $or: [
+        { name: { $regex: q, $options: "i" } },
+        { email: { $regex: q, $options: "i" } },
+      ],
+    })
+      .populate("classId", "name")
+      .limit(10);
+
+    return successResponse(res, "Search results", students);
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, "Search failed");
+  }
+};
+
 /* ================= UPDATE STUDENT ================= */
 exports.updateStudent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, classId, sectionId } = req.body;
+    const { 
+      name, email, classId, sectionId,
+      admissionNo, enrollmentNo, admissionDate,
+      parentName, parentPhone, dob, gender, address, bloodGroup,
+      aadharNo, category, religion, nationality, previousSchool, previousClass
+    } = req.body;
 
     if (!name || !email || !classId) {
       return errorResponse(res, "Missing required fields", 400);
@@ -202,6 +260,21 @@ exports.updateStudent = async (req, res) => {
     student.email = email;
     student.classId = classId;
     student.sectionId = sectionId || null;
+    student.admissionNo = admissionNo || student.admissionNo;
+    student.enrollmentNo = enrollmentNo || student.enrollmentNo;
+    student.admissionDate = admissionDate || student.admissionDate;
+    student.parentName = parentName || student.parentName;
+    student.parentPhone = parentPhone || student.parentPhone;
+    student.dob = dob || student.dob;
+    student.gender = gender || student.gender;
+    student.address = address || student.address;
+    student.bloodGroup = bloodGroup || student.bloodGroup;
+    student.aadharNo = aadharNo || student.aadharNo;
+    student.category = category || student.category;
+    student.religion = religion || student.religion;
+    student.nationality = nationality || student.nationality;
+    student.previousSchool = previousSchool || student.previousSchool;
+    student.previousClass = previousClass || student.previousClass;
 
     await student.save();
 

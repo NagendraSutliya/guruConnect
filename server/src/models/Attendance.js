@@ -21,15 +21,20 @@ const attendanceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Section",
     },
+    status: {
+      type: String,
+      enum: ["present", "absent", "late", "leave"],
+      default: "present",
+    },
     date: {
       type: Date,
       required: true,
     },
-    status: {
-      type: String,
-      enum: ["present", "absent"],
-      required: true,
+    recordedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
     },
+    remarks: { type: String },
   },
   { timestamps: true }
 );

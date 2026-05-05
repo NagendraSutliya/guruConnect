@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const ClassSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    description: { type: String },
+    capacity: { type: Number, default: 40 },
     academicYearId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AcademicYear",

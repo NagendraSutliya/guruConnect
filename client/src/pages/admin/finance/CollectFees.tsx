@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { 
   MdSearch, 
@@ -15,9 +15,33 @@ export default function CollectFees() {
   const { showToast } = useToast();
   const [search, setSearch] = useState("");
   const [student, setStudent] = useState<any>(null);
+  const [summary, setSummary] = useState<any>(null);
+  const [activity, setActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("cash");
+
+  useEffect(() => {
+    fetchRecentActivity();
+  }, []);
+
+  const fetchRecentActivity = async () => {
+    try {
+      const res = await api.get("/admin/finance/recent-activity");
+      setActivity(res.data.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchStudentSummary = async (studentId: string) => {
+    try {
+      const res = await api.get(`/admin/finance/summary/${studentId}`);
+      setSummary(res.data.data);
+    } catch (err) {
+      showToast("Failed to load fee summary", "error");
+    }
+  };
 
   const searchStudent = async () => {
     if (!search) return;
@@ -26,9 +50,13 @@ export default function CollectFees() {
       // Mocking or fetching student details
       const res = await api.get(`/admin/students/search?q=${search}`);
       if (res.data.data.length > 0) {
-        setStudent(res.data.data[0]);
+        const found = res.data.data[0];
+        setStudent(found);
+        fetchStudentSummary(found._id);
       } else {
         showToast("No student found", "error");
+        setStudent(null);
+        setSummary(null);
       }
     } catch (err) {
       showToast("Search failed", "error");
@@ -48,8 +76,9 @@ export default function CollectFees() {
         date: new Date()
       });
       showToast("Payment recorded successfully!", "success");
-      setStudent(null);
       setAmount("");
+      fetchStudentSummary(student._id);
+      fetchRecentActivity();
     } catch (err) {
       showToast("Payment failed", "error");
     } finally {
@@ -98,7 +127,7 @@ export default function CollectFees() {
                 </div>
                 <div>
                   <h2 className="text-2xl font-black text-slate-800">{student.name}</h2>
-                  <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Class {student.class?.className || 'N/A'}</p>
+                  <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Class {student.classId?.name || 'N/A'}</p>
                   <p className="text-slate-400 text-[10px] font-bold mt-1">ID: {student.studentId || 'GC-10293'}</p>
                 </div>
               </div>
@@ -106,11 +135,11 @@ export default function CollectFees() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Due</p>
-                  <p className="text-xl font-black text-slate-800">₹12,450</p>
+                  <p className="text-xl font-black text-slate-800">₹{summary?.totalDue || 0}</p>
                 </div>
                 <div className="p-4 rounded-2xl bg-orange-50 border border-orange-100">
                   <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1">Last Paid</p>
-                  <p className="text-xl font-black text-orange-700">₹3,200</p>
+                  <p className="text-xl font-black text-orange-700">₹{summary?.lastPayment?.amount || 0}</p>
                 </div>
               </div>
 
@@ -120,16 +149,15 @@ export default function CollectFees() {
                   <MdHistory size={16} className="text-slate-400" />
                 </div>
                 <div className="space-y-2">
-                  {[
-                    { label: "Tuition Fee (March)", val: "₹2,500" },
-                    { label: "Exam Fee", val: "₹500" },
-                    { label: "Transport Fee", val: "₹200" },
-                  ].map((item, i) => (
+                  {summary?.structure?.map((item: any, i: number) => (
                     <div key={i} className="flex justify-between items-center py-2 border-b border-slate-50 text-sm">
-                      <span className="text-slate-500 font-medium">{item.label}</span>
-                      <span className="text-slate-900 font-bold">{item.val}</span>
+                      <span className="text-slate-500 font-medium">{item.name} <span className="text-[8px] uppercase opacity-60">({item.type})</span></span>
+                      <span className="text-slate-900 font-bold">₹{item.amount}</span>
                     </div>
                   ))}
+                  {(!summary?.structure || summary.structure.length === 0) && (
+                    <p className="text-[10px] text-slate-400 font-bold italic py-4">No fee structure defined for this class.</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -208,23 +236,23 @@ export default function CollectFees() {
           <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100">
             <h4 className="text-emerald-800 font-bold text-xs uppercase tracking-widest mb-3">Recent Activity</h4>
             <div className="space-y-3">
-              {[
-                { name: "John Doe", amt: "₹2,500", time: "2 mins ago" },
-                { name: "Jane Smith", amt: "₹1,200", time: "1 hour ago" },
-              ].map((log, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-white/60 rounded-xl">
+              {activity.map((log, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-white/60 rounded-xl animate-fadeIn">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
                       <MdCheckCircle size={14} />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-800">{log.name}</p>
-                      <p className="text-[10px] text-slate-400 font-medium">{log.time}</p>
+                      <p className="text-xs font-bold text-slate-800">{log.studentId?.name}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">{new Date(log.date).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <span className="text-xs font-black text-emerald-600">{log.amt}</span>
+                  <span className="text-xs font-black text-emerald-600">₹{log.amount}</span>
                 </div>
               ))}
+              {activity.length === 0 && (
+                <p className="text-[10px] text-slate-400 text-center py-4 font-bold uppercase tracking-widest">No recent payments</p>
+              )}
             </div>
           </div>
         </div>

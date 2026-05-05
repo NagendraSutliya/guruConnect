@@ -11,16 +11,20 @@ import {
   MdFilterList
 } from "react-icons/md";
 import api from "../../../api/axiosInstance";
+import type { GalleryData } from "../../../types/admin/cms";
 
 export default function GalleryCMS() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
-  const [galleryData, setGalleryData] = useState({
-    bannerTitle: "",
-    bannerSubtitle: "",
+  const [galleryData, setGalleryData] = useState<GalleryData>({
+    bannerTitle: "Visual Journey",
+    bannerSubtitle: "Explore the vibrant life at Gyansthali through our lens—from infrastructure to historic achievements.",
     items: [
-      { title: "", category: "Campus", img: "" }
+      { title: "Modern Science Lab", category: "Campus", img: "/images/redesign/academics_lab.png" },
+      { title: "Annual Day 2026 Celebration", category: "Events", img: "/images/redesign/gallery_event.png" },
+      { title: "Inter-School Basketball Finals", category: "Sports", img: "/images/redesign/gallery_sports.png" },
+      { title: "Academic Board Toppers 2026", category: "Toppers", img: "/images/redesign/achievements_banner.png" },
     ]
   });
 
@@ -31,8 +35,26 @@ export default function GalleryCMS() {
       try {
         setFetching(true);
         const response = await api.get('/cms/gallery');
-        if (response.data.success) {
-          setGalleryData(response.data.data);
+        if (response.data.success && response.data.data) {
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          
+          Object.keys(incoming).forEach(key => {
+            const val = incoming[key];
+            if (Array.isArray(val)) {
+              const cleanArray = val.filter(item => {
+                if (typeof item === 'object') {
+                  return Object.values(item).some(v => v !== "" && v !== null);
+                }
+                return item !== "" && item !== null;
+              });
+              if (cleanArray.length > 0) cleanData[key] = cleanArray;
+            } else if (val && val !== "") {
+              cleanData[key] = val;
+            }
+          });
+          
+          setGalleryData(prev => ({ ...prev, ...cleanData }));
         }
       } catch (error) {
         console.error("Error fetching gallery data:", error);
@@ -138,7 +160,7 @@ export default function GalleryCMS() {
 
           {/* Media Items List */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {galleryData.items.map((item, index) => (
+            {(galleryData?.items || []).map((item, index) => (
               <div key={index} className="group bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm space-y-4 relative">
                 <button 
                   onClick={() => removeItem(index)}

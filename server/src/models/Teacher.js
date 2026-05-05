@@ -10,6 +10,25 @@ const TeacherSchema = new mongoose.Schema(
       ref: "Institute",
       required: true,
     },
+    
+    // --- Employment ---
+    employeeId: { type: String, unique: true, sparse: true },
+    designation: { type: String },
+    qualification: { type: String },
+    joiningDate: { type: Date, default: Date.now },
+    specialization: [String],
+
+    // --- Contact ---
+    phone: { type: String },
+    emergencyPhone: { type: String },
+    address: { type: String },
+
+    // --- Financial ---
+    panNo: { type: String },
+    bankAccountNo: { type: String },
+    ifscCode: { type: String },
+    basicSalary: { type: Number, default: 0 },
+
     role: { type: String, default: "teacher" },
     status: {
       type: String,

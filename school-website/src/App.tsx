@@ -8,16 +8,6 @@ import SchoolAcademics from './pages/SchoolAcademics'
 import SchoolGallery from './pages/SchoolGallery'
 import SchoolContact from './pages/SchoolContact'
 
-// CMS Admin Imports
-import CMSLayout from './admin/layouts/CMSLayout'
-import HeroCMS from './admin/cms/HeroCMS'
-import AboutCMS from './admin/cms/AboutCMS'
-import AdmissionsCMS from './admin/cms/AdmissionsCMS'
-import AcademicsCMS from './admin/cms/AcademicsCMS'
-import AchievementsCMS from './admin/cms/AchievementsCMS'
-import GalleryCMS from './admin/cms/GalleryCMS'
-import CMSDashboard from './admin/cms/CMSDashboard'
-
 const App = () => {
   return (
     <Routes>
@@ -29,18 +19,6 @@ const App = () => {
         <Route path="academics" element={<SchoolAcademics />} />
         <Route path="gallery" element={<SchoolGallery />} />
         <Route path="contact" element={<SchoolContact />} />
-      </Route>
-
-      {/* Separate CMS Portal */}
-      <Route path="/cms-admin" element={<CMSLayout />}>
-        <Route index element={<CMSDashboard />} />
-        <Route path="dashboard" element={<CMSDashboard />} />
-        <Route path="hero" element={<HeroCMS />} />
-        <Route path="about" element={<AboutCMS />} />
-        <Route path="admissions" element={<AdmissionsCMS />} />
-        <Route path="academics" element={<AcademicsCMS />} />
-        <Route path="achievements" element={<AchievementsCMS />} />
-        <Route path="gallery" element={<GalleryCMS />} />
       </Route>
     </Routes>
   )

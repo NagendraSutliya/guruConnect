@@ -8,6 +8,7 @@ router.use("/students", require("./student.routes"));
 router.use("/stats", require("./stats.routes"));
 router.use("/feedback", require("./feedback.routes"));
 router.use("/link", require("./publicLink.routes"));
+router.use("/finance", require("./finance.routes"));
 
 router.use("/attendance", require("./attendance.routes"));
 

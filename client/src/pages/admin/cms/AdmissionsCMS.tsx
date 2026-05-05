@@ -9,12 +9,13 @@ import {
   MdList
 } from "react-icons/md";
 import api from "../../../api/axiosInstance";
+import type { AdmissionsData } from "../../../types/admin/cms";
 
 export default function AdmissionsCMS() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
-  const [admissionsData, setAdmissionsData] = useState({
+  const [admissionsData, setAdmissionsData] = useState<AdmissionsData>({
     bannerTitle: "Join Our Learning Community",
     bannerSubtitle: "Secure your child's future by enrolling them in an environment that fosters intellectual curiosity and technological fluency for the 2026-27 session.",
     processTitle: "The Pathway to Excellence",
@@ -27,10 +28,18 @@ export default function AdmissionsCMS() {
     eligibilityTitle: "Admission Criteria",
     eligibilityDesc: "We seek curious minds ready to embrace challenges.",
     matrix: [
-      { grade: "Pre-Primary", age: "3 - 5 Years" },
-      { grade: "Primary", age: "6 - 10 Years" }
+      { grade: "Nursery - KG", age: "3 - 5 Years" },
+      { grade: "Class I - V", age: "6 - 10 Years" },
+      { grade: "Class VI - X", age: "11 - 15 Years" },
+      { grade: "Class XI - XII", age: "16+ Years" }
     ],
-    documents: ["Birth Certificate", "Previous School Report", "Aadhar Card"],
+    documents: [
+      "Birth Certificate (Original + Copy)",
+      "Transfer Certificate from previous school",
+      "Aadhar Card of student and parents",
+      "6 Passport size photographs",
+      "Previous year's report card"
+    ],
     bannerImage: "/images/redesign/admissions_banner.png"
   });
 
@@ -40,7 +49,25 @@ export default function AdmissionsCMS() {
         setFetching(true);
         const response = await api.get('/cms/admissions');
         if (response.data.success && response.data.data) {
-          setAdmissionsData(prev => ({ ...prev, ...response.data.data }));
+          const incoming = response.data.data;
+          const cleanData: any = {};
+          
+          Object.keys(incoming).forEach(key => {
+            const val = incoming[key];
+            if (Array.isArray(val)) {
+              const cleanArray = val.filter(item => {
+                if (typeof item === 'object') {
+                  return Object.values(item).some(v => v !== "" && v !== null);
+                }
+                return item !== "" && item !== null;
+              });
+              if (cleanArray.length > 0) cleanData[key] = cleanArray;
+            } else if (val && val !== "") {
+              cleanData[key] = val;
+            }
+          });
+          
+          setAdmissionsData(prev => ({ ...prev, ...cleanData }));
         }
       } catch (error) {
         console.error("Error fetching admissions data:", error);
@@ -131,7 +158,7 @@ export default function AdmissionsCMS() {
             </div>
 
             <div className="space-y-6">
-              {admissionsData.steps.map((step, index) => (
+              {(admissionsData?.steps || []).map((step, index) => (
                 <div key={index} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-xs">{step.step}</span>
@@ -180,7 +207,7 @@ export default function AdmissionsCMS() {
               </div>
               
               <div className="space-y-4">
-                {admissionsData.matrix.map((item, index) => (
+                {(admissionsData?.matrix || []).map((item, index) => (
                   <div key={index} className="grid grid-cols-2 gap-4">
                     <input 
                       value={item.grade}

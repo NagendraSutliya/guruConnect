@@ -1,21 +1,10 @@
 import React from "react";
 import { FiX, FiUser, FiMail, FiLayers, FiGrid, FiHash, FiLock, FiPhone, FiCalendar, FiMapPin } from "react-icons/fi";
+import type { StudentFormData } from "../../../types/admin/student";
 
 interface AddStudentModalProps {
-  form: {
-    name: string;
-    email: string;
-    password?: string;
-    rollNo: string;
-    classId: string;
-    sectionId: string;
-    phone?: string;
-    parentName?: string;
-    dob?: string;
-    admissionDate?: string;
-    address?: string;
-  };
-  setForm: (form: any) => void;
+  form: StudentFormData;
+  setForm: (form: StudentFormData) => void;
   onSave: () => void;
   onClose: () => void;
   loading?: boolean;
@@ -100,18 +89,35 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
               </div>
             </div>
 
-            {/* Roll Number */}
+            {/* Admission No */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Roll Number <span className="text-rose-500">*</span></label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Admission No <span className="text-rose-500">*</span></label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <FiHash size={14} />
                 </div>
                 <input
                   type="text"
-                  placeholder="e.g. 101"
-                  value={form.rollNo}
-                  onChange={(e) => setForm({ ...form, rollNo: e.target.value })}
+                  placeholder="ADM/2024/001"
+                  value={form.admissionNo}
+                  onChange={(e) => setForm({ ...form, admissionNo: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+
+            {/* Enrollment No */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Enrollment No</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiHash size={14} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Board Reg No"
+                  value={form.enrollmentNo}
+                  onChange={(e) => setForm({ ...form, enrollmentNo: e.target.value })}
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
                 />
               </div>
@@ -153,21 +159,122 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
               </div>
             </div>
 
-            {/* Phone */}
+            {/* Parent Phone */}
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Phone Number</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Parent Phone Number</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <FiPhone size={14} />
                 </div>
                 <input
                   type="text"
-                  placeholder="+1 (555) 000"
+                  placeholder="9876543210"
+                  value={form.parentPhone}
+                  onChange={(e) => setForm({ ...form, parentPhone: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+
+            {/* Student Phone */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Student Phone Number (Optional)</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiPhone size={14} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="9876543210"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
                 />
               </div>
+            </div>
+            
+            {/* Aadhar No */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Aadhar / National ID</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiHash size={14} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="1234-5678-9012"
+                  value={form.aadharNo}
+                  onChange={(e) => setForm({ ...form, aadharNo: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+
+            {/* Gender */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Gender</label>
+              <select
+                value={form.gender}
+                onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            {/* Blood Group */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Blood Group</label>
+              <input
+                type="text"
+                placeholder="O+"
+                value={form.bloodGroup}
+                onChange={(e) => setForm({ ...form, bloodGroup: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
+            </div>
+
+            {/* Religion */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Religion</label>
+              <input
+                type="text"
+                placeholder="e.g. Hindu"
+                value={form.religion}
+                onChange={(e) => setForm({ ...form, religion: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
+            </div>
+
+            {/* Category */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Category</label>
+              <select
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              >
+                <option value="">Select Category</option>
+                <option value="General">General</option>
+                <option value="OBC">OBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+              </select>
+            </div>
+
+            {/* Nationality */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Nationality</label>
+              <input
+                type="text"
+                placeholder="Indian"
+                value={form.nationality}
+                onChange={(e) => setForm({ ...form, nationality: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
             </div>
 
             {/* Class */}
@@ -245,6 +352,18 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
                 />
               </div>
+            </div>
+
+            {/* Previous School */}
+            <div className="space-y-1 md:col-span-2">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Previous School & Record</label>
+              <input
+                type="text"
+                placeholder="Name of last school attended"
+                value={form.previousSchool}
+                onChange={(e) => setForm({ ...form, previousSchool: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+              />
             </div>
 
             {/* Address */}

@@ -3,6 +3,7 @@ import api from "../../../api/axiosInstance";
 import ViewTeacherModal from "../../../components/admin/modals/ViewTeacherModal";
 import AddTeacherModal from "../../../components/admin/modals/AddTeacherModal";
 import { useToast } from "../../../context/ToastContext";
+import type { Teacher, TeacherFormData } from "../../../types/admin/teacher";
 import {
   FiEdit,
   FiEye,
@@ -18,10 +19,25 @@ import { FaUserPlus, FaUsers, FaUserCheck, FaUserTimes } from "react-icons/fa";
 const TeacherPanel = () => {
   /** --------------------- State Variables --------------------- **/
   const { showToast } = useToast();
-  const [teachers, setTeachers] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingTeacher, setEditingTeacher] = useState<any | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
+  const [form, setForm] = useState<TeacherFormData>({
+    name: "",
+    email: "",
+    password: "",
+    employeeId: "",
+    designation: "",
+    qualification: "",
+    specialization: "",
+    phone: "",
+    emergencyPhone: "",
+    panNo: "",
+    bankAccountNo: "",
+    ifscCode: "",
+    basicSalary: "",
+    joiningDate: "",
+  });
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
@@ -66,7 +82,22 @@ const TeacherPanel = () => {
         showToast("Teacher added successfully ✅", "success");
       }
 
-      setForm({ name: "", email: "", password: "" });
+      setForm({
+        name: "",
+        email: "",
+        password: "",
+        employeeId: "",
+        designation: "",
+        qualification: "",
+        specialization: "",
+        phone: "",
+        emergencyPhone: "",
+        panNo: "",
+        bankAccountNo: "",
+        ifscCode: "",
+        basicSalary: "",
+        joiningDate: "",
+      });
       setEditingTeacher(null);
       setShowForm(false);
       loadTeachers();
@@ -115,19 +146,49 @@ const TeacherPanel = () => {
     }
   };
 
-  const viewTeacher = (teacher: any) => {
+  const viewTeacher = (teacher: Teacher) => {
     setSelectedTeacher(teacher);
     setShowViewModal(true);
   };
 
-  const editTeacher = (teacher: any) => {
+  const editTeacher = (teacher: Teacher) => {
     setEditingTeacher(teacher);
-    setForm({ name: teacher.name, email: teacher.email, password: "" });
+    setForm({
+      name: teacher.name,
+      email: teacher.email,
+      password: "",
+      employeeId: teacher.employeeId || "",
+      designation: teacher.designation || "",
+      qualification: teacher.qualification || "",
+      specialization: teacher.specialization?.join(", ") || "",
+      phone: teacher.phone || "",
+      emergencyPhone: teacher.emergencyPhone || "",
+      panNo: teacher.panNo || "",
+      bankAccountNo: teacher.bankAccountNo || "",
+      ifscCode: teacher.ifscCode || "",
+      basicSalary: teacher.basicSalary || "",
+      joiningDate: teacher.joiningDate ? new Date(teacher.joiningDate).toISOString().split('T')[0] : "",
+    });
     setShowForm(true);
   };
 
   const closeAddTeacher = () => {
-    setForm({ name: "", email: "", password: "" });
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      employeeId: "",
+      designation: "",
+      qualification: "",
+      specialization: "",
+      phone: "",
+      emergencyPhone: "",
+      panNo: "",
+      bankAccountNo: "",
+      ifscCode: "",
+      basicSalary: "",
+      joiningDate: "",
+    });
     setEditingTeacher(null);
     setShowForm(false);
   };
