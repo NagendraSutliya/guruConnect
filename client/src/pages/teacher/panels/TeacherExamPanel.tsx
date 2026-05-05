@@ -111,7 +111,7 @@ const TeacherExamPanel = () => {
   };
 
   const saveTypedPaper = async () => {
-    if (!paperContent.trim()) return showToast("Paper cannot be empty ⚠️", "warning");
+    if (!paperContent.trim()) return showToast("Paper cannot be empty ⚠️", "warn");
     try {
       setSavingPaper(true);
       await api.post("/exam-files/save-typed-paper", {
@@ -142,10 +142,10 @@ const TeacherExamPanel = () => {
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "ongoing": return "bg-emerald-50 text-emerald-600 border-emerald-100";
-      case "upcoming": return "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20";
-      case "completed": return "bg-slate-100 text-slate-400 border-slate-200";
-      default: return "bg-slate-50 text-slate-400 border-slate-100";
+      case "ongoing": return "bg-emerald-500 text-white border-emerald-600 shadow-md shadow-emerald-100 font-black px-4";
+      case "upcoming": return "bg-indigo-500 text-white border-indigo-600 shadow-md shadow-indigo-100 font-black px-4";
+      case "completed": return "bg-red-600 text-white border-slate-200 opacity-70 font-bold px-3";
+      default: return "bg-slate-50 text-slate-400 border-slate-100 px-3";
     }
   };
 
@@ -162,7 +162,7 @@ const TeacherExamPanel = () => {
   return (
     <div className="space-y-6">
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="sticky top-0 z-40 bg-gradient-to-r from-indigo-50/90 via-white/80 to-indigo-100/90 backdrop-blur-xl -mx-6 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-100 mb-6 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Examination Ledger</h1>
           <p className="text-sm text-slate-500 font-medium">Coordinate schedules, question papers, and result reporting.</p>
@@ -184,7 +184,7 @@ const TeacherExamPanel = () => {
             placeholder="Search exam series..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:bg-white focus:border-[var(--primary)] transition-all outline-none"
+            className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:bg-white focus:border-[var(--primary)] transition-all outline-none"
           />
         </div>
         <div className="relative w-full sm:w-48">
@@ -207,7 +207,7 @@ const TeacherExamPanel = () => {
         {filteredExams.map((exam) => (
           <div 
             key={exam._id} 
-            className={`card-clean transition-all duration-300 ${
+            className={`card-clean transition-all duration-300 !overflow-visible ${
               openExam === exam._id ? "border-[var(--primary)]/30 ring-4 ring-[var(--primary)]/5" : "hover:border-slate-300"
             }`}
           >
@@ -218,8 +218,10 @@ const TeacherExamPanel = () => {
               onClick={() => setOpenExam(openExam === exam._id ? null : exam._id)}
             >
               <div className="flex items-center gap-4">
-                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm shadow-sm ${
-                   exam.status === 'ongoing' ? 'bg-[var(--primary)] text-white' : 'bg-slate-100 text-slate-400'
+                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm shadow-sm transition-colors ${
+                   exam.status === 'ongoing' ? 'bg-emerald-600 text-white' : 
+                   exam.status === 'upcoming' ? 'bg-indigo-600 text-white' : 
+                   'bg-slate-100 text-slate-400'
                  }`}>
                    <FiBook size={18} />
                  </div>
@@ -240,7 +242,7 @@ const TeacherExamPanel = () => {
             </div>
 
             {openExam === exam._id && (
-              <div className="px-4 pb-4 pt-1 animate-fade-in divide-y divide-slate-50">
+              <div className="px-4 pb-4 pt-1 animate-fade-in divide-y divide-slate-50 !overflow-visible">
                 {exam.subjects?.map((sub: any) => {
                   if (!menuRefs.current[sub._id]) menuRefs.current[sub._id] = React.createRef();
                   
@@ -275,7 +277,7 @@ const TeacherExamPanel = () => {
                            </button>
 
                            {openMenu === sub._id && (
-                             <div className="absolute w-64 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-xl z-50 py-2 animate-fade-in overflow-hidden">
+                             <div className="absolute w-64 right-0 bg-white border border-slate-200 rounded-lg shadow-xl z-[100] py-2 animate-fade-in overflow-hidden">
                                <div className="px-4 pb-2 mb-2 border-b border-slate-50">
                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Subject Operations</p>
                                </div>
@@ -336,7 +338,7 @@ const TeacherExamPanel = () => {
                                <button
                                  onClick={() => goToResult(exam._id, sub.subjectId?._id)}
                                  className="w-full flex items-center gap-3 px-4 py-2 hover:bg-slate-50 text-xs font-semibold text-slate-600 transition-colors"
-                               >
+                                >
                                  <FiArrowRight className="text-[var(--primary)]" />
                                  <span>View Performance Hub</span>
                                </button>
