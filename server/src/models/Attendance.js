@@ -30,6 +30,13 @@ const attendanceSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    subjectId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subject",
+    },
+    period: {
+      type: Number,
+    },
     recordedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Teacher",
@@ -38,8 +45,5 @@ const attendanceSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-/* Prevent duplicate attendance per student per day */
-attendanceSchema.index({ studentId: 1, classId: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model("Attendance", attendanceSchema);

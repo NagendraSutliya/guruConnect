@@ -4,7 +4,6 @@ import { useToast } from "../../../context/ToastContext";
 import { 
   FiChevronDown, 
   FiSearch, 
-  FiBarChart2, 
   FiUpload, 
   FiDownload, 
   FiAward, 
@@ -12,9 +11,12 @@ import {
   FiLayers, 
   FiBookOpen,
   FiCheckCircle,
-  FiAlertCircle
+  FiAlertCircle,
+  FiHash,
+  FiTarget
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { useTeacher } from "../../../context/TeacherContext";
 import type {
   ResultStudent,
   ResultClassAssignment,
@@ -23,19 +25,23 @@ import type {
 const ResultPanel = () => {
   const { showToast } = useToast();
   const [assignments, setAssignments] = useState<ResultClassAssignment[]>([]);
-  const [students, setStudents] = useState<ResultStudent[]>([]);
   const [exams, setExams] = useState<any[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  const [selectedClassId, setSelectedClassId] = useState("");
-  const [selectedSectionId, setSelectedSectionId] = useState("");
-  const [selectedSubjectId, setSelectedSubjectId] = useState("");
-  const [selectedExamId, setSelectedExamId] = useState("");
+  const { 
+    selectedClassId, setSelectedClassId, 
+    selectedSectionId, setSelectedSectionId,
+    selectedSubjectId, setSelectedSubjectId,
+    selectedExamId, setSelectedExamId,
+    resultStudents: students, setResultStudents: setStudents
+  } = useTeacher();
+
   const [maxMarks, setMaxMarks] = useState(100);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [filterMode, setFilterMode] = useState<'CHIPS' | 'LIST'>(() => (localStorage.getItem("guru_teacher_filter_mode") as any) || 'CHIPS');
 
   const handleUploadMarksClick = () => navigate("/teacher/results/upload-marks");
 
@@ -43,11 +49,22 @@ const ResultPanel = () => {
     return students.filter((s) => `${s.name} ${s.rollNo}`.toLowerCase().includes(search.toLowerCase()));
   }, [students, search]);
 
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+  const paginatedStudents = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredStudents.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredStudents, currentPage, itemsPerPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedClassId, selectedSectionId, selectedExamId, selectedSubjectId]);
+
   useEffect(() => {
     const loadAssignments = async () => {
       try {
-        const res = await api.get("/teacher/results");
-        setAssignments(res.data.data || []);
+        const res = await api.get("/teacher/attendance/my");
+        const data: ResultClassAssignment[] = res.data.data || [];
+        setAssignments(data);
       } catch (err) {
         showToast("Failed to load assignments", "error");
       }
@@ -99,8 +116,8 @@ const ResultPanel = () => {
           params: { examId: selectedExamId, examSubjectId: selectedSubjectId },
         });
         const marksList: any[] = marksRes.data.data || [];
-        const updatedStudents = studentList.map((s) => {
-          const m = marksList.find((m) => m.studentId._id === s._id);
+        const updatedStudents = studentList.map((s: ResultStudent) => {
+          const m = marksList.find((m: any) => m.studentId._id === s._id);
           return { ...s, marks: m?.marks };
         });
         setStudents(updatedStudents);
@@ -134,203 +151,479 @@ const ResultPanel = () => {
   }, [filteredExams, currentPage, itemsPerPage]);
 
   return (
-    <div className="space-y-6">
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <div className="space-y-2">
+      
+      {/* Sticky Header - Synced Aura Style */}
+      <div className="bg-gradient-to-r from-indigo-50/90 via-white/80 to-indigo-100/90 backdrop-blur-xl -mx-6 px-6 py-3 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-100 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Performance Ledger</h1>
-          <p className="text-sm text-slate-500 font-medium">Review academic outcomes and synchronize examination results.</p>
+          <h1 className="text-xl font-bold text-slate-800 tracking-tight">Performance Ledger</h1>
+          <p className="text-xs text-slate-500 font-medium">Review academic outcomes and synchronize examination results.</p>
         </div>
         <div className="flex items-center gap-3">
-           <button
-              onClick={downloadTemplate}
-              disabled={students.length === 0}
-              className="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm disabled:opacity-50"
-            >
-              <FiDownload /> Export CSV
-            </button>
-           <button
-            onClick={handleUploadMarksClick}
-            className="btn-primary flex items-center gap-2"
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">View Option</span>
+          <div className="relative bg-slate-100 p-1 rounded-xl border border-slate-200 flex items-center w-40 h-9 overflow-hidden shadow-inner">
+            <div 
+              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg transition-all duration-300 ease-out shadow-md bg-gradient-to-r from-orange-500 to-rose-500 ${
+                filterMode === 'CHIPS' ? 'left-1' : 'left-[calc(50%+1px)]'
+              }`}
+            />
+            <button 
+              onClick={() => {
+                setFilterMode("CHIPS");
+                localStorage.setItem("guru_teacher_filter_mode", "CHIPS");
+              }}
+              className={`relative z-10 flex-1 text-[9px] font-black transition-colors duration-300 ${filterMode === 'CHIPS' ? 'text-white' : 'text-slate-400'}`}
+            >CHIPS</button>
+            <button 
+              onClick={() => {
+                setFilterMode("LIST");
+                localStorage.setItem("guru_teacher_filter_mode", "LIST");
+              }}
+              className={`relative z-10 flex-1 text-[9px] font-black transition-colors duration-300 ${filterMode === 'LIST' ? 'text-white' : 'text-slate-400'}`}
+            >LIST</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Modern High-Density Filter Vault */}
+      <div className="card-clean px-6 py-2 bg-white/50 backdrop-blur-sm border-slate-300 mb-2">
+        <div className="min-h-[50px] flex items-center">
+          {filterMode === "CHIPS" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full animate-fade-in divide-x divide-slate-100">
+              {/* Academic Class Chips */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <FiTarget className="text-indigo-600 shrink-0" size={14} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Academic Class</label>
+                </div>
+                <div className="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto no-scrollbar">
+                  {classes.map((c) => (
+                    <button
+                      key={c._id}
+                      onClick={() => { setSelectedClassId(c._id); setSelectedSectionId(""); setSelectedExamId(""); setSelectedSubjectId(""); }}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                        selectedClassId === c._id ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300'
+                      }`}
+                    >{c.name}</button>
+                  ))}
+                  {classes.length === 0 && <span className="text-[10px] text-slate-300 font-bold uppercase italic">No assignments</span>}
+                </div>
+              </div>
+
+              {/* Section Chips */}
+              <div className="space-y-3 px-4">
+                <div className="flex items-center gap-2">
+                  <FiHash className="text-emerald-500 shrink-0" size={14} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sections</label>
+                </div>
+                <div className="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto no-scrollbar">
+                  {selectedClassId ? sections.map((s) => (
+                    <button
+                      key={s._id}
+                      onClick={() => { setSelectedSectionId(s._id); setSelectedExamId(""); setSelectedSubjectId(""); }}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                        selectedSectionId === s._id ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-200' : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-emerald-300'
+                      }`}
+                    >{s.name}</button>
+                  )) : <p className="text-[10px] font-bold text-slate-300 italic">Select class first</p>}
+                </div>
+              </div>
+
+              {/* Exam Series Chips */}
+              <div className="space-y-3 px-4">
+                <div className="flex items-center gap-2">
+                  <FiAward className="text-amber-500 shrink-0" size={14} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Exams</label>
+                </div>
+                <div className="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto no-scrollbar">
+                  {selectedSectionId ? exams.map((e) => (
+                    <button
+                      key={e._id}
+                      onClick={() => { setSelectedExamId(e._id); setSelectedSubjectId(""); }}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                        selectedExamId === e._id ? 'bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-200' : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-amber-300'
+                      }`}
+                    >{e.name}</button>
+                  )) : <p className="text-[10px] font-bold text-slate-300 italic">Select section first</p>}
+                </div>
+              </div>
+
+              {/* Subject Focus Chips */}
+              <div className="space-y-3 px-4">
+                <div className="flex items-center gap-2">
+                  <FiBookOpen className="text-rose-500 shrink-0" size={14} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subjects</label>
+                </div>
+                <div className="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto no-scrollbar">
+                  {selectedExamId ? subjects.map((sub) => (
+                    <button
+                      key={sub._id}
+                      onClick={() => setSelectedSubjectId(sub._id)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                        selectedSubjectId === sub._id ? 'bg-rose-500 border-rose-500 text-white shadow-lg shadow-rose-200' : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-rose-300'
+                      }`}
+                    >{sub.name}</button>
+                  )) : <p className="text-[10px] font-bold text-slate-300 italic">Select exam first</p>}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full animate-fade-in px-2">
+              <div className="space-y-2 relative">
+                <div className="flex items-center gap-2">
+                  <FiLayers className="text-indigo-600" size={14} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Class</label>
+                </div>
+                <div className="relative">
+                  <select
+                    value={selectedClassId}
+                    onChange={(e) => { setSelectedClassId(e.target.value); setSelectedSectionId(""); setSelectedExamId(""); setSelectedSubjectId(""); }}
+                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100 appearance-none shadow-sm cursor-pointer"
+                  >
+                    <option value="">Select Class</option>
+                    {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                  </select>
+                  <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+              <div className="space-y-2 relative">
+                <div className="flex items-center gap-2">
+                  <FiActivity className="text-emerald-500" size={14} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Section</label>
+                </div>
+                <div className="relative">
+                  <select
+                    value={selectedSectionId}
+                    onChange={(e) => { setSelectedSectionId(e.target.value); setSelectedExamId(""); setSelectedSubjectId(""); }}
+                    disabled={!selectedClassId}
+                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100 appearance-none disabled:opacity-50 shadow-sm cursor-pointer"
+                  >
+                    <option value="">Select Section</option>
+                    {sections.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
+                  </select>
+                  <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+              <div className="space-y-2 relative">
+                <div className="flex items-center gap-2">
+                  <FiAward className="text-amber-500" size={14} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Exam</label>
+                </div>
+                <div className="relative">
+                  <select
+                    value={selectedExamId}
+                    onChange={(e) => { setSelectedExamId(e.target.value); setSelectedSubjectId(""); }}
+                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100 appearance-none shadow-sm cursor-pointer"
+                  >
+                    <option value="">Select Exam</option>
+                    {paginatedExams.map((e) => <option key={e._id} value={e._id}>{e.name}</option>)}
+                  </select>
+                  <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+              <div className="space-y-2 relative">
+                <div className="flex items-center gap-2">
+                  <FiBookOpen className="text-rose-500" size={14} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Subject</label>
+                </div>
+                <div className="relative">
+                  <select
+                    value={selectedSubjectId}
+                    onChange={(e) => setSelectedSubjectId(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100 appearance-none shadow-sm cursor-pointer"
+                  >
+                    <option value="">Select Subject</option>
+                    {subjects.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
+                  </select>
+                  <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+            </div>            
+          )}
+        </div>
+
+        
+
+        <div className="mt-4 pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Left Side: Scaling Factor */}
+          <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 shadow-inner">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Maximum Marks</span>
+            <input
+              type="number"
+              value={maxMarks}
+              onChange={(e) => setMaxMarks(Number(e.target.value))}
+              className="w-16 bg-white border border-slate-200 rounded-lg py-1 text-center text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-indigo-100 transition-all shadow-sm"
+            />
+          </div>
+          
+          <button
+            onClick={loadStudents}
+            disabled={!selectedClassId || !selectedSectionId || !selectedExamId || !selectedSubjectId}
+            className="px-4 py-2 bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-all disabled:opacity-30 shadow-lg shadow-slate-100 flex items-center gap-2 group"
           >
-            <FiUpload />
-            Upload Marks
+           {loadingStudents ? "Syncing..." : "Load Students"}
           </button>
         </div>
       </div>
 
-      {/* Professional Filters */}
-      <div className="card-clean p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="relative">
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1">Class</label>
-          <select
-            value={selectedClassId}
-            onChange={(e) => setSelectedClassId(e.target.value)}
-            className="w-full pl-3 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:bg-white focus:border-[var(--primary)] transition-all appearance-none cursor-pointer"
-          >
-            <option value="">Select Class</option>
-            {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
-          </select>
-          <FiChevronDown className="absolute right-3 bottom-2.5 text-slate-400 pointer-events-none" />
-        </div>
-        <div className="relative">
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1">Section</label>
-          <select
-            value={selectedSectionId}
-            onChange={(e) => setSelectedSectionId(e.target.value)}
-            className="w-full pl-3 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:bg-white focus:border-[var(--primary)] transition-all appearance-none cursor-pointer"
-          >
-            <option value="">Select Section</option>
-            {sections.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
-          </select>
-          <FiChevronDown className="absolute right-3 bottom-2.5 text-slate-400 pointer-events-none" />
-        </div>
-        <div className="relative">
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1">Exam Series</label>
-          <select
-            value={selectedExamId}
-            onChange={(e) => setSelectedExamId(e.target.value)}
-            className="w-full pl-3 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:bg-white focus:border-[var(--primary)] transition-all appearance-none cursor-pointer"
-          >
-            <option value="">Select Exam</option>
-            {paginatedExams.map((e) => <option key={e._id} value={e._id}>{e.name}</option>)}
-          </select>
-          <FiChevronDown className="absolute right-3 bottom-2.5 text-slate-400 pointer-events-none" />
-        </div>
-        <div className="relative">
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block px-1">Subject Focus</label>
-          <select
-            value={selectedSubjectId}
-            onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="w-full pl-3 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:bg-white focus:border-[var(--primary)] transition-all appearance-none cursor-pointer"
-          >
-            <option value="">Select Subject</option>
-            {subjects.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
-          </select>
-          <FiChevronDown className="absolute right-3 bottom-2.5 text-slate-400 pointer-events-none" />
-        </div>
-      </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-1">
-          <div className="flex items-center gap-4">
-             <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Scaling Factor</span>
-                <input
-                   type="number"
-                   value={maxMarks}
-                   onChange={(e) => setMaxMarks(Number(e.target.value))}
-                   className="w-16 px-2 py-1 bg-white border border-slate-200 rounded text-xs font-bold text-slate-700 outline-none focus:border-[var(--primary)]"
-                />
-             </div>
-             <button
-                onClick={loadStudents}
-                disabled={!selectedClassId || !selectedSectionId || !selectedExamId || !selectedSubjectId}
-                className="px-4 py-1.5 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-all disabled:opacity-30"
-             >
-                {loadingStudents ? "Syncing..." : "Initiate Load"}
-             </button>
+      {/* Premium Metrics Dashboard */}
+      {students.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 animate-fade-in">
+          {/* Average Performance Card */}
+          <div className="card-clean p-4 bg-gradient-to-br from-blue-50 to-white border-blue-300 flex items-center gap-4 group hover:shadow-md transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+              <FiActivity size={20} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-blue-600/60 uppercase tracking-widest">Average Score</p>
+              <h4 className="text-xl font-bold text-slate-800 leading-tight">
+                {students.length > 0 
+                  ? (students.reduce((acc, s) => acc + (s.marks || 0), 0) / students.length).toFixed(1) 
+                  : "0.0"}
+                <span className="text-[10px] text-slate-400 ml-1">avg</span>
+              </h4>
+            </div>
           </div>
-          
-          <div className="flex items-center gap-4">
-             <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{students.filter(s => s.marks !== undefined && s.marks >= maxMarks / 3).length} Pass</span>
-             </div>
-             <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-rose-500" />
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{students.filter(s => s.marks !== undefined && s.marks < maxMarks / 3).length} Fail</span>
-             </div>
-          </div>
-      </div>
 
+          {/* Pass Velocity Card */}
+          <div className="card-clean p-4 bg-gradient-to-br from-emerald-50 to-white border-emerald-300 flex items-center gap-4 group hover:shadow-md transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+              <FiCheckCircle size={20} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest">Pass Outcome</p>
+              <h4 className="text-xl font-bold text-slate-800 leading-tight">
+                {students.filter(s => s.marks !== undefined && s.marks >= maxMarks / 3).length}
+                <span className="text-[10px] text-slate-400 ml-1">students</span>
+              </h4>
+            </div>
+          </div>
+
+          {/* Fail Registry Card */}
+          <div className="card-clean p-4 bg-gradient-to-br from-rose-50 to-white border-rose-300 flex items-center gap-4 group hover:shadow-md transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-600 group-hover:scale-110 transition-transform">
+              <FiAlertCircle size={20} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-rose-600/60 uppercase tracking-widest">Fail Registry</p>
+              <h4 className="text-xl font-bold text-slate-800 leading-tight">
+                {students.filter(s => s.marks !== undefined && s.marks < maxMarks / 3).length}
+                <span className="text-[10px] text-slate-400 ml-1">students</span>
+              </h4>
+            </div>
+          </div>
+
+          {/* Cohort Strength Card */}
+          <div className="card-clean p-4 bg-gradient-to-br from-indigo-50 to-white border-indigo-300 flex items-center gap-4 group hover:shadow-md transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+              <FiLayers size={20} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-indigo-600/60 uppercase tracking-widest">Cohort Strength</p>
+              <h4 className="text-xl font-bold text-slate-800 leading-tight">
+                {students.length}
+                <span className="text-[10px] text-slate-400 ml-1">total</span>
+              </h4>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Main Ledger Table */}
-      <div className="card-clean min-h-[400px] relative">
-        {loadingStudents && (
-          <div className="absolute inset-0 z-10 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center">
-            <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Aggregating Scores...</p>
-          </div>
-        )}
+      <div className="card-clean relative overflow-hidden border-slate-300 flex flex-col">
 
-        <div className="p-4 border-b border-slate-100">
-          <div className="relative w-full sm:w-72">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+        {/* Integrated Search & Actions Bar - Sticky Top */}
+        <div className="px-4 py-3 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between bg-slate-50/80 backdrop-blur-md gap-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={downloadTemplate}
+              disabled={students.length === 0 || loadingStudents}
+              className="px-4 py-2 text-[10px] font-black text-white bg-emerald-600 border border-emerald-500 rounded-xl hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-lg shadow-emerald-100 disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-widest group"
+            >
+              <FiDownload className="text-white group-hover:scale-110 transition-transform" size={14} /> 
+              Export CSV
+            </button>
+            <button
+              onClick={handleUploadMarksClick}
+              className="px-4 py-2 bg-blue-500 text-white text-[10px] font-black rounded-xl hover:bg-blue-700 transition-all flex items-center gap-2 shadow-lg shadow-orange-100 uppercase tracking-widest group"
+            >
+              <FiUpload className="group-hover:scale-110 transition-transform" size={14} />
+              Upload Marks
+            </button>
+          </div>
+          <div className="relative  w-full max-w-xs">
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
             <input
               type="text"
-              placeholder="Search by student name..."
+              placeholder="Search by student name or roll..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:bg-white focus:border-[var(--primary)] transition-all"
+              className="w-full pl-10 pr-4 py-1 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
             />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100">
-                <th className="px-6 py-4 w-24">Roll No</th>
-                <th className="px-6 py-4">Student Identity</th>
-                <th className="px-6 py-4">Series & Focus</th>
-                <th className="px-6 py-4 text-center">Outcome</th>
-                <th className="px-6 py-4 text-right">Raw Score</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {filteredStudents.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-24 text-center flex flex-col items-center">
-                    <FiAward size={48} className="text-slate-200 mb-4" />
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Apply filters to view outcomes</p>
-                  </td>
+           {loadingStudents ? (
+          <div className="flex flex-col items-center justify-center py-10">
+            <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Accessing Student Vault...</p>
+          </div>
+        ) : filteredStudents.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 opacity-40">
+              <FiAward size={64} className="text-slate-300 mb-4" />
+              <p className="text-sm font-bold text-slate-600">
+                {selectedClassId && selectedSectionId && selectedExamId && selectedSubjectId
+                  ? "No performance records found for this scope"
+                  : "Select full academic scope to view outcomes"}
+              </p>
+            </div>
+          ) : (
+             <div className="overflow-y-auto h-[calc(100vh-500px)] no-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead className="sticky top-0 z-10 bg-green-50 shadow-sm">
+                <tr className="text-[10px] font-black text-gray-600 uppercase tracking-widest border-b border-slate-100">
+                  <th className="px-6 py-3">Roll No</th>
+                  <th className="px-6 py-3">Student Name</th>
+                  <th className="px-6 py-3">Exam</th>
+                  <th className="px-6 py-3 text-center">Result</th>
+                  <th className="px-6 py-3 text-right">Score</th>
                 </tr>
-              ) : (
-                filteredStudents.map((s) => (
-                  <tr key={s._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <span className="text-xs font-bold text-slate-400">#{s.rollNo}</span>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {paginatedStudents.map((s) => (
+                  <tr key={s._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
+                    <td className="px-6 py-2">
+                      <span className="text-xs font-black text-slate-400 group-hover:text-indigo-600 transition-colors">{s.rollNo}</span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-[10px] font-bold border border-slate-200">
-                          {s.name.substring(0, 2).toUpperCase()}
-                        </div>
-                        <p className="text-sm font-semibold text-slate-700">{s.name}</p>
+                    <td className="px-6 py-2">
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm font-black text-slate-700 tracking-tight">{s.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                       <div className="space-y-0.5">
-                          <p className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-tight">
+                    <td className="px-6 py-2">
+                       <div className="space-y-1">
+                          <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
                             {exams.find(e => e._id === selectedExamId)?.name || "N/A"}
                           </p>
-                          <p className="text-[10px] font-medium text-slate-400">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
                             {subjects.find(sub => sub._id === selectedSubjectId)?.name || "N/A"}
                           </p>
                        </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-2 text-center">
                       {s.marks !== undefined ? (
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${
-                          s.marks >= maxMarks / 3 ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-rose-50 text-rose-500 border border-rose-100"
+                        <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${
+                          s.marks >= maxMarks / 3 
+                            ? "bg-emerald-500 text-white border-emerald-600 shadow-emerald-100" 
+                            : "bg-rose-500 text-white border-rose-600 shadow-rose-100"
                         }`}>
                           {s.marks >= maxMarks / 3 ? <FiCheckCircle /> : <FiAlertCircle />}
                           {s.marks >= maxMarks / 3 ? "Promoted" : "Retake"}
                         </span>
                       ) : (
-                        <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Evaluation Pending</span>
+                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full border border-slate-100">Evaluation Pending</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                       <p className="text-sm font-bold text-slate-800">
-                         {s.marks !== undefined ? `${s.marks} / ${maxMarks}` : "—"}
-                       </p>
-                    </td>
+                    <td className="px-6 py-2">
+                        <div className="flex flex-col items-end gap-1">
+                          {s.isEditing ? (
+                            <input
+                              type="number"
+                              min={0}
+                              max={maxMarks}
+                              value={s.marks ?? ""}
+                              autoFocus
+                              className="w-16 bg-white border-2 border-indigo-500 rounded-lg px-2 py-1 text-center text-xs font-black text-slate-800 outline-none shadow-sm"
+                              placeholder="0"
+                            />
+                          ) : (
+                            <>
+                              <p className="text-sm font-black text-slate-800 tracking-tight">
+                                {s.marks !== undefined ? `${s.marks} / ${maxMarks}` : "—"}
+                              </p>
+                              {s.marks !== undefined && (
+                                <div className="w-24 h-1 bg-slate-100 rounded-full overflow-hidden">
+                                    <div 
+                                      className={`h-full transition-all duration-1000 ${s.marks >= maxMarks/3 ? 'bg-emerald-500' : 'bg-rose-500'}`}
+                                      style={{ width: `${(s.marks / maxMarks) * 100}%` }}
+                                    />
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Pagination Footer - Synced Style */}
+        {filteredStudents.length > 0 && !loadingStudents && (
+          <div className="px-6 py-2 bg-slate-50/50 backdrop-blur-md border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Show</span>
+                <select 
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-600 outline-none focus:border-indigo-500 transition-all cursor-pointer shadow-sm"
+                >
+                  {[5, 10, 25, 50].map(val => (
+                    <option key={val} value={val}>{val}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+              >
+                Prev
+              </button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) pageNum = i + 1;
+                  else if (currentPage <= 3) pageNum = i + 1;
+                  else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                  else pageNum = currentPage - 2 + i;
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-7 h-7 rounded-lg text-[10px] font-bold transition-all ${
+                        currentPage === pageNum 
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' 
+                        : 'bg-white text-slate-500 border border-slate-200 hover:border-indigo-300'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -37,6 +37,23 @@ export type UploadMarksStudent = ResultStudent;
 
 export type UploadMarksClassAssignment = ResultClassAssignment;
 
+// ================= STUDENTS =================
+
+export type TeacherStudent = BaseStudent & {
+  gender?: string;
+  bloodGroup?: string;
+  address?: string;
+  phone?: string;
+  parentName?: string;
+  parentPhone?: string;
+  email?: string;
+  dob?: string;
+  admissionDate?: string;
+  admissionNo?: string;
+};
+
+export type TeacherClassAssignment = BaseClassAssignment;
+
 // ================= DASHBOARD ATTENDANCE =================
 export interface ClassAttendance {
   name: string;

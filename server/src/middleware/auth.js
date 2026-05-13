@@ -64,6 +64,8 @@ exports.requireStudent = (req, res, next) => {
       id: decoded.id,
       role: decoded.role,
       instituteId: decoded.instituteId,
+      classId: decoded.classId,
+      sectionId: decoded.sectionId,
     };
     next();
   } catch {

@@ -160,9 +160,9 @@ const TeacherExamPanel = () => {
   }, [exams, search, statusFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
 
-      <div className="sticky top-0 z-40 bg-gradient-to-r from-indigo-50/90 via-white/80 to-indigo-100/90 backdrop-blur-xl -mx-6 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-100 mb-6 shadow-sm">
+      <div className="sticky top-0 z-40 bg-gradient-to-r from-indigo-50/90 via-white/80 to-indigo-100/90 backdrop-blur-xl -mx-6 px-6 py-2 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-100 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Examination Ledger</h1>
           <p className="text-sm text-slate-500 font-medium">Coordinate schedules, question papers, and result reporting.</p>
@@ -196,7 +196,7 @@ const TeacherExamPanel = () => {
             <option value="all">All Series</option>
             <option value="upcoming">Upcoming</option>
             <option value="ongoing">Active</option>
-            <option value="completed">Concluded</option>
+            <option value="completed">Completed</option>
           </select>
           <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
         </div>

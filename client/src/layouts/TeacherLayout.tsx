@@ -61,7 +61,7 @@ const TeacherLayout = () => {
             {collapsed ? "•••" : "Main Menu"}
           </p>
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname.startsWith(item.path);
             return (
               <NavLink
                 key={item.path}

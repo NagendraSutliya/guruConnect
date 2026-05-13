@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const StudentNavbar = () => {
   const { user, logout } = useAuth();
   const [institute, setInstitute] = useState<any>(null);
+  const [studentDetails, setStudentDetails] = useState<any>(null);
   const [showProfile, setShowProfile] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const StudentNavbar = () => {
     if (user?.instituteId) {
       api.get(`/public/institute/${user.instituteId}`).then(res => setInstitute(res.data.data)).catch(console.error);
     }
+    // Fetch full student details for the navbar
+    api.get("/student/dashboard").then(res => setStudentDetails(res.data.data)).catch(console.error);
   }, [user]);
 
   useEffect(() => {
@@ -37,18 +40,22 @@ const StudentNavbar = () => {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 sticky top-0 z-40">
+    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 sticky top-0 z-[60]">
       
       {/* Left: Identity */}
       <div className="flex items-center gap-4">
-         <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-slate-800">
-               Student Portal
-            </span>
-            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-               {institute?.instituteName || "Nexus Institute"}
-            </span>
+         <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 font-black text-xs">
+               GC
+            </div>
+            <div className="flex flex-col">
+               <span className="text-[11px] font-black text-slate-800 uppercase tracking-[0.2em] leading-tight">
+                  Student Portal
+               </span>
+               <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest mt-0.5">
+                  {institute?.instituteName || "Nexus Institute"}
+               </span>
+            </div>
          </div>
       </div>
 
@@ -69,48 +76,70 @@ const StudentNavbar = () => {
         <div className="relative" ref={profileRef}>
            <button 
              onClick={() => setShowProfile(!showProfile)}
-             className="flex items-center gap-3 p-1 rounded-full hover:bg-slate-50 transition-all"
+             className="flex items-center gap-3 p-1 pr-3 rounded-xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 shadow-sm"
            >
-              <div className="text-right hidden sm:block">
-                 <p className="text-xs font-bold text-slate-800 leading-none">{user?.name || "Student User"}</p>
-                 <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Grade {user?.grade || "Primary"}</p>
+              <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 overflow-hidden">
+                 {studentDetails?.avatar ? <img src={studentDetails?.avatar} alt="User" /> : <span className="text-[10px] font-black uppercase">{studentDetails?.name?.charAt(0) || 'S'}</span>}
               </div>
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-sm overflow-hidden">
-                 {user?.avatar ? <img src={user.avatar} alt="User" /> : <FiUser size={16} />}
+              <div className="text-left hidden sm:block">
+                 <p className="text-[11px] font-black text-slate-800 leading-none">{studentDetails?.name || user?.name || "Student User"}</p>
+                 <p className="text-[9px] font-black text-indigo-500 mt-1 uppercase tracking-wider">
+                   {studentDetails?.classId?.name ? `Class ${studentDetails.classId.name}` : "Portal Node"} 
+                   {studentDetails?.sectionId?.name ? ` | Section ${studentDetails.sectionId.name}` : ""}
+                 </p>
               </div>
            </button>
 
            {showProfile && (
-             <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-2 animate-fade-in">
-                <div className="px-4 py-2 mb-2 border-b border-slate-50">
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Authenticated Account</p>
-                   <p className="text-xs font-bold text-slate-800 truncate">{user?.email}</p>
+             <div className="absolute right-0 w-56 bg-white border border-slate-200 rounded-lg shadow-2xl z-[70] animate-slideDown overflow-hidden">
+                <div className="px-4 py-2 bg-gradient-to-l from-rose-100 to-green-200 border-b border-slate-100">
+                   <p className="text-xs font-black text-slate-800 truncate">{studentDetails?.name || user?.name}</p>
+                   <p className="text-[10px] font-medium text-slate-500 truncate mt-0.5">{studentDetails?.email || user?.email}</p>
                 </div>
-                <button 
-                  onClick={() => handleNav("/student/profile")}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-all"
-                >
-                   <FiUser size={14} /> My Profile
-                </button>
-                <button 
-                  onClick={() => handleNav("/student/settings")}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-all"
-                >
-                   <FiSettings size={14} /> Portal Settings
-                </button>
-                <button 
-                  onClick={() => handleNav("/student/help")}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-all"
-                >
-                   <FiHelpCircle size={14} /> Student Help
-                </button>
-                <div className="h-px bg-slate-50 my-2" />
-                <button 
-                  onClick={logout}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-all"
-                >
-                   <FiLogOut size={14} /> Terminate Session
-                </button>
+                
+                <div className="space-y-1">
+                  <button 
+                    onClick={() => handleNav("/student/profile")}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[11px] font-black text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all group"
+                  >
+                     <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
+                        <FiUser size={14} />
+                     </div>
+                     My Profile
+                  </button>
+                  <button 
+                    onClick={() => handleNav("/student/settings")}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[11px] font-black text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all group"
+                  >
+                     <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
+                        <FiSettings size={14} />
+                     </div>
+                     Security Settings
+                  </button>
+                  <button 
+                    onClick={() => handleNav("/student/help")}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[11px] font-black text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all group"
+                  >
+                     <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
+                        <FiHelpCircle size={14} />
+                     </div>
+                     Support Hub
+                  </button>
+                </div>
+
+                <div className="h-px bg-slate-200" />
+                
+                <div className="pb-2">
+                  <button 
+                    onClick={logout}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[11px] font-black text-rose-500 hover:bg-rose-50 rounded-xl transition-all group"
+                  >
+                     <div className="w-7 h-7 rounded-lg bg-rose-100/50 flex items-center justify-center text-rose-400 group-hover:bg-white group-hover:shadow-sm transition-all">
+                        <FiLogOut size={14} />
+                     </div>
+                     Logout
+                  </button>
+                </div>
              </div>
            )}
         </div>

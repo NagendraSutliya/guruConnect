@@ -19,11 +19,15 @@ const CopyTimetableModal = ({ open, onClose, onSuccess, assignments, targetClass
   const [loading, setLoading] = useState(false);
 
   const classes = useMemo(() => {
-    return Array.from(new Map(assignments.map((a) => [a.classId._id, a.classId])).values());
+    return Array.from(new Map(
+      assignments
+        .filter(a => a.classId?._id)
+        .map((a) => [a.classId!._id, a.classId!])
+    ).values());
   }, [assignments]);
 
   const sections = useMemo(() => {
-    const filtered = assignments.filter((a) => a.classId._id === sourceClassId && a.sectionId);
+    const filtered = assignments.filter((a) => a.classId?._id === sourceClassId && a.sectionId?._id);
     return Array.from(new Map(filtered.map((a) => [a.sectionId!._id, a.sectionId!])).values());
   }, [assignments, sourceClassId]);
 

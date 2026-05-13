@@ -60,7 +60,7 @@ exports.getRoutine = async (req, res) => {
 // ================= GET TEACHER ROUTINE =================
 exports.getTeacherRoutine = async (req, res) => {
   try {
-    const teacherId = req.user._id;
+    const teacherId = req.user.id;
 
     const data = await Routine.find({ teacherId })
       .populate("classId", "name")
@@ -79,6 +79,8 @@ exports.getTeacherRoutine = async (req, res) => {
 exports.getStudentRoutine = async (req, res) => {
   try {
     const { classId, sectionId } = req.user;
+    
+    // If not in token, we need to handle it. But assuming standard student token.
 
     const data = await Routine.find({ classId, sectionId })
       .populate("subjectId", "name")

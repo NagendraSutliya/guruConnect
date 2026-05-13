@@ -68,27 +68,36 @@ const RoutinePanel = () => {
   }, [selectedClassId, selectedSectionId]);
 
   const classes = useMemo(() => {
-    return Array.from(new Map(assignments.map((a) => [a.classId._id, a.classId])).values());
+    return Array.from(new Map(
+      assignments
+        .filter(a => a.classId?._id)
+        .map((a) => [a.classId!._id, a.classId!])
+    ).values());
   }, [assignments]);
 
   const sections = useMemo(() => {
-    const filtered = assignments.filter((a) => a.classId._id === selectedClassId && a.sectionId);
+    const filtered = assignments.filter((a) => a.classId?._id === selectedClassId && a.sectionId?._id);
     return Array.from(new Map(filtered.map((a) => [a.sectionId!._id, a.sectionId!])).values());
   }, [assignments, selectedClassId]);
 
   const subjects = useMemo(() => {
     return assignments.filter(
-      (a) => a.classId._id === selectedClassId && a.sectionId?._id === selectedSectionId && a.subjectId && a.teacherId
+      (a) => a.classId?._id === selectedClassId && a.sectionId?._id === selectedSectionId && a.subjectId?._id && a.teacherId?._id
     );
   }, [assignments, selectedClassId, selectedSectionId]);
 
   const timeSlots = useMemo(() => {
-    let slots = routine.map((r) => `${r.startTime}-${r.endTime}`);
-    if (slots.length === 0) slots = defaultTimeSlots;
-    slots = Array.from(new Set(slots));
+    // Baseline slots that should always be present
+    const baseSlots = [...defaultTimeSlots];
+    
+    // Add any custom slots from existing routine
+    const customSlots = routine.map((r) => `${r.startTime}-${r.endTime}`);
+    
+    // Merge and deduplicate
+    let allSlots = Array.from(new Set([...baseSlots, ...customSlots]));
 
     const timeRegex = /^\d{2}:\d{2}-\d{2}:\d{2}$/;
-    return slots.filter((s) => timeRegex.test(s)).sort((a, b) => {
+    return allSlots.filter((s) => timeRegex.test(s)).sort((a, b) => {
       const timeA = a.split("-")[0];
       const timeB = b.split("-")[0];
       return timeA.localeCompare(timeB);
@@ -216,21 +225,15 @@ const RoutinePanel = () => {
     e.preventDefault(); // allow drop
   };
 
-  const subjectMap = useMemo(() => {
-    const map: Record<string, { subject: string; teacher: string }> = {};
-    subjects.forEach((s) => {
-      map[s.subjectId._id] = { subject: s.subjectId.name, teacher: s.teacherId.name };
-    });
-    return map;
-  }, [subjects]);
 
   return (
-    <div className="space-y-6 pb-12 animate-fadeIn">
-      {/* Header Section */}
-      <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-2">
+      
+      {/* Sticky Header - Aura Style */}
+      <div className="bg-gradient-to-r from-slate-50/90 via-white/80 to-slate-100/90 backdrop-blur-xl -mx-6 px-6 py-3 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 mb-2 shadow-sm sticky top-0 z-20">
         <div>
-          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Academic Timetable</h2>
-          <p className="text-slate-500 text-sm font-medium mt-1">Configure weekly routines and class schedules for students.</p>
+          <h1 className="text-xl font-bold text-slate-800 tracking-tight">Academic Timetable</h1>
+          <p className="text-xs text-slate-500 font-medium">Synchronize weekly lectures and classroom distributions.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -264,176 +267,174 @@ const RoutinePanel = () => {
         </div>
       </div>
 
-      {/* Selection Bar */}
-      <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/20 shadow-sm flex flex-col md:flex-row items-center gap-6">
-         <div className="flex flex-col gap-1.5 w-full md:w-64">
-            <label className="text-[11px] font-black text-slate-600 uppercase tracking-widest ml-1">Academic Grade</label>
-           <div className="relative">
-              <select
-                value={selectedClassId}
-                onChange={(e) => {setSelectedClassId(e.target.value); setSelectedSectionId("");}}
-                className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border-none rounded-2xl text-xs font-black uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer"
-              >
-                <option value="">Select Class</option>
-                {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
-              </select>
-              <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+      <div className="space-y-6 pt-2">
+        {/* Selection Bar */}
+        <div className="card-clean px-4 py-2 flex flex-col md:flex-row items-end gap-6 bg-white/40 backdrop-blur-sm border-slate-200 shadow-sm">
+           <div className="flex flex-col gap-2 w-full md:w-64">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Class</label>
+              <div className="relative group">
+                <select
+                  value={selectedClassId}
+                  onChange={(e) => {setSelectedClassId(e.target.value); setSelectedSectionId("");}}
+                  className="w-full pl-5 pr-10 py-2 bg-white group-hover:bg-white border-2 border-slate-200 group-hover:border-blue-400 rounded-2xl text-xs font-black uppercase tracking-wider focus:ring-1 focus:ring-blue-500/10 transition-all outline-none appearance-none cursor-pointer"
+                >
+                  <option value="">Select Class</option>
+                  {classes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                </select>
+                <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+              </div>
            </div>
+
+           <div className="flex flex-col gap-2 w-full md:w-64">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Section</label>
+              <div className="relative group">
+                <select
+                  value={selectedSectionId}
+                  disabled={!selectedClassId}
+                  onChange={(e) => setSelectedSectionId(e.target.value)}
+                  className="w-full pl-5 pr-10 py-2 bg-white group-hover:bg-white border-2 border-slate-200 group-hover:border-blue-400 rounded-2xl text-xs font-black uppercase tracking-wider focus:ring-1 focus:ring-blue-500/10 transition-all outline-none appearance-none cursor-pointer"
+                >
+                  <option value="">Select Section</option>
+                  {sections.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
+                </select>
+                <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+              </div>
+           </div>
+
+           {selectedClassId && selectedSectionId && (
+             <div className="hidden lg:flex items-center gap-4 px-6 py-2 bg-indigo-50 rounded-2xl border border-indigo-100 ml-auto animate-fadeIn">
+                <div className="w-10 h-10 bg-indigo-600 rounded-xl text-white flex items-center justify-center shadow-lg shadow-indigo-100">
+                   <FiCalendar size={18} />
+                </div>
+                <div>
+                   <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Active Focus</p>
+                   <p className="text-sm font-black text-slate-800">Grade {classes.find(c => c._id === selectedClassId)?.name} — {sections.find(s => s._id === selectedSectionId)?.name}</p>
+                </div>
+             </div>
+           )}
         </div>
 
-         <div className="flex flex-col gap-1.5 w-full md:w-64">
-            <label className="text-[11px] font-black text-slate-600 uppercase tracking-widest ml-1">Class Section</label>
-           <div className="relative">
-              <select
-                value={selectedSectionId}
-                disabled={!selectedClassId}
-                onChange={(e) => setSelectedSectionId(e.target.value)}
-                className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border-none rounded-2xl text-xs font-black uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50"
-              >
-                <option value="">Select Section</option>
-                {sections.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
-              </select>
-              <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-           </div>
-        </div>
+        {/* Grid Content */}
+        {!selectedClassId || !selectedSectionId ? (
+          <div className="card-clean py-32 text-center bg-white/40 border-slate-200 shadow-sm">
+             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+               <FiCalendar size={32} />
+             </div>
+             <h3 className="text-lg font-black text-slate-800">No Timetable Selected</h3>
+             <p className="text-xs text-slate-500 font-medium mt-1">Select a grade and section above to initialize management.</p>
+          </div>
+        ) : subjects.length === 0 ? (
+          <div className="card-clean py-32 text-center bg-white/40 border-slate-200 shadow-sm">
+             <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-400">
+               <FiFilter size={32} />
+             </div>
+             <h3 className="text-lg font-black text-slate-800">Unassigned Assets</h3>
+             <p className="text-xs text-slate-500 font-medium mt-1">No faculty-subject linkages detected for this section.</p>
+          </div>
+        ) : (
+          <div id="timetable-grid" className="card-clean border-slate-200 shadow-sm overflow-hidden bg-white/60 p-1">
+            <div className="overflow-x-auto">
+              <table className="w-full border-separate border-spacing-1">
+                <thead>
+                  <tr>
+                    <th className="w-20 px-1 py-2 text-center">
+                      <FiClock className="mx-auto text-slate-400 mb-0.5" size={14} />
+                      <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Timeline</span>
+                    </th>
+                    {days.map((d) => (
+                      <th key={d} className="min-w-[140px] px-2 py-2 text-center bg-slate-50/50 rounded-xl border border-slate-100">
+                        <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">{d}</span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {timeSlots.map((time) => (
+                    <tr key={time}>
+                      {/* Time Column */}
+                      <td className="px-1 py-1">
+                        <div className="flex flex-col items-center justify-center bg-white border border-slate-100 rounded-xl h-full py-3 px-1 shadow-sm">
+                          <span className="text-[10px] font-black text-slate-800">{time.split("-")[0]}</span>
+                          <div className="w-3 h-[1px] bg-slate-200 my-0.5" />
+                          <span className="text-[10px] font-black text-slate-800">{time.split("-")[1]}</span>
+                        </div>
+                      </td>
 
-        {selectedClassId && selectedSectionId && (
-          <div className="hidden lg:flex items-center gap-3 px-6 py-4 bg-indigo-50 rounded-3xl border border-indigo-100 ml-auto">
-             <div className="p-2 bg-indigo-600 rounded-xl text-white">
-                <FiCalendar />
-             </div>
-             <div>
-                <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">Active Schedule</p>
-                <p className="text-sm font-black text-indigo-600">Class {classes.find(c => c._id === selectedClassId)?.name} - {sections.find(s => s._id === selectedSectionId)?.name}</p>
-             </div>
+                      {/* Slots */}
+                      {days.map((day) => {
+                        const slot = getSlot(day, time);
+                        const isLunch = time === "12:00-13:00";
+
+                        return (
+                          <td
+                            key={day}
+                            onClick={() => !isLunch && openModal(day, time, slot)}
+                            onDragOver={isLunch ? undefined : handleDragOver}
+                            onDrop={isLunch ? undefined : (e) => handleDrop(e, day, time)}
+                            className={`h-24 align-top transition-all duration-300 ${isLunch ? "opacity-40" : ""}`}
+                          >
+                            {isLunch ? (
+                              <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/30">
+                                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.6em] rotate-90">Lunch</span>
+                              </div>
+                            ) : slot ? (
+                              (() => {
+                                const subjectName = typeof slot.subjectId === 'object' ? (slot.subjectId as any).name : "Unknown";
+                                const teacherName = typeof slot.teacherId === 'object' ? (slot.teacherId as any).name : "Unknown";
+                                const color = getSubjectColor(subjectName);
+
+                                return (
+                                  <div
+                                    draggable
+                                    onDragStart={(e) => { e.stopPropagation(); handleDragStart(e, slot); }}
+                                    className={`group relative h-full flex flex-col justify-between p-2.5 rounded-xl border-l-[4px] border border-slate-200 transition-all duration-300 cursor-grab active:cursor-grabbing shadow-sm hover:shadow-lg hover:-translate-y-0.5 bg-white hover:bg-slate-50 ${color.leftBorder}`}
+                                  >
+                                    <div className="flex items-start justify-between">
+                                      <div className={`px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-widest ${color.badgeBg} ${color.text}`}>
+                                        Subject
+                                      </div>
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); deleteSlot(slot); }}
+                                        className="text-slate-300 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100 p-1 hover:bg-rose-50 rounded-lg"
+                                      >
+                                        <FiTrash2 size={12} />
+                                      </button>
+                                    </div>
+
+                                    <h4 className="text-[11px] font-black text-slate-800 leading-tight mt-1 line-clamp-2">
+                                      {subjectName}
+                                    </h4>
+
+                                    <div className="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-slate-100">
+                                      <div className={`w-4 h-4 rounded-md flex items-center justify-center font-black text-[8px] ${color.badgeBg} ${color.text}`}>
+                                        {teacherName.charAt(0)}
+                                      </div>
+                                      <p className="text-[8px] font-black text-slate-400 truncate uppercase tracking-widest">
+                                        {teacherName}
+                                      </p>
+                                    </div>
+                                  </div>
+                                );
+                              })()
+                            ) : (
+                              <div className="group h-full flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-white/30 hover:bg-white hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-50/50 transition-all duration-300 cursor-pointer">
+                                <div className="w-7 h-7 rounded-lg bg-slate-50 text-slate-300 group-hover:bg-indigo-600 group-hover:text-white flex items-center justify-center transition-all duration-300 shadow-sm group-hover:shadow-indigo-100">
+                                  <FiPlus size={14} />
+                                </div>
+                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest group-hover:text-indigo-600 transition-all">Add</span>
+                              </div>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
-
-      {/* Grid Content */}
-      {!selectedClassId || !selectedSectionId ? (
-        <div className="bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 py-32 text-center shadow-sm">
-           <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-slate-300">
-             <FiCalendar size={32} />
-           </div>
-           <h3 className="text-lg font-black text-slate-800">No Timetable Selected</h3>
-           <p className="text-slate-500 font-medium mt-2">Select a class and section above to manage their weekly schedule.</p>
-        </div>
-      ) : subjects.length === 0 ? (
-        <div className="bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 py-32 text-center shadow-sm">
-           <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-amber-300">
-             <FiFilter size={32} />
-           </div>
-           <h3 className="text-lg font-black text-slate-800">Prerequisites Missing</h3>
-           <p className="text-slate-500 font-medium mt-2">No subjects or teachers have been assigned to this section yet.</p>
-        </div>
-      ) : (
-        <div id="timetable-grid" className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto p-3">
-            <table className="w-full border-separate border-spacing-1.5">
-              <thead>
-                <tr>
-                  <th className="w-20 px-1 py-4 text-center">
-                    <FiClock className="mx-auto text-slate-400 mb-1" size={16} />
-                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Time</span>
-                  </th>
-                  {days.map((d) => (
-                    <th key={d} className="min-w-[150px] px-2 py-4 text-center bg-slate-50 rounded-2xl border border-slate-100">
-                      <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">{d}</span>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {timeSlots.map((time) => (
-                  <tr key={time}>
-                    {/* Time Column */}
-                    <td className="px-2 py-4">
-                      <div className="flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-2xl h-full py-4 px-2">
-                        <span className="text-xs font-black text-slate-700">{time.split("-")[0]}</span>
-                        <span className="text-[10px] font-bold text-slate-400 my-0.5">to</span>
-                        <span className="text-xs font-black text-slate-700">{time.split("-")[1]}</span>
-                      </div>
-                    </td>
-
-                    {/* Slots */}
-                    {days.map((day) => {
-                      const slot = getSlot(day, time);
-                      const isLunch = time === "12:00-13:00";
-
-                      return (
-                        <td
-                          key={day}
-                          onClick={() => !isLunch && openModal(day, time, slot)}
-                          onDragOver={isLunch ? undefined : handleDragOver}
-                          onDrop={isLunch ? undefined : (e) => handleDrop(e, day, time)}
-                          className={`h-32 align-top ${isLunch ? "bg-slate-50/50" : ""}`}
-                        >
-                          {isLunch ? (
-                            <div className="h-full flex items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-amber-50/20">
-                               <span className="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] rotate-90">Lunch Break</span>
-                            </div>
-                          ) : slot ? (
-                            (() => {
-                              const sId = typeof slot.subjectId === 'string' ? slot.subjectId : slot.subjectId?._id;
-                              const subjectName = subjectMap[sId]?.subject || (typeof slot.subjectId === 'object' ? (slot.subjectId as any).name : "Unknown");
-                              const teacherName = subjectMap[sId]?.teacher || (typeof slot.teacherId === 'object' ? (slot.teacherId as any).name : "Unknown");
-                              const color = getSubjectColor(subjectName);
-
-                              return (
-                                <div
-                                  draggable
-                                  onDragStart={(e) => { e.stopPropagation(); handleDragStart(e, slot); }}
-                                  className={`group relative h-full flex flex-col justify-between p-3 rounded-2xl border-l-4 border-y border-r transition-all duration-300 cursor-grab active:cursor-grabbing shadow-sm hover:shadow-md hover:-translate-y-1 ${color.bg} ${color.border} ${color.leftBorder}`}
-                                >
-                                  {/* Top Row: Delete & Badge */}
-                                  <div className="flex items-start justify-between mb-1">
-                                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider ${color.badgeBg} ${color.text}`}>
-                                      Subject
-                                    </span>
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); deleteSlot(slot); }}
-                                      className="text-slate-400 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100 bg-white/50 hover:bg-white p-1 rounded-full"
-                                    >
-                                      <FiTrash2 size={12} />
-                                    </button>
-                                  </div>
-
-                                  {/* Middle Row: Subject Name */}
-                                  <p className={`text-xs font-black leading-tight mb-1 truncate-2-lines ${color.text}`}>
-                                    {subjectName}
-                                  </p>
-
-                                  {/* Bottom Row: Teacher */}
-                                  <div className="flex items-center gap-1.5 mt-auto">
-                                    <div className={`w-4 h-4 rounded-md flex items-center justify-center text-[8px] font-black ${color.text} ${color.badgeBg}`}>
-                                      {teacherName.charAt(0)}
-                                    </div>
-                                    <p className={`text-[9px] font-bold truncate ${color.text} opacity-80`}>
-                                      {teacherName}
-                                    </p>
-                                  </div>
-                                </div>
-                              );
-                            })()
-                          ) : (
-                            <div className="group h-full flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 hover:bg-blue-50/50 hover:border-blue-300 transition-all duration-300 cursor-pointer">
-                              <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-500 flex items-center justify-center transition-all">
-                                <FiPlus size={16} />
-                              </div>
-                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 group-hover:text-blue-500 transition-all">Add Slot</span>
-                            </div>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       <RoutineModal
         open={modalOpen}

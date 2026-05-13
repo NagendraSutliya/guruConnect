@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import PublicLayout from "../layouts/PublicLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import TeacherLayout from "../layouts/TeacherLayout";
+import { TeacherProvider } from "../context/TeacherContext";
 
 import Landing from "../pages/Landing";
 import Login from "../pages/auth/Login";
@@ -172,7 +173,9 @@ export default function AppRoutes() {
         path="/teacher"
         element={
           <TeacherRoute>
-            <TeacherLayout />
+            <TeacherProvider>
+              <TeacherLayout />
+            </TeacherProvider>
           </TeacherRoute>
         }
       >
