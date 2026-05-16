@@ -28,6 +28,7 @@ const TeacherSchema = new mongoose.Schema(
     bankAccountNo: { type: String },
     ifscCode: { type: String },
     basicSalary: { type: Number, default: 0 },
+    profileImage: { type: String },
 
     role: { type: String, default: "teacher" },
     status: {

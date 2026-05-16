@@ -8,23 +8,28 @@ const {
   deleteStudyMaterial,
 } = require("../../../controllers/teacher/StudyMaterialController");
 
-const storage = multer.diskStorage({
-  destination: "uploads/",
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName);
-  },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ["application/pdf", "image/png", "image/jpeg"];
-
-    if (!allowedTypes.includes(file.mimetype)) {
-      return cb(new Error("Only PDF, PNG, JPG allowed"), false);
+    // accept generic documents for study material
+    const allowedMimeTypes = [
+       "application/pdf", 
+       "image/png", 
+       "image/jpeg", 
+       "application/msword", 
+       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+       "application/zip",
+       "application/x-zip-compressed",
+       "application/vnd.ms-excel",
+       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+       "text/plain"
+    ];
+    
+    if (!allowedMimeTypes.includes(file.mimetype) && !file.originalname.match(/\.(pdf|doc|docx|zip|xls|xlsx|txt|png|jpg|jpeg)$/i)) {
+      return cb(new Error("File format not supported. Please upload documents or images."), false);
     }
-
     cb(null, true);
   },
 });

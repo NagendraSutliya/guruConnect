@@ -41,8 +41,8 @@ const StudentLayout = () => {
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">
           {!collapsed && (
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black">S</div>
-              <span className="text-white font-bold tracking-tight text-lg">Nexus<span className="text-indigo-400">Hub</span></span>
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black">G</div>
+              <span className="text-white font-bold tracking-tight text-lg">Guru<span className="text-indigo-400">Connect</span></span>
             </div>
           )}
           <button 

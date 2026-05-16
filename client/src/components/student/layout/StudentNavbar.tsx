@@ -13,11 +13,24 @@ const StudentNavbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.instituteId) {
-      api.get(`/public/institute/${user.instituteId}`).then(res => setInstitute(res.data.data)).catch(console.error);
-    }
-    // Fetch full student details for the navbar
-    api.get("/student/dashboard").then(res => setStudentDetails(res.data.data)).catch(console.error);
+    const fetchData = async () => {
+      try {
+        // 1. Fetch student profile (contains instituteId)
+        const studentRes = await api.get("/student/dashboard");
+        const studentData = studentRes.data.data;
+        setStudentDetails(studentData);
+
+        // 2. Fetch institute details using ID from profile or user context
+        const instId = studentData?.instituteId || user?.instituteId;
+        if (instId) {
+          const instRes = await api.get(`/public/institute/${instId}`);
+          setInstitute(instRes.data.data);
+        }
+      } catch (err) {
+        console.error("Navbar data fetch error:", err);
+      }
+    };
+    fetchData();
   }, [user]);
 
   useEffect(() => {
@@ -45,15 +58,17 @@ const StudentNavbar = () => {
       {/* Left: Identity */}
       <div className="flex items-center gap-4">
          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 font-black text-xs">
-               GC
+            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-100 font-black text-xs overflow-hidden">
+               {institute?.instituteName 
+                 ? institute.instituteName.split(' ').map((n: any) => n[0]).join('').toUpperCase().slice(0, 2)
+                 : ""}
             </div>
             <div className="flex flex-col">
                <span className="text-[11px] font-black text-slate-800 uppercase tracking-[0.2em] leading-tight">
                   Student Portal
                </span>
                <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest mt-0.5">
-                  {institute?.instituteName || "Nexus Institute"}
+                  {institute?.instituteName || ""}
                </span>
             </div>
          </div>

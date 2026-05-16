@@ -405,9 +405,17 @@ const TeacherPanel = () => {
                       {/* Teacher Info */}
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                            {initials}
-                          </div>
+                          {teacher.profileImage ? (
+                            <img 
+                              src={teacher.profileImage} 
+                              alt={teacher.name} 
+                              className="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-white"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                              {initials}
+                            </div>
+                          )}
                           <div>
                             <p className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">
                               {teacher.name || "Unnamed"}

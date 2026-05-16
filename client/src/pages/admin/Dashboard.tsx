@@ -13,29 +13,40 @@ export default function Dashboard() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [selectedRange, setSelectedRange] = useState("7days");
   const analyticsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    api.get("/admin/stats")
+  const fetchStats = (range: string) => {
+    // Only show full page loader on initial load
+    if (!stats) setLoading(true);
+    
+    api.get(`/admin/stats?range=${range}`)
       .then(res => {
         setStats(res.data.data);
       })
       .catch(err => console.error("Stats fetch error:", err))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchStats(selectedRange);
+  }, [selectedRange]);
 
   const handleCardClick = (category: string) => {
-  setActiveCategory(category);
+    setActiveCategory(category);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        analyticsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 50);
+    });
+  };
 
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      analyticsRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 50);
-  });
-};
+  const handleRangeChange = (range: string) => {
+    setSelectedRange(range);
+  };
 
   if (authLoading || loading) return (
     <div className="flex items-center justify-center h-64">
@@ -46,7 +57,7 @@ export default function Dashboard() {
   if (!user) return <p className="text-slate-400 text-center py-20 text-xs font-bold uppercase tracking-widest">Unauthorized Access</p>;
 
   return (
-    <div className="pb-12 max-w-[1400px] mx-auto space-y-8 animate-fadeIn">
+    <div className="pb-12 space-y-6 animate-fadeIn">
       {/* 1. Compact Hero Header */}
       <DashboardHero instituteName={user.instituteName || "Administrator"} />
 
@@ -91,7 +102,12 @@ export default function Dashboard() {
             Statistical Analysis
         </h2>
         <div className="w-full min-w-0">
-        <AnalyticsChart stats={stats} activeCategory={activeCategory} /></div>
+        <AnalyticsChart 
+          stats={stats} 
+          activeCategory={activeCategory} 
+          selectedRange={selectedRange}
+          onRangeChange={handleRangeChange}
+        /></div>
       </div>
     </div>
   );

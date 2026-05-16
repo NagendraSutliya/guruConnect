@@ -14,8 +14,10 @@ export interface Teacher {
   basicSalary?: number;
   joiningDate?: string;
   status: "active" | "inactive";
-  profilePic?: string;
+  profileImage?: string;
   bio?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface TeacherFormData {

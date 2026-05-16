@@ -47,6 +47,11 @@ exports.loginTeacher = async (req, res) => {
       name: teacher.name,
       email: teacher.email,
       instituteId: teacher.instituteId,
+      profileImage: teacher.profileImage,
+      phone: teacher.phone,
+      address: teacher.address,
+      designation: teacher.designation,
+      qualification: teacher.qualification,
     });
   } catch (err) {
     console.error(err);

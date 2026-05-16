@@ -7,6 +7,7 @@ const {
   getAttendanceSummary,
   getTeacherProfile,
   updateTeacherProfile,
+  updateTeacherImage,
   getTeacherDashboardCharts,
 } = require("../../../controllers/teacher/TeacherController");
 
@@ -16,6 +17,7 @@ router.use(requireTeacher);
 
 router.get("/profile", getTeacherProfile);
 router.put("/profile", updateTeacherProfile);
+router.patch("/profile/image", updateTeacherImage);
 router.get("/stats", getTeacherStats);
 router.get("/dashboard/charts", getTeacherDashboardCharts);
 router.get("/overview", getTeacherOverview);

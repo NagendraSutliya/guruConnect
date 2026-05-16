@@ -19,6 +19,7 @@ const StudyMaterialSchema = new mongoose.Schema(
     fileUrl: { type: String, required: true },
     fileName: { type: String },
     fileType: { type: String },
+    cloudinaryPublicId: { type: String },
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Teacher",

@@ -11,6 +11,7 @@ interface Event {
 
 const InstitutionCalendarModal = ({ onClose }: { onClose: () => void }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   
   const events: Event[] = [
     { date: "2026-05-01", title: "Labour Day", type: "holiday" },
@@ -31,27 +32,32 @@ const InstitutionCalendarModal = ({ onClose }: { onClose: () => void }) => {
 
   const days = [];
   for (let i = 0; i < firstDayOfMonth; i++) {
-    days.push(<div key={`empty-${i}`} className="h-24 border border-slate-50" />);
+    days.push(<div key={`empty-${i}`} className="border-b border-r border-slate-100 bg-slate-50/50" />);
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const dayEvents = events.filter(e => e.date === dateStr);
     const isToday = new Date().toISOString().slice(0, 10) === dateStr;
+    const isSelected = selectedDate === dateStr;
 
     days.push(
-      <div key={d} className={`h-24 border border-slate-50 p-2 transition-all hover:bg-slate-50/50 relative group cursor-pointer ${isToday ? "bg-indigo-50/30" : ""}`}>
-        <span className={`text-xs font-bold ${isToday ? "text-indigo-600 w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center" : "text-slate-400"}`}>
+      <div 
+         key={d} 
+         onClick={() => setSelectedDate(isSelected ? null : dateStr)}
+         className={`border-b border-r border-slate-100 p-1.5 md:p-2 flex flex-col min-h-0 transition-all hover:bg-indigo-50/20 relative group cursor-pointer ${isToday ? "bg-indigo-50/60" : "bg-white"} ${isSelected ? "ring-inset ring-2 ring-indigo-500 z-10" : ""}`}
+      >
+        <span className={`text-[10px] md:text-xs font-bold w-5 h-5 md:w-6 md:h-6 shrink-0 flex items-center justify-center rounded-full mb-1 transition-colors ${isToday ? "bg-indigo-600 text-white shadow-md shadow-indigo-300" : isSelected ? "bg-indigo-100 text-indigo-700" : "text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-700"}`}>
           {d}
         </span>
-        <div className="mt-1 space-y-1">
+        <div className="flex-1 overflow-y-auto space-y-1 custom-scrollbar min-h-0 pr-0.5 pointer-events-none">
           {dayEvents.map((e, idx) => (
             <div 
               key={idx} 
-              className={`text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded truncate ${
-                e.type === 'holiday' ? 'bg-rose-50 text-rose-600' : 
-                e.type === 'exam' ? 'bg-amber-50 text-amber-600' : 
-                'bg-emerald-50 text-emerald-600'
+              className={`text-[7px] md:text-[8px] font-black uppercase tracking-tighter px-1 md:px-1.5 py-0.5 rounded truncate shadow-sm ${
+                e.type === 'holiday' ? 'bg-rose-50 text-rose-600 border border-rose-100' : 
+                e.type === 'exam' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 
+                'bg-emerald-50 text-emerald-600 border border-emerald-100'
               }`}
             >
               {e.title}
@@ -60,6 +66,11 @@ const InstitutionCalendarModal = ({ onClose }: { onClose: () => void }) => {
         </div>
       </div>
     );
+  }
+
+  const remainingCells = 42 - days.length;
+  for (let i = 0; i < remainingCells; i++) {
+    days.push(<div key={`empty-end-${i}`} className="border-b border-r border-slate-100 bg-slate-50/50" />);
   }
 
   return (
@@ -83,6 +94,12 @@ const InstitutionCalendarModal = ({ onClose }: { onClose: () => void }) => {
           </div>
           
           <div className="flex items-center gap-4">
+            <button 
+               onClick={() => setCurrentDate(new Date())} 
+               className="px-4 py-2.5 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 transition-all border border-indigo-100 shadow-sm"
+            >
+               Today
+            </button>
             <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
               <button onClick={prevMonth} className="p-2 hover:bg-slate-50 rounded-lg transition-all text-slate-400 hover:text-indigo-600">
                 <FiChevronLeft size={20} />
@@ -104,60 +121,89 @@ const InstitutionCalendarModal = ({ onClose }: { onClose: () => void }) => {
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
           {/* Main Calendar Grid */}
-          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-            <div className="grid grid-cols-7 mb-4">
+          <div className="flex-1 flex flex-col p-6 bg-slate-50/30">
+            <div className="grid grid-cols-7 mb-2 shrink-0">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest pb-4">
+                <div key={day} className="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest pb-2">
                   {day}
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-7 border-t border-l border-slate-50 rounded-xl overflow-hidden shadow-sm">
+            <div className="grid grid-cols-7 grid-rows-6 border-t border-l border-slate-100 rounded-xl overflow-hidden shadow-sm flex-1 bg-white">
               {days}
             </div>
           </div>
 
           {/* Side Panel: Upcoming Events */}
           <div className="w-80 bg-slate-50 border-l border-slate-100 flex flex-col shrink-0">
-             <div className="p-6 border-b border-slate-200/60">
-                <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest mb-1">Upcoming Events</h3>
-                <p className="text-[10px] font-bold text-slate-400 tracking-tight">Syncing with institutional registry</p>
+             <div className="p-6 border-b border-slate-200/60 flex items-center justify-between">
+                <div>
+                   <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest mb-1">
+                      {selectedDate ? "Selected Date" : "Upcoming Events"}
+                   </h3>
+                   <p className="text-[10px] font-bold text-slate-400 tracking-tight">
+                      {selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) : "Syncing with institutional registry"}
+                   </p>
+                </div>
+                {selectedDate && (
+                   <button onClick={() => setSelectedDate(null)} className="p-1.5 bg-slate-200/50 hover:bg-slate-200 text-slate-500 rounded-lg transition-colors">
+                      <FiX size={14} />
+                   </button>
+                )}
              </div>
              
              <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
-                {events.filter(e => new Date(e.date) >= new Date()).map((e, i) => (
-                  <div key={i} className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm hover:border-indigo-200 transition-all group cursor-pointer">
-                    <div className="flex items-center justify-between mb-2">
-                       <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
-                         e.type === 'holiday' ? 'bg-rose-50 text-rose-600' : 
-                         e.type === 'exam' ? 'bg-amber-50 text-amber-600' : 
-                         'bg-emerald-50 text-emerald-600'
-                       }`}>
-                         {e.type}
-                       </span>
-                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
-                         {new Date(e.date).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
-                       </span>
-                    </div>
-                    <h4 className="text-xs font-black text-slate-800 group-hover:text-indigo-600 transition-colors">{e.title}</h4>
-                    {(e.time || e.location) && (
-                      <div className="mt-3 flex flex-wrap gap-3">
-                         {e.time && (
-                           <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400">
-                              <FiClock size={10} className="text-indigo-500" />
-                              {e.time}
+                {(() => {
+                  const filteredEvents = selectedDate 
+                    ? events.filter(e => e.date === selectedDate)
+                    : events.filter(e => new Date(e.date) >= new Date());
+                  
+                  if (filteredEvents.length === 0) {
+                     return (
+                        <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-300 shadow-sm border border-slate-100 mb-3">
+                              <FiCalendar size={20} />
                            </div>
-                         )}
-                         {e.location && (
-                           <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400">
-                              <FiMapPin size={10} className="text-rose-500" />
-                              {e.location}
-                           </div>
-                         )}
+                           <p className="text-xs font-bold text-slate-500">No events scheduled.</p>
+                           <p className="text-[10px] text-slate-400 mt-1">This day is completely free.</p>
+                        </div>
+                     );
+                  }
+
+                  return filteredEvents.map((e, i) => (
+                    <div key={i} className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm hover:border-indigo-200 transition-all group cursor-pointer">
+                      <div className="flex items-center justify-between mb-2">
+                         <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                           e.type === 'holiday' ? 'bg-rose-50 text-rose-600' : 
+                           e.type === 'exam' ? 'bg-amber-50 text-amber-600' : 
+                           'bg-emerald-50 text-emerald-600'
+                         }`}>
+                           {e.type}
+                         </span>
+                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
+                           {new Date(e.date).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
+                         </span>
                       </div>
-                    )}
-                  </div>
-                ))}
+                      <h4 className="text-xs font-black text-slate-800 group-hover:text-indigo-600 transition-colors">{e.title}</h4>
+                      {(e.time || e.location) && (
+                        <div className="mt-3 flex flex-wrap gap-3">
+                           {e.time && (
+                             <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400">
+                                <FiClock size={10} className="text-indigo-500" />
+                                {e.time}
+                             </div>
+                           )}
+                           {e.location && (
+                             <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400">
+                                <FiMapPin size={10} className="text-rose-500" />
+                                {e.location}
+                             </div>
+                           )}
+                        </div>
+                      )}
+                    </div>
+                  ));
+                })()}
              </div>
              
              <div className="p-6 bg-white border-t border-slate-100">

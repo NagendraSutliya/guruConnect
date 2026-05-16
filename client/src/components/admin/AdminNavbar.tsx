@@ -41,6 +41,7 @@ const AdminNavbar = () => {
   });
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [logoUrl, setLogoUrl] = useState("");
 
   const fetchRealNotifications = async () => {
     setLoadingNotifications(true);
@@ -135,29 +136,25 @@ const AdminNavbar = () => {
   useEffect(() => {
     fetchRealNotifications();
 
-    // Fetch email if missing or if it's the dummy one
-    const isDummyEmail = !user?.email || user?.email === "admin@guruconnect.com";
-    if (user && isDummyEmail) {
-      api.get("/admin/profile")
-        .then(res => {
-          const realEmail = res.data.data?.email;
-          if (realEmail) {
-            setAdminEmail(realEmail);
-            // Update local storage for persistence
-            const updatedUser = { ...user, email: realEmail };
-            localStorage.setItem("admin", JSON.stringify(updatedUser));
-          } else {
-            // Fallback if no email found in response
-            setAdminEmail(user?.email || "No email set");
-          }
-        })
-        .catch(err => {
-          console.error("Profile fetch error:", err);
-          setAdminEmail(user?.email || "Email unavailable");
-        });
-    } else if (user?.email) {
-      setAdminEmail(user.email);
-    }
+    // Fetch profile for email and logo
+    api.get("/admin/profile")
+      .then(res => {
+        const data = res.data.data;
+        if (data) {
+          if (data.email) setAdminEmail(data.email);
+          if (data.logoUrl) setLogoUrl(data.logoUrl);
+          
+          // Update local storage for persistence across components
+          const saved = localStorage.getItem("admin");
+          const currentUser = saved ? JSON.parse(saved) : {};
+          localStorage.setItem("admin", JSON.stringify({ 
+            ...currentUser, 
+            email: data.email,
+            logoUrl: data.logoUrl 
+          }));
+        }
+      })
+      .catch(err => console.error("Profile fetch error:", err));
 
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -330,7 +327,11 @@ const AdminNavbar = () => {
             }`}
           >
             <div className="relative">
-              <FaUserCircle className="text-3xl text-slate-400" />
+              {logoUrl ? (
+                <img src={logoUrl} alt="admin" className="w-8 h-8 rounded-full object-cover border border-slate-200" />
+              ) : (
+                <FaUserCircle className="text-3xl text-slate-400" />
+              )}
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
             </div>
             <div className="text-left hidden md:block">
@@ -343,9 +344,14 @@ const AdminNavbar = () => {
 
           {showProfileDropdown && (
             <div className="absolute right-0 mt-3 w-56 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-dropdown origin-top-right">
-              <div className="p-4 bg-gradient-to-br from-indigo-600 to-purple-600 text-white">
-                <p className="font-bold text-sm">{user?.instituteName || "Admin User"}</p>
-                <p className="text-[10px] opacity-80 font-medium truncate">{adminEmail || user?.email || "admin@guruconnect.com"}</p>
+              <div className="p-4 bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center gap-3">
+                {logoUrl && (
+                  <img src={logoUrl} alt="admin" className="w-10 h-10 rounded-xl object-cover border border-white/20 shadow-sm" />
+                )}
+                <div>
+                  <p className="font-bold text-sm">{user?.instituteName || "Admin User"}</p>
+                  <p className="text-[10px] opacity-80 font-medium truncate">{adminEmail || user?.email || "admin@guruconnect.com"}</p>
+                </div>
               </div>
               
               <div className="p-2">

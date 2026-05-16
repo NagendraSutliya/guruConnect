@@ -48,8 +48,10 @@ const StudyMaterialPanel = () => {
     try {
       setLoading(true);
       const res = await api.get("/teacher/study-material");
-      const data = Array.isArray(res.data) ? res.data : Array.isArray(res.data.data) ? res.data.data : [];
-      setMaterials(data);
+      // Handle nested paginated response { success, message, data: { data: [], total, ... } }
+      const rawData = res.data?.data;
+      const materialsArray = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.data) ? rawData.data : []);
+      setMaterials(materialsArray);
     } catch (err) {
       console.error(err);
     } finally {
@@ -84,7 +86,7 @@ const StudyMaterialPanel = () => {
 
     try {
       setIsUploading(true);
-      await api.post("/study-material", formData, {
+      await api.post("/teacher/study-material", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setTitle("");
@@ -106,7 +108,7 @@ const StudyMaterialPanel = () => {
   const handleDelete = async (id: string) => {
     if (!window.confirm("Delete this material?")) return;
     try {
-      await api.delete(`/study-material/${id}`);
+      await api.delete(`/teacher/study-material/${id}`);
       showToast("Material deleted", "success");
       fetchMaterials();
     } catch (err) {
@@ -115,10 +117,13 @@ const StudyMaterialPanel = () => {
   };
 
   const filteredMaterials = useMemo(() => {
-    return materials.filter((m) =>
-      m.title.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [materials, search]);
+    return materials.filter((m) => {
+      const matchesSearch = m.title.toLowerCase().includes(search.toLowerCase());
+      const matchesClass = selectedClassId ? m.classId?._id === selectedClassId : true;
+      const matchesSubject = selectedSubjectId ? m.subjectId?._id === selectedSubjectId : true;
+      return matchesSearch && matchesClass && matchesSubject;
+    });
+  }, [materials, search, selectedClassId, selectedSubjectId]);
 
   const totalPages = Math.ceil(filteredMaterials.length / itemsPerPage);
   const paginatedMaterials = useMemo(() => {
@@ -318,7 +323,7 @@ const StudyMaterialPanel = () => {
              className="px-6 py-2 bg-indigo-600 text-white text-[10px] font-black rounded-xl hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-lg shadow-indigo-100 uppercase tracking-widest disabled:opacity-50 whitespace-nowrap"
            >
              <FiUpload size={14} className={isUploading ? "animate-bounce" : ""} />
-             <span>{isUploading ? "Uplinking..." : "Commit Dispatch"}</span>
+             <span>{isUploading ? "Uplinking..." : "Upload"}</span>
            </button>
         </div>
       </div>
@@ -385,7 +390,7 @@ const StudyMaterialPanel = () => {
                     </td>
                     <td className="px-6 py-3 text-center">
                       <a
-                        href={`http://localhost:5000${m.fileUrl}`}
+                        href={m.fileUrl}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-1.5 text-indigo-600 hover:text-indigo-800 font-black text-[9px] uppercase tracking-widest transition-all hover:gap-2"

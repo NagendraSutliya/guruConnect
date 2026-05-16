@@ -80,30 +80,35 @@ export default function StatsCards({ stats, onCardClick }: { stats: any, onCardC
         icon={<FaUsers />}
         trend={{ value: "Active", positive: true }}
         color="blue"
+        onClick={() => onCardClick?.("students")}
       />
        <StatCard
         title="Avg Rating"
         value={(safeStats.avgRating || 0).toFixed(1)}
         icon={<FaStar />}
         color="rose"
+        onClick={() => onCardClick?.("rating")}
       />
       <StatCard
         title="Feedback Today"
         value={safeStats.feedbackToday}
         icon={<FaClock />}
         color="emerald"
+        onClick={() => onCardClick?.("feedback")}
       />
       <StatCard
         title="Joined Today"
         value={safeStats.newTeachersToday}
         icon={<FaUserShield />}
         color="orange"
+        onClick={() => onCardClick?.("teachers")}
       />
       <StatCard
         title="Active Plan"
         value={safeStats.plan}
         icon={<FaChartLine />}
         color="cyan"
+        onClick={() => onCardClick?.("plan")}
       />
     </div>
   );

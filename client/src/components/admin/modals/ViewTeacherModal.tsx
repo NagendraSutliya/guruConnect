@@ -38,12 +38,12 @@ const ViewTeacherModal: React.FC<Props> = ({ teacher, onClose }) => {
           {/* Profile Summary Overlay */}
           <div className="px-8 pb-4">
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16 relative z-0">
-              <div className="p-1.5 bg-white rounded-full shadow-lg">
-                {teacher.profilePic ? (
+              <div className="p-1 bg-white rounded-full shadow-lg">
+                {teacher.profileImage ? (
                   <img
-                    src={teacher.profilePic}
+                    src={teacher.profileImage}
                     alt={teacher.name}
-                    className="w-32 h-32 rounded-full object-cover border-4 border-slate-50"
+                    className="w-32 h-32 rounded-full object-cover border-2 border-slate-50"
                   />
                 ) : (
                   <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-4xl font-black shadow-inner border-4 border-slate-50">
@@ -56,7 +56,7 @@ const ViewTeacherModal: React.FC<Props> = ({ teacher, onClose }) => {
                 <h2 className="text-3xl font-black text-slate-800 tracking-tight">{teacher.name || "Unnamed Teacher"}</h2>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
                   <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-blue-100">
-                    ID: {teacher.employeeId || "N/A"}
+                    ID: {teacher.employeeId || teacher._id?.slice(-6).toUpperCase() || "N/A"}
                   </span>
                   <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-indigo-100">
                     {teacher.designation || "Faculty"}

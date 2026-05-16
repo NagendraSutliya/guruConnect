@@ -9,10 +9,14 @@ const StudyMaterial = require("../../models/StudyMaterial");
 const Result = require("../../models/Result");
 const { successResponse, errorResponse } = require("../../utils/response");
 
+const cloudinary = require("../../config/cloudinary");
+
 /* ================= TEACHER PROFILE ================= */
 exports.getTeacherProfile = async (req, res) => {
   try {
-    const teacher = await Teacher.findById(req.user.id).select("name email");
+    const teacher = await Teacher.findById(req.user.id).select(
+      "name email profileImage phone address designation qualification"
+    );
 
     if (!teacher) {
       return errorResponse(res, "Teacher not found", 404);
@@ -26,16 +30,46 @@ exports.getTeacherProfile = async (req, res) => {
 
 exports.updateTeacherProfile = async (req, res) => {
   try {
-    const { name, phone, address } = req.body;
+    const { name, phone, address, designation, qualification } = req.body;
     const teacher = await Teacher.findByIdAndUpdate(
       req.user.id,
-      { $set: { name, phone, address } },
+      { $set: { name, phone, address, designation, qualification } },
       { new: true }
     ).select("-password");
 
     return successResponse(res, "Profile updated successfully", teacher);
   } catch (err) {
     return errorResponse(res, "Failed to update profile");
+  }
+};
+
+exports.updateTeacherImage = async (req, res) => {
+  try {
+    const { image } = req.body;
+    const teacherId = req.user.id;
+
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) return errorResponse(res, "Teacher not found", 404);
+
+    // Delete old image from Cloudinary if exists
+    if (teacher.profileImage && teacher.profileImage.includes("cloudinary")) {
+      try {
+        const publicId = teacher.profileImage.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(`guru_connect/profiles/${publicId}`);
+      } catch (err) {
+        console.error("Cloudinary delete error:", err);
+      }
+    }
+
+    // Update with new image (URL from frontend upload or handle upload here)
+    // For simplicity, assuming frontend sends the Cloudinary URL after uploading
+    teacher.profileImage = image;
+    await teacher.save();
+
+    return successResponse(res, "Profile image updated", { profileImage: image });
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, "Failed to update profile image");
   }
 };
 

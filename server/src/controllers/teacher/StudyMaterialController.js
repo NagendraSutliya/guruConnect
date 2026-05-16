@@ -1,5 +1,6 @@
 const StudyMaterial = require("../../models/StudyMaterial");
 const { successResponse, errorResponse } = require("../../utils/response");
+const cloudinary = require("../../config/cloudinary");
 
 // GET all materials
 exports.getStudyMaterials = async (req, res) => {
@@ -47,13 +48,32 @@ exports.createStudyMaterial = async (req, res) => {
       return errorResponse(res, "File upload is required", 400);
     }
 
+    const streamUpload = (req) => {
+      return new Promise((resolve, reject) => {
+        let stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "guruconnect_studymaterial",
+            resource_type: "auto",
+          },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+    };
+
+    const cloudinaryResult = await streamUpload(req);
+
     const studyMaterial = new StudyMaterial({
       title,
       classId,
       subjectId,
-      fileUrl: `/uploads/${req.file.filename}`,
-      fileName: req.file.originalname, // ✅ NEW
-      fileType: req.file.mimetype, // ✅ NEW
+      fileUrl: cloudinaryResult.secure_url,
+      cloudinaryPublicId: cloudinaryResult.public_id,
+      fileName: req.file.originalname, 
+      fileType: req.file.mimetype, 
       uploadedBy: req.user?.id,
     });
 
@@ -61,6 +81,7 @@ exports.createStudyMaterial = async (req, res) => {
 
     return successResponse(res, "Study material created", studyMaterial);
   } catch (err) {
+    console.error("Study Material Upload Error:", err);
     return errorResponse(res, err.message, 500);
   }
 };
@@ -75,12 +96,21 @@ exports.deleteStudyMaterial = async (req, res) => {
     }
 
     // ✅ Delete file from storage
-    const filePath = path.join(__dirname, "..", "..", studyMaterial.fileUrl);
+    if (studyMaterial.cloudinaryPublicId) {
+       await cloudinary.uploader.destroy(studyMaterial.cloudinaryPublicId, { resource_type: "raw" }).catch(e => console.log(e));
+       // Also attempt standard destroy in case it was uploaded as image
+       await cloudinary.uploader.destroy(studyMaterial.cloudinaryPublicId).catch(e => console.log(e));
+    } else {
+       // Fallback for older local files
+       const fs = require('fs');
+       const path = require('path');
+       const filePath = path.join(__dirname, "..", "..", studyMaterial.fileUrl);
 
-    if (fs.existsSync(filePath)) {
-      fs.unlink(filePath, (err) => {
-        if (err) console.log("File delete error", err);
-      });
+       if (fs.existsSync(filePath)) {
+         fs.unlink(filePath, (err) => {
+           if (err) console.log("File delete error", err);
+         });
+       }
     }
 
     await StudyMaterial.findByIdAndDelete(req.params.id);

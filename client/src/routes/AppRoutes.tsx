@@ -71,6 +71,7 @@ import AcademicsCMS from "../pages/admin/cms/AcademicsCMS";
 import AchievementsCMS from "../pages/admin/cms/AchievementsCMS";
 import GalleryCMS from "../pages/admin/cms/GalleryCMS";
 import ContactCMS from "../pages/admin/cms/ContactCMS";
+import StudentHelp from "../pages/student/StudentHelp";
 
 export default function AppRoutes() {
   return (
@@ -209,7 +210,8 @@ export default function AppRoutes() {
         <Route path="tests" element={<StudentTests />} />
         <Route path="routine" element={<RoutineStudent />} />
         <Route path="profile" element={<StudentProfile />} />
-        <Route path="change-password" element={<ChangePassword />} />
+        <Route path="settings" element={<ChangePassword />} />
+        <Route path="help" element={<StudentHelp />} />
       </Route>
 
     </Routes>

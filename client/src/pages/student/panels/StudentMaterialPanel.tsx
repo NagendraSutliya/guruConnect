@@ -7,7 +7,6 @@ import {
   FiClock,
   FiFolder,
   FiCpu,
-  FiBook,
   FiGrid,
   FiZap,
 } from "react-icons/fi";

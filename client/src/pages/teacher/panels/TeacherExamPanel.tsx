@@ -162,10 +162,10 @@ const TeacherExamPanel = () => {
   return (
     <div className="space-y-2">
 
-      <div className="sticky top-0 z-40 bg-gradient-to-r from-indigo-50/90 via-white/80 to-indigo-100/90 backdrop-blur-xl -mx-6 px-6 py-2 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-100 shadow-sm">
+      <div className="sticky top-0 z-40 bg-gradient-to-r from-indigo-50/90 via-white/80 to-indigo-100/90 backdrop-blur-xl -mx-6 px-6 py-3 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-100 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Examination Ledger</h1>
-          <p className="text-sm text-slate-500 font-medium">Coordinate schedules, question papers, and result reporting.</p>
+          <h1 className="text-xl font-bold text-slate-800 tracking-tight">Examination Ledger</h1>
+          <p className="text-xs text-slate-500 font-medium">Coordinate schedules, question papers, and result reporting.</p>
         </div>
         <div className="flex items-center gap-3">
            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-lg">

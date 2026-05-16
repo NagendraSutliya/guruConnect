@@ -7,6 +7,7 @@ const { successResponse, errorResponse } = require("../../utils/response.js");
 exports.getAdminStats = async (req, res) => {
   try {
     const instituteId = req.user.id;
+    const { range = "7days" } = req.query;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -41,21 +42,31 @@ exports.getAdminStats = async (req, res) => {
       }),
     ]);
 
-    // --- Trend Data (Last 7 Days) ---
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // --- Trend Data (Dynamic Range) ---
+    let daysToSubtract = 7;
+    let dateFormat = "%Y-%m-%d"; // Daily
 
-    const getDailyTrend = async (model, filter = {}) => {
+    if (range === "30days") {
+      daysToSubtract = 30;
+    } else if (range === "1year") {
+      daysToSubtract = 365;
+      dateFormat = "%Y-%m"; // Monthly
+    }
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - daysToSubtract);
+
+    const getTrend = async (model, filter = {}) => {
       const trend = await model.aggregate([
         {
           $match: {
             ...filter,
-            createdAt: { $gte: sevenDaysAgo },
+            createdAt: { $gte: startDate },
           },
         },
         {
           $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            _id: { $dateToString: { format: dateFormat, date: "$createdAt" } },
             count: { $sum: 1 },
           },
         },
@@ -65,9 +76,9 @@ exports.getAdminStats = async (req, res) => {
     };
 
     const [teacherTrend, feedbackTrend, studentTrend] = await Promise.all([
-      getDailyTrend(Teacher, { instituteId }),
-      getDailyTrend(Feedback, { instituteId }),
-      getDailyTrend(Student, { classId: { $in: classIds } }),
+      getTrend(Teacher, { instituteId }),
+      getTrend(Feedback, { instituteId }),
+      getTrend(Student, { classId: { $in: classIds } }),
     ]);
 
     return successResponse(res, "Admin stats loaded", {
@@ -85,6 +96,7 @@ exports.getAdminStats = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error("Dashboard Stats Error:", err);
     return errorResponse(res, "Failed to load stats");
   }
 };

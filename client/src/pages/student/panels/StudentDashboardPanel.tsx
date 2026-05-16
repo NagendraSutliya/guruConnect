@@ -248,17 +248,27 @@ const StudentDashboardPanel = () => {
                       const day = i + 1;
                       const hasEvent = getEventForDay(day);
                       const isSelected = selectedDay === day;
+                      const isToday = day === new Date().getDate() && 
+                                     viewDate.getMonth() === new Date().getMonth() && 
+                                     viewDate.getFullYear() === new Date().getFullYear();
+
                       return (
                         <button 
                           key={`day-${day}`} 
                           onClick={() => setSelectedDay(day)}
                           className={`h-8 rounded-lg flex flex-col items-center justify-center text-[10px] font-black transition-all relative
-                            ${isSelected ? 'bg-yellow-500 text-white shadow-lg' : 'hover:bg-slate-200 text-slate-600'}
+                            ${isSelected 
+                               ? isToday 
+                                  ? 'bg-yellow-500 text-white shadow-lg' 
+                                  : 'bg-indigo-600 text-white shadow-lg' 
+                               : isToday 
+                                  ? 'bg-yellow-50 text-yellow-600 ring-1 ring-yellow-400 ring-inset' 
+                                  : 'hover:bg-slate-100 text-slate-600'}
                           `}
                         >
                           {day}
                           {hasEvent && !isSelected && (
-                            <div className={`absolute bottom-1 w-1 h-1 rounded-full ${hasEvent.type === 'exam' ? 'bg-amber-400' : hasEvent.type === 'today' ? 'bg-indigo-400' : 'bg-rose-400'}`} />
+                            <div className={`absolute bottom-1.5 w-1 h-1 rounded-full ${hasEvent.type === 'exam' ? 'bg-amber-400' : 'bg-rose-400'}`} />
                           )}
                         </button>
                       );

@@ -165,7 +165,7 @@ const StudentProfilePanel = () => {
                     { label: "Contact Vector", val: formData.phone, icon: FiPhone, editKey: "phone" },
                     { label: "Campus Section", val: `Section ${student?.sectionId?.name || "A"}`, icon: FiHash, disabled: true },
                     { label: "Current HQ", val: formData.address, icon: FiMapPin, editKey: "address", full: true },
-                    { label: "Nexus Node", val: institute?.instituteName || "Primary Institute", icon: FiAward, disabled: true, full: true },
+                    { label: "Institutional Node", val: institute?.instituteName || "Primary Institute", icon: FiAward, disabled: true, full: true },
                  ].map((field, fIdx) => (
                     <div key={fIdx} className={`space-y-1.5 ${field.full ? 'md:col-span-2' : ''}`}>
                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 ml-1">

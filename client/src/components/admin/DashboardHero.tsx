@@ -4,7 +4,7 @@ type DashboardHeroProps = {
 
 export default function DashboardHero({ instituteName }: DashboardHeroProps) {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 px-8 py-6 shadow-lg mb-8">
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 -mx-6 px-8 py-6 shadow-lg mb-8">
       {/* Subtle Background Mesh */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 blur-[80px] -mr-20 -mt-20" />
       

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "../../api/axiosInstance";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -10,71 +10,183 @@ import {
   FiCamera,
   FiSave,
   FiCheckCircle,
+  FiLoader,
+  FiTrash2,
 } from "react-icons/fi";
 import { useToast } from "../../context/ToastContext";
 
 const AdminProfile = () => {
   const { showToast } = useToast();
   const { user } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [admin, setAdmin] = useState({
     name: user?.instituteName || "Administrator",
     email: user?.email || "",
-    phone: user?.phone || "+91 9876543210",
+    phone: "",
     role: "Administrator",
     lastLogin: "Active Session",
-    profileImage: user?.profileImage || "",
+    profileImage: "",
+    studentCount: 0,
+    teacherCount: 0,
   });
 
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
-    if (!user?.email) {
-      api.get("/admin/profile")
-        .then(res => {
-          if (res.data.data) {
-            setAdmin(prev => ({
-              ...prev,
-              name: res.data.data.instituteName,
-              email: res.data.data.email
-            }));
-          }
-        })
-        .catch(err => console.error("Profile load error:", err));
-    }
-  }, [user]);
+    api.get("/admin/profile")
+      .then(res => {
+        const data = res.data.data;
+        if (data) {
+          setAdmin(prev => ({
+            ...prev,
+            name: data.instituteName,
+            email: data.email,
+            phone: data.phone || "+91 9876543210",
+            profileImage: data.logoUrl || "",
+            studentCount: data.studentCount || 0,
+            teacherCount: data.teacherCount || 0,
+          }));
+        }
+      })
+      .catch(err => console.error("Profile load error:", err));
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdmin({ ...admin, [e.target.name]: e.target.value });
   };
 
-  const handleSave = () => {
-    console.log("Updated Profile:", admin);
-    showToast("Profile changes archived successfully", "success");
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await api.post("/upload/single", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+
+      const imageUrl = res.data.data.url;
+
+      // Update in DB
+      await api.patch("/admin/profile/logo", { logoUrl: imageUrl });
+
+      setAdmin(prev => ({ ...prev, profileImage: imageUrl }));
+      
+      // Update Navbar sync
+      const saved = localStorage.getItem("admin");
+      const currentUser = saved ? JSON.parse(saved) : {};
+      localStorage.setItem("admin", JSON.stringify({ ...currentUser, logoUrl: imageUrl }));
+
+      showToast("Profile image updated successfully", "success");
+    } catch (err) {
+      console.error("Upload error:", err);
+      showToast("Failed to upload image", "error");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    try {
+      setUploading(true);
+      await api.patch("/admin/profile/logo", { logoUrl: "" });
+      
+      setAdmin(prev => ({ ...prev, profileImage: "" }));
+
+      // Update Navbar sync
+      const saved = localStorage.getItem("admin");
+      const currentUser = saved ? JSON.parse(saved) : {};
+      localStorage.setItem("admin", JSON.stringify({ ...currentUser, logoUrl: "" }));
+
+      showToast("Profile image removed", "success");
+    } catch (err) {
+      console.error("Remove error:", err);
+      showToast("Failed to remove image", "error");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setUploading(true);
+      await api.patch("/admin/profile", {
+        name: admin.name,
+        phone: admin.phone
+      });
+
+      // Update local storage so navbar/sidebar names update
+      const saved = localStorage.getItem("admin");
+      const currentUser = saved ? JSON.parse(saved) : {};
+      localStorage.setItem("admin", JSON.stringify({ 
+        ...currentUser, 
+        instituteName: admin.name 
+      }));
+
+      showToast("Profile updated successfully", "success");
+    } catch (err) {
+      console.error("Save error:", err);
+      showToast("Failed to save changes", "error");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const avatarLetter = admin?.name?.charAt(0)?.toUpperCase();
 
   return (
     <div className="space-y-8 animate-fadeIn pb-12">
-      {/* Header */}
-      {/* <div className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-md -mx-8 px-8 py-6 border-b border-slate-200/50">
-        <h2 className="text-3xl font-black text-slate-800 tracking-tight">Identity & Security</h2>
-        <p className="text-slate-500 text-sm font-medium mt-1">Manage your administrative credentials and institution profile.</p>
-      </div> */}
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-10">
         {/* Profile Visual Card */}
         <div className="lg:col-span-1 bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 shadow-xl overflow-hidden flex flex-col items-center py-12 px-8 text-center relative">
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
           
           <div className="relative group mb-8">
-            <div className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center text-5xl font-black shadow-2xl shadow-indigo-200 ring-4 ring-white transition-transform duration-500 group-hover:rotate-6">
+            <div className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center text-5xl font-black shadow-2xl shadow-indigo-200 ring-4 ring-white transition-transform duration-500 group-hover:rotate-6 overflow-hidden relative">
               {admin.profileImage ? (
-                <img src={admin.profileImage} alt="profile" className="w-full h-full rounded-[2.5rem] object-cover" />
+                <img src={admin.profileImage} alt="profile" className="w-full h-full object-cover" />
               ) : avatarLetter}
+              
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="p-2.5 bg-white/20 hover:bg-white/40 rounded-xl text-white transition-colors"
+                  title="Change Photo"
+                >
+                  <FiCamera size={20} />
+                </button>
+                {admin.profileImage && (
+                  <button 
+                    onClick={handleRemoveImage}
+                    disabled={uploading}
+                    className="p-2.5 bg-rose-500/20 hover:bg-rose-500/40 rounded-xl text-rose-200 transition-colors"
+                    title="Remove Photo"
+                  >
+                    <FiTrash2 size={20} />
+                  </button>
+                )}
+              </div>
+
+              {uploading && (
+                <div className="absolute inset-0 bg-indigo-900/40 flex items-center justify-center backdrop-blur-sm z-20">
+                  <FiLoader className="text-white animate-spin" size={32} />
+                </div>
+              )}
             </div>
-            <button className="absolute -bottom-2 -right-2 w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-indigo-600 border border-slate-100 hover:scale-110 transition-all active:scale-90">
-              <FiCamera size={18} />
-            </button>
+            
+            <input 
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              className="hidden"
+              accept="image/*"
+            />
           </div>
 
           <h3 className="text-2xl font-black text-slate-800 tracking-tight">{admin.name}</h3>
@@ -87,12 +199,12 @@ const AdminProfile = () => {
 
           <div className="mt-12 w-full pt-8 border-t border-slate-100 flex items-center justify-center gap-8">
              <div className="text-center">
-                <p className="text-xl font-black text-slate-800">1.2k</p>
+                <p className="text-xl font-black text-slate-800">{admin.studentCount}</p>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Students</p>
              </div>
              <div className="w-px h-8 bg-slate-100" />
              <div className="text-center">
-                <p className="text-xl font-black text-slate-800">48</p>
+                <p className="text-xl font-black text-slate-800">{admin.teacherCount}</p>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Faculty</p>
              </div>
           </div>
@@ -186,8 +298,6 @@ const AdminProfile = () => {
           </div>
         </div>
       </div>
-
- 
     </div>
   );
 };
