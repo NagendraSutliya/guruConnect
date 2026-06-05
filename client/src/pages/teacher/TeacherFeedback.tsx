@@ -6,10 +6,8 @@ import {
   FiSmile, 
   FiMeh, 
   FiFrown, 
-  FiCalendar, 
   FiUser, 
-  FiLayers,
-  FiActivity
+  FiLayers
 } from "react-icons/fi";
 
 const TeacherFeedback = () => {

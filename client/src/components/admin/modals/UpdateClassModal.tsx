@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiX } from "react-icons/fi";
+
 import api from "../../../api/axiosInstance";
 import { useToast } from "../../../context/ToastContext";
 import type { Class } from "../../../types/admin/class";

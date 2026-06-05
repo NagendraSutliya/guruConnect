@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
 import type { Feedback } from "../../../types/admin/feedback";
-import { FiTrash2, FiSearch, FiFilter, FiSmile, FiMeh, FiFrown, FiCalendar, FiUser } from "react-icons/fi";
+import { FiTrash2, FiFilter, FiSmile, FiMeh, FiFrown, FiCalendar, FiUser } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
 
 const MOOD_CONFIG: Record<

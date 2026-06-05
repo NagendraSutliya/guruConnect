@@ -1,5 +1,5 @@
 import React from "react";
-import { FiX, FiMail, FiLayers, FiUser, FiPhone, FiMapPin } from "react-icons/fi";
+import { FiX, FiMail, FiUser, FiPhone, FiMapPin } from "react-icons/fi";
 import type { Student } from "../../../types/admin/student";
 
 interface Props {

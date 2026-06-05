@@ -1,5 +1,5 @@
 import React from "react";
-import { FiX, FiUser, FiMail, FiLock, FiPhone, FiHash, FiBriefcase, FiBook, FiCalendar } from "react-icons/fi";
+import { FiX, FiUser, FiMail, FiLock, FiPhone, FiHash, FiBriefcase, FiCalendar } from "react-icons/fi";
 import type { TeacherFormData } from "../../../types/admin/teacher";
 
 interface AddTeacherModalProps {

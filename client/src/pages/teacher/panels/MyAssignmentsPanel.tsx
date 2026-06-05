@@ -13,7 +13,7 @@ import {
   FiCalendar,
   FiActivity
 } from "react-icons/fi";
-import { useToast } from "../../../context/ToastContext";
+
 import Pagination from "../../../components/common/Pagination";
 
 const MetricCard = ({ title, value, icon: Icon, gradient }: any) => (
@@ -32,10 +32,8 @@ const MetricCard = ({ title, value, icon: Icon, gradient }: any) => (
 );
 
 export default function MyAssignmentsPanel() {
-  const { showToast } = useToast();
   const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<any>(null);
@@ -46,11 +44,10 @@ export default function MyAssignmentsPanel() {
   const load = async () => {
     try {
       setLoading(true);
-      setError("");
       const res = await api.get("/teacher/assignments/my");
       setList(res.data.data || []);
     } catch (e) {
-      setError("Failed to load assignments");
+      console.error("Failed to load assignments", e);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,4 @@
-import { FiHelpCircle, FiBook, FiMessageCircle, FiVideo, FiSearch, FiChevronRight, FiCpu, FiLifeBuoy } from "react-icons/fi";
+import { FiBook, FiMessageCircle, FiVideo, FiSearch, FiChevronRight, FiCpu, FiLifeBuoy } from "react-icons/fi";
 
 const TeacherHelp = () => {
   return (
