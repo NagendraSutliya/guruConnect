@@ -55,6 +55,7 @@ const AdminLayout = () => {
       name: "Students",
       icon: <FaUserGraduate size={16} />,
       children: [
+        { name: "Admission Form", path: "/admin/admissions" },
         { name: "Students", path: "/admin/students" },
         { name: "Attendance", path: "/admin/attendance" },
       ],

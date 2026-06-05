@@ -1,11 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
-import { FiChevronDown, FiEdit, FiSearch, FiTrash2, FiX, FiPlus, FiBox } from "react-icons/fi";
+import { FiChevronDown, FiEdit, FiSearch, FiTrash2, FiPlus, FiBox } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
 import type { Class } from "../../../types/admin/class";
 import type { Section } from "../../../types/admin/section";
 import type { AcademicYear } from "../../../types/admin/academicYear";
 import UpdateClassModal from "../../../components/admin/modals/UpdateClassModal";
+import Pagination from "../../../components/common/Pagination";
 
 const ClassesPanel = () => {
   const { showToast } = useToast();
@@ -268,25 +269,13 @@ const ClassesPanel = () => {
 
             {/* Pagination */}
             {!loading && filteredClasses.length > 0 && (
-              <div className="p-6 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-50/30 text-xs font-black uppercase tracking-widest text-slate-400">
-                <div className="flex items-center gap-3">
-                  <span>Rows:</span>
-                  <select
-                    value={itemsPerPage}
-                    onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                    className="bg-white border border-slate-200 rounded-xl px-2 py-1 outline-none"
-                  >
-                    {[5, 10, 20].map((n) => <option key={n} value={n}>{n}</option>)}
-                  </select>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span>Page <span className="text-indigo-600">{currentPage}</span> of {totalPages || 1}</span>
-                  <div className="flex gap-2">
-                    <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="p-2 disabled:opacity-30 hover:bg-white hover:shadow-md rounded-lg">Prev</button>
-                    <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages || totalPages === 0} className="p-2 disabled:opacity-30 hover:bg-white hover:shadow-md rounded-lg">Next</button>
-                  </div>
-                </div>
-              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                itemsPerPage={itemsPerPage}
+                setItemsPerPage={setItemsPerPage}
+                setCurrentPage={setCurrentPage}
+              />
             )}
           </div>
         </div>

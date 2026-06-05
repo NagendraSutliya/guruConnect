@@ -4,6 +4,7 @@ import { FiEdit, FiTrash2, FiSearch, FiChevronLeft, FiPlus, FiClock, FiCalendar,
 import api from "../../../api/axiosInstance";
 import { useToast } from "../../../context/ToastContext";
 import UpdateExamSubjectModal from "../../../components/admin/modals/UpdateExamSubjectModal";
+import Pagination from "../../../components/common/Pagination";
 
 const ExamSubjectPanel = () => {
   const { showToast } = useToast();
@@ -316,25 +317,13 @@ const ExamSubjectPanel = () => {
 
               {/* Pagination */}
               {!loading && filtered.length > 0 && (
-                <div className="p-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30 text-[11px] font-black uppercase tracking-widest text-slate-600">
-                   <div className="flex items-center gap-4">
-                      <span>Entries per page</span>
-                      <select
-                        value={itemsPerPage}
-                        onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                        className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 outline-none"
-                      >
-                        {[5, 10, 20].map(n => <option key={n} value={n}>{n}</option>)}
-                      </select>
-                   </div>
-                   <div className="flex items-center gap-6">
-                      <span>Page <span className="text-indigo-600 font-black">{currentPage}</span> of {totalPages || 1}</span>
-                      <div className="flex gap-2">
-                         <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-4 py-2 hover:bg-white hover:shadow-md rounded-xl transition-all disabled:opacity-30">Prev</button>
-                         <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages || totalPages === 0} className="px-4 py-2 hover:bg-white hover:shadow-md rounded-xl transition-all disabled:opacity-30">Next</button>
-                      </div>
-                   </div>
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  itemsPerPage={itemsPerPage}
+                  setItemsPerPage={setItemsPerPage}
+                  setCurrentPage={setCurrentPage}
+                />
               )}
            </div>
         </div>

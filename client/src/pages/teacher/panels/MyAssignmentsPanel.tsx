@@ -14,6 +14,7 @@ import {
   FiActivity
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
+import Pagination from "../../../components/common/Pagination";
 
 const MetricCard = ({ title, value, icon: Icon, gradient }: any) => (
   <div className="relative overflow-hidden bg-white/70 backdrop-blur-md p-6 rounded-[2rem] border border-white/20 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 group flex-1">
@@ -253,40 +254,13 @@ export default function MyAssignmentsPanel() {
 
       {/* Pagination */}
       {!loading && filtered.length > 0 && (
-        <div className="bg-white/70 backdrop-blur-md border border-slate-200 p-6 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rows per page</p>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-              className="bg-white border border-slate-200 text-slate-700 text-xs font-black rounded-lg px-2 py-1 outline-none"
-            >
-              {[5, 10, 15, 20].map((num) => <option key={num} value={num}>{num}</option>)}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              Page <span className="text-indigo-600">{currentPage}</span> of {totalPages || 1}
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-xl border border-slate-200 hover:bg-white hover:shadow-sm disabled:opacity-30 transition-all"
-              >
-                <FiChevronRight className="rotate-180" />
-              </button>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages || totalPages === 0}
-                className="p-2 rounded-xl border border-slate-200 hover:bg-white hover:shadow-sm disabled:opacity-30 transition-all"
-              >
-                <FiChevronRight />
-              </button>
-            </div>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          setItemsPerPage={setItemsPerPage}
+          setCurrentPage={setCurrentPage}
+        />
       )}
 
       {/* Side Drawer Details */}

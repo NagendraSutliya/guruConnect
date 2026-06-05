@@ -5,11 +5,30 @@
 :root {
   font-family: 'Outfit', sans-serif;
   scroll-behavior: smooth;
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+  --card-bg: rgba(255, 255, 255, 0.8);
+}
+
+.dark {
+  --bg-primary: #020617;
+  --bg-secondary: rgba(15, 23, 42, 0.5); /* equivalent to slate-950/50 */
+  --bg-tertiary: rgba(2, 6, 23, 0.8); /* equivalent to slate-950/80 */
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8; /* slate-400 */
+  --border-color: rgba(255, 255, 255, 0.05); /* white/5 */
+  --card-bg: rgba(255, 255, 255, 0.03); /* white/[0.03] */
 }
 
 body {
   margin: 0;
-  background-color: #020617;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.5s ease, color 0.5s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

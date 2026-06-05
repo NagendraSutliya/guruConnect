@@ -15,19 +15,21 @@ import {
   FiAward,
   FiEdit,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "../../../context/ToastContext";
 import { useTeacher } from "../../../context/TeacherContext";
 import type {
   UploadMarksStudent,
   UploadMarksClassAssignment,
 } from "../../../types/teacher/types";
+import Pagination from "../../../components/common/Pagination";
 
 const UploadMarksPage = () => {
   const { showToast } = useToast();
   const [assignments, setAssignments] = useState<UploadMarksClassAssignment[]>([]);
   const [exams, setExams] = useState<any[]>([]);
   const navigate = useNavigate();
+  const location = useLocation();
   const [maxMarks, setMaxMarks] = useState(100);
 
   const { 
@@ -38,6 +40,19 @@ const UploadMarksPage = () => {
     draftStudents: students, setDraftStudents: setStudents,
     setResultStudents
   } = useTeacher();
+
+  useEffect(() => {
+    if (location.state) {
+      const { classId, sectionId, examId, subjectId } = location.state as any;
+      if (classId) setSelectedClassId(classId);
+      if (sectionId) setSelectedSectionId(sectionId);
+      if (examId) setSelectedExamId(examId);
+      if (subjectId) setSelectedSubjectId(subjectId);
+      
+      // Clear location state to prevent infinite loops if we go back/forward
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, setSelectedClassId, setSelectedSectionId, setSelectedExamId, setSelectedSubjectId]);
 
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -569,65 +584,13 @@ const UploadMarksPage = () => {
 
         {/* Pagination Footer */}
         {!loadingStudents && filteredStudents.length > 0 && (
-          <div className="px-6 py-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50 shrink-0">
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Show</span>
-                <select 
-                  value={itemsPerPage}
-                  onChange={(e) => {
-                    setItemsPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-600 outline-none focus:border-indigo-500 transition-all cursor-pointer shadow-sm"
-                >
-                  {[5, 10, 25, 50].map(val => (
-                    <option key={val} value={val}>{val}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
-              >
-                Prev
-              </button>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) pageNum = i + 1;
-                  else if (currentPage <= 3) pageNum = i + 1;
-                  else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
-                  else pageNum = currentPage - 2 + i;
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`w-7 h-7 rounded-lg text-[10px] font-bold transition-all ${
-                        currentPage === pageNum 
-                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' 
-                        : 'bg-white text-slate-500 border border-slate-200 hover:border-indigo-300'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-              </div>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
-              >
-                Next
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+            setCurrentPage={setCurrentPage}
+          />
         )}
       </div>
     </div>

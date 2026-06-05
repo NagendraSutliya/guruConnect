@@ -17,6 +17,7 @@ import {
 import type { ResultClassAssignment } from "../../../types/teacher/types";
 import { useToast } from "../../../context/ToastContext";
 import { useTeacher } from "../../../context/TeacherContext";
+import Pagination from "../../../components/common/Pagination";
 
 const StudyMaterialPanel = () => {
   const { showToast } = useToast();
@@ -416,46 +417,13 @@ const StudyMaterialPanel = () => {
 
         {/* Sync Pagination Footer */}
         {!loading && filteredMaterials.length > 0 && (
-          <div className="px-6 py-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50 shrink-0">
-             <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Show</span>
-                <select 
-                  value={itemsPerPage}
-                  onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                  className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-600 outline-none focus:border-indigo-500 transition-all cursor-pointer shadow-sm"
-                >
-                  {[5, 10, 25, 50].map(val => (
-                    <option key={val} value={val}>{val}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all disabled:opacity-30 shadow-sm"
-                >Prev</button>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`w-7 h-7 rounded-lg text-[10px] font-bold transition-all ${
-                        currentPage === pageNum 
-                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' 
-                        : 'bg-white text-slate-500 border border-slate-200 hover:border-indigo-300'
-                      }`}
-                    >{pageNum}</button>
-                  ))}
-                </div>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all disabled:opacity-30 shadow-sm"
-                >Next</button>
-              </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+            setCurrentPage={setCurrentPage}
+          />
         )}
       </div>
     </div>

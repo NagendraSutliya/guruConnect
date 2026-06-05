@@ -12,6 +12,7 @@ import {
   FiFilter,
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
+import Pagination from "../../../components/common/Pagination";
 
 const MetricCard = ({ title, value, icon, gradient }: any) => (
   <div className="bg-white/70 backdrop-blur-md p-6 rounded-[2rem] border border-white/20 shadow-sm flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
@@ -338,25 +339,13 @@ const AdminResultPanel = () => {
 
         {/* Pagination Section */}
         {!loading && filteredResults.length > 0 && (
-          <div className="p-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30 text-[10px] font-black uppercase tracking-widest text-slate-400">
-             <div className="flex items-center gap-4">
-                <span>Display entries</span>
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                  className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                >
-                  {[5, 10, 25].map(n => <option key={n} value={n}>{n}</option>)}
-                </select>
-             </div>
-             <div className="flex items-center gap-6">
-                <span>Page <span className="text-indigo-600 font-black">{currentPage}</span> of {totalPages || 1}</span>
-                <div className="flex gap-2">
-                   <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-4 py-2 hover:bg-white hover:shadow-md rounded-xl transition-all disabled:opacity-30">Prev</button>
-                   <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages || totalPages === 0} className="px-4 py-2 hover:bg-white hover:shadow-md rounded-xl transition-all disabled:opacity-30">Next</button>
-                </div>
-             </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+            setCurrentPage={setCurrentPage}
+          />
         )}
       </div>
 

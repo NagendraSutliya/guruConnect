@@ -1,33 +1,33 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosInstance";
 import { useToast } from "../../../context/ToastContext";
-import type { Student, StudentFormData } from "../../../types/admin/student";
+import type { Admission, AdmissionFormData } from "../../../types/admin/student";
 import {
   FiEdit,
   FiEye,
   FiSearch,
-  FiToggleLeft,
-  FiToggleRight,
   FiTrash2,
   FiX,
   FiUserPlus,
   FiDownload,
-  FiCopy,
   FiCheckCircle,
+  FiPrinter,
+  FiCheck,
+  FiCopy
 } from "react-icons/fi";
-import {  FaUserCheck, FaUserTimes, FaUsers } from "react-icons/fa";
-import AddStudentModal from "../../../components/admin/modals/AddStudentModal";
-import ViewStudentModal from "../../../components/admin/modals/ViewStudentModal";
+import {  FaUserCheck, FaUsers } from "react-icons/fa";
+import AddAdmissionModal from "../../../components/admin/modals/AddAdmissionModal";
+import ViewAdmissionModal from "../../../components/admin/modals/ViewAdmissionModal";
 import Pagination from "../../../components/common/Pagination";
 
-const StudentPanel = () => {
+const AdmissionsPanel = () => {
   const { showToast } = useToast();
-  const [students, setStudents] = useState<Student[]>([]);
+  const [admissions, setAdmissions] = useState<Admission[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
-  const [form, setForm] = useState<StudentFormData>({
+  const [editingAdmission, setEditingAdmission] = useState<Admission | null>(null);
+  const [form, setForm] = useState<AdmissionFormData>({
     name: "",
     email: "",
     password: "",
@@ -38,6 +38,7 @@ const StudentPanel = () => {
     sectionId: "",
     parentName: "",
     parentPhone: "",
+    parentEmail: "",
     phone: "",
     dob: "",
     admissionDate: "",
@@ -49,26 +50,27 @@ const StudentPanel = () => {
     previousSchool: "",
     previousClass: "",
     address: "",
+    aadharNo: "",
   });
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
+  const [selectedAdmission, setSelectedAdmission] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<
-    "all" | "active" | "inactive"
-  >(() => (localStorage.getItem("studentFilter") as any) || "all");
+    "all" | "pending" | "confirmed"
+  >(() => (localStorage.getItem("admissionFilter") as any) || "all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const [newStudentCreds, setNewStudentCreds] = useState<{
+  const [newAdmissionCreds, setNewAdmissionCreds] = useState<{
     email: string;
     password: string;
   } | null>(null);
 
 
   useEffect(() => {
-  if (showForm || showViewModal) {
+  if (showViewModal) {
     document.body.style.overflow = "hidden";
   } else {
     document.body.style.overflow = "auto";
@@ -77,17 +79,17 @@ const StudentPanel = () => {
   return () => {
     document.body.style.overflow = "auto";
   };
-}, [showForm, showViewModal]);
+}, [showViewModal]);
 
-  // Load students
-  const loadStudents = async () => {
+  // Load admissions
+  const loadAdmissions = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/admin/students");
-      setStudents(res.data.data || []);
+      const res = await api.get("/admin/admissions");
+      setAdmissions(res.data.data || []);
     } catch (err) {
       console.error(err);
-      showToast("Failed to load students ❌", "error");
+      showToast("Failed to load admissions ❌", "error");
     } finally {
       setLoading(false);
     }
@@ -104,7 +106,7 @@ const StudentPanel = () => {
   };
 
   useEffect(() => {
-    loadStudents();
+    loadAdmissions();
     loadClasses();
   }, []);
 
@@ -132,23 +134,38 @@ const StudentPanel = () => {
     loadSections();
   }, [form.classId]);
 
-  // Add or edit student
-  const saveStudent = async () => {
-    if (!form.name || !form.email || !form.classId) {
-      return showToast("Please fill all required fields ⚠️", "warn");
+  // Add or edit admission
+  const saveAdmission = async () => {
+    if (!form.name || !form.email || !form.classId || !form.admissionNo) {
+      return showToast("Please fill all required fields (Name, Email, Admission No, Class) ⚠️", "warn");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      return showToast("Please enter a valid student email address ⚠️", "warn");
+    }
+
+    if (form.parentEmail && !emailRegex.test(form.parentEmail)) {
+      return showToast("Please enter a valid parent email address ⚠️", "warn");
+    }
+
+    if (form.phone && form.phone.length !== 10) {
+      return showToast("Student phone number must be 10 digits ⚠️", "warn");
+    }
+
+    if (form.parentPhone && form.parentPhone.length !== 10) {
+      return showToast("Parent phone number must be 10 digits ⚠️", "warn");
     }
 
     try {
       setActionLoading("save");
 
-      if (editingStudent) {
-        await api.put(`/admin/students/${editingStudent._id}`, form);
-        showToast("Student updated ✏️", "success");
+      if (editingAdmission) {
+        await api.put(`/admin/admissions/${editingAdmission._id}`, form);
+        showToast("Admission updated ✏️", "success");
       } else {
-        const res = await api.post("/admin/students", form);
-        const creds = res.data.data;
-        setNewStudentCreds({ email: creds.email, password: creds.password });
-        showToast("Student created successfully ✅", "success");
+        await api.post("/admin/admissions", form);
+        showToast("Admission drafted successfully ✅", "success");
       }
 
       setForm({
@@ -172,10 +189,12 @@ const StudentPanel = () => {
         previousSchool: "",
         previousClass: "",
         address: "",
+        aadharNo: "",
+        phone: "",
       });
-      setEditingStudent(null);
+      setEditingAdmission(null);
       setShowForm(false);
-      loadStudents();
+      loadAdmissions();
     } catch (err: any) {
       showToast(err?.response?.data?.message || "Operation failed ❌", "error");
     } finally {
@@ -183,15 +202,15 @@ const StudentPanel = () => {
     }
   };
 
-  // Delete student
-  const deleteStudent = async (student: Student) => {
-    if (!confirm(`Delete ${student.name}? This cannot be undone.`)) return;
+  // Delete admission
+  const deleteAdmission = async (admission: Admission) => {
+    if (!confirm(`Delete ${admission.name}? This cannot be undone.`)) return;
 
     try {
-      setActionLoading(student._id);
-      await api.delete(`/admin/students/${student._id}`);
-      setStudents((prev) => prev.filter((s) => s._id !== student._id));
-      showToast("Student deleted 🗑️", "success");
+      setActionLoading(admission._id);
+      await api.delete(`/admin/admissions/${admission._id}`);
+      setAdmissions((prev) => prev.filter((s) => s._id !== admission._id));
+      showToast("Admission deleted 🗑️", "success");
     } catch (err) {
       showToast("Delete failed ❌", "error");
     } finally {
@@ -199,56 +218,57 @@ const StudentPanel = () => {
     }
   };
 
-  // Toggle active/inactive
-  const toggleStudent = async (student: Student) => {
+  // Confirm Admission
+  const confirmAdmission = async (admission: Admission) => {
+    if (!confirm(`Are you sure you want to confirm admission for ${admission.name}? This will create a permanent student account.`)) return;
+    
     try {
-      setActionLoading(student._id);
+      setActionLoading(admission._id);
 
-      if (student.isActive) {
-        await api.patch(`/admin/students/${student._id}/deactivate`);
-        showToast("Student deactivated", "info");
-      } else {
-        await api.patch(`/admin/students/${student._id}/activate`);
-        showToast("Student activated", "success");
-      }
+      const res = await api.patch(`/admin/admissions/${admission._id}/confirm`);
+      const creds = res.data.data.studentCreds;
+      setNewAdmissionCreds({ email: creds.email, password: creds.password });
+      showToast("Admission Confirmed and Student Account created!", "success");
 
-      loadStudents();
-    } catch (err) {
-      showToast("Failed to update status ❌", "error");
+      loadAdmissions();
+    } catch (err: any) {
+      showToast(err?.response?.data?.message || "Failed to confirm admission ❌", "error");
     } finally {
       setActionLoading(null);
     }
   };
 
-  const viewStudent = (student: Student) => {
-    setSelectedStudent(student);
+  const viewAdmission = (admission: Admission) => {
+    setSelectedAdmission(admission);
     setShowViewModal(true);
   };
 
-  const editStudent = (student: Student) => {
-    setEditingStudent(student);
+  const editAdmission = (admission: Admission) => {
+    setEditingAdmission(admission);
     setForm({
-      name: student.name,
-      email: student.email || "",
+      name: admission.name,
+      email: admission.email || "",
       password: "",
-      rollNo: student.rollNo || "",
-      admissionNo: student.admissionNo || "",
-      enrollmentNo: student.enrollmentNo || "",
-      classId: student.classId?._id || student.classId || "",
-      sectionId: student.sectionId?._id || student.sectionId || "",
-      parentName: student.parentName || "",
-      parentPhone: student.parentPhone || "",
-      phone: student.phone || "",
-      dob: student.dob ? new Date(student.dob).toISOString().split('T')[0] : "",
-      admissionDate: student.admissionDate ? new Date(student.admissionDate).toISOString().split('T')[0] : "",
-      gender: student.gender || "",
-      category: student.category || "",
-      religion: student.religion || "",
-      nationality: student.nationality || "Indian",
-      bloodGroup: student.bloodGroup || "",
-      previousSchool: student.previousSchool || "",
-      previousClass: student.previousClass || "",
-      address: student.address || "",
+      rollNo: admission.rollNo || "",
+      admissionNo: admission.admissionNo || "",
+      enrollmentNo: admission.enrollmentNo || "",
+      classId: admission.classId?._id || admission.classId || "",
+      sectionId: admission.sectionId?._id || admission.sectionId || "",
+      parentName: admission.parentName || "",
+      parentPhone: admission.parentPhone || "",
+      parentEmail: admission.parentEmail || "",
+      phone: admission.phone || "",
+      dob: admission.dob ? new Date(admission.dob).toISOString().split('T')[0] : "",
+      admissionDate: admission.admissionDate ? new Date(admission.admissionDate).toISOString().split('T')[0] : "",
+      gender: admission.gender || "",
+      category: admission.category || "",
+      religion: admission.religion || "",
+      nationality: admission.nationality || "Indian",
+      bloodGroup: admission.bloodGroup || "",
+      previousSchool: admission.previousSchool || "",
+      previousClass: admission.previousClass || "",
+      address: admission.address || "",
+      aadharNo: admission.aadharNo || "",
     });
     setShowForm(true);
   };
@@ -265,6 +285,7 @@ const StudentPanel = () => {
       sectionId: "",
       parentName: "",
       parentPhone: "",
+      parentEmail: "",
       dob: "",
       admissionDate: "",
       gender: "",
@@ -275,15 +296,17 @@ const StudentPanel = () => {
       previousSchool: "",
       previousClass: "",
       address: "",
+      aadharNo: "",
+      phone: "",
     });
-    setEditingStudent(null);
+    setEditingAdmission(null);
     setShowForm(false);
   };
 
-  // Filter students
-  const filteredStudents = students.filter((s) => {
+  // Filter admissions
+  const filteredAdmissions = admissions.filter((s) => {
     const matchesStatus =
-      statusFilter === "all" || s.isActive === (statusFilter === "active");
+      statusFilter === "all" || s.status?.toLowerCase() === statusFilter;
     const matchesSearch =
       s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.email?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -291,50 +314,63 @@ const StudentPanel = () => {
   });
 
   const counts = {
-    all: students.length,
-    active: students.filter((s) => s.isActive).length,
-    inactive: students.filter((s) => !s.isActive).length,
+    all: admissions.length,
+    pending: admissions.filter((s) => s.status === "Pending").length,
+    confirmed: admissions.filter((s) => s.status === "Confirmed").length,
   };
 
-  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
-  const paginatedStudents = filteredStudents.slice(
+  const totalPages = Math.ceil(filteredAdmissions.length / itemsPerPage);
+  const paginatedAdmissions = filteredAdmissions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
   useEffect(() => {
-    localStorage.setItem("studentFilter", statusFilter);
+    localStorage.setItem("admissionFilter", statusFilter);
     setCurrentPage(1);
   }, [statusFilter, searchTerm, itemsPerPage]);
 
   return (
     <div className="space-y-6 pb-8 animate-fadeIn">
 
-      {/* Credentials Banner */}
-      {newStudentCreds && (
+      {showForm ? (
+        <AddAdmissionModal
+          form={form}
+          setForm={setForm}
+          onSave={saveAdmission}
+          onClose={closeForm}
+          loading={actionLoading === "save"}
+          isEdit={!!editingAdmission}
+          classes={classes}
+          sections={sections}
+        />
+      ) : (
+        <>
+          {/* Credentials Banner */}
+          {newAdmissionCreds && (
         <div className="bg-indigo-600 rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>
                     <h3 className="text-xl font-black tracking-tight mb-2 flex items-center gap-2">
                         <FiCheckCircle className="text-emerald-400" /> 
-                        Student Credentials Generated
+                        Admission Credentials Generated
                     </h3>
                     <div className="flex flex-col sm:flex-row gap-4 mt-4">
                         <div className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md rounded-2xl px-4 py-2 border border-white/20">
                             <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Email Address :</p>
-                            <p className="font-mono font-bold">{newStudentCreds.email}</p>
+                            <p className="font-mono font-bold">{newAdmissionCreds.email}</p>
                         </div>
                         <div className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md rounded-2xl px-4 py-2 border border-white/20">
                             <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Temporary Password :</p>
-                            <p className="font-mono font-bold">{newStudentCreds.password}</p>
+                            <p className="font-mono font-bold">{newAdmissionCreds.password}</p>
                         </div>
                     </div>
                 </div>
                 <div className="flex gap-3">
                     <button
                         onClick={() => {
-                            navigator.clipboard.writeText(`Email: ${newStudentCreds.email}\nPassword: ${newStudentCreds.password}`);
+                            navigator.clipboard.writeText(`Email: ${newAdmissionCreds.email}\nPassword: ${newAdmissionCreds.password}`);
                             showToast("Copied to clipboard!", "success");
                         }}
                         className="flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-2xl font-black shadow-xl hover:scale-105 transition-transform active:scale-95"
@@ -342,7 +378,7 @@ const StudentPanel = () => {
                         <FiCopy /> Copy Both
                     </button>
                     <button
-                        onClick={() => setNewStudentCreds(null)}
+                        onClick={() => setNewAdmissionCreds(null)}
                         className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl border border-white/20 transition-colors"
                     >
                         <FiX size={20} />
@@ -355,8 +391,8 @@ const StudentPanel = () => {
       {/* Header Section */}
       <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Student Enrollment</h2>
-          <p className="text-slate-500 text-sm font-medium mt-1">Manage student records, classes, and portal access.</p>
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Admission Processing</h2>
+          <p className="text-slate-500 text-sm font-medium mt-1">Manage admission records, classes, and portal access.</p>
         </div>
         <div className="flex items-center gap-3">
           <button className="flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl font-bold shadow-sm transition-all active:scale-95 text-sm">
@@ -369,7 +405,7 @@ const StudentPanel = () => {
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-5 py-2 rounded-xl font-bold shadow-md shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:scale-95 text-sm"
             >
               <FiUserPlus />
-              <span>Add Student</span>
+              <span>Add Admission</span>
             </button>
           )}
         </div>
@@ -392,18 +428,18 @@ const StudentPanel = () => {
             <FaUserCheck />
           </div>
            <div>
-             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Students</p>
-             <h3 className="text-3xl font-black text-slate-800">{counts.active}</h3>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Pending Processing</p>
+             <h3 className="text-3xl font-black text-slate-800">{counts.pending}</h3>
            </div>
         </div>
 
-         <div className="bg-gradient-to-br from-white to-rose-50/50 rounded-2xl p-5 shadow-sm border border-rose-100/60 flex items-center gap-4 transition-all hover:shadow-[0_8px_30px_rgb(244,63,94,0.1)] hover:-translate-y-1 duration-300 group">
-          <div className="w-12 h-12 rounded-xl bg-rose-100/80 flex items-center justify-center text-rose-600 text-xl shadow-inner group-hover:scale-110 transition-transform">
-            <FaUserTimes />
+         <div className="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl p-5 shadow-sm border border-purple-100/60 flex items-center gap-4 transition-all hover:shadow-[0_8px_30px_rgb(168,85,247,0.1)] hover:-translate-y-1 duration-300 group">
+          <div className="w-12 h-12 rounded-xl bg-purple-100/80 flex items-center justify-center text-purple-600 text-xl shadow-inner group-hover:scale-110 transition-transform">
+            <FaUsers />
           </div>
            <div>
-             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Inactive / Left</p>
-             <h3 className="text-3xl font-black text-slate-800">{counts.inactive}</h3>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Confirmed Enrolled</p>
+             <h3 className="text-3xl font-black text-slate-800">{counts.confirmed}</h3>
            </div>
         </div>
       </div>
@@ -434,7 +470,7 @@ const StudentPanel = () => {
           </div>
 
  <div className="flex bg-slate-100/80 p-1 rounded-lg w-full sm:w-auto">
-            {(["all", "active", "inactive"] as const).map((status) => {
+            {(["all", "pending", "confirmed"] as const).map((status) => {
               const isActive = statusFilter === status;
               return (
                 <button
@@ -458,7 +494,7 @@ const StudentPanel = () => {
           <table className="w-full text-left border-collapse">
             <thead>
                <tr className="bg-slate-50/80 text-slate-600 text-[11px] uppercase tracking-wider font-black border-b border-slate-100">
-                <th className="px-5 py-3">Student Info</th>
+                <th className="px-5 py-3">Admission Info</th>
                 <th className="px-5 py-3">Contact</th>
                 <th className="px-5 py-3">Academic Info</th>
                 <th className="px-5 py-3 text-center">Status</th>
@@ -471,28 +507,28 @@ const StudentPanel = () => {
                   <td colSpan={4} className="p-8 text-center">
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-                      <p className="text-sm font-bold text-slate-500">Syncing Student Data...</p>
+                      <p className="text-sm font-bold text-slate-500">Syncing Admission Data...</p>
                     </div>
                   </td>
                 </tr>
-              ) : paginatedStudents.length === 0 ? (
+              ) : paginatedAdmissions.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="p-8 text-center text-slate-500">
                     <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                       <FiSearch size={24} className="text-slate-300" />
                     </div>
-                    <p className="text-lg font-black text-slate-700">No students found</p>
+                    <p className="text-lg font-black text-slate-700">No admissions found</p>
                     <p className="text-sm font-medium mt-1">Try a different search term or filter.</p>
                   </td>
                 </tr>
               ) : (
-                paginatedStudents.map((s) => {
+                paginatedAdmissions.map((s) => {
                   const isLoading = actionLoading === s._id;
                   const initials = s.name?.substring(0, 2).toUpperCase() || "??";
 
                   return (
                     <tr key={s._id} className="group hover:bg-slate-50/50 transition-colors duration-200">
-                      {/* Student Info */}
+                      {/* Admission Info */}
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-[10px] shadow-sm">
@@ -500,7 +536,7 @@ const StudentPanel = () => {
                           </div>
                           <div>
                             <p className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">
-                              {s.name || "Unnamed Student"}
+                              {s.name || "Unnamed Admission"}
                             </p>
                             <p className="text-[10px] text-slate-400 font-medium">
                               ID: {s._id?.slice(-6).toUpperCase()}
@@ -531,9 +567,9 @@ const StudentPanel = () => {
                       {/* Status */}
                       <td className="px-5 py-3 text-center">
                         <span className={`inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
-                          s.isActive ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-500"
+                          s.status === "Confirmed" ? "bg-emerald-100 text-emerald-600" : "bg-amber-100 text-amber-600"
                         }`}>
-                          {s.isActive ? "Active" : "Inactive"}
+                          {s.status || "Pending"}
                         </span>
                       </td>
 
@@ -541,36 +577,46 @@ const StudentPanel = () => {
                       <td className="px-5 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => viewStudent(s)}
+                            onClick={() => window.open(`/admin/admissions/print/${s._id}`, "_blank")}
+                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                            title="Print Admission Form"
+                          >
+                            <FiPrinter size={16} />
+                          </button>
+                          
+                          {s.status !== "Confirmed" && (
+                            <button
+                              onClick={() => confirmAdmission(s)}
+                              disabled={isLoading}
+                              className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                              title="Confirm Admission"
+                            >
+                              {isLoading ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <FiCheck size={16} />}
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => viewAdmission(s)}
                             className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                             title="View Profile"
                           >
                             <FiEye size={16} />
                           </button>
 
-                          <button
-                            onClick={() => editStudent(s)}
-                            className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
-                            title="Edit Record"
-                          >
-                            <FiEdit size={16} />
-                          </button>
+                          {s.status !== "Confirmed" && (
+                            <button
+                              onClick={() => editAdmission(s)}
+                              className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
+                              title="Edit Record"
+                            >
+                              <FiEdit size={16} />
+                            </button>
+                          )}
 
                           <button
-                            onClick={() => toggleStudent(s)}
-                            disabled={isLoading}
-                            className={`p-1.5 rounded-lg transition-all ${
-                              s.isActive ? "text-slate-400 hover:text-rose-600 hover:bg-rose-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
-                            }`}
-                            title={s.isActive ? "Deactivate Account" : "Activate Account"}
-                          >
-                            {isLoading ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : s.isActive ? <FiToggleLeft size={16} /> : <FiToggleRight size={16} />}
-                          </button>
-
-                          <button
-                            onClick={() => deleteStudent(s)}
+                            onClick={() => deleteAdmission(s)}
                             className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                            title="Delete Student"
+                            title="Delete Admission"
                           >
                             <FiTrash2 size={16} />
                           </button>
@@ -585,7 +631,7 @@ const StudentPanel = () => {
         </div>
 
         {/* Pagination */}
-        {!loading && filteredStudents.length > 0 && (
+        {!loading && filteredAdmissions.length > 0 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -595,24 +641,13 @@ const StudentPanel = () => {
           />
         )}
       </div>
-
-      {/* Modals */}
-      {showForm && (
-        <AddStudentModal
-          form={form}
-          setForm={setForm}
-          onSave={saveStudent}
-          onClose={closeForm}
-          loading={actionLoading === "save"}
-          isEdit={!!editingStudent}
-          classes={classes}
-          sections={sections}
-        />
+      </>
       )}
 
-      {showViewModal && selectedStudent && (
-        <ViewStudentModal
-          student={selectedStudent}
+      {/* Modals */}
+      {showViewModal && selectedAdmission && (
+        <ViewAdmissionModal
+          admission={selectedAdmission}
           onClose={() => setShowViewModal(false)}
         />
       )}
@@ -622,4 +657,4 @@ const StudentPanel = () => {
   );
 };
 
-export default StudentPanel;
+export default AdmissionsPanel;

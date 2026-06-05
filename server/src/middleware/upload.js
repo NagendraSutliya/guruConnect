@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
         folder = "texts";
       }
 
-      const uploadPath = path.join("/uploads", folder);
+      const uploadPath = path.join("uploads", folder);
 
       if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, { recursive: true });

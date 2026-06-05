@@ -5,7 +5,6 @@ import {
   FiChevronDown, 
   FiMoreVertical, 
   FiSearch, 
-  FiX, 
   FiCalendar, 
   FiClock, 
   FiFilePlus, 
@@ -14,12 +13,14 @@ import {
   FiInfo, 
   FiCheckCircle, 
   FiUploadCloud, 
-  FiArrowRight,
   FiBook,
-  FiActivity
+  FiActivity,
+  FiTrash2,
+  FiBarChart2
 } from "react-icons/fi";
 import useClickOutside from "../../../hooks/useClickOutside";
 import { useToast } from "../../../context/ToastContext";
+import ExamPaperStudioModal from "../../../components/teacher/modals/ExamPaperStudioModal";
 
 const TeacherExamPanel = () => {
   const { showToast } = useToast();
@@ -29,66 +30,59 @@ const TeacherExamPanel = () => {
   const [openExam, setOpenExam] = useState<string | null>(null);
 
   const [paperModal, setPaperModal] = useState(false);
-  const [paperContent, setPaperContent] = useState("");
+  const [paperDetails, setPaperDetails] = useState({
+    title: "",
+    marks: "",
+    duration: "",
+    instructions: "",
+    content: ""
+  });
   const [activeExam, setActiveExam] = useState<any>(null);
   const [activeSubject, setActiveSubject] = useState<any>(null);
-  const [savingPaper, setSavingPaper] = useState(false);
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const menuRefs = useRef<Record<string, React.RefObject<HTMLDivElement | null>>>({});
-  const modalRef = useRef<HTMLDivElement | null>(null);
 
   const navigate = useNavigate();
 
+  const activeMenuRef = useRef<HTMLDivElement | null>(null);
+
+  // Sync the activeMenuRef with the currently open menu
   useEffect(() => {
-    if (!openMenu) return;
-    const currentRef = menuRefs.current[openMenu];
-    if (!currentRef) return;
-
-    const handleClick = (event: MouseEvent) => {
-      if (!currentRef.current) return;
-      if (!currentRef.current.contains(event.target as Node)) setOpenMenu(null);
-    };
-
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpenMenu(null);
-    };
-
-    document.addEventListener("mousedown", handleClick);
-    document.addEventListener("keydown", handleEsc);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-      document.removeEventListener("keydown", handleEsc);
-    };
+    activeMenuRef.current = openMenu ? menuRefs.current[openMenu]?.current || null : null;
   }, [openMenu]);
 
-  useClickOutside(modalRef, () => setPaperModal(false));
+  useClickOutside(activeMenuRef, () => setOpenMenu(null));
+  const fetchExams = async () => {
+    try {
+      const res = await api.get("/teacher/exams/full");
+      setExams(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to load exams ❌", "error");
+    }
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const res = await api.get("/teacher/exams/full");
-        setExams(res.data.data || []);
-      } catch (err) {
-        console.error(err);
-        showToast("Failed to load exams ❌", "error");
-      }
-    };
-    loadData();
+    fetchExams();
   }, []);
 
   useEffect(() => {
     if (exams.length && !openExam) setOpenExam(exams[0]._id);
   }, [exams]);
 
-  const goToUploadMarks = (examId: string, subjectId: string) => {
-    navigate("/teacher/results/upload-marks", { state: { examId, subjectId } });
+  const goToUploadMarks = (exam: any, subjectId: string) => {
+    const classId = exam?.classId?._id || exam?.examClass?._id;
+    const sectionId = exam?.sectionId?._id;
+    navigate("/teacher/results/upload-marks", { state: { examId: exam._id, subjectId, classId, sectionId } });
   };
 
-  const goToResult = (examId: string, subjectId: string) => {
-    navigate("/teacher/results", { state: { examId, subjectId } });
+  const goToResult = (exam: any, subjectId: string) => {
+    const classId = exam?.classId?._id || exam?.examClass?._id;
+    const sectionId = exam?.sectionId?._id;
+    navigate("/teacher/results", { state: { examId: exam._id, subjectId, classId, sectionId } });
   };
 
   const uploadFiles = async (examId: string, subjectId: string, files: FileList, type: "question" | "answer") => {
@@ -96,41 +90,39 @@ const TeacherExamPanel = () => {
     try {
       setUploading(true);
       const formData = new FormData();
-      Array.from(files).forEach((file) => formData.append("files", file));
       formData.append("examId", examId);
       formData.append("subjectId", subjectId);
       formData.append("type", type);
+      Array.from(files).forEach((file) => formData.append("files", file));
+      
       await api.post("/exam-files/upload-multiple", formData);
       showToast("Files uploaded successfully ✅", "success");
-    } catch (err) {
+      await fetchExams(); // Instantly refresh UI
+    } catch (err: any) {
       console.error(err);
-      showToast("Upload failed ❌", "error");
+      const errMsg = err.response?.data?.message || "Upload failed ❌";
+      showToast(errMsg, "error");
     } finally {
       setUploading(false);
     }
   };
 
-  const saveTypedPaper = async () => {
-    if (!paperContent.trim()) return showToast("Paper cannot be empty ⚠️", "warn");
+  const deleteFile = async (e: React.MouseEvent, fileId: string) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this paper?")) return;
+    
     try {
-      setSavingPaper(true);
-      await api.post("/exam-files/save-typed-paper", {
-        examId: activeExam,
-        subjectId: activeSubject,
-        content: paperContent,
-      });
-      showToast("Paper saved successfully ✍️", "success");
-      setPaperModal(false);
-      setPaperContent("");
-      setActiveExam(null);
-      setActiveSubject(null);
+      await api.delete(`/exam-files/${fileId}`);
+      showToast("File deleted successfully 🗑️", "success");
+      const res = await api.get("/teacher/exams/full");
+      setExams(res.data.data || []);
     } catch (err) {
       console.error(err);
-      showToast("Failed to save paper ❌", "error");
-    } finally {
-      setSavingPaper(false);
+      showToast("Failed to delete file ❌", "error");
     }
   };
+
+
 
   const isToday = (date: string) => {
     const today = new Date();
@@ -138,7 +130,7 @@ const TeacherExamPanel = () => {
     return d.toDateString() === today.toDateString();
   };
 
-  const isUploadAllowed = (status: string, isSubmitted?: boolean) => status === "completed" && !isSubmitted;
+  
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -264,9 +256,49 @@ const TeacherExamPanel = () => {
                          </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                         {isToday(sub.date) && <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[8px] font-bold uppercase tracking-widest rounded border border-blue-100">Live Cycle</span>}
-                         {sub.isSubmitted && <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] font-bold uppercase tracking-widest rounded border border-emerald-100">Evaluated</span>}
+                      <div className="flex items-center gap-3 flex-wrap justify-end">
+                         {/* Minimal File Buttons */}
+                         {sub.files && sub.files.length > 0 && sub.files.map((file: any) => {
+                           const isQuestion = file.type === "question" || file.type === "typed";
+                           const fileUrl = `http://localhost:5000${file.fileUrl}`;
+                           const displayName = file.fileName ? file.fileName.replace(/\.[^/.]+$/, "") : (isQuestion ? 'Q. Paper' : 'Answers');
+                           const typeColor = isQuestion ? "text-indigo-600" : "text-emerald-600";
+                           const borderColor = isQuestion ? "hover:border-indigo-300" : "hover:border-emerald-300";
+                           
+                           return (
+                             <div key={file._id} className={`flex items-center bg-white border border-slate-200 rounded shadow-sm transition-all ${borderColor} group`}>
+                               <button
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   if (file.fileUrl) {
+                                     window.open(fileUrl, "_blank");
+                                   } else {
+                                     showToast("PDF not yet generated for this file", "warn");
+                                   }
+                                 }}
+                                 title={file.fileName ? `${isQuestion ? 'Question Paper' : 'Answer Sheet'}: ${file.fileName}` : "Uploaded File"}
+                                 className="flex items-center gap-1.5 px-2.5 py-1 text-[9px] font-bold text-slate-600 hover:bg-slate-50 transition-colors rounded-l"
+                               >
+                                 {isQuestion ? <FiFilePlus className={typeColor} size={10} /> : <FiUploadCloud className={typeColor} size={10} />}
+                                 <span className="uppercase tracking-wide max-w-[120px] truncate flex items-center gap-1">
+                                    <span className={typeColor}>{isQuestion ? 'Q:' : 'ANS:'}</span>
+                                    {displayName}
+                                 </span>
+                               </button>
+                               <div className="w-px h-3 bg-slate-200 mx-0.5 group-hover:bg-slate-300 transition-colors"></div>
+                               <button
+                                 onClick={(e) => deleteFile(e, file._id)}
+                                 title="Delete Paper"
+                                 className="px-2 py-1 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors rounded-r"
+                               >
+                                 <FiTrash2 size={10} />
+                               </button>
+                             </div>
+                           );
+                         })}
+
+                         {isToday(sub.date) && <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[8px] font-bold uppercase tracking-widest rounded border border-blue-100 whitespace-nowrap">Live Cycle</span>}
+                         {sub.isSubmitted && <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] font-bold uppercase tracking-widest rounded border border-emerald-100 whitespace-nowrap">Evaluated</span>}
                          
                          <div ref={menuRefs.current[sub._id]} className="relative ml-2">
                            <button
@@ -284,7 +316,7 @@ const TeacherExamPanel = () => {
                                
                                <label className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-600 transition-colors">
                                  <FiFilePlus className="text-[var(--primary)]" />
-                                 <span>Upload Question Script</span>
+                                 <span>Upload Question Paper</span>
                                  <input
                                    type="file"
                                    hidden
@@ -300,16 +332,22 @@ const TeacherExamPanel = () => {
                                </label>
 
                                <button
-                                 onClick={() => { setActiveExam(exam._id); setActiveSubject(sub.subjectId?._id); setPaperModal(true); setOpenMenu(null); }}
+                                 onClick={() => {
+                                   setPaperDetails({ title: "", marks: "", duration: "", instructions: "", content: "" });
+                                   setActiveExam(exam._id);
+                                   setActiveSubject(sub.subjectId?._id);
+                                   setPaperModal(true);
+                                   setOpenMenu(null);
+                                 }}
                                  className="w-full flex items-center gap-3 px-4 py-2 hover:bg-slate-50 text-xs font-semibold text-slate-600 transition-colors"
                                >
                                  <FiPenTool className="text-[var(--primary)]" />
-                                 <span>Author Digital Paper</span>
+                                 <span>Create Question Paper</span>
                                </button>
 
                                <label className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-600 transition-colors">
                                  <FiUploadCloud className="text-[var(--primary)]" />
-                                 <span>Batch Answer Upload</span>
+                                 <span>Upload Answer Sheet</span>
                                  <input
                                    type="file"
                                    hidden
@@ -323,29 +361,27 @@ const TeacherExamPanel = () => {
                                    }}
                                  />
                                </label>
-
                                <button
-                                 disabled={!isUploadAllowed(exam.status, sub.isSubmitted)}
-                                 onClick={() => goToUploadMarks(exam._id, sub.subjectId?._id)}
-                                 className={`w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold transition-colors ${
-                                   isUploadAllowed(exam.status, sub.isSubmitted) ? "hover:bg-slate-50 text-slate-600" : "text-slate-300 cursor-not-allowed opacity-50"
-                                 }`}
-                               >
-                                 <FiTrendingUp className={isUploadAllowed(exam.status, sub.isSubmitted) ? "text-[var(--primary)]" : "text-slate-200"} />
-                                 <span>Input Evaluation Results</span>
+                                 onClick={() => goToResult(exam, sub.subjectId?._id)}
+                                 className="w-full flex items-center gap-3 px-4 py-2 hover:bg-slate-50 text-xs font-semibold text-slate-600 transition-colors rounded-b-xl"
+                                >
+                                 <FiBarChart2 className="text-[var(--primary)]" />
+                                 <span>View Results</span>
                                </button>
 
-                               <button
-                                 onClick={() => goToResult(exam._id, sub.subjectId?._id)}
+
+                                <button
+                                 onClick={() => goToUploadMarks(exam, sub.subjectId?._id)}
                                  className="w-full flex items-center gap-3 px-4 py-2 hover:bg-slate-50 text-xs font-semibold text-slate-600 transition-colors"
-                                >
-                                 <FiArrowRight className="text-[var(--primary)]" />
-                                 <span>View Performance Hub</span>
+                               >
+                                 <FiTrendingUp className="text-[var(--primary)]" />
+                                 <span>Upload Marks</span>
                                </button>
                              </div>
                            )}
                          </div>
                       </div>
+
                     </div>
                   );
                 })}
@@ -355,54 +391,17 @@ const TeacherExamPanel = () => {
         ))}
       </div>
 
-      {/* Authoring Studio Modal */}
-      {paperModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm" onClick={() => setPaperModal(false)} />
-          <div
-            ref={modalRef}
-            className="relative bg-white w-full max-w-4xl rounded-xl shadow-2xl border border-slate-200 overflow-hidden animate-fade-in flex flex-col max-h-[90vh]"
-          >
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                  <FiPenTool className="text-[var(--primary)]" />
-                  Digital Paper Authoring
-                </h2>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Compose high-fidelity exam scripts</p>
-              </div>
-              <button onClick={() => setPaperModal(false)} className="p-2 hover:bg-slate-100 rounded-lg transition-all text-slate-400">
-                <FiX size={18} />
-              </button>
-            </div>
-
-            <div className="p-6 flex-1 overflow-y-auto bg-slate-50/30">
-              <textarea
-                value={paperContent}
-                onChange={(e) => setPaperContent(e.target.value)}
-                placeholder="Commence authoring here..."
-                className="w-full h-[400px] bg-white border border-slate-200 rounded-lg p-6 text-sm font-medium text-slate-700 outline-none focus:border-[var(--primary)] transition-all shadow-inner resize-none leading-relaxed"
-              />
-            </div>
-
-            <div className="p-6 border-t border-slate-100 flex justify-end gap-3 bg-white">
-              <button
-                onClick={() => setPaperModal(false)}
-                className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                Cancel Draft
-              </button>
-              <button
-                onClick={saveTypedPaper}
-                disabled={savingPaper}
-                className="btn-primary"
-              >
-                {savingPaper ? "Finalizing..." : "Commit Script"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ExamPaperStudioModal
+        isOpen={paperModal}
+        onClose={() => setPaperModal(false)}
+        initialDetails={paperDetails}
+        examId={activeExam}
+        subjectId={activeSubject}
+        onSuccess={async () => {
+          const res = await api.get("/teacher/exams/full");
+          setExams(res.data.data || []);
+        }}
+      />
 
       {/* Operational Protocol */}
       <div className="bg-slate-900 rounded-xl p-6 text-white flex gap-4">

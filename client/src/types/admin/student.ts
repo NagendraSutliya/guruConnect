@@ -9,6 +9,7 @@ export interface Student {
   sectionId: any;
   parentName?: string;
   parentPhone?: string;
+  parentEmail?: string;
   phone?: string;
   dob?: string;
   admissionDate?: string;
@@ -35,6 +36,7 @@ export interface StudentFormData {
   sectionId: string;
   parentName?: string;
   parentPhone?: string;
+  parentEmail?: string;
   phone?: string;
   dob?: string;
   admissionDate?: string;
@@ -48,3 +50,6 @@ export interface StudentFormData {
   bloodGroup?: string;
   address?: string;
 }
+
+export interface Admission extends Student { status: string; appliedDate?: string; }
+export interface AdmissionFormData extends StudentFormData { }

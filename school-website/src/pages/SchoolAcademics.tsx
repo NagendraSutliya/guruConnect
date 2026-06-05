@@ -80,7 +80,7 @@ const SchoolAcademics = () => {
   }, []);
 
   return (
-    <div className="bg-[#020617] text-white overflow-hidden">
+    <div className="bg-themeBg text-themeText overflow-hidden transition-colors duration-500">
       <SchoolPageHeader 
         title={academicsData.bannerTitle} 
         subtitle={academicsData.bannerSubtitle}
@@ -91,29 +91,29 @@ const SchoolAcademics = () => {
       <section className="py-24 max-w-7xl mx-auto px-6">
         <div className="text-center mb-20 space-y-4">
           <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">The Pedagogy</h5>
-          <h2 className="text-4xl font-black text-white tracking-tight leading-tight">
+          <h2 className="text-4xl font-black text-themeText tracking-tight leading-tight">
             Our Journey of <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Continuous Growth</span>
           </h2>
-          <p className="text-slate-500 max-w-2xl mx-auto font-medium">
+          <p className="text-themeTextSec max-w-2xl mx-auto font-medium">
             We follow a balanced instructional model that evolves with the student, from sensory-based play to advanced analytical specialization.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {(academicsData.phases || []).map((step, i) => (
-            <div key={i} className="group p-8 rounded-[3rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-indigo-500/30 transition-all duration-700 relative overflow-hidden animate-fadeIn" style={{ animationDelay: `${i * 150}ms` }}>
+            <div key={i} className="group p-8 rounded-[3rem] bg-themeCard border border-themeBorder hover:bg-themeBgSec hover:border-indigo-500/30 transition-all duration-700 relative overflow-hidden animate-fadeIn" style={{ animationDelay: `${i * 150}ms` }}>
               <div className={`absolute top-0 right-0 w-32 h-32 bg-${step.color || 'indigo'}-500/5 blur-3xl rounded-full transition-all group-hover:scale-150`} />
               <div className="relative z-10 space-y-8">
                 <div className="flex justify-between items-start">
                    <div className={`w-16 h-16 rounded-2xl bg-${step.color || 'indigo'}-500/10 flex items-center justify-center text-3xl text-${step.color || 'indigo'}-400 group-hover:bg-${step.color || 'indigo'}-500 group-hover:text-white transition-all duration-500 shadow-2xl`}>
                       <MdLightbulb />
                    </div>
-                   <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{step.phase}</span>
+                   <span className="text-[10px] font-black text-themeTextSec uppercase tracking-widest">{step.phase}</span>
                 </div>
                 <div className="space-y-3">
-                  <h4 className="text-2xl font-black text-white tracking-tight group-hover:text-indigo-400 transition-colors">{step.title}</h4>
+                  <h4 className="text-2xl font-black text-themeText tracking-tight group-hover:text-indigo-400 transition-colors">{step.title}</h4>
                   <p className="text-[11px] font-black text-indigo-500 uppercase tracking-[0.2em]">{step.years}</p>
-                  <p className="text-xs text-slate-500 font-bold leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">{step.desc}</p>
+                  <p className="text-xs text-themeTextSec font-bold leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">{step.desc}</p>
                 </div>
               </div>
             </div>
@@ -122,16 +122,16 @@ const SchoolAcademics = () => {
       </section>
 
       {/* Beyond the Classroom */}
-      <section className="py-24 bg-slate-950/50 border-y border-white/5 relative">
+      <section className="py-24 bg-themeBgSec border-y border-themeBorder relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="relative order-2 lg:order-1">
               <div className="absolute -inset-10 bg-indigo-500/10 blur-[80px] rounded-full" />
-              <div className="relative aspect-[4/3] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
+              <div className="relative aspect-[4/3] rounded-[3rem] overflow-hidden border border-themeBorder shadow-2xl">
                  <img src="/images/redesign/academics_lab.png" alt="Science Lab" className="w-full h-full object-cover" />
-                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-themeBgSec to-transparent opacity-60" />
               </div>
-              <div className="absolute -bottom-6 -left-6 p-6 bg-slate-900 border border-white/5 rounded-3xl shadow-2xl">
+              <div className="absolute -bottom-6 -left-6 p-6 bg-themeCard border border-themeBorder rounded-3xl shadow-2xl">
                  <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center"><MdScience size={20} /></div>
                     <p className="text-xs font-black uppercase tracking-widest">Innovation Hub</p>
@@ -142,15 +142,15 @@ const SchoolAcademics = () => {
             <div className="space-y-10 order-1 lg:order-2">
               <div className="space-y-4">
                 <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.5em]">{academicsData.infrastructureTitle ? 'The Infrastructure' : ''}</h5>
-                <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight">{academicsData.infrastructureTitle || "Beyond the Textbook"}</h2>
-                <p className="text-slate-400 font-bold leading-relaxed text-sm opacity-80">
+                <h2 className="text-4xl md:text-5xl font-black text-themeText tracking-tighter leading-tight">{academicsData.infrastructureTitle || "Beyond the Textbook"}</h2>
+                <p className="text-themeTextSec font-bold leading-relaxed text-sm opacity-80">
                   {academicsData.infrastructureDesc || "Learning at Gyansthali isn't confined to four walls. We provide an ecosystem where students apply theoretical knowledge in world-class facilities."}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(academicsData.infrastructureItems || []).map((item, i) => (
-                  <div key={i} className="flex gap-5 p-6 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:bg-white/[0.06] hover:border-indigo-500/30 transition-all duration-500 group">
+                  <div key={i} className="flex gap-5 p-6 rounded-[2rem] bg-themeBg border border-themeBorder hover:bg-themeCard hover:border-indigo-500/30 transition-all duration-500 group">
                     <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xl">
                       {item.icon === "MdComputer" && <MdComputer size={24} />}
                       {item.icon === "MdMenuBook" && <MdMenuBook size={24} />}
@@ -159,8 +159,8 @@ const SchoolAcademics = () => {
                       {!["MdComputer", "MdMenuBook", "MdBrush", "MdLanguage"].includes(item.icon) && <MdScience size={24} />}
                     </div>
                     <div className="space-y-1">
-                      <h5 className="font-black text-sm uppercase tracking-wider text-white">{item.title}</h5>
-                      <p className="text-[11px] text-slate-500 font-bold leading-relaxed">{item.desc}</p>
+                      <h5 className="font-black text-sm uppercase tracking-wider text-themeText">{item.title}</h5>
+                      <p className="text-[11px] text-themeTextSec font-bold leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -201,16 +201,16 @@ const SchoolAcademics = () => {
       </section>
 
       {/* Specialized Departments */}
-      <section className="py-24 border-t border-white/5">
+      <section className="py-24 border-t border-themeBorder">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
-             <h2 className="text-3xl font-black text-white tracking-tight">Specialized Departments</h2>
-             <p className="text-slate-500 text-sm font-medium">Expertise across diverse academic and creative domains.</p>
+             <h2 className="text-3xl font-black text-themeText tracking-tight">Specialized Departments</h2>
+             <p className="text-themeTextSec text-sm font-medium">Expertise across diverse academic and creative domains.</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {(academicsData.departments || []).map((dept, i) => (
-              <div key={i} className="group p-6 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-indigo-500/50 hover:bg-white/[0.06] transition-all duration-500 text-center space-y-4 animate-fadeIn" style={{ animationDelay: `${i * 100}ms` }}>
+              <div key={i} className="group p-6 rounded-3xl bg-themeCard border border-themeBorder hover:border-indigo-500/50 hover:bg-themeBgSec transition-all duration-500 text-center space-y-4 animate-fadeIn" style={{ animationDelay: `${i * 100}ms` }}>
                 <div className="text-indigo-400 text-2xl mx-auto group-hover:scale-125 transition-transform duration-500">
                    {dept.name.toLowerCase().includes('stem') && <MdComputer />}
                    {dept.name.toLowerCase().includes('linguistic') && <MdLanguage />}
@@ -218,7 +218,7 @@ const SchoolAcademics = () => {
                    {dept.name.toLowerCase().includes('athletic') && <MdNaturePeople />}
                    {!['stem', 'linguistic', 'arts', 'athletic'].some(k => dept.name.toLowerCase().includes(k)) && <MdLibraryBooks />}
                 </div>
-                <p className="font-black text-slate-400 text-[10px] uppercase tracking-[0.2em] group-hover:text-white transition-colors">{dept.name}</p>
+                <p className="font-black text-themeTextSec text-[10px] uppercase tracking-[0.2em] group-hover:text-themeText transition-colors">{dept.name}</p>
               </div>
             ))}
           </div>

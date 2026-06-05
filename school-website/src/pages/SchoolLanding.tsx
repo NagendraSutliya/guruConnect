@@ -29,7 +29,7 @@ const Typewriter = ({ texts }: { texts: string[] }) => {
   return (
     <span className="text-indigo-400">
       {texts[index].substring(0, subIndex)}
-      <span className="animate-pulse ml-1 text-white">|</span>
+      <span className="animate-pulse ml-1 text-themeText">|</span>
     </span>
   );
 };
@@ -38,7 +38,7 @@ const SchoolLanding = () => {
   const [fetching, setFetching] = useState(true);
   const [heroData, setHeroData] = useState({
     title: "Empowering Minds, Shaping Tomorrow's Leaders",
-    subtitle: "At Gyansthali Edu, we blend traditional values with cutting-edge digital innovation to provide a holistic learning experience that prepares students for the challenges of a global future.",
+    subtitle: "At Gyansthali Enlightening, we blend traditional values with cutting-edge digital innovation to provide a holistic learning experience that prepares students for the challenges of a global future.",
     button1: "Apply for 2026-27",
     button2: "Explore Campus",
     announcement: "Now Enrolling: Academic Session 2026-27",
@@ -70,7 +70,7 @@ const SchoolLanding = () => {
   }, []);
 
   return (
-    <div className="relative overflow-x-hidden bg-[#020617] text-white">
+    <div className="relative overflow-x-hidden bg-themeBg text-themeText transition-colors duration-500">
       {/* Background Blobs */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/10 rounded-full blur-[120px] animate-pulse" />
@@ -85,7 +85,7 @@ const SchoolLanding = () => {
             alt="School Hero" 
             className="w-full h-full object-cover opacity-20 scale-105 animate-slowZoom"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950" />
+          <div className="absolute inset-0 bg-gradient-to-b from-themeBgSec via-transparent to-themeBg opacity-80" />
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full">
@@ -105,7 +105,7 @@ const SchoolLanding = () => {
               </div>
             ) : (
               <>
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-[0.2em] text-indigo-300 animate-slideDown">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-themeCard border border-themeBorder text-xs font-black uppercase tracking-[0.2em] text-indigo-300 animate-slideDown">
                   <MdStar className="text-amber-400 animate-spin-slow" size={14} />
                   {heroData.announcement}
                 </div>
@@ -113,7 +113,7 @@ const SchoolLanding = () => {
                   {heroData.title} <br />
                   <Typewriter texts={["Leaders.", "Innovators.", "Thinkers."]} />
                 </h2>
-                <p className="text-base md:text-lg text-slate-400 font-medium leading-relaxed max-w-lg animate-fadeInDelay">
+                <p className="text-base md:text-lg text-themeTextSec font-medium leading-relaxed max-w-lg animate-fadeInDelay">
                   {heroData.subtitle}
                 </p>
                 <div className="flex flex-wrap gap-4 pt-4 animate-slideUp">
@@ -121,7 +121,7 @@ const SchoolLanding = () => {
                     {heroData.button1}
                     <MdArrowForward size={18} className="group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button className="flex items-center gap-3 px-8 py-3.5 bg-white/5 text-white backdrop-blur-xl border border-white/10 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-slate-950 transition-all active:scale-95">
+                  <button className="flex items-center gap-3 px-8 py-3.5 bg-themeCard text-themeText backdrop-blur-xl border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-themeBgSec transition-all active:scale-95">
                     <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white">
                       <MdPlayArrow size={16} />
                     </div>
@@ -134,22 +134,22 @@ const SchoolLanding = () => {
 
           <div className="hidden lg:block relative animate-float">
              <div className="absolute -inset-10 bg-indigo-500/10 blur-[80px] rounded-full" />
-             <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl">
+             <div className="relative rounded-[2.5rem] overflow-hidden border border-themeBorder shadow-2xl">
                 <img src="/images/redesign/classroom.png" alt="Modern Classroom" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-themeBgSec to-transparent opacity-60" />
              </div>
              {/* Floating Info Card */}
-             <div className="absolute -bottom-6 -left-6 p-6 bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl">
+             <div className="absolute -bottom-6 -left-6 p-6 bg-themeBgSec backdrop-blur-2xl border border-themeBorder rounded-3xl shadow-2xl">
                 <div className="flex items-center gap-3 mb-3">
-                   <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center">
+                   <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
                       <MdSchool size={20} />
                    </div>
                    <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Global Ranking</p>
+                      <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest leading-none mb-1">Global Ranking</p>
                       <p className="text-xl font-black">Top 1% in India</p>
                    </div>
                 </div>
-                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1 w-full bg-themeBorder rounded-full overflow-hidden">
                    <div className="h-full w-[85%] bg-indigo-500" />
                 </div>
              </div>
@@ -158,20 +158,20 @@ const SchoolLanding = () => {
       </section>
 
       {/* Stats Bar */}
-      <section className="py-16 bg-slate-950/50 border-y border-white/5">
+      <section className="py-16 bg-themeBgSec border-y border-themeBorder">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             {[
               { label: 'Success Rate', val: '99%', sub: 'University Placements' },
-              { label: 'Expert Faculty', val: '150+', sub: 'Certified Educators' },
-              { label: 'Modern Labs', val: '12+', sub: 'World-class Facilities' },
-              { label: 'Years Legacy', val: '25+', sub: 'Of Excellence' },
+              { label: 'Expert Faculty', val: '25+', sub: 'Certified Educators' },
+              { label: 'Modern Labs', val: '10+', sub: 'World-class Facilities' },
+              { label: 'Established', val: '2020', sub: 'Mahesh Nagar, Jaipur' },
             ].map((stat, i) => (
-              <div key={i} className="text-left space-y-2 border-l border-white/10 pl-8">
-                <p className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-none">{stat.val}</p>
+              <div key={i} className="text-left space-y-2 border-l border-themeBorder pl-8">
+                <p className="text-4xl md:text-5xl font-black text-themeText tracking-tighter leading-none">{stat.val}</p>
                 <div className="space-y-0.5">
                   <p className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.2em]">{stat.label}</p>
-                  <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">{stat.sub}</p>
+                  <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-[0.2em]">{stat.sub}</p>
                 </div>
               </div>
             ))}
@@ -184,7 +184,7 @@ const SchoolLanding = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-20 space-y-4">
             <h5 className="text-xs font-black text-indigo-400 uppercase tracking-[0.4em]">Our DNA</h5>
-            <h2 className="text-4xl font-black text-white tracking-tight leading-tight">An Ecosystem for <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Human Excellence</span></h2>
+            <h2 className="text-4xl font-black text-themeText tracking-tight leading-tight">An Ecosystem for <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Human Excellence</span></h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -208,15 +208,15 @@ const SchoolLanding = () => {
                 tag: "Security"
               }
             ].map((feature, i) => (
-              <div key={i} className="group bg-white/5 p-10 rounded-[3rem] border border-white/5 hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 shadow-2xl">
-                <div className="w-full h-36 bg-slate-900/50 rounded-2xl mb-10 overflow-hidden border border-white/5 relative">
+              <div key={i} className="group bg-themeCard p-10 rounded-[3rem] border border-themeBorder hover:bg-themeBgSec transition-all duration-500 hover:-translate-y-2 shadow-2xl">
+                <div className="w-full h-36 bg-themeBgSec rounded-2xl mb-10 overflow-hidden border border-themeBorder relative">
                    <img src={feature.icon} alt={feature.title} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700" />
-                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent" />
+                   <div className="absolute inset-0 bg-gradient-to-t from-themeBgSec to-transparent opacity-60" />
                 </div>
                 <div className="space-y-4">
                   <span className="text-[11px] font-black text-indigo-500 uppercase tracking-widest">{feature.tag}</span>
-                  <h4 className="text-2xl font-black text-white tracking-tight leading-tight">{feature.title}</h4>
-                  <p className="text-slate-400 text-sm font-medium leading-relaxed">{feature.desc}</p>
+                  <h4 className="text-2xl font-black text-themeText tracking-tight leading-tight">{feature.title}</h4>
+                  <p className="text-themeTextSec text-sm font-medium leading-relaxed">{feature.desc}</p>
                 </div>
               </div>
             ))}

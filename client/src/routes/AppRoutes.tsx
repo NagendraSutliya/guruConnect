@@ -35,6 +35,8 @@ import Routine from "../pages/admin/academic/Routine";
 import Exams from "../pages/admin/exams/Exams";
 import Results from "../pages/admin/exams/Results";
 import Students from "../pages/admin/student/Students";
+import AdmissionsPanel from "../pages/admin/student/AdmissionsPanel";
+import PrintAdmissionForm from "../pages/admin/student/PrintAdmissionForm";
 import StudentLogin from "../pages/student/Login";
 import StudentRoute from "../guards/StudentRoute";
 import StudentLayout from "../layouts/StudentLayout";
@@ -107,6 +109,8 @@ export default function AppRoutes() {
         <Route path="subjects" element={<Subjects />} />
         <Route path="teacher-assign" element={<TeacherAssignPanel />} />
         <Route path="students" element={<Students />} />
+        <Route path="admissions" element={<AdmissionsPanel />} />
+        <Route path="admissions/print/:id" element={<PrintAdmissionForm />} />
         <Route path="attendance" element={<Attendance />} />
         <Route path="routine" element={<Routine />} />
 

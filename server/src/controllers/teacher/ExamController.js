@@ -162,13 +162,29 @@ exports.getFullExams = async (req, res) => {
       instituteId: req.user.instituteId,
     }).populate("subjectId", "name");
 
+    // ✅ STEP 4.5: Get exam files
+    const ExamFile = require("../../models/ExamFile");
+    const examFiles = await ExamFile.find({
+      examId: { $in: examIds },
+    });
+
     // ✅ STEP 5: FILTER SUBJECTS (IMPORTANT 🔥)
     const result = exams.map((exam) => {
       const subjects = examSubjects.filter(
         (s) =>
           s.examId.toString() === exam._id.toString() &&
           subjectIds.includes(s.subjectId._id.toString()) // ✅ FILTER HERE
-      );
+      ).map((s) => {
+        const files = examFiles.filter(
+          (f) =>
+            f.examId.toString() === s.examId.toString() &&
+            f.subjectId.toString() === s.subjectId._id.toString()
+        );
+        return {
+          ...s.toObject(),
+          files,
+        };
+      });
 
       return {
         ...exam.toObject(),

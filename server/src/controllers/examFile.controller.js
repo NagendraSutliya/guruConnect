@@ -20,34 +20,10 @@ exports.uploadMultipleFiles = async (req, res) => {
       return errorResponse(res, "No files uploaded", 400);
     }
 
-    // ✅ Fetch exam and check status
-    const exam = await Exam.findById(examId);
-    if (!exam) {
-      return errorResponse(res, "Exam not found", 404);
-    }
-    if (type === "answer" && exam.status !== "completed") {
-      return errorResponse(
-        res,
-        "Cannot upload answers before exam is completed",
-        400
-      );
-    }
+    // Removed the "Cannot upload answers before exam is completed" restriction
+    // allowing teachers to upload answer sheets at any time.
 
-    // ✅ Prevent duplicate question upload
-    if (type === "question") {
-      const existing = await ExamFile.findOne({
-        examId,
-        subjectId,
-        type: "question",
-      });
-      if (existing) {
-        return errorResponse(
-          res,
-          "Question paper already uploaded for this subject",
-          400
-        );
-      }
-    }
+
 
     const records = req.files.map((file) => ({
       examId,

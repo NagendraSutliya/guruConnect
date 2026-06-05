@@ -7,5 +7,6 @@ router.use("/v1/public", require("./v1/public.routes"));
 router.use("/v1/feedback", require("./v1/feedback.routes"));
 router.use("/v1/cms", require("./cmsRoutes"));
 router.use("/v1/upload", require("./uploadRoutes"));
+router.use("/v1/exam-files", require("./v1/examFile.routes"));
 
 module.exports = router;

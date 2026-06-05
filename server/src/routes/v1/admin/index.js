@@ -5,6 +5,7 @@ const router = express.Router();
 router.use("/profile", require("./profile.routes"));
 router.use("/teachers", require("./teacher.routes"));
 router.use("/students", require("./student.routes"));
+router.use("/admissions", require("./admission.routes"));
 router.use("/stats", require("./stats.routes"));
 router.use("/feedback", require("./feedback.routes"));
 router.use("/link", require("./publicLink.routes"));

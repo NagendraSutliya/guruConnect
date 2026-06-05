@@ -15,6 +15,7 @@ import {
   FiDownload,
 } from "react-icons/fi";
 import { FaUserPlus, FaUsers, FaUserCheck, FaUserTimes } from "react-icons/fa";
+import Pagination from "../../../components/common/Pagination";
 
 const TeacherPanel = () => {
   /** --------------------- State Variables --------------------- **/
@@ -516,45 +517,13 @@ const TeacherPanel = () => {
 
         {/* Pagination Controls */}
         {!loading && filteredTeachers.length > 0 && (
-          <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-slate-500">Show rows:</label>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 outline-none font-medium"
-              >
-                {[5, 10, 20, 50].map((num) => (
-                  <option key={num} value={num}>{num}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-slate-500">
-                Page <span className="text-slate-800">{currentPage}</span> of <span className="text-slate-800">{totalPages || 1}</span>
-              </span>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 text-slate-700"
-                >
-                  Prev
-                </button>
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages || totalPages === 0}
-                  className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 text-slate-700"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+            setCurrentPage={setCurrentPage}
+          />
         )}
       </div>
 
