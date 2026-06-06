@@ -168,7 +168,7 @@ const AdminLayout = () => {
         { name: "Achievements", path: "/admin/cms/achievements" },
         { name: "Photo Gallery", path: "/admin/cms/gallery" },
         { name: "Contact Us", path: "/admin/cms/contact" },
-        { name: "Live Preview", path: "http://localhost:5174", external: true },
+        { name: "Live Preview", path: import.meta.env.VITE_SCHOOL_WEBSITE_URL || "http://localhost:5174", external: true },
       ],
     },
     {

@@ -1,4 +1,4 @@
-import { useState, } from "react";
+﻿import { useState, } from "react";
 import { 
   MdWeb, 
   MdHistory, 
@@ -40,7 +40,7 @@ export default function CMSDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <a 
-            href="http://localhost:5174" 
+            href={import.meta.env.VITE_SCHOOL_WEBSITE_URL || "http://localhost:5174"} 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"
@@ -159,7 +159,7 @@ export default function CMSDashboard() {
                    <div className="w-10 h-10 bg-indigo-600 rounded-xl" />
                    <div>
                       <p className="text-[10px] font-black uppercase">campus_hero.jpg</p>
-                      <p className="text-[9px] text-slate-400 font-bold">2.4 MB • 1920x1080</p>
+                      <p className="text-[9px] text-slate-400 font-bold">2.4 MB â€¢ 1920x1080</p>
                    </div>
                 </div>
                 <MdCheckCircle className="text-emerald-500" size={20} />

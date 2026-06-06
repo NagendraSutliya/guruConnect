@@ -59,7 +59,7 @@ const Landing = () => {
           />
           
           {/* Modal Content */}
-          <div className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className="relative bg-white w-full max-w-4xl max-h-[90vh] md:max-h-full rounded-3xl md:rounded-[40px] shadow-2xl overflow-y-auto animate-in zoom-in-95 duration-300">
             <button 
               onClick={() => setShowLoginModal(false)}
               className="absolute top-2 right-4 p-3 hover:bg-slate-100 rounded-full transition-colors z-10"
@@ -69,7 +69,7 @@ const Landing = () => {
 
             <div className="flex flex-col md:flex-row h-full">
               {/* Left Side: Branding */}
-              <div className="w-full md:w-1/3 bg-orange-600 p-12 text-white flex flex-col justify-between relative overflow-hidden">
+              <div className="w-full md:w-1/3 bg-orange-600 p-6 md:p-12 text-white flex flex-col justify-between relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-8">
@@ -81,13 +81,13 @@ const Landing = () => {
                   <h3 className="text-3xl font-extrabold mb-4 leading-tight">Welcome Back!</h3>
                   <p className="text-orange-100 font-medium">Select your portal to continue your journey.</p>
                 </div>
-                <div className="text-sm text-orange-200">
+                <div className="text-sm text-orange-200 mt-6 md:mt-0">
                   Need help? <a href="#" className="underline font-bold text-white">Contact Support</a>
                 </div>
               </div>
 
               {/* Right Side: Role Selector */}
-              <div className="w-full md:w-2/3 p-12 bg-slate-50">
+              <div className="w-full md:w-2/3 p-6 md:p-12 bg-slate-50">
                 <div className="grid gap-4">
                   {[
                     { 
@@ -118,9 +118,9 @@ const Landing = () => {
                     <Link 
                       key={i} 
                       to={item.link}
-                      className="group flex items-center gap-6 p-6 bg-white rounded-3xl border border-slate-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/50 transition-all duration-300"
+                      className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-2xl md:rounded-3xl border border-slate-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/50 transition-all duration-300"
                     >
-                      <div className={`w-14 h-14 ${item.bg} ${item.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                      <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 ${item.bg} ${item.color} rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         {item.icon}
                       </div>
                       <div className="flex-1">
@@ -140,14 +140,14 @@ const Landing = () => {
       )}
       {/* ================= NAVIGATION ================= */}
       <nav className="fixed top-0 w-full z-50 bg-white shadow-sm border-b border-slate-50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img 
               src="/guruconnect-logo.png" 
               alt="guruConnect Logo" 
-              className="h-14 w-auto object-contain"
+              className="h-10 sm:h-14 w-auto object-contain"
             />
-            <div className="flex flex-col justify-center">
+            <div className="hidden sm:flex flex-col justify-center">
               <span className="text-xl font-black tracking-tighter leading-none">
                 <span className="text-orange-600">guru</span>
                 <span className="text-blue-600">Connect</span>
@@ -160,26 +160,27 @@ const Landing = () => {
             <a href="#how-it-works" className="hover:text-blue-600 transition-colors">Workflows</a>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {!checkingSession && (
               userRole ? (
                 <Link to={getDashboardLink()}>
-                  <button className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95">
+                  <button className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-2 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95 text-sm sm:text-base">
                     <LayoutDashboard className="w-4 h-4 text-orange-500" />
-                    Go to Dashboard
+                    <span className="hidden sm:inline">Go to Dashboard</span>
+                    <span className="sm:hidden">Dashboard</span>
                   </button>
                 </Link>
               ) : (
                 <>
                   <button 
                     onClick={() => setShowLoginModal(true)}
-                    className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-xl text-slate-600 font-bold hover:bg-slate-50 transition-all border border-slate-100"
+                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2 rounded-xl text-slate-600 font-bold hover:bg-slate-50 transition-all border border-slate-100 text-sm sm:text-base"
                   >
-                    <Users className="w-4 h-4 text-orange-500" />
-                    Sign In
+                    <Users className="hidden sm:block w-4 h-4 text-orange-500" />
+                    <span className="text-xs sm:text-base whitespace-nowrap">Sign In</span>
                   </button>
                   <Link to="/auth/register">
-                    <button className="bg-orange-600 text-white px-7 py-2.5 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95">
+                    <button className="bg-orange-600 text-white px-3 sm:px-7 py-2 sm:py-2 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95 text-xs sm:text-base whitespace-nowrap">
                       Get Started
                     </button>
                   </Link>
@@ -206,13 +207,27 @@ const Landing = () => {
               </div>
             )}
             
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
+            <h1 className="text-4xl md:text-6xl md:font-extrabold tracking-tight text-slate-900 leading-[1.05]">
               {heroData.title}
             </h1>
 
             <p className="mt-8 text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
               {heroData.subtitle}
             </p>
+
+             <div className="flex mt-8 items-center justify-center lg:justify-start">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
+                      <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
+                    </div>
+                  ))}
+                  <div className="w-10 h-10 rounded-full border-2 border-white bg-blue-600 flex items-center justify-center text-[10px] text-white font-bold">
+                    500+
+                  </div>
+                </div>
+                <span className="ml-4 text-xs sm:text-sm font-medium text-slate-500">Trusted by 500+ Schools</span>
+              </div>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
               {!checkingSession && (
@@ -224,30 +239,20 @@ const Landing = () => {
                     </button>
                   </Link>
                 ) : (
-                  <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                    <Link to="/auth/register" className="w-full sm:w-auto">
-                      <button className="w-full bg-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3 group">
+                  <div className="flex flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+                    <Link to="/auth/register" className="flex-1 sm:w-auto">
+                      <button className="w-full bg-orange-600 text-white px-3 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl font-bold text-xs sm:text-base md:text-lg hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 sm:gap-3 group whitespace-nowrap">
                         {heroData.button1}
-                        <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                        <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 group-hover:translate-x-1 sm:group-hover:translate-x-2 transition-transform shrink-0" />
                       </button>
                     </Link>
-                    <button className="w-full sm:w-auto bg-white text-slate-900 border border-slate-200 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-3">
+                    <button className="flex-1 sm:w-auto w-full bg-white text-slate-900 border border-slate-200 px-3 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl font-bold text-xs sm:text-base md:text-lg hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-2 sm:gap-3 whitespace-nowrap">
                       {heroData.button2}
                     </button>
                   </div>
                 )
               )}
-              <div className="flex -space-x-3 mt-4 sm:mt-0 items-center">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
-                    <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
-                  </div>
-                ))}
-                <div className="w-10 h-10 rounded-full border-2 border-white bg-blue-600 flex items-center justify-center text-[10px] text-white font-bold">
-                  500+
-                </div>
-                <span className="ml-4 text-sm font-medium text-slate-500 self-center">Trusted by 500+ Schools</span>
-              </div>
+             
             </div>
           </div>
 
@@ -331,15 +336,17 @@ const Landing = () => {
               <Link 
                 to={item.link} 
                 key={i}
-                className="group relative overflow-hidden rounded-3xl p-10 text-left transition-all hover:-translate-y-2 border border-slate-100 hover:border-transparent"
+                className="group relative overflow-hidden rounded-2xl md:rounded-3xl p-5 md:p-10 text-left transition-all hover:-translate-y-2 border border-slate-100 hover:border-transparent"
               >
                 <div className={`absolute inset-0 ${item.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
-                <div className="relative z-10">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-colors ${item.color} text-white group-hover:bg-white group-hover:text-slate-900`}>
+                <div className="relative z-10 flex items-center md:block gap-4 md:gap-0">
+                  <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-xl md:rounded-2xl flex items-center justify-center md:mb-6 transition-colors ${item.color} text-white group-hover:bg-white group-hover:text-slate-900`}>
                     {item.icon}
                   </div>
-                  <h3 className="text-2xl font-bold mb-2 group-hover:text-white transition-colors">{item.role} Portal</h3>
-                  <p className="text-slate-500 group-hover:text-white/80 transition-colors">Access your dedicated workspace and tools.</p>
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 group-hover:text-white transition-colors">{item.role} Portal</h3>
+                    <p className="text-sm md:text-base text-slate-500 group-hover:text-white/80 transition-colors">Access your dedicated workspace and tools.</p>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -380,7 +387,7 @@ const Landing = () => {
 
       {/* ================= FOOTER ================= */}
       <footer className="py-12 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:row items-center justify-between gap-6">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
               <GraduationCap className="text-white w-5 h-5" />

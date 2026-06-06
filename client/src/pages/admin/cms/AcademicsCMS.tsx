@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { 
   MdSave, 
   MdImage, 
@@ -340,7 +340,7 @@ export default function AcademicsCMS() {
             <h4 className="font-black text-lg mb-2">Live Preview</h4>
             <p className="text-slate-400 text-xs mb-6">Verify your changes on the public academics page.</p>
             <a 
-              href="http://localhost:5174/academics" 
+              href={`${import.meta.env.VITE_SCHOOL_WEBSITE_URL || "http://localhost:5174"}/academics`} 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-3 w-full py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl transition-all"

@@ -1,13 +1,10 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/Navbar";
 
 const PublicLayout = () => {
   return (
     <>
       <div className="h-screen flex flex-col overflow-hidden">
-        <Navbar />
-
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto mt-16">
           <Outlet />
         </main>
       </div>
