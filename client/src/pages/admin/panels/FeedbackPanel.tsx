@@ -1,28 +1,20 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../../api/axiosInstance";
-
-type Feedback = {
-  _id: string;
-  message: string;
-  mood: "happy" | "neutral" | "sad";
-  teacherName?: string;
-  teacherId?: { name: string; _id?: string };
-  studentName?: string;
-  studentId?: { name: string };
-  classOrBatch?: string;
-  createdAt: string;
-};
+import type { Feedback } from "../../../types/admin/feedback";
+import { FiTrash2, FiFilter, FiSmile, FiMeh, FiFrown, FiCalendar, FiUser } from "react-icons/fi";
+import { useToast } from "../../../context/ToastContext";
 
 const MOOD_CONFIG: Record<
   Feedback["mood"],
-  { emoji: string; color: string; bg: string }
+  { emoji: string; color: string; bg: string; icon: any }
 > = {
-  happy: { emoji: "😊", color: "text-green-600", bg: "bg-green-50" },
-  neutral: { emoji: "😐", color: "text-yellow-600", bg: "bg-yellow-50" },
-  sad: { emoji: "😞", color: "text-red-600", bg: "bg-red-50" },
+  happy: { emoji: "😊", color: "text-emerald-600", bg: "bg-emerald-50", icon: <FiSmile /> },
+  neutral: { emoji: "😐", color: "text-amber-600", bg: "bg-amber-50", icon: <FiMeh /> },
+  sad: { emoji: "😞", color: "text-rose-600", bg: "bg-rose-50", icon: <FiFrown /> },
 };
 
 const FeedbackPanel = () => {
+  const { showToast } = useToast();
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,7 +28,7 @@ const FeedbackPanel = () => {
   useEffect(() => {
     api
       .get("/admin/feedback", { headers })
-      .then((res) => setFeedback(res.data))
+      .then((res) => setFeedback(res.data.data))
       .finally(() => setLoading(false));
   }, []);
 
@@ -60,157 +52,178 @@ const FeedbackPanel = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this feedback?")) return;
-    await api.delete(`/admin/feedback/${id}`, { headers });
-    setFeedback((prev) => prev.filter((f) => f._id !== id));
+    try {
+      await api.delete(`/admin/feedback/${id}`, { headers });
+      setFeedback((prev) => prev.filter((f) => f._id !== id));
+      showToast("Feedback response deleted", "success");
+    } catch {
+      showToast("Failed to delete feedback", "error");
+    }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20 text-gray-400">
-        Fetching student feedback…
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-end justify-between">
+    <div className="space-y-6 pb-12 animate-fadeIn">
+      {/* Header Section */}
+      <div className="sticky top-0 z-30 bg-gradient-to-r from-blue-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-blue-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold">Student Feedback</h2>
-          {/* <p className="text-sm text-gray-500">
-            {filteredFeedback.length} responses
-          </p> */}
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Voice of Students</h2>
+          <p className="text-slate-500 text-sm font-medium mt-1">Monitor teacher performance through real-time student feedback.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              setLoading(true);
+              api.get("/admin/feedback", { headers }).then(res => setFeedback(res.data.data)).finally(() => setLoading(false));
+            }}
+            className="flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl font-bold shadow-sm transition-all active:scale-95 text-sm"
+          >
+            <FiMeh />
+            <span>Sync Feedback</span>
+          </button>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white border rounded-xl p-4 shadow-sm space-y-4">
-        <div>
-          <p className="text-lg md:text-xl font-bold text-gray-600">
-            {filteredFeedback.length} Responses
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-4">
-          <select
-            className="border px-3 py-2 rounded w-56"
-            value={selectedTeacher}
-            onChange={(e) => setSelectedTeacher(e.target.value)}
-          >
-            <option value="">All Teachers</option>
-            {teachers.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+      {/* Control Bar */}
+      <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/20 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto">
+           <div className="flex flex-col gap-1.5 w-full sm:w-64">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Filter by Teacher</label>
+              <div className="relative">
+                 <select
+                   className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border-none rounded-2xl text-xs font-black uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer"
+                   value={selectedTeacher}
+                   onChange={(e) => setSelectedTeacher(e.target.value)}
+                 >
+                   <option value="">All Teachers</option>
+                   {teachers.map((t) => <option key={t} value={t}>{t}</option>)}
+                 </select>
+                 <FiFilter className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              </div>
+           </div>
 
-          <select
-            className="border px-3 py-2 rounded w-40"
-            value={selectedMood}
-            onChange={(e) =>
-              setSelectedMood(e.target.value as Feedback["mood"] | "")
-            }
-          >
-            <option value="">All Moods</option>
-            <option value="happy">Happy</option>
-            <option value="neutral">Neutral</option>
-            <option value="sad">Sad</option>
-          </select>
+           <div className="flex flex-col gap-1.5 w-full sm:w-48">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Filter by Sentiment</label>
+              <div className="relative">
+                 <select
+                   className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border-none rounded-2xl text-xs font-black uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer"
+                   value={selectedMood}
+                   onChange={(e) => setSelectedMood(e.target.value as Feedback["mood"] | "")}
+                 >
+                   <option value="">All Moods</option>
+                   <option value="happy">Happy Only</option>
+                   <option value="neutral">Neutral Only</option>
+                   <option value="sad">Critical Only</option>
+                 </select>
+                 <FiSmile className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              </div>
+           </div>
+        </div>
+
+        <div className="px-8 py-4 bg-indigo-50 border border-indigo-100 rounded-3xl text-center w-full lg:w-auto">
+           <p className="text-3xl font-black text-indigo-600 tracking-tight">{filteredFeedback.length}</p>
+           <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-0.5">Responses Filtered</p>
         </div>
       </div>
 
-      {/* Empty State */}
-      {filteredFeedback.length === 0 && (
-        <div className="bg-gradient-to-br from-gray-50 to-white border rounded-2xl py-20 text-center text-gray-400">
-          <div className="text-4xl mb-4">📭</div>
-          No feedback found
+      {/* Grid of Feedback */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-24 gap-4 opacity-50">
+           <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+           <p className="text-sm font-black uppercase tracking-widest">Collecting Student Voices...</p>
+        </div>
+      ) : filteredFeedback.length === 0 ? (
+        <div className="bg-white/70 backdrop-blur-md border border-white/20 rounded-[3rem] py-32 text-center">
+           <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-slate-300">📭</div>
+           <h3 className="text-lg font-black text-slate-800">No Feedback Captured</h3>
+           <p className="text-slate-500 font-medium mt-2">Adjust your filters or wait for students to submit more responses.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {filteredFeedback.map((item) => {
+            const moodUI = MOOD_CONFIG[item.mood];
+            const studentName = item.studentName || item.studentId?.name || "Anonymous";
+            const teacherName = item.teacherName || item.teacherId?.name || "Unknown Teacher";
+            const initialsS = studentName.charAt(0).toUpperCase();
+            const initialsT = teacherName.charAt(0).toUpperCase();
+
+            return (
+              <div
+                key={item._id}
+                className={`group relative rounded-[2.5rem] bg-white/70 backdrop-blur-md border border-white/20 p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden`}
+              >
+                {/* Decorative Sentiment Indicator */}
+                <div className={`absolute top-0 right-0 w-24 h-24 opacity-5 pointer-events-none flex items-center justify-center text-8xl ${moodUI.color}`}>
+                   {moodUI.icon}
+                </div>
+
+                <div className="relative z-10">
+                  {/* Identity Header */}
+                  <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
+                     <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black shadow-lg shadow-slate-200">
+                          {initialsS}
+                        </div>
+                        <div>
+                           <p className="text-[11px] font-black text-slate-600 uppercase tracking-widest">Feedback From</p>
+                           <p className="text-sm font-black text-slate-800">{studentName}</p>
+                        </div>
+                     </div>
+
+                     <div className="hidden sm:block text-slate-300 font-black tracking-tighter">━━━━▶</div>
+
+                     <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-lg shadow-indigo-100 ring-4 ring-indigo-50">
+                          {initialsT}
+                        </div>
+                        <div>
+                           <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">Regarding Teacher</p>
+                           <p className="text-sm font-black text-indigo-600">{teacherName}</p>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* Sentiment Badge */}
+                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl mb-6 border ${moodUI.bg} ${moodUI.color} border-current/10`}>
+                     <span className="text-lg">{moodUI.emoji}</span>
+                     <span className="text-[11px] font-black uppercase tracking-[0.2em]">{item.mood} Sentiment</span>
+                  </div>
+
+                  {/* Message Body */}
+                  <div className="bg-slate-50/50 rounded-3xl p-6 mb-8 border border-slate-100 group-hover:bg-white group-hover:shadow-inner transition-all duration-500">
+                     <p className="text-slate-700 font-medium leading-relaxed italic">
+                       "{item.message}"
+                     </p>
+                  </div>
+
+                  {/* Metadata Footer */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-slate-100">
+                     <div className="flex items-center gap-4 text-[11px] font-black text-slate-600 uppercase tracking-widest">
+                        <div className="flex items-center gap-1.5 bg-slate-100/50 px-3 py-1.5 rounded-lg">
+                           <FiCalendar className="w-3 h-3" />
+                           {new Date(item.createdAt).toLocaleDateString()}
+                        </div>
+                        {item.classOrBatch && (
+                           <div className="flex items-center gap-1.5 bg-slate-100/50 px-3 py-1.5 rounded-lg">
+                              <FiUser className="w-3 h-3" />
+                              {item.classOrBatch}
+                           </div>
+                        )}
+                     </div>
+                     <button
+                        onClick={() => handleDelete(item._id)}
+                        className="p-2.5 bg-rose-50 text-rose-400 hover:text-rose-600 hover:bg-rose-100 rounded-xl transition-all shadow-sm active:scale-90"
+                        title="Delete Feedback"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
-      {/* Feedback Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredFeedback.map((item) => {
-          const moodUI = MOOD_CONFIG[item.mood];
-
-          const studentName = item.studentName || item.studentId?.name || "";
-          const teacherName = item.teacherName || item.teacherId?.name || "";
-
-          return (
-            <div
-              key={item._id}
-              className={`relative rounded-2xl border p-6 shadow-sm hover:shadow-lg transition ${moodUI.bg}`}
-            >
-              {/* Mood Bar */}
-              <div
-                className={`absolute left-0 top-0 h-full w-1 rounded-l-2xl ${moodUI.color.replace(
-                  "text",
-                  "bg"
-                )}`}
-              />
-
-              {/* From → About */}
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-4">
-                  {/* Student */}
-                  <div className="flex items-center gap-2">
-                    <div className="h-10 w-10 rounded-full bg-gray-700 text-white flex items-center justify-center text-sm font-semibold">
-                      {studentName.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">From</p>
-                      <p className="font-medium">{studentName}</p>
-                    </div>
-                  </div>
-
-                  <span className="text-gray-400 text-lg">➜</span>
-
-                  {/* Teacher */}
-                  <div className="flex items-center gap-2">
-                    <div className="h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold ring-2 ring-blue-200">
-                      {teacherName.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">About</p>
-                      <p className="font-semibold text-blue-700">
-                        {teacherName}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleDelete(item._id)}
-                  className="text-xs text-red-500 hover:text-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-
-              {/* Mood */}
-              <div className="flex items-center gap-2 mb-4">
-                <span className={`text-2xl ${moodUI.color}`}>
-                  {moodUI.emoji}
-                </span>
-                <span className="text-xs uppercase tracking-wide text-gray-500">
-                  {item.mood} feedback
-                </span>
-              </div>
-
-              {/* Message */}
-              <p className="text-gray-800 text-lg leading-relaxed mb-6">
-                {item.message}
-              </p>
-
-              {/* Footer */}
-              <div className="flex flex-wrap gap-3 text-xs text-gray-500 border-t pt-4">
-                {item.classOrBatch && <span>🏫 {item.classOrBatch}</span>}
-                <span>🕒 {new Date(item.createdAt).toLocaleString()}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 };

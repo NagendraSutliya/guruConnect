@@ -10,12 +10,34 @@ const TeacherSchema = new mongoose.Schema(
       ref: "Institute",
       required: true,
     },
-    // instituteCode: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   required: true, // public sharing code
-    // },
+    
+    // --- Employment ---
+    employeeId: { type: String, unique: true, sparse: true },
+    designation: { type: String },
+    qualification: { type: String },
+    joiningDate: { type: Date, default: Date.now },
+    specialization: [String],
+
+    // --- Contact ---
+    phone: { type: String },
+    emergencyPhone: { type: String },
+    address: { type: String },
+
+    // --- Financial ---
+    panNo: { type: String },
+    bankAccountNo: { type: String },
+    ifscCode: { type: String },
+    basicSalary: { type: Number, default: 0 },
+    profileImage: { type: String },
+
     role: { type: String, default: "teacher" },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
+
   { timestamps: true }
 );
 

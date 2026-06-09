@@ -1,3 +1,8 @@
+IMS_AI = Institute_Management_System_AI
+
+
+
+
 # guruConnect
 
 MASTER FLOW CHART (MERMAID FORMAT)
@@ -27,6 +32,7 @@ ADMIN_DASH --> ADM_STUDENTS[Manage Students]
 ADMIN_DASH --> ADM_ACADEMIC[Academic Setup]
 ADMIN_DASH --> ADM_ACCOUNTS[Accounts & Fees]
 ADMIN_DASH --> ADM_REPORTS[Reports & Analytics]
+ADMIN_DASH --> ADM_CMS[Website CMS]
 
 %% Admin → Teachers
 ADM_TEACHERS --> ADD_TEACHER[Add Teacher]
@@ -49,6 +55,11 @@ ADM_ACADEMIC --> ACADEMIC_YEAR[Academic Year Config]
 ADM_ACCOUNTS --> FEES[Fee Structure]
 ADM_ACCOUNTS --> PAY_STATUS[Payment Status]
 ADM_ACCOUNTS --> NOTIFICATIONS[Fee Notifications]
+
+%% Admin → Website CMS
+ADM_CMS --> CMS_HERO[Hero Banner Configuration]
+ADM_CMS --> CMS_PAGES[Dynamic Pages Content]
+ADM_CMS --> CMS_GALLERY[Gallery & Media Management]
 
 %% =====================
 %% TEACHER FLOW
@@ -112,23 +123,57 @@ END([System Stable & Scalable])
 
 
 
-🧭 PHASE-WISE BREAKDOWN (FOR FUTURE YOU)
-🔹 Phase 1 – Foundation
-    1.Auth (Admin / Teacher / Student)
-    2.Teacher & Student management
-    3.Class, section, subject setup
-🔹 Phase 2 – Academic Core
-    1.Study materials
-    2.Attendance
-    3.Test creation
-    4.Marks upload
-🔹 Phase 3 – Student Experience
-    1.Test attempts
-    2.Marks visibility
-    3.Attendance visibility
-    4.Worksheets
-🔹 Phase 4 – Accounts & Control
-    1.Fees
-    2.Notifications
-    3.Admin analytics
-    4.Reports
+🧭 PHASE-WISE BREAKDOWN
+🔹 Phase 1 – Foundation (Complete)
+    1. Auth (Admin / Teacher / Student)
+    2. Teacher & Student management
+    3. Class, section, subject setup
+🔹 Phase 2 – Academic Core (Complete)
+    1. Study materials
+    2. Attendance
+    3. Test creation
+    4. Marks upload
+🔹 Phase 3 – Student Experience (In Progress)
+    1. Test attempts
+    2. Marks visibility
+    3. Attendance visibility
+    4. Worksheets
+🔹 Phase 4 – Accounts & Control (In Progress)
+    1. Fees
+    2. Notifications
+    3. Admin analytics
+    4. Reports
+🔹 Phase 5 – Public Website & CMS (Decoupled Architecture)
+    1. Separate `school-website` Project (React + Tailwind)
+    2. Integrated CMS Portal inside `school-website/src/admin`
+    3. Hero, About, Admissions, and Academics CMS Editors
+    4. Dynamic Content Sync between CMS and Public Pages
+
+---
+
+## 🏗 Project Structure
+
+- **/client**: The Institute Management System (IMS) Dashboard. Handles daily operations, staff, and students.
+- **/school-website**: The public-facing school website with its own internal CMS Portal (`/cms-admin`).
+- **/server**: Unified Node.js/Express backend serving both the IMS and the Website CMS.
+- **/common**: (Planned) Shared types and utilities across projects.
+
+---
+
+## 💎 Core Architecture & UI Refactor (Current Milestone)
+
+We have successfully completed a major refactor to stabilize the data layer and elevate the administrative experience:
+
+### 1. Unified Type System
+- **Centralized Definitions**: Moved all inline interfaces to `client/src/types/admin/` (e.g., `student.ts`, `teacher.ts`, `cms.ts`).
+- **Schema-Type Sync**: Ensured Mongoose schemas and TypeScript interfaces are perfectly aligned, eliminating `any` types across the dashboard.
+- **Dynamic CMS Typing**: Implemented robust interfaces for all CMS pages (Hero, About, Academics, etc.), ensuring data persistence integrity.
+
+### 2. High-Density Modal Redesign
+- **Wide-Canvas Layout**: Upgraded View Modals for Students and Teachers to a `max-w-4xl` 2-column grid.
+- **Sticky Header/Footer**: Implemented a fixed header/footer architecture where profile identity and action buttons stay locked while details scroll.
+- **Data Completeness**: Added dozens of previously hidden fields (Aadhar, Nationality, Financials, Academic History) to provide a 360-degree view of entities.
+
+### 3. Backend Hardening
+- **Field Expansion**: Added critical fields like `phone` (student-specific), `emergencyPhone` (teacher-specific), and financial metadata to the Mongoose models.
+- **Migration Ready**: The data structure is now prepared for advanced analytics and automated reporting modules.

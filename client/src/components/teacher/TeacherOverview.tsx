@@ -15,7 +15,7 @@ const TeacherOverview = () => {
           Authorization: "Bearer " + localStorage.getItem("teacherToken"),
         },
       })
-      .then((res) => setData(res.data));
+      .then((res) => setData(res.data.data));
   }, []);
 
   const Card = ({ title, value, color }: any) => (
