@@ -1,4 +1,4 @@
-﻿import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import AdminNavbar from "../components/admin/AdminNavbar";
 import { useState } from "react";
 import {
@@ -280,7 +280,7 @@ const AdminLayout = () => {
                             open ? "rotate-180 text-slate-300" : ""
                           }`}
                         >
-                          â–¾
+                          ▾
                         </span>
                       </button>
 
