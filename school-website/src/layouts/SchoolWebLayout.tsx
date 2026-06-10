@@ -4,20 +4,14 @@ import {
   MdClose,
   MdLocationOn,
   MdPhone,
-  MdEmail
+  MdEmail,
+  MdVerifiedUser,
+  MdPublic,
+  MdArrowForward,
+  MdWbSunny,
+  MdNightsStay
 } from "react-icons/md";
-import { 
-  Zap, 
-  ShieldCheck, 
-  Globe, 
-  ArrowRight,
-  Instagram,
-  Twitter,
-  Facebook,
-  Mail,
-  Sun,
-  Moon
-} from "lucide-react";
+import { FaInstagram, FaTwitter, FaFacebook } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
@@ -104,7 +98,7 @@ const SchoolWebLayout = () => {
               className="p-2.5 rounded-xl bg-themeCard border border-themeBorder text-themeText hover:bg-indigo-600 hover:text-white transition-all shadow-xl"
               title="Toggle Theme"
             >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              {theme === 'dark' ? <MdWbSunny size={18} /> : <MdNightsStay size={18} />}
             </button>
             <button 
               className="lg:hidden p-2.5 bg-themeCard border border-themeBorder rounded-lg text-themeText hover:bg-themeBgSec transition-colors"
@@ -153,9 +147,9 @@ const SchoolWebLayout = () => {
              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-4">Connect with us</p>
              <div className="flex gap-5">
                  {[
-                   { Icon: Instagram, link: "https://www.instagram.com/gyansthali_2020" },
-                   { Icon: Twitter, link: "#" },
-                   { Icon: Facebook, link: "#" }
+                   { Icon: FaInstagram, link: "https://www.instagram.com/gyansthali_2020" },
+                   { Icon: FaTwitter, link: "#" },
+                   { Icon: FaFacebook, link: "#" }
                  ].map(({ Icon, link }, i) => (
                    <a 
                      href={link} 
@@ -197,9 +191,9 @@ const SchoolWebLayout = () => {
               </p>
               <div className="flex gap-3">
                  {[
-                   { Icon: Instagram, link: "https://www.instagram.com/gyansthali_2020" },
-                   { Icon: Globe, link: "#" },
-                   { Icon: ShieldCheck, link: "#" }
+                   { Icon: FaInstagram, link: "https://www.instagram.com/gyansthali_2020" },
+                   { Icon: MdPublic, link: "#" },
+                   { Icon: MdVerifiedUser, link: "#" }
                  ].map(({ Icon, link }, i) => (
                     <a 
                       href={link} 
@@ -245,7 +239,7 @@ const SchoolWebLayout = () => {
                 </li>
                 <li className="flex items-center gap-3 text-xs font-medium text-slate-500 group">
                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-all">
-                    <Mail size={18} />
+                    <MdEmail size={18} />
                   </div>
                   <span>info@gyansthali.edu</span>
                 </li>
@@ -262,7 +256,7 @@ const SchoolWebLayout = () => {
                 />
                 <button className="bg-indigo-600 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center gap-2 group/btn">
                   Join
-                  <ArrowRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
+                  <MdArrowForward size={12} className="group-hover/btn:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
