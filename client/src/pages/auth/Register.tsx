@@ -46,7 +46,8 @@ const Register = () => {
         phone: form.phone,
         password: form.password,
       });
-      nav("/auth/verify?phone=" + form.phone);
+      // alert("Registration successful! (OTP bypassed for testing) Please log in.");
+      nav("/auth/login");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -57,7 +58,7 @@ const Register = () => {
   return (
     <div className="h-full bg-white flex overflow-hidden">
       {/* ================= LEFT SIDE: VISUAL ANCHOR (40%) ================= */}
-      <div className="hidden lg:flex lg:w-[40%] bg-slate-950 relative items-center justify-center p-0 overflow-hidden h-full border-r border-white/5">
+      <div className="hidden md:flex md:w-[45%] lg:w-[40%] bg-slate-950 relative items-center justify-center p-0 overflow-hidden h-full border-r border-white/5">
         {/* Onboarding Visual */}
         <img 
           src="/images/register_bg.png" 
@@ -69,16 +70,16 @@ const Register = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-transparent" />
 
-        <div className="relative z-10 w-full px-12 xl:px-16">
+        <div className="relative z-10 w-full px-8 lg:px-12 xl:px-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-600/20 border border-orange-500/30 text-orange-400 text-[10px] font-black uppercase tracking-widest mb-8">
              <CheckCircle2 size={12} /> Institutional Launch
           </div>
           
-          <h2 className="text-5xl font-black text-white mb-6 leading-[1.05] tracking-tighter">
-            Launch Your Smart <span className="text-orange-500">Institute</span> Today.
+          <h2 className="text-3xl lg:text-5xl xl:text-6xl font-black text-white mb-4 lg:mb-6 leading-[1.1] lg:leading-[1.05] tracking-tighter">
+            Launch Your Smart <br className="hidden xl:block" /><span className="text-orange-500">Institute</span> Today.
           </h2>
           
-          <p className="text-slate-300 text-lg mb-10 leading-relaxed font-medium max-w-sm">
+          <p className="text-slate-300 text-sm lg:text-lg mb-8 lg:mb-10 leading-relaxed font-medium max-w-sm">
             Join the future of education management. Establish your digital presence with precision.
           </p>
           
@@ -106,13 +107,15 @@ const Register = () => {
       </div>
 
       {/* ================= RIGHT SIDE: FORM (60%) ================= */}
-      <div className="w-full lg:w-[60%] flex flex-col items-center bg-slate-50/50 h-full overflow-y-auto custom-scrollbar px-6 md:px-12">
-        <div className="w-full max-w-2xl py-12 flex-1 flex flex-col justify-start">
+      <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col items-center bg-slate-50/50 h-full overflow-y-auto custom-scrollbar px-6 lg:px-12">
+        <div className="w-full max-w-2xl py-10 flex-1 flex flex-col justify-start">
           
-        <Link to="/" className="absolute top-24 right-8 inline-flex items-center gap-2 text-slate-400 hover:text-orange-600 transition-all group font-bold text-[10px] uppercase tracking-widest z-10 mt-6">
-          <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-          Back to Home
-        </Link>
+        <div className="flex justify-end w-full mb-4 lg:mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-orange-600 transition-all group font-bold text-[10px] uppercase tracking-widest">
+            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+            Back to Home
+          </Link>
+        </div>
           {/* Header Section */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
             <div>
@@ -130,7 +133,7 @@ const Register = () => {
 
           <form onSubmit={submit} className="space-y-4">
             {/* Row 1: Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Institute Name</label>
                 <div className="relative group">
@@ -161,7 +164,7 @@ const Register = () => {
             </div>
 
             {/* Row 2: Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-500 ml-1 uppercase tracking-widest">Work Email Address</label>
                 <div className="relative group">
