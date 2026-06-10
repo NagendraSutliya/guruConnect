@@ -71,9 +71,7 @@ const SchoolWebLayout = () => {
       }`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className={`w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-2xl shadow-indigo-500/20 transition-all duration-500 group-hover:rotate-[15deg] group-hover:scale-110`}>
-              <MdSchool size={24} />
-            </div>
+            <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-12 h-12 object-contain transition-all duration-500 group-hover:scale-110 bg-white rounded-xl p-1" />
             <div className="text-left">
               <h1 className="text-xl font-black tracking-tighter text-themeText leading-none">
                 Gyansthali <span className="text-indigo-500">Enlightening</span>
@@ -125,9 +123,7 @@ const SchoolWebLayout = () => {
         <div className="p-8 h-full flex flex-col">
           <div className="flex justify-between items-center mb-12">
             <div className="flex items-center gap-3">
-               <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
-                  <MdSchool size={22} />
-               </div>
+               <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-10 h-10 object-contain bg-white rounded-lg p-1" />
                <h1 className="text-themeText font-black text-lg tracking-tighter">Gyansthali <span className="text-indigo-500">Enlightening</span></h1>
             </div>
             <button onClick={() => setMobileMenuOpen(false)} className="text-themeText p-2.5 bg-themeCard border border-themeBorder rounded-full">
@@ -188,9 +184,7 @@ const SchoolWebLayout = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-500/20">
-                  <MdSchool size={24} />
-                </div>
+                <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-12 h-12 object-contain bg-white rounded-xl p-1 shadow-xl shadow-indigo-500/20" />
                 <div>
                   <h1 className="text-xl font-black tracking-tighter">
                     Gyansthali <span className="text-indigo-400">Enlightening</span>
