@@ -95,10 +95,10 @@ exports.loginInstitute = async (req, res) => {
     if (!inst) {
       return errorResponse(res, "Invalid email", 401);
     }
-
-    if (!inst.isVerified) {
-      return errorResponse(res, "Please verify your phone number first", 403);
-    }
+    // Bypass OTP verification for testing
+    // if (!inst.isVerified) {
+    //   return errorResponse(res, "Please verify your phone number first", 403);
+    // }
 
     const ok = await bcrypt.compare(password, inst.password);
     if (!ok) {

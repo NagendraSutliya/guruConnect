@@ -61,7 +61,7 @@ const TeacherLogin = () => {
   return (
     <div className="h-full bg-white flex overflow-hidden">
       {/* ================= LEFT SIDE: VISUAL ANCHOR ================= */}
-      <div className="hidden lg:flex lg:w-1/2 bg-blue-950 relative items-center justify-center p-0 overflow-hidden">
+      <div className="hidden md:flex md:w-[45%] lg:w-1/2 bg-blue-950 relative items-center justify-center p-0 overflow-hidden">
         {/* Educator Focus Image */}
         <img 
           src="/images/teacher_login.png" 
@@ -73,16 +73,16 @@ const TeacherLogin = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-blue-950/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-blue-950 via-transparent to-transparent" />
 
-        <div className="relative z-10 w-full px-12 xl:px-20 mt-20">
+        <div className="relative z-10 w-full px-8 lg:px-12 xl:px-20 mt-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-400 text-[10px] font-black uppercase tracking-widest mb-6">
              <GraduationCap size={12} /> Educator Hub
           </div>
           
-          <h2 className="text-5xl font-black text-white mb-6 leading-[1.05] tracking-tighter">
-            Empower Your <span className="text-blue-500">Teaching</span> Journey.
+          <h2 className="text-3xl lg:text-5xl xl:text-6xl font-black text-white mb-4 lg:mb-6 leading-[1.1] lg:leading-[1.05] tracking-tighter">
+            Empower Your <br className="hidden xl:block" /><span className="text-blue-500">Teaching</span> Journey.
           </h2>
           
-          <p className="text-slate-300 text-lg mb-10 leading-relaxed font-medium max-w-md">
+          <p className="text-slate-300 text-sm lg:text-lg mb-8 lg:mb-10 leading-relaxed font-medium max-w-md">
             Join your digital classroom. Manage attendance, grade assignments, and communicate with students effortlessly.
           </p>
           
@@ -103,18 +103,18 @@ const TeacherLogin = () => {
       </div>
 
       {/* ================= RIGHT SIDE: FORM ================= */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center min-h-screen bg-white relative overflow-y-auto">
+      <div className="w-full md:w-[55%] lg:w-1/2 flex flex-col items-center min-h-screen bg-white relative overflow-y-auto custom-scrollbar px-6 lg:px-12">
         
         {/* PORTAL SLIDER HEADER */}
         <PortalSlider activePortal="teacher" />
 
-        {/* Top Right Navigation (Shifted below slider) */}
-        <Link to="/" className="absolute top-24 right-8 inline-flex items-center gap-2 text-slate-400 hover:text-orange-600 transition-all group font-bold text-[10px] uppercase tracking-widest z-10">
-          <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-          Back to Portal
-        </Link>
-
         <div className="w-full max-w-lg py-10 flex-1 flex flex-col justify-start pt-16">
+          <div className="flex justify-end w-full mb-4 lg:mb-8">
+            <Link to="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-orange-600 transition-all group font-bold text-[10px] uppercase tracking-widest z-10">
+              <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+              Back to Portal
+            </Link>
+          </div>
           <div className="mb-8">
             <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Teacher Portal</h1>
             <p className="text-slate-500 font-medium text-lg">Welcome back, Educator!</p>
