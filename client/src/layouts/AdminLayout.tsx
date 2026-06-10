@@ -8,14 +8,7 @@ import {
   MdLink,
   MdSchool,
   MdAttachMoney,
-  MdNotifications,
   MdSettings,
-  MdPeople,
-  MdDirectionsBus,
-  MdInventory,
-  MdLibraryBooks,
-  MdHotel,
-  MdBadge,
   MdWeb,
 } from "react-icons/md";
 import { FaChalkboardTeacher, FaUserGraduate } from "react-icons/fa";
