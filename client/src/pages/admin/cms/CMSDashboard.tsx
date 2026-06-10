@@ -40,7 +40,7 @@ export default function CMSDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <a 
-            href="http://localhost:5174" 
+            href={import.meta.env.VITE_SCHOOL_WEBSITE_URL || 'http://localhost:5174'} 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"

@@ -88,74 +88,68 @@ const AdminLayout = () => {
         { name: "Invoices", path: "/admin/invoices" },
       ],
     },
-    {
-      name: "HR & Payroll",
-      icon: <MdPeople size={18} />,
-      children: [
-        { name: "Staff Management", path: "/admin/staff" },
-        { name: "Payroll / Salary", path: "/admin/payroll" },
-        { name: "Leave Management", path: "/admin/leaves" },
-      ],
-    },
-    {
-      name: "Transport",
-      icon: <MdDirectionsBus size={18} />,
-      children: [
-        { name: "Routes", path: "/admin/transport/routes" },
-        { name: "Vehicles", path: "/admin/transport/vehicles" },
-        { name: "Driver Logs", path: "/admin/transport/drivers" },
-      ],
-    },
-    {
-      name: "Inventory",
-      icon: <MdInventory size={18} />,
-      children: [
-        { name: "Assets", path: "/admin/inventory/assets" },
-        { name: "Suppliers", path: "/admin/inventory/suppliers" },
-        { name: "Purchase Logs", path: "/admin/inventory/purchase" },
-      ],
-    },
-    {
-      name: "Library",
-      icon: <MdLibraryBooks size={18} />,
-      children: [
-        { name: "Book List", path: "/admin/library/books" },
-        { name: "Issue / Return", path: "/admin/library/issue" },
-        { name: "Members", path: "/admin/library/members" },
-      ],
-    },
-    {
-      name: "Hostel",
-      icon: <MdHotel size={18} />,
-      children: [
-        { name: "Hostel List", path: "/admin/hostel/list" },
-        { name: "Rooms", path: "/admin/hostel/rooms" },
-        { name: "Allotment", path: "/admin/hostel/allotment" },
-      ],
-    },
-    {
-      name: "Certificates",
-      icon: <MdBadge size={18} />,
-      children: [
-        { name: "ID Cards", path: "/admin/certificates/id-cards" },
-        { name: "Transfer Certificate", path: "/admin/certificates/tc" },
-        { name: "Transcripts", path: "/admin/certificates/transcripts" },
-      ],
-    },
-    {
-      name: "Communication",
-      icon: <MdNotifications size={18} />,
-      children: [
-        { name: "Notice Board", path: "/admin/notices" },
-        { name: "Send Message", path: "/admin/send-message" },
-      ],
-    },
-    {
-      name: "Feedback",
-      icon: <MdFeedback size={18} />,
-      path: "/admin/feedback",
-    },
-    { name: "Public Links", icon: <MdLink size={18} />, path: "/admin/link" },
+    // {
+    //   name: "HR & Payroll",
+    //   icon: <MdPeople size={18} />,
+    //   children: [
+    //     { name: "Staff Management", path: "/admin/staff" },
+    //     { name: "Payroll / Salary", path: "/admin/payroll" },
+    //     { name: "Leave Management", path: "/admin/leaves" },
+    //   ],
+    // },
+    // {
+    //   name: "Transport",
+    //   icon: <MdDirectionsBus size={18} />,
+    //   children: [
+    //     { name: "Routes", path: "/admin/transport/routes" },
+    //     { name: "Vehicles", path: "/admin/transport/vehicles" },
+    //     { name: "Driver Logs", path: "/admin/transport/drivers" },
+    //   ],
+    // },
+    // {
+    //   name: "Inventory",
+    //   icon: <MdInventory size={18} />,
+    //   children: [
+    //     { name: "Assets", path: "/admin/inventory/assets" },
+    //     { name: "Suppliers", path: "/admin/inventory/suppliers" },
+    //     { name: "Purchase Logs", path: "/admin/inventory/purchase" },
+    //   ],
+    // },
+    // {
+    //   name: "Library",
+    //   icon: <MdLibraryBooks size={18} />,
+    //   children: [
+    //     { name: "Book List", path: "/admin/library/books" },
+    //     { name: "Issue / Return", path: "/admin/library/issue" },
+    //     { name: "Members", path: "/admin/library/members" },
+    //   ],
+    // },
+    // {
+    //   name: "Hostel",
+    //   icon: <MdHotel size={18} />,
+    //   children: [
+    //     { name: "Hostel List", path: "/admin/hostel/list" },
+    //     { name: "Rooms", path: "/admin/hostel/rooms" },
+    //     { name: "Allotment", path: "/admin/hostel/allotment" },
+    //   ],
+    // },
+    // {
+    //   name: "Certificates",
+    //   icon: <MdBadge size={18} />,
+    //   children: [
+    //     { name: "ID Cards", path: "/admin/certificates/id-cards" },
+    //     { name: "Transfer Certificate", path: "/admin/certificates/tc" },
+    //     { name: "Transcripts", path: "/admin/certificates/transcripts" },
+    //   ],
+    // },
+    // {
+    //   name: "Communication",
+    //   icon: <MdNotifications size={18} />,
+    //   children: [
+    //     { name: "Notice Board", path: "/admin/notices" },
+    //     { name: "Send Message", path: "/admin/send-message" },
+    //   ],
+    // },
     {
       name: "Website CMS",
       icon: <MdWeb size={18} />,
@@ -171,6 +165,13 @@ const AdminLayout = () => {
         { name: "Live Preview", path: "http://localhost:5174", external: true },
       ],
     },
+    {
+      name: "Feedback",
+      icon: <MdFeedback size={18} />,
+      path: "/admin/feedback",
+    },
+    { name: "Public Links", icon: <MdLink size={18} />, path: "/admin/link" },
+    
     {
       name: "System Settings",
       icon: <MdSettings size={18} />,
