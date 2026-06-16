@@ -9,7 +9,8 @@ import {
   MdPublic,
   MdArrowForward,
   MdWbSunny,
-  MdNightsStay
+  MdNightsStay,
+  MdStarOutline
 } from "react-icons/md";
 import { FaInstagram, FaTwitter, FaFacebook } from "react-icons/fa";
 import { useState, useEffect } from "react";
@@ -58,33 +59,33 @@ const SchoolWebLayout = () => {
   const IMS_URL = "http://localhost:5173"; 
 
   return (
-    <div className="min-h-screen bg-themeBg font-sans selection:bg-indigo-500/30 selection:text-white overflow-x-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans selection:bg-indigo-500/30 selection:text-white overflow-x-hidden transition-colors duration-500">
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-        isScrolled ? "bg-themeBgSec backdrop-blur-2xl border-b border-themeBorder py-2 shadow-2xl" : "bg-transparent py-6"
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 bg-white/95 dark:bg-[#020617]/90 backdrop-blur-xl border-b border-emerald-500/20 dark:border-indigo-500/20 shadow-sm ${
+        isScrolled ? "py-3 md:py-4" : "py-5 md:py-6"
       }`}>
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div className="w-full px-6 md:px-12 xl:px-10 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-12 h-12 object-contain transition-all duration-500 group-hover:scale-110 bg-white rounded-xl p-1" />
+            <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-12 h-12 object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-sm" />
             <div className="text-left">
-              <h1 className="text-xl font-black tracking-tighter text-themeText leading-none">
-                Gyansthali <span className="text-indigo-500">Enlightening</span>
+              <h1 className="text-xl font-black tracking-tighter dark:text-white leading-none">
+                Gyansthali <span className="text-indigo-400">Enlightening</span>
               </h1>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-300 mt-0.5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mt-0.5">
                 Step Towards Success...
               </p>
             </div>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6 ml-auto mr-4">
             {navLinks.map((item) => (
               <Link 
                 key={item.name} 
                 to={item.path} 
-                className={`text-xs font-black uppercase tracking-[0.15em] transition-all hover:text-indigo-400 ${
+                className={`text-xs font-black uppercase tracking-[0.15em] transition-all hover:text-emerald-600 dark:hover:text-indigo-400 ${
                   location.pathname === item.path 
-                    ? "text-indigo-400" 
-                    : "text-themeTextSec hover:text-themeText"
+                    ? "text-emerald-500 dark:text-indigo-400" 
+                    : "text-slate-600 dark:text-slate-300"
                 }`}
               >
                 {item.name}
@@ -95,13 +96,13 @@ const SchoolWebLayout = () => {
           <div className="flex items-center gap-3">
             <button 
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-themeCard border border-themeBorder text-themeText hover:bg-indigo-600 hover:text-white transition-all shadow-xl"
+              className="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white dark:bg-white/5 dark:border-white/10 dark:text-white dark:hover:bg-indigo-600 transition-all shadow-sm dark:shadow-xl"
               title="Toggle Theme"
             >
               {theme === 'dark' ? <MdWbSunny size={18} /> : <MdNightsStay size={18} />}
             </button>
             <button 
-              className="lg:hidden p-2.5 bg-themeCard border border-themeBorder rounded-lg text-themeText hover:bg-themeBgSec transition-colors"
+              className="lg:hidden p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white dark:bg-white/5 dark:border-white/10 dark:text-white dark:hover:bg-white/10 transition-colors"
               onClick={() => setMobileMenuOpen(true)}
             >
               <MdMenu size={24} />
@@ -171,25 +172,26 @@ const SchoolWebLayout = () => {
       </main>
 
       {/* Premium Footer */}
-      <footer className="bg-themeBg pt-20 pb-12 text-themeText border-t border-themeBorder relative overflow-hidden transition-colors duration-500">
+      <footer className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-slate-900 via-[#020617] to-slate-950 pt-8 pb-6 text-slate-300 border-t border-indigo-500/20 relative overflow-hidden">
+        {/* Glow Effects */}
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-600/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-10 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
         
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-            <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-4">
+            <div className="flex flex-col h-full">
               <div className="flex items-center gap-3">
-                <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-12 h-12 object-contain bg-white rounded-xl p-1 shadow-xl shadow-indigo-500/20" />
+                <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-10 h-10 object-contain bg-white rounded-lg p-1 shadow-[0_0_20px_rgba(79,70,229,0.3)]" />
                 <div>
-                  <h1 className="text-xl font-black tracking-tighter">
+                  <h1 className="text-lg font-black tracking-tighter text-white">
                     Gyansthali <span className="text-indigo-400">Enlightening</span>
                   </h1>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Since 2020</p>
+                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-500">Since 2020</p>
                 </div>
               </div>
-              <p className="text-themeTextSec text-xs font-medium leading-relaxed max-w-xs">
-                Empowering the next generation of leaders through quality education, character building, and holistic development.
-              </p>
-              <div className="flex gap-3">
+             
+              <div className="flex gap-2 mt-auto pt-6">
                  {[
                    { Icon: FaInstagram, link: "https://www.instagram.com/gyansthali_2020" },
                    { Icon: MdPublic, link: "#" },
@@ -200,69 +202,75 @@ const SchoolWebLayout = () => {
                       target="_blank" 
                       rel="noopener noreferrer" 
                       key={i} 
-                      className="w-9 h-9 bg-white/5 rounded-lg flex items-center justify-center hover:bg-indigo-600 transition-colors cursor-pointer text-slate-500 hover:text-white"
+                      className="w-8 h-8 bg-white/5 rounded-md flex items-center justify-center hover:bg-indigo-600 transition-colors cursor-pointer text-slate-500 hover:text-white"
                     >
-                       <Icon size={16} />
+                       <Icon size={14} />
                     </a>
                  ))}
               </div>
             </div>
 
-            <div className="space-y-6">
-              <h5 className="font-black text-xs uppercase tracking-[0.2em] text-themeText">Quick Links</h5>
-              <ul className="grid grid-cols-1 gap-3 text-xs font-bold text-themeTextSec">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h5 className="font-black text-[10px] uppercase tracking-[0.2em] text-white">Quick Links</h5>
+                <div className="flex-1 flex items-center">
+                  <div className="w-8 h-0.5 bg-amber-500 rounded-l-full" />
+                  <div className="flex-1 h-[1px] bg-white/20 rounded-r-full" />
+                </div>
+              </div>
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs font-bold text-slate-500">
                 {navLinks.map(link => (
                   <li key={link.name}>
-                    <Link to={link.path} className="hover:text-indigo-400 transition-all flex items-center gap-2 group">
-                      <div className="w-1 h-1 rounded-full bg-indigo-500 opacity-0 group-hover:opacity-100 transition-all" />
-                      {link.name}
+                    <Link to={link.path} className="hover:text-white transition-all flex items-center gap-2 group">
+                      <MdStarOutline className="text-amber-500 text-sm group-hover:scale-110 transition-transform" />
+                      <span className="group-hover:translate-x-1 transition-transform">{link.name}</span>
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="space-y-6">
-              <h5 className="font-black text-xs uppercase tracking-[0.2em] text-themeText">Reach Us</h5>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3 text-xs font-medium text-slate-500 group">
-                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-all">
-                    <MdLocationOn size={18} />
+            <div className="space-y-4">
+              <h5 className="font-black text-[10px] uppercase tracking-[0.2em] text-white">Reach Us</h5>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2 text-xs font-medium text-slate-500 group">
+                  <div className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-all">
+                    <MdLocationOn size={14} />
                   </div>
-                  <span className="pt-1.5">80 Feet Road, Mahesh Nagar, Jaipur, Rajasthan</span>
+                  <span className="pt-0.5">80 Feet Road, Mahesh Nagar, Jaipur, Rajasthan</span>
                 </li>
-                <li className="flex items-center gap-3 text-xs font-medium text-slate-500 group">
-                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-all">
-                    <MdPhone size={18} />
+                <li className="flex items-center gap-2 text-xs font-medium text-slate-500 group">
+                   <div className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-all">
+                    <MdPhone size={14} />
                   </div>
                   <span>+91 9425847076 | +91 9782994277</span>
                 </li>
-                <li className="flex items-center gap-3 text-xs font-medium text-slate-500 group">
-                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-all">
-                    <MdEmail size={18} />
+                <li className="flex items-center gap-2 text-xs font-medium text-slate-500 group">
+                   <div className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-all">
+                    <MdEmail size={14} />
                   </div>
                   <span>info@gyansthali.edu</span>
                 </li>
               </ul>
             </div>
 
-            <div className="space-y-6">
-              <h5 className="font-black text-xs uppercase tracking-[0.2em] text-themeText">Newsletter</h5>
-              <p className="text-themeTextSec text-xs font-medium">Get the latest updates from our campus.</p>
-              <div className="flex bg-themeCard p-1.5 rounded-xl border border-themeBorder group focus-within:border-indigo-500/50 transition-all">
+            <div className="space-y-4">
+              <h5 className="font-black text-[10px] uppercase tracking-[0.2em] text-white">Newsletter</h5>
+              <p className="text-slate-400 text-[10px] font-medium">Get the latest updates from our campus.</p>
+              <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 group focus-within:border-indigo-500/50 transition-all">
                 <input 
                   placeholder="Enter your email"
-                  className="bg-transparent border-none outline-none flex-1 px-3 text-xs font-medium text-themeText placeholder:text-themeTextSec"
+                  className="bg-transparent border-none outline-none flex-1 px-3 text-xs font-medium text-white placeholder:text-slate-400"
                 />
-                <button className="bg-indigo-600 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center gap-2 group/btn">
+                <button className="bg-indigo-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center gap-2 group/btn">
                   Join
-                  <MdArrowForward size={12} className="group-hover/btn:translate-x-1 transition-transform" />
+                  <MdArrowForward size={10} className="group-hover/btn:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
               © 2026 Gyansthali Education Group. <span className="text-slate-800 ml-2">Built with Excellence.</span>
             </p>

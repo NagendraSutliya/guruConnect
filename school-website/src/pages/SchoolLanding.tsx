@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MdArrowForward, MdCheckCircle, MdPlayArrow, MdSchool, MdStar } from "react-icons/md";
+import { MdArrowForward, MdCheckCircle, MdPlayArrow, MdSchool, MdStar, MdOutlineKeyboardArrowDown } from "react-icons/md";
 import api from "../api/axiosInstance";
 
 const Typewriter = ({ texts }: { texts: string[] }) => {
@@ -27,7 +27,7 @@ const Typewriter = ({ texts }: { texts: string[] }) => {
   }, [subIndex, index, reverse, texts]);
 
   return (
-    <span className="text-indigo-400">
+    <span className="text-emerald-600 dark:text-indigo-400">
       {texts[index].substring(0, subIndex)}
       <span className="animate-pulse ml-1 text-themeText">|</span>
     </span>
@@ -78,8 +78,8 @@ const SchoolLanding = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center pt-16">
-        <div className="absolute inset-0 z-0">
+      <section className="relative min-h-[80vh] flex items-center pt-20">
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <img 
             src={heroData.backgroundImage || "/images/redesign/hero.png"} 
             alt="School Hero" 
@@ -92,37 +92,37 @@ const SchoolLanding = () => {
           <div className="space-y-8">
             {fetching ? (
               <div className="space-y-8 animate-pulse">
-                <div className="h-8 bg-white/5 rounded-full w-48" />
+                <div className="h-8 bg-slate-200 dark:bg-white/5 rounded-full w-48" />
                 <div className="space-y-4">
-                  <div className="h-16 bg-white/5 rounded-2xl w-full" />
-                  <div className="h-16 bg-white/5 rounded-2xl w-3/4" />
+                  <div className="h-16 bg-slate-200 dark:bg-white/5 rounded-2xl w-full" />
+                  <div className="h-16 bg-slate-200 dark:bg-white/5 rounded-2xl w-3/4" />
                 </div>
-                <div className="h-24 bg-white/5 rounded-2xl w-full" />
+                <div className="h-24 bg-slate-200 dark:bg-white/5 rounded-2xl w-full" />
                 <div className="flex gap-4">
-                  <div className="h-12 bg-white/5 rounded-xl w-32" />
-                  <div className="h-12 bg-white/5 rounded-xl w-40" />
+                  <div className="h-12 bg-slate-200 dark:bg-white/5 rounded-xl w-32" />
+                  <div className="h-12 bg-slate-200 dark:bg-white/5 rounded-xl w-40" />
                 </div>
               </div>
             ) : (
               <>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-themeCard border border-themeBorder text-xs font-black uppercase tracking-[0.2em] text-indigo-300 animate-slideDown">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-themeCard border border-themeBorder text-xs font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-indigo-300 animate-slideDown">
                   <MdStar className="text-amber-400 animate-spin-slow" size={14} />
                   {heroData.announcement}
                 </div>
-                <h2 className="text-3xl md:text-5xl font-black leading-[1] tracking-tighter animate-fadeIn">
-                  {heroData.title} <br />
+                <h2 className="text-3xl md:text-5xl font-black leading-[1.1] tracking-tighter animate-fadeIn">
+                  Empowering Minds, Shaping Tomorrow's <br />
                   <Typewriter texts={["Leaders.", "Innovators.", "Thinkers."]} />
                 </h2>
                 <p className="text-base md:text-lg text-themeTextSec font-medium leading-relaxed max-w-lg animate-fadeInDelay">
                   {heroData.subtitle}
                 </p>
                 <div className="flex flex-wrap gap-4 pt-4 animate-slideUp">
-                  <button className="group flex items-center gap-3 px-8 py-3.5 bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95">
+                  <button className="group flex items-center gap-3 px-8 py-3 bg-green-600 dark:bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest dark:hover:bg-indigo-800 hover:bg-green-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95">
                     {heroData.button1}
                     <MdArrowForward size={18} className="group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button className="flex items-center gap-3 px-8 py-3.5 bg-themeCard text-themeText backdrop-blur-xl border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-themeBgSec transition-all active:scale-95">
-                    <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white">
+                  <button className="flex items-center gap-3 px-8 py-3 bg-themeCard text-themeText backdrop-blur-xl border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-themeBgSec transition-all active:scale-95">
+                    <div className="w-6 h-6 rounded-full bg-green-600 dark:bg-indigo-500 flex items-center justify-center text-white">
                       <MdPlayArrow size={16} />
                     </div>
                     {heroData.button2}
@@ -136,7 +136,7 @@ const SchoolLanding = () => {
              <div className="absolute -inset-10 bg-indigo-500/10 blur-[80px] rounded-full" />
              <div className="relative rounded-[2.5rem] overflow-hidden border border-themeBorder shadow-2xl aspect-[4/3]">
                 <img src="/images/redesign/classroom.png" alt="Modern Classroom" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-themeBgSec to-transparent opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-t from-themeBgSec to-transparent opacity-20 dark:opacity-60" />
              </div>
               
           </div>
@@ -144,7 +144,7 @@ const SchoolLanding = () => {
       </section>
 
       {/* Stats Bar */}
-      <section className="py-16 bg-themeBgSec border-y border-themeBorder">
+      <section className="py-10 bg-themeBgSec border-y border-themeBorder">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             {[
@@ -156,7 +156,7 @@ const SchoolLanding = () => {
               <div key={i} className="text-left space-y-2 border-l border-themeBorder pl-8">
                 <p className="text-4xl md:text-5xl font-black text-themeText tracking-tighter leading-none">{stat.val}</p>
                 <div className="space-y-0.5">
-                  <p className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.2em]">{stat.label}</p>
+                  <p className="text-[11px] font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.2em]">{stat.label}</p>
                   <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-[0.2em]">{stat.sub}</p>
                 </div>
               </div>
@@ -165,12 +165,36 @@ const SchoolLanding = () => {
         </div>
       </section>
 
+         {/* Welcome / About Introduction */}
+      <section className="py-16 bg-themeBg">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+           <div className="relative aspect-video rounded-[2.5rem] overflow-hidden border border-themeBorder shadow-2xl">
+             <img src="/images/redesign/campus_hero.png" alt="Campus Overview" className="w-full h-full object-cover" />
+          </div>
+          <div className="space-y-6">
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Welcome to Gyansthali</h5>
+            <h2 className="text-4xl font-black text-themeText tracking-tight leading-tight">Nurturing Excellence in Education</h2>
+            <p className="text-themeTextSec leading-relaxed">
+              Established with a vision to create responsible and capable citizens, Gyansthali has grown to become a premier institution. We offer a comprehensive curriculum that emphasizes conceptual clarity, critical thinking, and holistic development.
+            </p>
+            <p className="text-themeTextSec leading-relaxed">
+              Our mission is simple: to empower students with knowledge, confidence, and compassion. Backed by experienced educators and modern infrastructure, we stand out as a top choice for a balanced, future-ready education.
+            </p>
+            <button className="px-8 py-3 bg-green-600/10 text-green-600 dark:text-indigo-400 font-bold rounded-xl border border-green-500/20 dark:border-indigo-500/20 hover:bg-green-600 dark:hover:bg-indigo-600 hover:text-white transition-all uppercase tracking-widest text-xs">
+              Read Our Story
+            </button>
+          </div>
+         
+        </div>
+      </section>
+
       {/* Features Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-16 bg-themeBg relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-xl mx-auto mb-20 space-y-4">
-            <h5 className="text-xs font-black text-indigo-400 uppercase tracking-[0.4em]">Our DNA</h5>
-            <h2 className="text-4xl font-black text-themeText tracking-tight leading-tight">An Ecosystem for <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Human Excellence</span></h2>
+          <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Our DNA</h5>
+            <h2 className="text-3xl md:text-4xl font-black text-themeText tracking-tight leading-tight">An Ecosystem for 
+              <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-indigo-400 dark:from-indigo-400 dark:to-purple-400">Human Excellence</span></h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -195,11 +219,11 @@ const SchoolLanding = () => {
               }
             ].map((feature, i) => (
               <div key={i} className="group bg-themeCard p-10 rounded-[3rem] border border-themeBorder hover:bg-themeBgSec transition-all duration-500 hover:-translate-y-2 shadow-2xl">
-                <div className="w-full h-36 bg-themeBgSec rounded-2xl mb-10 overflow-hidden border border-themeBorder relative">
+                <div className="w-full h-36 bg-themeBgSec rounded-2xl mb-6 overflow-hidden border border-themeBorder relative">
                    <img src={feature.icon} alt={feature.title} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700" />
                    <div className="absolute inset-0 bg-gradient-to-t from-themeBgSec to-transparent opacity-60" />
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-2">
                   <span className="text-[11px] font-black text-indigo-500 uppercase tracking-widest">{feature.tag}</span>
                   <h4 className="text-2xl font-black text-themeText tracking-tight leading-tight">{feature.title}</h4>
                   <p className="text-themeTextSec text-sm font-medium leading-relaxed">{feature.desc}</p>
@@ -210,11 +234,13 @@ const SchoolLanding = () => {
         </div>
       </section>
 
-            <section className="py-24 bg-indigo-600 relative overflow-hidden">
+
+  {/* Why Choose */}
+      <section className="py-12 bg-gradient-to-r from-green-600 to-indigo-400 dark:from-blue-600 dark:to-indigo-400 rounded-3xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-12">
           <div className="space-y-4">
-            <h2 className="text-4xl font-black text-white tracking-tight">Why Choose Gyansthali?</h2>
+            <h2 className="text-4xl font-black text-indigo-800 dark:text-white tracking-tight">Why Choose Gyansthali?</h2>
             <p className="text-indigo-100 max-w-2xl mx-auto font-medium">We provide more than just education; we provide an experience that lasts a lifetime.</p>
           </div>
           
@@ -236,37 +262,19 @@ const SchoolLanding = () => {
         </div>
       </section>
 
-      {/* Welcome / About Introduction */}
-      <section className="py-24 bg-themeBg">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
-          <div className="space-y-6">
-            <h5 className="text-xs font-black text-indigo-400 uppercase tracking-[0.4em]">Welcome to Gyansthali</h5>
-            <h2 className="text-4xl font-black text-themeText tracking-tight leading-tight">Nurturing Excellence in Education</h2>
-            <p className="text-themeTextSec leading-relaxed">
-              Established with a vision to create responsible and capable citizens, Gyansthali has grown to become a premier institution. We offer a comprehensive curriculum that emphasizes conceptual clarity, critical thinking, and holistic development.
-            </p>
-            <p className="text-themeTextSec leading-relaxed">
-              Our mission is simple: to empower students with knowledge, confidence, and compassion. Backed by experienced educators and modern infrastructure, we stand out as a top choice for a balanced, future-ready education.
-            </p>
-            <button className="px-8 py-3 bg-indigo-600/10 text-indigo-400 font-bold rounded-xl border border-indigo-500/20 hover:bg-indigo-600 hover:text-white transition-all uppercase tracking-widest text-xs">
-              Read Our Story
-            </button>
-          </div>
-          <div className="relative aspect-video rounded-[2.5rem] overflow-hidden border border-themeBorder shadow-2xl">
-             <img src="/images/redesign/campus_hero.png" alt="Campus Overview" className="w-full h-full object-cover" />
-          </div>
-        </div>
-      </section>
+   
 
       {/* Latest News & Updates */}
-      <section className="py-24 bg-themeBgSec border-y border-themeBorder">
+      <section className="py-16 bg-themeBgSec border-y border-themeBorder">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div className="space-y-4">
-              <h5 className="text-xs font-black text-indigo-400 uppercase tracking-[0.4em]">Happenings</h5>
+              <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Happenings</h5>
               <h2 className="text-4xl font-black text-themeText tracking-tight">Latest News & Resources</h2>
             </div>
-            <button className="shrink-0 px-6 py-2.5 bg-themeCard border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest text-themeText hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all">
+            <button className="shrink-0 px-6 py-2.5 bg-themeCard border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest text-themeText 
+                          hover:bg-green-500 hover:text-white hover:border-green-400 dark:hover:bg-indigo-600 dark:hover:text-white dark:hover:border-indigo-600 
+                            transition-all">
               View All News
             </button>
           </div>
@@ -294,7 +302,7 @@ const SchoolLanding = () => {
       </section>
 
       {/* Leadership Messages */}
-      <section className="py-24 bg-themeBg">
+      <section className="py-16 bg-themeBg">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8">
           <div className="bg-gradient-to-br from-indigo-900/40 to-slate-900 p-12 rounded-[3rem] border border-indigo-500/20 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[60px] rounded-full" />
@@ -324,7 +332,7 @@ const SchoolLanding = () => {
                   <MdSchool className="text-indigo-600" size={24} />
                 </div>
                 <div>
-                  <p className="text-themeText font-black uppercase tracking-widest text-sm">Dr. Ananya Sharma</p>
+                  <p className="text-themeText font-black uppercase tracking-widest text-sm">Mrs. Khushboo Soni</p>
                   <p className="text-themeTextSec text-xs font-bold uppercase tracking-widest mt-1">Principal</p>
                 </div>
               </div>
@@ -334,10 +342,10 @@ const SchoolLanding = () => {
       </section>
 
       {/* Alumni Spotlight */}
-      <section className="py-24 bg-themeBgSec border-y border-themeBorder overflow-hidden">
+      <section className="py-16 bg-themeBgSec border-y border-themeBorder overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-xl mx-auto mb-16 space-y-4">
-            <h5 className="text-xs font-black text-indigo-400 uppercase tracking-[0.4em]">Our Legacy</h5>
+          <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Our Legacy</h5>
             <h2 className="text-4xl font-black text-themeText tracking-tight">Alumni Spotlight</h2>
           </div>
           
@@ -348,9 +356,9 @@ const SchoolLanding = () => {
               { name: "Ankit Olla", role: "FIGHTER PILOT, IAF", year: "2015" },
               { name: "Pranjal Rajawat", role: "MARKETING MANAGER", year: "2013" }
             ].map((alumni, i) => (
-              <div key={i} className="bg-themeBg p-8 rounded-[2rem] border border-themeBorder hover:border-indigo-500/30 transition-all text-center space-y-4">
-                <div className="w-20 h-20 mx-auto rounded-full bg-indigo-50 border-4 border-white flex items-center justify-center text-indigo-600 font-black text-2xl shadow-lg">
-                  {alumni.name.charAt(0)}
+              <div key={i} className="bg-themeBg p-8 rounded-[2rem] border border-themeBorder hover:border-indigo-500/30 transition-all text-center space-y-4 shadow-sm hover:shadow-xl hover:-translate-y-1">
+                <div className="w-20 h-20 mx-auto rounded-full bg-indigo-50 border-4 border-themeBgSec flex items-center justify-center shadow-lg overflow-hidden">
+                  <img src={`https://ui-avatars.com/api/?name=${alumni.name.replace(' ', '+')}&background=e0e7ff&color=4f46e5&size=128&font-size=0.33`} alt={alumni.name} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h4 className="text-lg font-black text-themeText tracking-tight">{alumni.name}</h4>
@@ -364,7 +372,7 @@ const SchoolLanding = () => {
           </div>
           
           <div className="mt-12 text-center">
-            <button className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all uppercase tracking-widest text-xs">
+            <button className="px-8 py-3 bg-green-500 dark:bg-indigo-600 text-white font-bold rounded-xl shadow-xl shadow-green-500/20 dark:shadow-indigo-500/20 hover:bg-green-700 dark:hover:bg-indigo-700 transition-all uppercase tracking-widest text-xs">
               Join Alumni Community
             </button>
           </div>
@@ -372,10 +380,10 @@ const SchoolLanding = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-themeBg">
+      <section className="py-16 bg-themeBg">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-xl mx-auto mb-16 space-y-4">
-            <h5 className="text-xs font-black text-indigo-400 uppercase tracking-[0.4em]">Voices of Trust</h5>
+          <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Voices of Trust</h5>
             <h2 className="text-4xl font-black text-themeText tracking-tight">What Parents Say</h2>
           </div>
           
@@ -387,7 +395,7 @@ const SchoolLanding = () => {
             ].map((testimonial, i) => (
               <div key={i} className="bg-themeCard p-10 rounded-[2.5rem] border border-themeBorder relative group hover:shadow-xl transition-all flex flex-col justify-between">
                 <div>
-                  <div className="text-indigo-100 absolute top-8 right-8 text-6xl font-serif opacity-50 group-hover:text-indigo-200 transition-colors">"</div>
+                  <div className="text-indigo-500/10 dark:text-indigo-100/30 absolute top-8 right-8 text-6xl font-serif group-hover:text-indigo-500/20 dark:group-hover:text-indigo-100/50 transition-colors">"</div>
                   <p className="text-themeTextSec font-medium leading-relaxed mb-8 relative z-10 italic">
                     "{testimonial.quote}"
                   </p>
@@ -408,10 +416,10 @@ const SchoolLanding = () => {
       </section>
 
       {/* FAQs */}
-      <section className="py-24 bg-themeBgSec border-t border-themeBorder">
+      <section className="py-16 bg-themeBgSec border-t border-themeBorder">
         <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-16 space-y-4">
-            <h5 className="text-xs font-black text-indigo-400 uppercase tracking-[0.4em]">Clear Your Doubts</h5>
+          <div className="text-center mb-12 space-y-4">
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Clear Your Doubts</h5>
             <h2 className="text-4xl font-black text-themeText tracking-tight">Frequently Asked Questions</h2>
           </div>
           
@@ -425,8 +433,8 @@ const SchoolLanding = () => {
               <details key={i} className="group bg-themeBg border border-themeBorder rounded-2xl [&_summary::-webkit-details-marker]:hidden">
                 <summary className="flex items-center justify-between p-6 cursor-pointer font-black text-themeText select-none outline-none">
                   {faq.q}
-                  <span className="transition duration-300 group-open:rotate-180 text-indigo-500">
-                    <svg fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                  <span className="transition duration-300 group-open:rotate-180 text-green-500 dark:text-indigo-400">
+                    <MdOutlineKeyboardArrowDown size={24} />
                   </span>
                 </summary>
                 <div className="px-6 pb-6 pt-0 text-themeTextSec font-medium leading-relaxed">
