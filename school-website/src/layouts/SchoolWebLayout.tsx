@@ -121,8 +121,8 @@ const SchoolWebLayout = () => {
                <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-10 h-10 object-contain bg-white rounded-lg p-1" />
                <h1 className="text-themeText font-black text-lg tracking-tighter">Gyansthali <span className="text-indigo-500">Enlightening</span></h1>
             </div>
-            <button onClick={() => setMobileMenuOpen(false)} className="text-themeText p-2.5 bg-themeCard border border-themeBorder rounded-full">
-              <MdClose size={24} />
+            <button onClick={() => setMobileMenuOpen(false)} className="text-themeText p-1 bg-themeCard">
+              <MdClose size={20} />
             </button>
           </div>
           <div className="space-y-3">
@@ -130,7 +130,7 @@ const SchoolWebLayout = () => {
               <Link 
                 key={link.name} 
                 to={link.path}
-                className="block text-3xl font-black text-white/20 hover:text-indigo-500 transition-all hover:translate-x-3"
+                className="block text-xl font-black text-green-500 dark:text-white/30 hover:text-green-700 dark:hover:text-indigo-500 transition-all hover:translate-x-3"
                 style={{ transitionDelay: `${i * 40}ms` }}
               >
                 {link.name}
@@ -144,9 +144,9 @@ const SchoolWebLayout = () => {
             </a> */}
           </div>
           
-          <div className="mt-auto pt-8 border-t border-white/5">
-             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-4">Connect with us</p>
-             <div className="flex gap-5">
+          <div className="mt-auto pt-8 border-t dark:border-white/5">
+             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/50 dark:text-white/30 mb-2">Connect with us</p>
+             <div className="flex gap-2">
                  {[
                    { Icon: FaInstagram, link: "https://www.instagram.com/gyansthali_2020" },
                    { Icon: FaTwitter, link: "#" },
@@ -157,7 +157,7 @@ const SchoolWebLayout = () => {
                      target="_blank" 
                      rel="noopener noreferrer" 
                      key={i} 
-                     className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:bg-indigo-600 hover:text-white transition-all"
+                     className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-black/50 dark:text-white/50 hover:bg-indigo-600 hover:text-white transition-all"
                    >
                      <Icon size={20} />
                    </a>
@@ -172,14 +172,14 @@ const SchoolWebLayout = () => {
       </main>
 
       {/* Premium Footer */}
-      <footer className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-slate-900 via-[#020617] to-slate-950 pt-8 pb-6 text-slate-300 border-t border-indigo-500/20 relative overflow-hidden">
+      <footer className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-slate-900 via-[#020617] to-slate-950 pt-12 md:pt-16 pb-8 text-slate-300 border-t border-indigo-500/20 relative overflow-hidden">
         {/* Glow Effects */}
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-600/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-10 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
         
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-8 mb-8 md:mb-12">
             <div className="flex flex-col h-full">
               <div className="flex items-center gap-3">
                 <img src="/images/redesign/gyansthali_logo.png" alt="Gyansthali Logo" className="w-10 h-10 object-contain bg-white rounded-lg p-1 shadow-[0_0_20px_rgba(79,70,229,0.3)]" />
@@ -214,7 +214,7 @@ const SchoolWebLayout = () => {
               <div className="flex items-center gap-2">
                 <h5 className="font-black text-[10px] uppercase tracking-[0.2em] text-white">Quick Links</h5>
                 <div className="flex-1 flex items-center">
-                  <div className="w-8 h-0.5 bg-amber-500 rounded-l-full" />
+                  <div className="w-8 h-0.5 bg-green-500 dark:bg-amber-500 rounded-l-full" />
                   <div className="flex-1 h-[1px] bg-white/20 rounded-r-full" />
                 </div>
               </div>
@@ -222,7 +222,7 @@ const SchoolWebLayout = () => {
                 {navLinks.map(link => (
                   <li key={link.name}>
                     <Link to={link.path} className="hover:text-white transition-all flex items-center gap-2 group">
-                      <MdStarOutline className="text-amber-500 text-sm group-hover:scale-110 transition-transform" />
+                      <MdStarOutline className="text-green-500 dark:text-amber-500 text-sm group-hover:scale-110 transition-transform" />
                       <span className="group-hover:translate-x-1 transition-transform">{link.name}</span>
                     </Link>
                   </li>
@@ -262,7 +262,7 @@ const SchoolWebLayout = () => {
                   placeholder="Enter your email"
                   className="bg-transparent border-none outline-none flex-1 px-3 text-xs font-medium text-white placeholder:text-slate-400"
                 />
-                <button className="bg-indigo-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center gap-2 group/btn">
+                <button className="bg-green-500 dark:bg-indigo-600 text-black dark:text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center gap-2 group/btn">
                   Join
                   <MdArrowForward size={10} className="group-hover/btn:translate-x-1 transition-transform" />
                 </button>
@@ -270,17 +270,17 @@ const SchoolWebLayout = () => {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
-              © 2026 Gyansthali Education Group. <span className="text-slate-800 ml-2">Built with Excellence.</span>
+          <div className="pt-6 md:pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] text-center md:text-left leading-relaxed">
+              © 2026 Gyansthali Education Group. <span className="text-slate-800 block md:inline md:ml-2 mt-1 md:mt-0">Built with Excellence.</span>
             </p>
-            <div className="flex gap-8 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
+            <div className="flex flex-wrap justify-center gap-6 md:gap-8 text-[9px] md:text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
                <div className="flex items-center gap-2">
                   <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
                   Live Campus
                </div>
-               <a href="#" className="hover:text-indigo-400 transition-colors">Privacy</a>
-               <a href="#" className="hover:text-indigo-400 transition-colors">Terms</a>
+               <div className="hover:text-slate-400 transition-colors cursor-pointer">Privacy Policy</div>
+               <div className="hover:text-slate-400 transition-colors cursor-pointer">Terms</div>
             </div>
           </div>
         </div>
