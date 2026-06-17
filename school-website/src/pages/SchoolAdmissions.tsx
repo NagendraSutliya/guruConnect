@@ -105,39 +105,35 @@ const SchoolAdmissions = () => {
       />
 
       {/* Process Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent hidden lg:block z-0" />
+      <section className="py-8 md:py-16 relative overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/30 dark:via-indigo-500/30 to-transparent hidden lg:block z-0" />
         
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-20 space-y-4">
-            <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.5em] animate-fadeIn">The Pathway</h5>
-            <h2 className="text-4xl md:text-3xl font-black text-themeText tracking-tighter">Streamlined Admission Cycle</h2>
+          <div className="text-center mb-8 md:mb-12 space-y-4">
+            <h5 className="text-[10px] font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.5em] animate-fadeIn">The Pathway</h5>
+            <h2 className="text-xl md:text-3xl font-black text-themeText tracking-tighter">Streamlined Admission Cycle</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 lg:gap-12 relative">
+            {/* Horizontal connector line for desktop */}
+            <div className="absolute top-8 md:top-12 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-green-500/30 dark:via-indigo-500/30 to-transparent hidden md:block z-0" />
+
             {(admissionsData.steps || []).map((item, i) => (
-              <div key={i} className="group relative text-center space-y-8 animate-fadeIn" style={{ animationDelay: `${i * 150}ms` }}>
-                <div className="w-24 h-24 rounded-[2.5rem] bg-themeCard border border-themeBorder flex items-center justify-center text-4xl text-indigo-400 mx-auto group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-110 transition-all duration-700 shadow-[0_0_50px_-12px_rgba(79,70,229,0.3)] relative z-10 overflow-hidden">
+              <div key={i} className="group relative text-center space-y-4 md:space-y-8 animate-fadeIn" style={{ animationDelay: `${i * 150}ms` }}>
+                <div className="w-16 h-16 md:w-24 md:h-24 rounded-2xl md:rounded-[2rem] bg-themeCard border border-themeBorder flex items-center justify-center text-2xl md:text-4xl text-green-500 dark:text-indigo-400 mx-auto group-hover:bg-green-600 dark:group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-110 transition-all duration-700 shadow-[0_0_50px_-12px_rgba(34,197,94,0.3)] dark:shadow-[0_0_50px_-12px_rgba(79,70,229,0.3)] relative z-10 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <MdAssignment className="relative z-10" />
-                  <div className="absolute -top-1 -right-1 w-10 h-10 rounded-full bg-themeBg border-2 border-indigo-600/30 flex items-center justify-center text-[11px] font-black text-indigo-500 group-hover:text-white group-hover:border-white/50 transition-all">
+                  <div className="absolute -top-1 -right-1 w-6 h-6 md:w-10 md:h-10 rounded-full bg-themeBg border-2 border-green-600/30 dark:border-indigo-600/30 flex items-center justify-center text-[9px] md:text-[11px] font-black text-green-500 dark:text-indigo-400 dark:group-hover:text-white group-hover:border-white/50 transition-all">
                     {item.step}
                   </div>
                 </div>
                 
-                <div className="space-y-3 px-2">
-                  <h4 className="text-xl font-black text-themeText tracking-tight group-hover:text-indigo-400 transition-colors">{item.title}</h4>
-                  <p className="text-sm text-themeTextSec font-bold leading-relaxed max-w-[220px] mx-auto opacity-80 group-hover:opacity-100 transition-opacity">
+                <div className="space-y-2 md:space-y-3 px-1 md:px-2">
+                  <h4 className="text-sm md:text-xl font-black text-themeText tracking-tight group-hover:text-green-500 dark:group-hover:text-indigo-400 transition-colors">{item.title}</h4>
+                  <p className="text-[10px] md:text-sm text-themeTextSec font-bold leading-relaxed max-w-[220px] mx-auto opacity-80 group-hover:opacity-100 transition-opacity">
                     {item.desc}
                   </p>
                 </div>
-
-                {/* Mobile/Tablet Arrow Connector */}
-                {i < (admissionsData.steps?.length - 1) && (
-                  <div className="lg:hidden flex justify-center py-4 text-indigo-500/20">
-                    <MdArrowForward className="rotate-90 text-2xl" />
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -145,13 +141,13 @@ const SchoolAdmissions = () => {
       </section>
 
       {/* Criteria & Matrix */}
-      <section className="py-24 bg-themeBgSec border-y border-themeBorder">
+      <section className="py-8 md:py-16 bg-themeBgSec border-y border-themeBorder">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-10">
-              <div className="space-y-4">
-                <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">Eligibility</h5>
-                <h2 className="text-4xl font-black text-themeText tracking-tight">Grades & Age Matrix</h2>
+            <div className="space-y-4 md:space-y-10">
+              <div className="space-y-2 md:space-y-4">
+                <h5 className="text-[10px] font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Eligibility</h5>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Grades & Age Matrix</h2>
                 <p className="text-themeTextSec font-medium leading-relaxed">
                   We follow a standardized age criteria to ensure that children are socially and emotionally ready for their respective grade levels.
                 </p>
@@ -159,9 +155,9 @@ const SchoolAdmissions = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(admissionsData.matrix || []).map((row, i) => (
-                  <div key={i} className="flex items-center justify-between p-7 rounded-[2rem] bg-themeBg border border-themeBorder hover:border-indigo-500/40 hover:bg-themeCard transition-all duration-500 group">
+                  <div key={i} className="flex items-center justify-between p-4 md:p-7 rounded-2xl md:rounded-[2rem] bg-themeBg border border-themeBorder hover:border-green-500/40 dark:hover:border-indigo-500/40 hover:bg-themeCard transition-all duration-500 group">
                     <div className="space-y-1">
-                      <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest opacity-60 group-hover:opacity-100">Grade Level</p>
+                      <p className="text-[9px] font-black text-green-500 dark:text-indigo-400 uppercase tracking-widest opacity-60 group-hover:opacity-100">Grade Level</p>
                       <span className="font-black text-base text-themeText tracking-tight uppercase">{row.grade}</span>
                     </div>
                     <div className="text-right">
@@ -174,9 +170,9 @@ const SchoolAdmissions = () => {
             </div>
 
             <div className="relative group">
-              <div className="absolute -inset-10 bg-indigo-500/10 blur-[80px] rounded-full" />
-              <div className="relative bg-themeCard backdrop-blur-2xl p-10 rounded-[4rem] border border-themeBorder shadow-2xl space-y-8">
-                <div className="flex items-center gap-4 text-indigo-400">
+              <div className="absolute -inset-10 bg-green-500/10 dark:bg-indigo-500/10 blur-[80px] rounded-full" />
+              <div className="relative bg-themeCard backdrop-blur-2xl p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] border border-themeBorder shadow-2xl space-y-4 md:space-y-8">
+                <div className="flex items-center gap-4 text-green-500 dark:text-indigo-400">
                   <MdInfoOutline size={24} />
                   <h4 className="font-black uppercase tracking-widest text-xs">Note to Parents</h4>
                 </div>
@@ -185,7 +181,7 @@ const SchoolAdmissions = () => {
                 </p>
                 <div className="pt-6 border-t border-themeBorder">
                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center font-black">26</div>
+                      <div className="w-12 h-12 rounded-full bg-green-500 dark:bg-indigo-600 flex items-center justify-center font-black text-white">26</div>
                       <div>
                          <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest">Available Seats</p>
                          <p className="text-sm font-bold text-themeText">Admissions Open for 2026-27</p>
@@ -199,26 +195,26 @@ const SchoolAdmissions = () => {
       </section>
 
       {/* Checklist Section */}
-      <section className="py-24 max-w-7xl mx-auto px-6">
+      <section className="py-8 md:py-16 max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           <div className="lg:col-span-5 relative order-2 lg:order-1">
-             <div className="aspect-square rounded-[3rem] overflow-hidden border border-themeBorder shadow-2xl">
+             <div className="aspect-square rounded-[2rem] md:rounded-[3rem] overflow-hidden border border-themeBorder shadow-2xl">
                 <img src="/images/redesign/admissions_checklist.png" alt="Documents" className="w-full h-full object-cover opacity-80" />
              </div>
-             <div className="absolute -bottom-6 -right-6 p-8 bg-indigo-600 rounded-3xl shadow-2xl animate-float">
-                <MdCloudUpload size={32} className="text-white" />
+             <div className="absolute -bottom-6 -right-6 p-6 md:p-8 bg-green-500 dark:bg-indigo-600 rounded-3xl shadow-2xl animate-float">
+                <MdCloudUpload size={24} className="text-white" />
              </div>
           </div>
           
-          <div className="lg:col-span-7 space-y-10 order-1 lg:order-2">
-            <div className="space-y-4">
-              <h5 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">Verification</h5>
-              <h2 className="text-4xl font-black text-themeText tracking-tight">Required Documents</h2>
+          <div className="lg:col-span-7 space-y-6 md:space-y-10 order-1 lg:order-2">
+            <div className="space-y-2 md:space-y-4">
+              <h5 className="text-[10px] font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Verification</h5>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Required Documents</h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               {(admissionsData.documents || []).map((doc, i) => (
-                <div key={i} className="group flex items-center gap-5 p-5 rounded-[1.5rem] bg-themeCard border border-themeBorder hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] transition-all duration-500">
+                <div key={i} className="group flex items-center gap-3 md:gap-5 p-3 md:p-5 rounded-[1.5rem] bg-themeCard border border-themeBorder hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] transition-all duration-500">
                   <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-lg shadow-emerald-500/5">
                     <MdCheckCircle size={20} />
                   </div>
@@ -231,26 +227,26 @@ const SchoolAdmissions = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 bg-themeBgSec border-t border-themeBorder">
+      <section className="py-8 md:py-16 bg-themeBgSec border-t border-themeBorder">
         <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-16 space-y-4">
-             <h2 className="text-3xl font-black text-themeText tracking-tight">Common Inquiries</h2>
+          <div className="text-center mb-8 md:mb-12 space-y-2 md:space-y-4">
+             <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Common Inquiries</h2>
              <p className="text-themeTextSec text-sm font-medium">Everything you need to know about the admission cycle.</p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-2 md:space-y-4">
             {faqs.map((faq, i) => (
               <div key={i} className="rounded-2xl bg-themeCard border border-themeBorder overflow-hidden transition-all">
                 <button 
                   onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                  className="w-full p-6 text-left flex items-center justify-between hover:bg-themeBgSec transition-colors"
+                  className="w-full p-4 md:p-6 text-left flex items-center justify-between hover:bg-themeBgSec transition-colors"
                 >
                   <span className="font-bold text-sm text-themeText">{faq.q}</span>
                   <div className={`transition-transform duration-300 ${activeFaq === i ? 'rotate-45' : ''}`}>
-                    <MdAdd size={20} className="text-indigo-500" />
+                    <MdAdd size={20} className="text-green-500 dark:text-indigo-500" />
                   </div>
                 </button>
-                <div className={`px-6 transition-all duration-500 ease-in-out ${activeFaq === i ? 'max-h-40 pb-6 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className={`px-4 md:px-6 transition-all duration-500 ease-in-out ${activeFaq === i ? 'max-h-40 pb-4 md:pb-6 opacity-100' : 'max-h-0 opacity-0'}`}>
                   <p className="text-xs text-themeTextSec leading-relaxed font-medium">{faq.a}</p>
                 </div>
               </div>
@@ -260,16 +256,16 @@ const SchoolAdmissions = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24">
+      <section className="py-8 md:py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="p-12 md:p-20 rounded-[4rem] bg-indigo-600 relative overflow-hidden group">
+          <div className="p-8 md:p-12 lg:p-20 rounded-[2.5rem] md:rounded-[4rem] bg-gradient-to-r from-green-600 to-indigo-400 dark:from-blue-600 dark:to-indigo-400 relative overflow-hidden group">
             <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
               <div className="space-y-4 max-w-xl">
-                <h2 className="text-4xl font-black text-white tracking-tight">Ready to join our community?</h2>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight">Ready to join our community?</h2>
                 <p className="text-indigo-100 font-medium">Start your digital application today and secure a seat for the 2026-27 academic session.</p>
               </div>
-              <button className="flex items-center gap-3 px-10 py-5 bg-white text-indigo-600 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-50 transition-all shadow-2xl active:scale-95 shrink-0">
+              <button className="flex items-center gap-3 px-4 py-2 md:px-10 md:py-5 bg-white text-green-600 dark:text-indigo-600 rounded-xl md:rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-green-50 dark:hover:bg-indigo-50 transition-all shadow-2xl active:scale-95 shrink-0">
                 Apply Online Now
                 <MdArrowForward size={20} />
               </button>

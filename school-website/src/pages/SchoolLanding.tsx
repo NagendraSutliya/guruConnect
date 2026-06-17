@@ -105,7 +105,7 @@ const SchoolLanding = () => {
               </div>
             ) : (
               <>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-themeCard border border-themeBorder text-xs font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-indigo-300 animate-slideDown">
+                <div className="inline-flex items-center gap-2 px-2 py-1 md:px-4 md:py-2 rounded-full bg-themeCard border border-themeBorder text-xs font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-indigo-300 animate-slideDown">
                   <MdStar className="text-amber-400 animate-spin-slow" size={14} />
                   {heroData.announcement}
                 </div>
@@ -117,11 +117,11 @@ const SchoolLanding = () => {
                   {heroData.subtitle}
                 </p>
                 <div className="flex flex-wrap gap-4 pt-4 animate-slideUp">
-                  <button className="group flex items-center gap-3 px-8 py-3 bg-green-600 dark:bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest dark:hover:bg-indigo-800 hover:bg-green-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95">
+                  <button className="group flex items-center gap-3 px-3 py-2 md:px-8 md:py-3 bg-green-600 dark:bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest dark:hover:bg-indigo-800 hover:bg-green-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95">
                     {heroData.button1}
                     <MdArrowForward size={18} className="group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button className="flex items-center gap-3 px-8 py-3 bg-themeCard text-themeText backdrop-blur-xl border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-themeBgSec transition-all active:scale-95">
+                  <button className="flex items-center gap-3 px-3 py-2 md:px-8 md:py-3 bg-themeCard text-themeText backdrop-blur-xl border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-themeBgSec transition-all active:scale-95">
                     <div className="w-6 h-6 rounded-full bg-green-600 dark:bg-indigo-500 flex items-center justify-center text-white">
                       <MdPlayArrow size={16} />
                     </div>
@@ -144,7 +144,7 @@ const SchoolLanding = () => {
       </section>
 
       {/* Stats Bar */}
-      <section className="py-10 bg-themeBgSec border-y border-themeBorder">
+      <section className="py-8 md:py-10 bg-themeBgSec border-y border-themeBorder">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             {[
@@ -166,14 +166,14 @@ const SchoolLanding = () => {
       </section>
 
          {/* Welcome / About Introduction */}
-      <section className="py-16 bg-themeBg">
+      <section className="py-8 md:py-16 bg-themeBg">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
            <div className="relative aspect-video rounded-[2.5rem] overflow-hidden border border-themeBorder shadow-2xl">
              <img src="/images/redesign/campus_hero.png" alt="Campus Overview" className="w-full h-full object-cover" />
           </div>
           <div className="space-y-6">
             <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Welcome to Gyansthali</h5>
-            <h2 className="text-4xl font-black text-themeText tracking-tight leading-tight">Nurturing Excellence in Education</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight leading-tight">Nurturing Excellence in Education</h2>
             <p className="text-themeTextSec leading-relaxed">
               Established with a vision to create responsible and capable citizens, Gyansthali has grown to become a premier institution. We offer a comprehensive curriculum that emphasizes conceptual clarity, critical thinking, and holistic development.
             </p>
@@ -189,11 +189,11 @@ const SchoolLanding = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-themeBg relative overflow-hidden">
+      <section className="py-8 md:py-16 bg-themeBg relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
             <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Our DNA</h5>
-            <h2 className="text-3xl md:text-4xl font-black text-themeText tracking-tight leading-tight">An Ecosystem for 
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight leading-tight">An Ecosystem for 
               <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-indigo-400 dark:from-indigo-400 dark:to-purple-400">Human Excellence</span></h2>
           </div>
 
@@ -236,15 +236,15 @@ const SchoolLanding = () => {
 
 
   {/* Why Choose */}
-      <section className="py-12 bg-gradient-to-r from-green-600 to-indigo-400 dark:from-blue-600 dark:to-indigo-400 rounded-3xl relative overflow-hidden">
+      <section className="py-8 md:py-12 bg-gradient-to-r from-green-600 to-indigo-400 dark:from-blue-600 dark:to-indigo-400 rounded-3xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
-        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-12">
-          <div className="space-y-4">
-            <h2 className="text-4xl font-black text-indigo-800 dark:text-white tracking-tight">Why Choose Gyansthali?</h2>
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-4 md:space-y-12">
+          <div className="space-y-2 md:space-y-4">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-indigo-800 dark:text-white tracking-tight">Why Choose Gyansthali?</h2>
             <p className="text-indigo-100 max-w-2xl mx-auto font-medium">We provide more than just education; we provide an experience that lasts a lifetime.</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
             {[
               "Digital-First Pedagogy",
               "Personalized Mentorship",
@@ -253,24 +253,22 @@ const SchoolLanding = () => {
               "Global Exposure",
               "Values-Based Learning"
             ].map((point, i) => (
-              <div key={i} className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-8 py-5 rounded-2xl border border-white/10">
+              <div key={i} className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-4 py-3 md:px-8 md:py-5 rounded-2xl border border-white/10">
                 <MdCheckCircle className="text-indigo-200 text-xl shrink-0" />
-                <span className="font-black text-xs uppercase tracking-widest text-white">{point}</span>
+                <span className="font-black text-xs uppercase tracking-widest text-white text-left">{point}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-   
-
       {/* Latest News & Updates */}
-      <section className="py-16 bg-themeBgSec border-y border-themeBorder">
+      <section className="py-8 md:py-16 bg-themeBgSec border-y border-themeBorder">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div className="space-y-4">
               <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Happenings</h5>
-              <h2 className="text-4xl font-black text-themeText tracking-tight">Latest News & Resources</h2>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Latest News & Resources</h2>
             </div>
             <button className="shrink-0 px-6 py-2.5 bg-themeCard border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest text-themeText 
                           hover:bg-green-500 hover:text-white hover:border-green-400 dark:hover:bg-indigo-600 dark:hover:text-white dark:hover:border-indigo-600 
@@ -302,14 +300,14 @@ const SchoolLanding = () => {
       </section>
 
       {/* Leadership Messages */}
-      <section className="py-16 bg-themeBg">
+      <section className="py-8 md:py-16 bg-themeBg">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8">
-          <div className="bg-gradient-to-br from-indigo-900/40 to-slate-900 p-12 rounded-[3rem] border border-indigo-500/20 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-indigo-900/40 to-slate-900 p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-indigo-500/20 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[60px] rounded-full" />
-            <div className="relative z-10 space-y-8 flex flex-col h-full justify-between">
-              <div className="space-y-6">
-                <h3 className="text-3xl font-black text-white tracking-tight">The Inspiration</h3>
-                <p className="text-indigo-100/80 leading-relaxed font-medium text-lg">
+            <div className="relative z-10 space-y-4 md:space-y-8 flex flex-col h-full justify-between">
+              <div className="space-y-4 md:space-y-6">
+                <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight">The Inspiration</h3>
+                <p className="text-indigo-100/80 leading-relaxed font-medium text-sm md:text-base lg:text-lg">
                   "We proudly honor the visionaries who dedicated their efforts to bringing an international standard of education. The driving force behind our school is a dream, initiative, and unwavering commitment to a learning environment that seamlessly blends modern education with rich Indian culture."
                 </p>
               </div>
@@ -319,11 +317,11 @@ const SchoolLanding = () => {
               </div>
             </div>
           </div>
-          <div className="bg-themeCard p-12 rounded-[3rem] border border-themeBorder shadow-xl relative overflow-hidden">
-            <div className="relative z-10 space-y-8 flex flex-col h-full justify-between">
-              <div className="space-y-6">
-                <h3 className="text-3xl font-black text-themeText tracking-tight">Principal's Desk</h3>
-                <p className="text-themeTextSec leading-relaxed font-medium text-lg italic">
+          <div className="bg-themeCard p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-themeBorder shadow-xl relative overflow-hidden">
+            <div className="relative z-10 space-y-4 md:space-y-8 flex flex-col h-full justify-between">
+              <div className="space-y-4 md:space-y-6">
+                <h3 className="text-2xl md:text-3xl font-black text-themeText tracking-tight">Principal's Desk</h3>
+                <p className="text-themeTextSec leading-relaxed font-medium text-sm md:text-base lg:text-lg italic">
                   "At Gyansthali, we believe that the true goal of education is to build knowledge as well as character of our students by enabling them to think intensively and critically. We prepare them not just for exams, but for life."
                 </p>
               </div>
@@ -342,14 +340,14 @@ const SchoolLanding = () => {
       </section>
 
       {/* Alumni Spotlight */}
-      <section className="py-16 bg-themeBgSec border-y border-themeBorder overflow-hidden">
+      <section className="py-8 md:py-16 bg-themeBgSec border-y border-themeBorder overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
             <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Our Legacy</h5>
-            <h2 className="text-4xl font-black text-themeText tracking-tight">Alumni Spotlight</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Alumni Spotlight</h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { name: "Sankalp Sharma", role: "III RD OFFICER", year: "2013" },
               { name: "Deeksha Singh", role: "CORPORATE LAWYER", year: "2009" },
@@ -380,11 +378,11 @@ const SchoolLanding = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 bg-themeBg">
+      <section className="py-8 md:py-16 bg-themeBg">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
             <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Voices of Trust</h5>
-            <h2 className="text-4xl font-black text-themeText tracking-tight">What Parents Say</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">What Parents Say</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -393,14 +391,14 @@ const SchoolLanding = () => {
               { quote: "Aarush was very shy and scared to speak his mind. But the way the teachers communicate with him, he is improving rapidly. I see a lot of change.", parent: "Sonu J", child: "Aaryush, Grade 3" },
               { quote: "We're extremely thankful for the efforts made by the teachers and the way they are dealing with the children. The digital integration is flawless.", parent: "Ashok S", child: "Aryansh, Grade 8" },
             ].map((testimonial, i) => (
-              <div key={i} className="bg-themeCard p-10 rounded-[2.5rem] border border-themeBorder relative group hover:shadow-xl transition-all flex flex-col justify-between">
+              <div key={i} className="bg-themeCard p-6 md:p-8 rounded-[1rem] md:rounded-[2.5rem] border border-themeBorder relative group hover:shadow-xl transition-all flex flex-col justify-between">
                 <div>
-                  <div className="text-indigo-500/10 dark:text-indigo-100/30 absolute top-8 right-8 text-6xl font-serif group-hover:text-indigo-500/20 dark:group-hover:text-indigo-100/50 transition-colors">"</div>
+                  <div className="text-indigo-500/10 dark:text-indigo-100/30 absolute top-4 right-4 md:top-8 md:right-8 text-4xl md:text-6xl font-serif group-hover:text-indigo-500/20 dark:group-hover:text-indigo-100/50 transition-colors">"</div>
                   <p className="text-themeTextSec font-medium leading-relaxed mb-8 relative z-10 italic">
                     "{testimonial.quote}"
                   </p>
                 </div>
-                <div className="flex items-center gap-4 pt-6 border-t border-themeBorder">
+                <div className="flex items-center gap-4 pt-4 md:pt-6 border-t border-themeBorder">
                   <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-black">
                     {testimonial.parent.charAt(0)}
                   </div>
@@ -416,14 +414,14 @@ const SchoolLanding = () => {
       </section>
 
       {/* FAQs */}
-      <section className="py-16 bg-themeBgSec border-t border-themeBorder">
+      <section className="py-8 md:py-16 bg-themeBgSec border-t border-themeBorder">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-12 space-y-4">
             <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Clear Your Doubts</h5>
-            <h2 className="text-4xl font-black text-themeText tracking-tight">Frequently Asked Questions</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Frequently Asked Questions</h2>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-2 md:space-y-4">
             {[
               { q: "Is Gyansthali affiliated with CBSE?", a: "Yes, we are a fully CBSE-affiliated school offering education from primary to senior secondary levels." },
               { q: "Does the school provide transportation facilities?", a: "Yes, we provide safe and efficient transportation through GPS-enabled buses covering major routes." },
@@ -431,7 +429,7 @@ const SchoolLanding = () => {
               { q: "How can I apply for admission?", a: "Admissions can be initiated through our online portal by clicking 'Apply Now' or visiting the campus." }
             ].map((faq, i) => (
               <details key={i} className="group bg-themeBg border border-themeBorder rounded-2xl [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex items-center justify-between p-6 cursor-pointer font-black text-themeText select-none outline-none">
+                <summary className="flex items-center justify-between p-3 md:p-6 cursor-pointer md:font-black text-themeText select-none outline-none">
                   {faq.q}
                   <span className="transition duration-300 group-open:rotate-180 text-green-500 dark:text-indigo-400">
                     <MdOutlineKeyboardArrowDown size={24} />

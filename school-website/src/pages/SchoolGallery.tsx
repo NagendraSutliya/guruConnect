@@ -60,12 +60,12 @@ const SchoolGallery = () => {
         bgImage={galleryData.bannerImage || "/images/redesign/about_banner.png"}
       />
 
-      <section className="py-24 max-w-7xl mx-auto px-6">
+      <section className="py-8 md:py-16 max-w-7xl mx-auto px-6">
         {/* Filter Tabs */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16 border-b border-themeBorder pb-8">
-           <div className="flex items-center gap-3 text-indigo-400">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8 md:mb-12 border-b border-themeBorder pb-8">
+           <div className="flex items-center gap-3 text-green-500 dark:text-indigo-400">
               <MdPhotoLibrary size={24} />
-              <h2 className="text-2xl font-black text-themeText tracking-tight">Media Hub</h2>
+              <h2 className="text-xl md:text-2xl font-black text-themeText tracking-tight">Media Hub</h2>
            </div>
 
            <div className="flex flex-wrap justify-center gap-2">
@@ -73,9 +73,9 @@ const SchoolGallery = () => {
                 <button
                   key={cat}
                   onClick={() => setActiveTab(cat)}
-                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${
+                  className={`px-3 py-1.5 md:px-6 md:py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${
                     activeTab === cat 
-                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" 
+                      ? "bg-green-600 dark:bg-indigo-600 text-white shadow-lg shadow-green-500/20 dark:shadow-indigo-500/20" 
                       : "bg-themeCard text-themeTextSec hover:bg-themeBgSec hover:text-themeText border border-themeBorder"
                   }`}
                 >
@@ -86,7 +86,7 @@ const SchoolGallery = () => {
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {filteredItems.map((item, i) => (
             <div 
               key={i} 
@@ -101,7 +101,7 @@ const SchoolGallery = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-themeBgSec via-transparent to-transparent opacity-80 transition-opacity group-hover:opacity-100" />
               
               <div className="absolute bottom-0 left-0 right-0 p-8 translate-y-4 group-hover:translate-y-0 transition-all duration-700">
-                <span className="px-3 py-1 rounded-lg bg-indigo-600/20 text-indigo-400 text-[8px] font-black uppercase tracking-widest border border-indigo-500/20">
+                <span className="px-3 py-1 rounded-lg bg-green-600/20 dark:bg-indigo-600/20 text-green-500 dark:text-indigo-400 text-[8px] font-black uppercase tracking-widest border border-green-500/20 dark:border-indigo-500/20">
                    {item.category}
                 </span>
                 <h4 className="text-sm font-black text-themeText tracking-tight mt-3 leading-snug">{item.title}</h4>
@@ -125,22 +125,22 @@ const SchoolGallery = () => {
       </section>
 
       {/* Experience Section */}
-      <section className="py-32 bg-indigo-600 relative overflow-hidden">
+      <section className="py-8 md:py-16 bg-gradient-to-r from-green-600 to-indigo-400 dark:from-blue-600 dark:to-indigo-400 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
-        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center space-y-10">
-           <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight">Every Frame Tells a <br />Success Story</h2>
+        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center space-y-4 md:space-y-10">
+           <h2 className="text-2xl md:text-3xl font-black text-white tracking-tighter leading-tight">Every Frame Tells a <br />Success Story</h2>
            <p className="text-indigo-100 font-bold leading-relaxed max-w-2xl mx-auto opacity-80">
              Our gallery is more than just photos; it's a testament to the vibrant culture, academic rigor, and creative freedom that defines the Gyansthali experience.
            </p>
-           <div className="flex flex-wrap justify-center gap-8 md:gap-16 pt-10 border-t border-white/20">
+           <div className="flex flex-wrap justify-center gap-6 md:gap-16 pt-4 md:pt-10 border-t border-white/20">
               {[
                 { val: "500+", label: "Memories" },
                 { val: "50+", label: "Annual Events" },
                 { val: "25+", label: "Years Legacy" }
               ].map((stat, i) => (
-                <div key={i} className="text-center group">
-                   <p className="text-4xl font-black text-white mb-2 group-hover:scale-110 transition-transform duration-500">{stat.val}</p>
-                   <p className="text-[10px] font-black text-indigo-200 uppercase tracking-widest opacity-60">{stat.label}</p>
+                 <div key={i} className="text-center group">
+                   <p className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2 group-hover:scale-110 transition-transform duration-500">{stat.val}</p>
+                   <p className="text-[10px] font-black text-green-100 dark:text-indigo-200 uppercase tracking-widest opacity-60">{stat.label}</p>
                 </div>
               ))}
            </div>
