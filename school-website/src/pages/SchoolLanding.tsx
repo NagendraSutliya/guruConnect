@@ -36,38 +36,125 @@ const Typewriter = ({ texts }: { texts: string[] }) => {
 
 const SchoolLanding = () => {
   const [fetching, setFetching] = useState(true);
-  const [heroData, setHeroData] = useState({
-    title: "Empowering Minds, Shaping Tomorrow's Leaders",
-    subtitle: "At Gyansthali Enlightening, we blend traditional values with cutting-edge digital innovation to provide a holistic learning experience that prepares students for the challenges of a global future.",
-    button1: "Apply for 2026-27",
-    button2: "Explore Campus",
-    announcement: "Now Enrolling: Academic Session 2026-27",
-    backgroundImage: "/images/redesign/hero.png"
+  const [homeData, setHomeData] = useState({
+    hero: {
+      title: "Empowering Minds, Shaping Tomorrow's Leaders",
+      subtitle: "At Gyansthali Enlightening, we blend traditional values with cutting-edge digital innovation to provide a holistic learning experience that prepares students for the challenges of a global future.",
+      button1: "Apply for 2026-27",
+      button2: "Explore Campus",
+      announcement: "Now Enrolling: Academic Session 2026-27",
+      backgroundImage: "/images/redesign/hero.png"
+    },
+    stats: [
+      { label: 'Success Rate', val: '99%', sub: 'University Placements' },
+      { label: 'Expert Faculty', val: '25+', sub: 'Certified Educators' },
+      { label: 'Modern Labs', val: '10+', sub: 'World-class Facilities' },
+      { label: 'Established', val: '2020', sub: 'Mahesh Nagar, Jaipur' }
+    ],
+    welcome: {
+      title: "Nurturing Excellence in Education",
+      subtitle: "Welcome to Gyansthali",
+      p1: "Established with a vision to create responsible and capable citizens, Gyansthali has grown to become a premier institution. We offer a comprehensive curriculum that emphasizes conceptual clarity, critical thinking, and holistic development.",
+      p2: "Our mission is simple: to empower students with knowledge, confidence, and compassion. Backed by experienced educators and modern infrastructure, we stand out as a top choice for a balanced, future-ready education.",
+      button: "Read Our Story",
+      image: "/images/redesign/campus_hero.png"
+    },
+    features: {
+      title: "An Ecosystem for \\n<br /><span className=\"text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-indigo-400 dark:from-indigo-400 dark:to-purple-400\">Human Excellence</span>",
+      subtitle: "Our DNA",
+      items: [
+        { title: "Smart Learning", desc: "Digitally equipped classrooms with interactive boards and AI-assisted learning tools.", tag: "Technology", icon: "/images/redesign/speed.png" },
+        { title: "Holistic Growth", desc: "Special focus on sports, arts, and cultural activities alongside academic rigor.", tag: "Values", icon: "/images/redesign/stats.png" },
+        { title: "Safe Campus", desc: "24/7 surveillance and specialized security staff to ensure a secure environment.", tag: "Security", icon: "/images/redesign/security.png" }
+      ]
+    },
+    whyChoose: {
+      title: "Why Choose Gyansthali?",
+      subtitle: "We provide more than just education; we provide an experience that lasts a lifetime.",
+      points: [
+        "Digital-First Pedagogy", "Personalized Mentorship", "World-Class Infrastructure",
+        "Holistic Development", "Global Exposure", "Values-Based Learning"
+      ]
+    },
+    news: {
+      title: "Latest News & Resources",
+      subtitle: "Happenings",
+      items: [
+        { date: "May 9, 2026", title: "17th Annual Inter-School Sports Trophy", img: "/images/redesign/gallery1.png" },
+        { date: "May 2, 2026", title: "Mosaic Art & Cultural Fest 2026", img: "/images/redesign/gallery2.png" },
+        { date: "Apr 15, 2026", title: "National Science Olympiad Winners", img: "/images/redesign/gallery3.png" }
+      ]
+    },
+    leadership: {
+      inspiration: { title: "The Inspiration", quote: "\"We proudly honor the visionaries who dedicated their efforts to bringing an international standard of education. The driving force behind our school is a dream, initiative, and unwavering commitment to a learning environment that seamlessly blends modern education with rich Indian culture.\"", author: "Gyansthali Education Trust", role: "Founding Board" },
+      principal: { title: "Principal's Desk", quote: "\"At Gyansthali, we believe that the true goal of education is to build knowledge as well as character of our students by enabling them to think intensively and critically. We prepare them not just for exams, but for life.\"", author: "Mrs. Khushboo Soni", role: "Principal" }
+    },
+    alumni: {
+      title: "Alumni Spotlight",
+      subtitle: "Our Legacy",
+      items: [
+        { name: "Sankalp Sharma", role: "III RD OFFICER", year: "2013" },
+        { name: "Deeksha Singh", role: "CORPORATE LAWYER", year: "2009" },
+        { name: "Ankit Olla", role: "FIGHTER PILOT, IAF", year: "2015" },
+        { name: "Pranjal Rajawat", role: "MARKETING MANAGER", year: "2013" }
+      ]
+    },
+    testimonials: {
+      title: "What Parents Say",
+      subtitle: "Voices of Trust",
+      items: [
+        { quote: "Such an interactive and enthusiastic session! So happy that my child is in such wonderful hands. More power to teachers like you.", parent: "Rashmi D", child: "Arohi, Grade 5" },
+        { quote: "Aarush was very shy and scared to speak his mind. But the way the teachers communicate with him, he is improving rapidly. I see a lot of change.", parent: "Sonu J", child: "Aaryush, Grade 3" },
+        { quote: "We're extremely thankful for the efforts made by the teachers and the way they are dealing with the children. The digital integration is flawless.", parent: "Ashok S", child: "Aryansh, Grade 8" }
+      ]
+    },
+    faqs: {
+      title: "Frequently Asked Questions",
+      subtitle: "Clear Your Doubts",
+      items: [
+        { q: "Is Gyansthali affiliated with CBSE?", a: "Yes, we are a fully CBSE-affiliated school offering education from primary to senior secondary levels." },
+        { q: "Does the school provide transportation facilities?", a: "Yes, we provide safe and efficient transportation through GPS-enabled buses covering major routes." },
+        { q: "What are the key co-curricular activities?", a: "Our framework includes sports, music, dance, coding clubs, robotics, and elocution." },
+        { q: "How can I apply for admission?", a: "Admissions can be initiated through our online portal by clicking 'Apply Now' or visiting the campus." }
+      ]
+    }
   });
 
   useEffect(() => {
-    const fetchHeroData = async () => {
+    const fetchHomeData = async () => {
       try {
         setFetching(true);
-        const response = await api.get('/cms/hero');
+        const response = await api.get('/cms/home');
         if (response.data.success && response.data.data) {
-          const incoming = response.data.data;
-          const cleanData: any = {};
-          Object.keys(incoming).forEach(key => {
-            if (incoming[key] && incoming[key] !== "") {
-              cleanData[key] = incoming[key];
-            }
-          });
-          setHeroData(prev => ({ ...prev, ...cleanData }));
+          setHomeData(prev => ({
+            ...prev,
+            ...response.data.data,
+            hero: { ...prev.hero, ...(response.data.data.hero || {}) },
+            welcome: { ...prev.welcome, ...(response.data.data.welcome || {}) },
+            features: { ...prev.features, ...(response.data.data.features || {}) },
+            news: { ...prev.news, ...(response.data.data.news || {}) },
+            leadership: { ...prev.leadership, ...(response.data.data.leadership || {}) },
+            alumni: { ...prev.alumni, ...(response.data.data.alumni || {}) },
+            testimonials: { ...prev.testimonials, ...(response.data.data.testimonials || {}) },
+            faqs: { ...prev.faqs, ...(response.data.data.faqs || {}) },
+          }));
+        } else {
+          // fallback to hero if home is empty
+          const heroRes = await api.get('/cms/hero');
+          if (heroRes.data.success && heroRes.data.data) {
+             setHomeData(prev => ({ ...prev, hero: { ...prev.hero, ...heroRes.data.data } }));
+          }
         }
       } catch (error) {
-        console.error("Error fetching hero data:", error);
+        console.error("Error fetching home data:", error);
       } finally {
         setFetching(false);
       }
     };
-    fetchHeroData();
+    fetchHomeData();
   }, []);
+
+  const heroData = homeData.hero;
 
   return (
     <div className="relative overflow-x-hidden bg-themeBg text-themeText transition-colors duration-500">
@@ -116,14 +203,14 @@ const SchoolLanding = () => {
                 <p className="text-base md:text-lg text-themeTextSec font-medium leading-relaxed max-w-lg animate-fadeInDelay">
                   {heroData.subtitle}
                 </p>
-                <div className="flex flex-wrap gap-4 pt-4 animate-slideUp">
-                  <button className="group flex items-center gap-3 px-3 py-2 md:px-8 md:py-3 bg-green-600 dark:bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest dark:hover:bg-indigo-800 hover:bg-green-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95">
+                <div className="flex flex-wrap gap-2 md:gap-4 pt-4 animate-slideUp">
+                  <button className="group flex items-center gap-2 md:gap-3 px-3 py-2 md:px-8 md:py-3 bg-green-600 dark:bg-indigo-600 text-white rounded-xl font-bold text-[11px] md:text-xs uppercase tracking-widest dark:hover:bg-indigo-800 hover:bg-green-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95">
                     {heroData.button1}
-                    <MdArrowForward size={18} className="group-hover:translate-x-1 transition-transform" />
+                    <MdArrowForward className="text-[16px] md:text-[18px] group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button className="flex items-center gap-3 px-3 py-2 md:px-8 md:py-3 bg-themeCard text-themeText backdrop-blur-xl border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-themeBgSec transition-all active:scale-95">
-                    <div className="w-6 h-6 rounded-full bg-green-600 dark:bg-indigo-500 flex items-center justify-center text-white">
-                      <MdPlayArrow size={16} />
+                  <button className="flex items-center gap-2 md:gap-3 px-3 py-2 md:px-8 md:py-3 bg-themeCard text-themeText backdrop-blur-xl border border-themeBorder rounded-xl font-bold text-[11px] md:text-xs uppercase tracking-widest hover:bg-themeBgSec transition-all active:scale-95">
+                    <div className="w-4 h-4 md:w-6 md:h-6 rounded-full bg-green-600 dark:bg-indigo-500 flex items-center justify-center text-white">
+                      <MdPlayArrow className="text-[12px] md:text-[16px]" />
                     </div>
                     {heroData.button2}
                   </button>
@@ -132,7 +219,7 @@ const SchoolLanding = () => {
             )}
           </div>
 
-          <div className="hidden lg:block relative animate-float mt-10 w-[90%] max-w-[750px] ml-auto">
+          <div className="relative animate-float md:mt-10 w-[90%] md:w-full max-w-[750px] mx-auto lg:ml-auto">
              <div className="absolute -inset-10 bg-indigo-500/10 blur-[80px] rounded-full" />
              <div className="relative rounded-[2.5rem] overflow-hidden border border-themeBorder shadow-2xl aspect-[4/3]">
                 <img src="/images/redesign/classroom.png" alt="Modern Classroom" className="w-full h-full object-cover" />
@@ -147,12 +234,7 @@ const SchoolLanding = () => {
       <section className="py-8 md:py-10 bg-themeBgSec border-y border-themeBorder">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-            {[
-              { label: 'Success Rate', val: '99%', sub: 'University Placements' },
-              { label: 'Expert Faculty', val: '25+', sub: 'Certified Educators' },
-              { label: 'Modern Labs', val: '10+', sub: 'World-class Facilities' },
-              { label: 'Established', val: '2020', sub: 'Mahesh Nagar, Jaipur' },
-            ].map((stat, i) => (
+            {homeData.stats.map((stat, i) => (
               <div key={i} className="text-left space-y-2 border-l border-themeBorder pl-8">
                 <p className="text-4xl md:text-5xl font-black text-themeText tracking-tighter leading-none">{stat.val}</p>
                 <div className="space-y-0.5">
@@ -169,19 +251,19 @@ const SchoolLanding = () => {
       <section className="py-8 md:py-16 bg-themeBg">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
            <div className="relative aspect-video rounded-[2.5rem] overflow-hidden border border-themeBorder shadow-2xl">
-             <img src="/images/redesign/campus_hero.png" alt="Campus Overview" className="w-full h-full object-cover" />
+             <img src={homeData.welcome.image} alt="Campus Overview" className="w-full h-full object-cover" />
           </div>
           <div className="space-y-6">
-            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Welcome to Gyansthali</h5>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight leading-tight">Nurturing Excellence in Education</h2>
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">{homeData.welcome.subtitle}</h5>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight leading-tight">{homeData.welcome.title}</h2>
             <p className="text-themeTextSec leading-relaxed">
-              Established with a vision to create responsible and capable citizens, Gyansthali has grown to become a premier institution. We offer a comprehensive curriculum that emphasizes conceptual clarity, critical thinking, and holistic development.
+              {homeData.welcome.p1}
             </p>
             <p className="text-themeTextSec leading-relaxed">
-              Our mission is simple: to empower students with knowledge, confidence, and compassion. Backed by experienced educators and modern infrastructure, we stand out as a top choice for a balanced, future-ready education.
+              {homeData.welcome.p2}
             </p>
             <button className="px-8 py-3 bg-green-600/10 text-green-600 dark:text-indigo-400 font-bold rounded-xl border border-green-500/20 dark:border-indigo-500/20 hover:bg-green-600 dark:hover:bg-indigo-600 hover:text-white transition-all uppercase tracking-widest text-xs">
-              Read Our Story
+              {homeData.welcome.button}
             </button>
           </div>
          
@@ -192,32 +274,12 @@ const SchoolLanding = () => {
       <section className="py-8 md:py-16 bg-themeBg relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
-            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Our DNA</h5>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight leading-tight">An Ecosystem for 
-              <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-indigo-400 dark:from-indigo-400 dark:to-purple-400">Human Excellence</span></h2>
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">{homeData.features.subtitle}</h5>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight leading-tight" dangerouslySetInnerHTML={{ __html: homeData.features.title }} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {[
-              { 
-                title: "Smart Learning", 
-                desc: "Digitally equipped classrooms with interactive boards and AI-assisted learning tools.",
-                icon: "/images/redesign/speed.png",
-                tag: "Technology"
-              },
-              { 
-                title: "Holistic Growth", 
-                desc: "Special focus on sports, arts, and cultural activities alongside academic rigor.",
-                icon: "/images/redesign/stats.png",
-                tag: "Values"
-              },
-              { 
-                title: "Safe Campus", 
-                desc: "24/7 surveillance and specialized security staff to ensure a secure environment.",
-                icon: "/images/redesign/security.png",
-                tag: "Security"
-              }
-            ].map((feature, i) => (
+            {homeData.features.items.map((feature, i) => (
               <div key={i} className="group bg-themeCard p-10 rounded-[3rem] border border-themeBorder hover:bg-themeBgSec transition-all duration-500 hover:-translate-y-2 shadow-2xl">
                 <div className="w-full h-36 bg-themeBgSec rounded-2xl mb-6 overflow-hidden border border-themeBorder relative">
                    <img src={feature.icon} alt={feature.title} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700" />
@@ -240,19 +302,12 @@ const SchoolLanding = () => {
         <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-4 md:space-y-12">
           <div className="space-y-2 md:space-y-4">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-indigo-800 dark:text-white tracking-tight">Why Choose Gyansthali?</h2>
-            <p className="text-indigo-100 max-w-2xl mx-auto font-medium">We provide more than just education; we provide an experience that lasts a lifetime.</p>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-indigo-800 dark:text-white tracking-tight">{homeData.whyChoose.title}</h2>
+            <p className="text-indigo-100 max-w-2xl mx-auto font-medium">{homeData.whyChoose.subtitle}</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-            {[
-              "Digital-First Pedagogy",
-              "Personalized Mentorship",
-              "World-Class Infrastructure",
-              "Holistic Development",
-              "Global Exposure",
-              "Values-Based Learning"
-            ].map((point, i) => (
+            {homeData.whyChoose.points.map((point, i) => (
               <div key={i} className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-4 py-3 md:px-8 md:py-5 rounded-2xl border border-white/10">
                 <MdCheckCircle className="text-indigo-200 text-xl shrink-0" />
                 <span className="font-black text-xs uppercase tracking-widest text-white text-left">{point}</span>
@@ -267,8 +322,8 @@ const SchoolLanding = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div className="space-y-4">
-              <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Happenings</h5>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Latest News & Resources</h2>
+              <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">{homeData.news.subtitle}</h5>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">{homeData.news.title}</h2>
             </div>
             <button className="shrink-0 px-6 py-2.5 bg-themeCard border border-themeBorder rounded-xl font-bold text-xs uppercase tracking-widest text-themeText 
                           hover:bg-green-500 hover:text-white hover:border-green-400 dark:hover:bg-indigo-600 dark:hover:text-white dark:hover:border-indigo-600 
@@ -277,11 +332,7 @@ const SchoolLanding = () => {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { date: "May 9, 2026", title: "17th Annual Inter-School Sports Trophy", img: "/images/redesign/gallery1.png" },
-              { date: "May 2, 2026", title: "Mosaic Art & Cultural Fest 2026", img: "/images/redesign/gallery2.png" },
-              { date: "Apr 15, 2026", title: "National Science Olympiad Winners", img: "/images/redesign/gallery3.png" },
-            ].map((news, i) => (
+            {homeData.news.items.map((news, i) => (
               <div key={i} className="group bg-themeCard rounded-[2rem] border border-themeBorder overflow-hidden hover:-translate-y-2 transition-all duration-500 shadow-xl flex flex-col">
                 <div className="aspect-[4/3] bg-themeBgSec overflow-hidden relative">
                   <img src={news.img} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -306,23 +357,23 @@ const SchoolLanding = () => {
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[60px] rounded-full" />
             <div className="relative z-10 space-y-4 md:space-y-8 flex flex-col h-full justify-between">
               <div className="space-y-4 md:space-y-6">
-                <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight">The Inspiration</h3>
+                <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight">{homeData.leadership.inspiration.title}</h3>
                 <p className="text-indigo-100/80 leading-relaxed font-medium text-sm md:text-base lg:text-lg">
-                  "We proudly honor the visionaries who dedicated their efforts to bringing an international standard of education. The driving force behind our school is a dream, initiative, and unwavering commitment to a learning environment that seamlessly blends modern education with rich Indian culture."
+                  {homeData.leadership.inspiration.quote}
                 </p>
               </div>
               <div className="pt-8 border-t border-white/10">
-                <p className="text-white font-black uppercase tracking-widest text-sm">Founding Board</p>
-                <p className="text-indigo-300 text-xs font-bold uppercase tracking-widest mt-1">Gyansthali Education Trust</p>
+                <p className="text-white font-black uppercase tracking-widest text-sm">{homeData.leadership.inspiration.role}</p>
+                <p className="text-indigo-300 text-xs font-bold uppercase tracking-widest mt-1">{homeData.leadership.inspiration.author}</p>
               </div>
             </div>
           </div>
           <div className="bg-themeCard p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-themeBorder shadow-xl relative overflow-hidden">
             <div className="relative z-10 space-y-4 md:space-y-8 flex flex-col h-full justify-between">
               <div className="space-y-4 md:space-y-6">
-                <h3 className="text-2xl md:text-3xl font-black text-themeText tracking-tight">Principal's Desk</h3>
+                <h3 className="text-2xl md:text-3xl font-black text-themeText tracking-tight">{homeData.leadership.principal.title}</h3>
                 <p className="text-themeTextSec leading-relaxed font-medium text-sm md:text-base lg:text-lg italic">
-                  "At Gyansthali, we believe that the true goal of education is to build knowledge as well as character of our students by enabling them to think intensively and critically. We prepare them not just for exams, but for life."
+                  {homeData.leadership.principal.quote}
                 </p>
               </div>
               <div className="flex items-center gap-4 pt-8 border-t border-themeBorder">
@@ -330,8 +381,8 @@ const SchoolLanding = () => {
                   <MdSchool className="text-indigo-600" size={24} />
                 </div>
                 <div>
-                  <p className="text-themeText font-black uppercase tracking-widest text-sm">Mrs. Khushboo Soni</p>
-                  <p className="text-themeTextSec text-xs font-bold uppercase tracking-widest mt-1">Principal</p>
+                  <p className="text-themeText font-black uppercase tracking-widest text-sm">{homeData.leadership.principal.author}</p>
+                  <p className="text-themeTextSec text-xs font-bold uppercase tracking-widest mt-1">{homeData.leadership.principal.role}</p>
                 </div>
               </div>
             </div>
@@ -343,17 +394,12 @@ const SchoolLanding = () => {
       <section className="py-8 md:py-16 bg-themeBgSec border-y border-themeBorder overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
-            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Our Legacy</h5>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Alumni Spotlight</h2>
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">{homeData.alumni.subtitle}</h5>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">{homeData.alumni.title}</h2>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { name: "Sankalp Sharma", role: "III RD OFFICER", year: "2013" },
-              { name: "Deeksha Singh", role: "CORPORATE LAWYER", year: "2009" },
-              { name: "Ankit Olla", role: "FIGHTER PILOT, IAF", year: "2015" },
-              { name: "Pranjal Rajawat", role: "MARKETING MANAGER", year: "2013" }
-            ].map((alumni, i) => (
+            {homeData.alumni.items.map((alumni, i) => (
               <div key={i} className="bg-themeBg p-8 rounded-[2rem] border border-themeBorder hover:border-indigo-500/30 transition-all text-center space-y-4 shadow-sm hover:shadow-xl hover:-translate-y-1">
                 <div className="w-20 h-20 mx-auto rounded-full bg-indigo-50 border-4 border-themeBgSec flex items-center justify-center shadow-lg overflow-hidden">
                   <img src={`https://ui-avatars.com/api/?name=${alumni.name.replace(' ', '+')}&background=e0e7ff&color=4f46e5&size=128&font-size=0.33`} alt={alumni.name} className="w-full h-full object-cover" />
@@ -381,16 +427,12 @@ const SchoolLanding = () => {
       <section className="py-8 md:py-16 bg-themeBg">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-4">
-            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Voices of Trust</h5>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">What Parents Say</h2>
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">{homeData.testimonials.subtitle}</h5>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">{homeData.testimonials.title}</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { quote: "Such an interactive and enthusiastic session! So happy that my child is in such wonderful hands. More power to teachers like you.", parent: "Rashmi D", child: "Arohi, Grade 5" },
-              { quote: "Aarush was very shy and scared to speak his mind. But the way the teachers communicate with him, he is improving rapidly. I see a lot of change.", parent: "Sonu J", child: "Aaryush, Grade 3" },
-              { quote: "We're extremely thankful for the efforts made by the teachers and the way they are dealing with the children. The digital integration is flawless.", parent: "Ashok S", child: "Aryansh, Grade 8" },
-            ].map((testimonial, i) => (
+            {homeData.testimonials.items.map((testimonial, i) => (
               <div key={i} className="bg-themeCard p-6 md:p-8 rounded-[1rem] md:rounded-[2.5rem] border border-themeBorder relative group hover:shadow-xl transition-all flex flex-col justify-between">
                 <div>
                   <div className="text-indigo-500/10 dark:text-indigo-100/30 absolute top-4 right-4 md:top-8 md:right-8 text-4xl md:text-6xl font-serif group-hover:text-indigo-500/20 dark:group-hover:text-indigo-100/50 transition-colors">"</div>
@@ -417,17 +459,12 @@ const SchoolLanding = () => {
       <section className="py-8 md:py-16 bg-themeBgSec border-t border-themeBorder">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-12 space-y-4">
-            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">Clear Your Doubts</h5>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">Frequently Asked Questions</h2>
+            <h5 className="text-xs font-black text-green-500 dark:text-indigo-400 uppercase tracking-[0.4em]">{homeData.faqs.subtitle}</h5>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-themeText tracking-tight">{homeData.faqs.title}</h2>
           </div>
           
           <div className="space-y-2 md:space-y-4">
-            {[
-              { q: "Is Gyansthali affiliated with CBSE?", a: "Yes, we are a fully CBSE-affiliated school offering education from primary to senior secondary levels." },
-              { q: "Does the school provide transportation facilities?", a: "Yes, we provide safe and efficient transportation through GPS-enabled buses covering major routes." },
-              { q: "What are the key co-curricular activities?", a: "Our framework includes sports, music, dance, coding clubs, robotics, and elocution." },
-              { q: "How can I apply for admission?", a: "Admissions can be initiated through our online portal by clicking 'Apply Now' or visiting the campus." }
-            ].map((faq, i) => (
+            {homeData.faqs.items.map((faq, i) => (
               <details key={i} className="group bg-themeBg border border-themeBorder rounded-2xl [&_summary::-webkit-details-marker]:hidden">
                 <summary className="flex items-center justify-between p-3 md:p-6 cursor-pointer md:font-black text-themeText select-none outline-none">
                   {faq.q}

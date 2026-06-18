@@ -1,4 +1,4 @@
-﻿import { useState, } from "react";
+import { useState, useEffect } from "react";
 import { 
   MdWeb, 
   MdHistory, 
@@ -10,6 +10,69 @@ import {
   MdVisibility
 } from "react-icons/md";
 import { Link } from "react-router-dom";
+import api from "../../../api/axiosInstance";
+
+const calculateCompletion = (id: string, content: any) => {
+  const steps: string[] = [];
+  if (!content) return { completion: 0, missingSteps: ["Content not initialized"] };
+
+  let total = 5;
+
+  switch (id) {
+    case 'home':
+      if (!content.hero?.backgroundImage) steps.push("Upload Hero Image");
+      if (!content.hero?.title) steps.push("Set Hero Title");
+      if (!content.features?.items || content.features.items.length === 0) steps.push("Add at least 1 Feature");
+      if (!content.stats || content.stats.length === 0) steps.push("Add at least 1 Statistic");
+      if (!content.faqs?.items || content.faqs.items.length === 0) steps.push("Add at least 1 FAQ");
+      break;
+    case 'about':
+      if (!content.bannerImage) steps.push("Upload Banner Image");
+      if (!content.mainTitle) steps.push("Set Main Title");
+      if (!content.mission) steps.push("Set Mission Statement");
+      if (!content.vision) steps.push("Set Vision Statement");
+      if (!content.staff || content.staff.length === 0) steps.push("Add Core Team Members");
+      break;
+    case 'admissions':
+      if (!content.bannerImage) steps.push("Upload Banner Image");
+      if (!content.steps || content.steps.length === 0) steps.push("Add Application Steps");
+      if (!content.faqs || content.faqs.length === 0) steps.push("Add FAQs");
+      if (!content.matrix || content.matrix.length === 0) steps.push("Fill Eligibility Matrix");
+      if (!content.documents || content.documents.length === 0) steps.push("Add Required Documents");
+      break;
+    case 'academics':
+      if (!content.bannerImage) steps.push("Upload Banner Image");
+      if (!content.phases || content.phases.length === 0) steps.push("Add Learning Phases");
+      if (!content.labImage) steps.push("Upload Infrastructure Image");
+      if (!content.infrastructureItems || content.infrastructureItems.length === 0) steps.push("Add Infrastructure Items");
+      if (!content.departments || content.departments.length === 0) steps.push("Add Departments");
+      break;
+    case 'achievements':
+      total = 4;
+      if (!content.bannerImage) steps.push("Upload Banner Image");
+      if (!content.stats || content.stats.length === 0) steps.push("Add Key Statistics");
+      if (!content.toppers || content.toppers.length === 0) steps.push("Add Board Toppers");
+      if (!content.awards || content.awards.length === 0) steps.push("Add Awards");
+      break;
+    case 'gallery':
+      total = 2;
+      if (!content.bannerImage) steps.push("Upload Banner Image");
+      if (!content.items || content.items.length === 0) steps.push("Add Gallery Images");
+      break;
+    case 'contact':
+      if (!content.bannerImage) steps.push("Upload Banner Image");
+      if (!content.addressDetail) steps.push("Set Campus Address");
+      if (!content.phoneDetail) steps.push("Set Contact Phones");
+      if (!content.emailDetail) steps.push("Set Contact Emails");
+      if (!content.mapEmbedUrl) steps.push("Provide Map Embed URL");
+      break;
+  }
+
+  const completed = total - steps.length;
+  const completion = Math.round((Math.max(0, completed) / total) * 100);
+  
+  return { completion, missingSteps: steps };
+};
 
 export default function CMSDashboard() {
   const [stats] = useState({
@@ -19,15 +82,49 @@ export default function CMSDashboard() {
     activePromotions: 1
   });
 
-  const pages = [
-    { name: "Home / Hero", path: "/admin/cms/hero", status: "Published", lastEdit: "Today", completion: 100 },
-    { name: "About Us", path: "/admin/cms/about", status: "Published", lastEdit: "Yesterday", completion: 90 },
-    { name: "Admissions", path: "/admin/cms/admissions", status: "Draft", lastEdit: "3 days ago", completion: 65 },
-    { name: "Academics", path: "/admin/cms/academics", status: "Published", lastEdit: "Today", completion: 100 },
-    { name: "Achievements", path: "/admin/cms/achievements", status: "Published", lastEdit: "1 week ago", completion: 85 },
-    { name: "Gallery", path: "/admin/cms/gallery", status: "Needs Update", lastEdit: "2 weeks ago", completion: 40 },
-    { name: "Contact", path: "/admin/cms/contact", status: "Published", lastEdit: "Today", completion: 100 },
-  ];
+  const [pages, setPages] = useState([
+    { id: "home", name: "Home / Landing Page", path: "/admin/cms/home", isEnabled: true, lastEdit: "Unknown", completion: 0, missingSteps: [] as string[] },
+    { id: "about", name: "About Us", path: "/admin/cms/about", isEnabled: true, lastEdit: "Unknown", completion: 0, missingSteps: [] as string[] },
+    { id: "admissions", name: "Admissions", path: "/admin/cms/admissions", isEnabled: true, lastEdit: "Unknown", completion: 0, missingSteps: [] as string[] },
+    { id: "academics", name: "Academics", path: "/admin/cms/academics", isEnabled: true, lastEdit: "Unknown", completion: 0, missingSteps: [] as string[] },
+    { id: "achievements", name: "Achievements", path: "/admin/cms/achievements", isEnabled: true, lastEdit: "Unknown", completion: 0, missingSteps: [] as string[] },
+    { id: "gallery", name: "Gallery", path: "/admin/cms/gallery", isEnabled: true, lastEdit: "Unknown", completion: 0, missingSteps: [] as string[] },
+    { id: "contact", name: "Contact", path: "/admin/cms/contact", isEnabled: true, lastEdit: "Unknown", completion: 0, missingSteps: [] as string[] },
+  ]);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await api.get('/cms/all-status');
+        if(res.data.success) {
+          const dbStatus = res.data.data;
+          setPages(prev => prev.map(p => {
+            const dbEntry = dbStatus.find((d: any) => d.section === p.id);
+            if(dbEntry) {
+                const { completion, missingSteps } = calculateCompletion(p.id, dbEntry.content);
+                return { ...p, isEnabled: dbEntry.isEnabled, lastEdit: new Date(dbEntry.updatedAt).toLocaleDateString(), completion, missingSteps };
+            }
+            return p;
+          }));
+        }
+      } catch(e) {
+        console.error("Failed to fetch CMS statuses");
+      }
+    };
+    fetchStatus();
+  }, []);
+
+  const handleToggle = async (e: any, id: string, currentStatus: boolean) => {
+    e.preventDefault(); // Prevent Link navigation
+    try {
+      const res = await api.post(`/cms/toggle/${id}`, { isEnabled: !currentStatus });
+      if(res.data.success) {
+        setPages(prev => prev.map(p => p.id === id ? { ...p, isEnabled: !currentStatus } : p));
+      }
+    } catch(err) {
+      alert("Failed to toggle status");
+    }
+  };
 
   return (
     <div className="py-6 space-y-10 animate-fadeIn text-slate-900">
@@ -92,11 +189,18 @@ export default function CMSDashboard() {
                 <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
                   <MdWeb size={24} />
                 </div>
-                <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                  page.status === 'Published' ? 'bg-emerald-50 text-emerald-600' : 
-                  page.status === 'Draft' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
-                }`}>
-                  {page.status}
+                <div className="flex items-center gap-3">
+                  <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                    page.isEnabled ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                  }`}>
+                    {page.isEnabled ? 'Published' : 'Disabled'}
+                  </div>
+                  <button 
+                    onClick={(e) => handleToggle(e, page.id, page.isEnabled)}
+                    className={`w-10 h-5 rounded-full relative transition-colors shadow-inner ${page.isEnabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                  >
+                    <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all shadow-sm ${page.isEnabled ? 'left-5' : 'left-0.5'}`} />
+                  </button>
                 </div>
               </div>
 
@@ -108,7 +212,7 @@ export default function CMSDashboard() {
                       <span>Completion</span>
                       <span className="text-slate-800">{page.completion}%</span>
                    </div>
-                   <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                   <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden mb-3">
                       <div 
                         className={`h-full transition-all duration-1000 ${
                           page.completion === 100 ? 'bg-emerald-500' : 
@@ -117,9 +221,29 @@ export default function CMSDashboard() {
                         style={{ width: `${page.completion}%` }}
                       />
                    </div>
+
+                   {/* Missing Steps Checklist */}
+                   <div className="pt-2">
+                     {page.completion === 100 ? (
+                       <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-600">
+                         <MdCheckCircle />
+                         All content requirements met!
+                       </div>
+                     ) : (
+                       <div className="space-y-1">
+                         <p className="text-[10px] font-black uppercase text-rose-500 mb-1 tracking-widest">Pending Steps</p>
+                         {page.missingSteps.map((step, idx) => (
+                           <div key={idx} className="flex items-start gap-1.5 text-[10px] text-slate-500 font-medium">
+                             <span className="text-rose-400 mt-0.5">•</span>
+                             {step}
+                           </div>
+                         ))}
+                       </div>
+                     )}
+                   </div>
                 </div>
 
-                <div className="pt-4 flex items-center justify-between">
+                <div className="pt-4 flex items-center justify-between border-t border-slate-50">
                    <div className="flex items-center gap-2 text-slate-400">
                       <MdHistory size={14} />
                       <span className="text-[10px] font-bold uppercase tracking-widest">Edited {page.lastEdit}</span>

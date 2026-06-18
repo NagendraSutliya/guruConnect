@@ -10,6 +10,10 @@ const WebsiteCMSSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     required: true,
   },
+  isEnabled: {
+    type: Boolean,
+    default: true,
+  },
   lastUpdatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Admin',

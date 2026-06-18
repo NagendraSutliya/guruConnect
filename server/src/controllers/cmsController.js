@@ -46,3 +46,42 @@ exports.getCMSSection = async (req, res) => {
     });
   }
 };
+
+exports.getAllCMSStatus = async (req, res) => {
+  try {
+    const cmsData = await WebsiteCMS.find({}, 'section isEnabled updatedAt content');
+    res.status(200).json({
+      success: true,
+      data: cmsData
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+exports.toggleCMSSection = async (req, res) => {
+  try {
+    const { section } = req.params;
+    const { isEnabled } = req.body;
+    
+    let cmsData = await WebsiteCMS.findOneAndUpdate(
+      { section },
+      { isEnabled, lastUpdatedBy: req.user?.id },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `${section} status updated to ${isEnabled ? 'Published' : 'Disabled'}`,
+      data: cmsData
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

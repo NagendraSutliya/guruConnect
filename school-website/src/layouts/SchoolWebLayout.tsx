@@ -15,6 +15,7 @@ import {
 import { FaInstagram, FaTwitter, FaFacebook } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import api from "../api/axiosInstance";
 
 const SchoolWebLayout = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -46,15 +47,37 @@ const SchoolWebLayout = () => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About Us', path: '/about' },
-    { name: 'Achievements', path: '/achievements' },
-    { name: 'Admissions', path: '/admissions' },
-    { name: 'Academics', path: '/academics' },
-    { name: 'Gallery', path: '/gallery' },
-    { name: 'Contact', path: '/contact' },
-  ];
+  const [navLinks, setNavLinks] = useState([
+    { id: 'home', name: 'Home', path: '/' },
+    { id: 'about', name: 'About Us', path: '/about' },
+    { id: 'achievements', name: 'Achievements', path: '/achievements' },
+    { id: 'admissions', name: 'Admissions', path: '/admissions' },
+    { id: 'academics', name: 'Academics', path: '/academics' },
+    { id: 'gallery', name: 'Gallery', path: '/gallery' },
+    { id: 'contact', name: 'Contact Us', path: '/contact' },
+  ]);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await api.get('/cms/all-status');
+        if (res.data.success && res.data.data) {
+          const dbStatus = res.data.data;
+          setNavLinks(prev => prev.filter(link => {
+             const dbEntry = dbStatus.find((d: any) => d.section === link.id);
+             // If entry exists and isEnabled is exactly false, we hide it. Otherwise we show it.
+             if (dbEntry && dbEntry.isEnabled === false) {
+               return false;
+             }
+             return true;
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch nav statuses");
+      }
+    };
+    fetchStatus();
+  }, []);
 
   const IMS_URL = "http://localhost:5173"; 
 
