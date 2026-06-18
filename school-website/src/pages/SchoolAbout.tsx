@@ -8,6 +8,13 @@ import {
 } from "react-icons/md";
 import api from "../api/axiosInstance";
 
+const getInitials = (name: string) => {
+  if (!name) return "";
+  // Remove common titles
+  const cleanedName = name.replace(/^(Mr\.|Mrs\.|Ms\.|Dr\.|Prof\.|Mr|Mrs|Ms|Dr|Prof)\s+/i, '');
+  return cleanedName.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+};
+
 const SchoolAbout = () => {
   const [fetching, setFetching] = useState(true);
   const [aboutData, setAboutData] = useState({
@@ -174,15 +181,21 @@ const SchoolAbout = () => {
         <div>
            <div className="flex flex-col items-center justify-center gap-3 mb-12 text-center">
               <div className="w-12 h-12 bg-green-500/10 dark:bg-indigo-500/10 rounded-full flex items-center justify-center">
-                 <MdGroups className="text-green-500 dark:bg-indigo-400 text-2xl" />
+                 <MdGroups className="text-green-500 dark:text-indigo-400 text-2xl" />
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-themeText">Our Core Team</h3>
            </div>
            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
               {aboutData.staff.map((member, i) => (
                 <div key={i} className="text-center group">
-                   <div className="w-24 h-24 md:w-28 md:h-28 mx-auto rounded-full mb-4 overflow-hidden border border-themeBorder/50 bg-themeBgSec group-hover:border-green-500 dark:group-hover:border-indigo-400 transition-colors">
-                     <img src={member.image} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                   <div className="w-24 h-24 md:w-28 md:h-28 mx-auto rounded-full mb-4 overflow-hidden border border-themeBorder/50 bg-themeBgSec group-hover:border-green-500 dark:group-hover:border-indigo-400 transition-colors flex items-center justify-center">
+                     {member.image ? (
+                       <img src={member.image} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                     ) : (
+                       <span className="text-3xl md:text-4xl font-bold text-themeTextSec group-hover:text-green-500 dark:group-hover:text-indigo-400 transition-colors">
+                         {getInitials(member.name)}
+                       </span>
+                     )}
                    </div>
                    <h5 className="text-base font-bold text-themeText mb-1">{member.name}</h5>
                    <p className="text-[10px] text-themeTextSec font-semibold uppercase tracking-wider">{member.role}</p>
