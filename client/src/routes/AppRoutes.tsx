@@ -66,7 +66,7 @@ import InstituteSettings from "../pages/admin/settings/InstituteSettings";
 import RolesPermissions from "../pages/admin/settings/RolesPermissions";
 import AccountSettings from "../pages/admin/AccountSettings";
 import CMSDashboard from "../pages/admin/cms/CMSDashboard";
-import HeroCMS from "../pages/admin/cms/HeroCMS";
+import HomeCMS from "../pages/admin/cms/HomeCMS";
 import AboutCMS from "../pages/admin/cms/AboutCMS";
 import AdmissionsCMS from "../pages/admin/cms/AdmissionsCMS";
 import AcademicsCMS from "../pages/admin/cms/AcademicsCMS";
@@ -160,7 +160,7 @@ export default function AppRoutes() {
 
         {/* WEBSITE CMS (Synced with school-website) */}
         <Route path="cms" element={<CMSDashboard />} />
-        <Route path="cms/hero" element={<HeroCMS />} />
+        <Route path="cms/home" element={<HomeCMS />} />
         <Route path="cms/about" element={<AboutCMS />} />
         <Route path="cms/admissions" element={<AdmissionsCMS />} />
         <Route path="cms/academics" element={<AcademicsCMS />} />

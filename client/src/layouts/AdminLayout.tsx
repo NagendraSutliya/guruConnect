@@ -148,7 +148,7 @@ const AdminLayout = () => {
       icon: <MdWeb size={18} />,
       children: [
         { name: "CMS Dashboard", path: "/admin/cms" },
-        { name: "Hero Banner", path: "/admin/cms/hero" },
+        { name: "Home Page", path: "/admin/cms/home" },
         { name: "About Content", path: "/admin/cms/about" },
         { name: "Admissions", path: "/admin/cms/admissions" },
         { name: "Academics", path: "/admin/cms/academics" },
