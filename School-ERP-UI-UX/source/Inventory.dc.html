@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Inventory and Assets</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="inventory" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Inventory › Stock · Purchase orders · Uniform counter · Assets</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Main store stock</h1>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Issue items</button>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">New purchase request</button>
+        </div>
+      </div>
+
+      <div style="background: #FFF6EC; border: 1px solid #EBC99C; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #5E3305">4 items are below reorder level. Create one purchase request for all of them?</div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 860px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; font-weight: 600">Item</th><th style="padding: 12px 16px; font-weight: 600">Category</th><th style="padding: 12px 16px; font-weight: 600; text-align: right">In stock</th><th style="padding: 12px 16px; font-weight: 600; text-align: right">Reorder at</th><th style="padding: 12px 16px; font-weight: 600; text-align: right">Value</th><th style="padding: 12px 16px; font-weight: 600">Last movement</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{items}}" as="i" hint-placeholder-count="8">
+                <tr style="border-top: 1px solid #EEF1EF; background: {{i.bg}}">
+                  <td style="padding: 10px 16px; font-weight: 500">{{i.name}}</td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{i.cat}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: {{i.qColor}}">{{i.qty}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: #4F5B57">{{i.re}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{i.val}}</td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{i.last}}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600">Assets due for maintenance</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
+          <sc-for list="{{assets}}" as="a" hint-placeholder-count="4">
+            <div style="border: 1px solid #DDE2DE; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4F5B57">{{a.tag}}</span>
+              <span style="font-size: 14px; font-weight: 600">{{a.name}}</span>
+              <span style="font-size: 13px; color: #4F5B57">{{a.where}}</span>
+              <span style="font-size: 12.5px; font-weight: 600; color: {{a.color}}">{{a.due}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const raw = [
+      ['A4 paper (ream)', 'Stationery', 18, 40, 4860, 'Issued 12 to exam cell · 7 Oct'],
+      ['Whiteboard markers (box)', 'Stationery', 9, 20, 2250, 'Issued 6 to Class 6–8 · 5 Oct'],
+      ['Shirt, size 30 (uniform)', 'Uniform', 64, 40, 22400, 'Sold 3 at counter · 8 Oct'],
+      ['Tie, junior (uniform)', 'Uniform', 22, 30, 2640, 'Sold 8 at counter · 8 Oct'],
+      ['Chemistry lab — test tubes', 'Lab consumables', 140, 100, 2800, 'Received PO-0231 · 1 Oct'],
+      ['Floor cleaner (5 L)', 'Housekeeping', 4, 10, 1760, 'Issued 2 to housekeeping · 6 Oct'],
+      ['Football (size 5)', 'Sports', 14, 8, 9100, 'Issued 2 to PET · 2 Oct'],
+      ['Toner cartridge', 'IT', 3, 2, 8700, 'Issued 1 to office · 29 Sep']
+    ];
+    const items = raw.map(([name, cat, q, re, v, last]) => ({ name, cat, last, qty: String(q), re: String(re), val: '₹' + v.toLocaleString('en-IN'),
+      qColor: q < re ? '#8F4A09' : '#17201D', bg: q < re ? '#FFFBF6' : '#FFFFFF' }));
+    const assets = [
+      { tag: 'AST-0412', name: 'Water cooler, 150 L', where: 'Ground floor corridor', due: 'Filter change overdue 6 days', color: '#8F4A09' },
+      { tag: 'AST-0098', name: 'Smart board, Room 8-B', where: 'Custodian: Sunita Rathore', due: 'AMC visit 20 Oct', color: '#4F5B57' },
+      { tag: 'AST-0207', name: 'Fire extinguishers (12)', where: 'All floors', due: 'Refill due 31 Oct', color: '#4F5B57' },
+      { tag: 'AST-0330', name: 'Generator, 62.5 kVA', where: 'Utility block', due: 'Service due 15 Nov', color: '#4F5B57' }
+    ];
+    return { items, assets };
+  }
+}
+</script>
+</body>
+</html>

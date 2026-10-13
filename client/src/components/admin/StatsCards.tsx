@@ -18,18 +18,28 @@ type StatCardProps = {
 };
 
 const StatCard = ({ title, value, icon, trend, color, onClick }: StatCardProps) => {
+  // Map old semantic colors to Patshala tokens
+  const colorMap: Record<string, string> = {
+    indigo: "bg-primary-tint text-primary",
+    purple: "bg-primary-tint text-primary-dark",
+    blue: "bg-[#FFF6EC] text-gold",
+    emerald: "bg-success-bg text-success-text"
+  };
+  
+  const iconColors = colorMap[color] || "bg-primary-tint text-primary";
+
   return (
     <div 
       onClick={onClick}
-      className={`bg-white/70 backdrop-blur-md rounded-2xl p-5 border border-slate-100 hover:border-indigo-200 transition-all hover:shadow-xl group ${onClick ? 'cursor-pointer' : ''}`}
+      className={`bg-surface rounded-card p-5 border border-line hover:border-primary-soft transition-all hover:shadow-sm group ${onClick ? 'cursor-pointer' : ''}`}
     >
       <div className="flex justify-between items-start mb-4">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-${color}-50 text-${color}-600 group-hover:scale-110 transition-transform`}>
+        <div className={`w-12 h-12 rounded-control flex items-center justify-center text-xl ${iconColors} group-hover:scale-110 transition-transform`}>
           {icon}
         </div>
         {trend && (
-          <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black tracking-tight ${
-            trend.positive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+          <div className={`flex items-center gap-1 px-2.5 py-1 rounded-control text-micro font-semibold tracking-tight ${
+            trend.positive ? "bg-success-bg text-success-text" : "bg-[#FFF6EC] text-[#7A4106]"
           }`}>
             {trend.positive ? <FaArrowUp size={8} /> : <FaArrowDown size={8} />}
             {trend.value}
@@ -37,8 +47,8 @@ const StatCard = ({ title, value, icon, trend, color, onClick }: StatCardProps) 
         )}
       </div>
       <div>
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">{title}</p>
-        <h2 className="text-3xl font-black text-slate-800 tracking-tighter">
+        <p className="text-micro font-semibold text-ink-secondary uppercase tracking-[0.15em] mb-1">{title}</p>
+        <h2 className="text-kpi font-semibold text-ink tracking-tight">
           {value ?? 0}
         </h2>
       </div>

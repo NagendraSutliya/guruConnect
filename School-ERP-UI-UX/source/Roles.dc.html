@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Roles and Permissions</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="admin" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <nav aria-label="Users and audit" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <a href="Users.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Users</a>
+        <a href="Roles.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid #0E5A63; text-decoration: none; font-size: 14px; font-weight: 600; color: #0E5A63">Roles &amp; permissions</a>
+        <a href="AuditLog.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Audit log</a>
+      </nav>
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 1 1 240px; max-width: 280px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 2px">
+          <sc-for list="{{roles}}" as="r" hint-placeholder-count="10">
+            <button style="text-align: left; min-height: 44px; padding: 6px 12px; border: 0; border-radius: 8px; background: {{r.bg}}; font: inherit; color: #17201D; display: flex; justify-content: space-between; align-items: center; gap: 8px">
+              <span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: {{r.fw}}">{{r.name}}</span><span style="font-size: 12px; color: #4F5B57">{{r.kind}}</span></span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4F5B57">{{r.users}}</span>
+            </button>
+          </sc-for>
+          <button style="margin: 8px 4px 4px; min-height: 40px; border-radius: 8px; border: 1px dashed #9AA8A3; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Clone a role</button>
+        </section>
+
+        <section style="flex: 999 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+          <div style="padding: 16px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h1 style="margin: 0; font-size: 22px; font-weight: 600">Accountant (Mansarovar)</h1>
+              <span style="font-size: 13px; color: #4F5B57">Cloned from Accountant · scope: one branch · 2 users</span>
+            </div>
+            <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Save role</button>
+          </div>
+          <div style="overflow-x: auto">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px">
+              <thead><tr style="background: #F2F4F2">
+                <th style="padding: 12px 16px; font-weight: 600; text-align: left">Module</th>
+                <sc-for list="{{actions}}" as="a" hint-placeholder-count="7"><th style="padding: 12px 8px; font-weight: 600; text-align: center">{{a}}</th></sc-for>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{matrix}}" as="m" hint-placeholder-count="8">
+                  <tr style="border-top: 1px solid #EEF1EF">
+                    <td style="padding: 10px 16px; font-weight: 500">{{m.module}}</td>
+                    <sc-for list="{{m.cells}}" as="c" hint-placeholder-count="7">
+                      <td style="padding: 8px; text-align: center">
+                        <sc-if value="{{c.na}}" hint-placeholder-val="{{ false }}"><span style="color: #9AA8A3">—</span></sc-if>
+                        <sc-if value="{{c.ok}}" hint-placeholder-val="{{ true }}"><input type="checkbox" aria-label="{{c.label}}" checked="{{c.on}}" onChange="{{c.toggle}}" style="width: 18px; height: 18px"></sc-if>
+                      </td>
+                    </sc-for>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding: 14px 20px; border-top: 1px solid #EEF1EF; font-size: 13px; color: #4F5B57">Approve on fees needs a second person (maker-checker) for concessions above ₹5,000, receipt cancellation and refunds.</div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { p: {
+      Students: 'VE', Attendance: 'V', Exams: '', 'Fee collection': 'VCEPX', 'Fee setup': 'VCE', 'Concessions & refunds': 'VC', Accounts: 'VCEPX', Payroll: 'V', Reports: 'VX'
+    } };
+  }
+  renderVals() {
+    const actions = ['View', 'Create', 'Edit', 'Delete', 'Approve', 'Print', 'Export'];
+    const keys = ['V', 'C', 'E', 'D', 'A', 'P', 'X'];
+    const notAllowed = { Attendance: 'D', Exams: 'D', Reports: 'CEDA' };
+    const p = this.state.p;
+    const matrix = Object.keys(p).map(module => ({
+      module,
+      cells: keys.map((k, j) => {
+        const na = (notAllowed[module] || '').includes(k);
+        const on = p[module].includes(k);
+        return { na, ok: !na, on, label: actions[j] + ' ' + module,
+          toggle: () => this.setState({ p: Object.assign({}, p, { [module]: on ? p[module].replace(k, '') : p[module] + k }) }) };
+      })
+    }));
+    const roles = [
+      ['School Admin', 'Default', 3], ['Principal', 'Default', 1], ['Class Teacher', 'Default · auto scope', 41], ['Subject Teacher', 'Default · auto scope', 58],
+      ['Exam Coordinator', 'Default', 2], ['Accountant (Mansarovar)', 'Custom', 2], ['Fee Counter Clerk', 'Default', 3], ['Front Office', 'Default', 2], ['HR Manager', 'Default', 1], ['Librarian', 'Default', 1]
+    ].map(([name, kind, n], i) => ({ name, kind, users: String(n), bg: i === 5 ? '#E3EFEF' : 'transparent', fw: i === 5 ? 600 : 500 }));
+    return { actions, matrix, roles };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Defaulters and Reminders</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="fees" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <nav aria-label="Fees" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+          <a href="{{t.href}}" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid {{t.line}}; text-decoration: none; font-size: 14px; font-weight: {{t.fw}}; color: {{t.fg}}; white-space: nowrap">{{t.label}}</a>
+        </sc-for>
+      </nav>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Defaulters · 184 students · ₹7,67,500</h1>
+          <div style="font-size: 14px; color: #4F5B57">Installments unpaid more than 15 days after the due date</div>
+        </div>
+        <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Export with contacts</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+        <sc-for list="{{buckets}}" as="b" hint-placeholder-count="3">
+          <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12.5px; color: #4F5B57; font-weight: 500">{{b.label}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: {{b.color}}">{{b.amount}}</span>
+            <span style="font-size: 12.5px; color: #4F5B57">{{b.count}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 16px; background: {{barBg}}; border-bottom: 1px solid #EEF1EF">
+          <span style="font-size: 14px; font-weight: 600">{{selText}}</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <button style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Send SMS</button>
+            <button style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600">Send WhatsApp reminder with pay link</button>
+          </div>
+        </div>
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 880px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; width: 28px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Select</span></th>
+              <th style="padding: 12px 8px; font-weight: 600">Student</th>
+              <th style="padding: 12px 16px; font-weight: 600">Guardian</th>
+              <th style="padding: 12px 16px; font-weight: 600; text-align: right">Overdue</th>
+              <th style="padding: 12px 16px; font-weight: 600; text-align: right">Days late</th>
+              <th style="padding: 12px 16px; font-weight: 600">Last reminder</th>
+              <th style="padding: 12px 16px; font-weight: 600">Note</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+                <tr style="border-top: 1px solid #EEF1EF; background: {{r.bg}}">
+                  <td style="padding: 10px 16px"><input type="checkbox" aria-label="Select {{r.name}}" checked="{{r.on}}" onChange="{{r.toggle}}" style="width: 18px; height: 18px"></td>
+                  <td style="padding: 10px 8px"><span style="display: flex; flex-direction: column"><span style="font-weight: 600">{{r.name}}</span><span style="font-size: 12px; color: #4F5B57">{{r.cls}}</span></span></td>
+                  <td style="padding: 10px 16px"><span style="display: flex; flex-direction: column"><span>{{r.guardian}}</span><span style="font-size: 12px; color: #4F5B57">{{r.mobile}}</span></span></td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: #8F4A09">{{r.amount}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.days}}</td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{r.last}}</td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{r.note}}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sel: { 0: true, 1: true } }; }
+  renderVals() {
+    const tabs = [['Counter', 'FeeCounter.dc.html'], ['Fee structure', 'FeeStructure.dc.html'], ['Defaulters', 'Defaulters.dc.html'], ['Online payments', 'Reconciliation.dc.html'], ['Accounts', 'Accounts.dc.html']]
+      .map(([label, href], i) => ({ label, href, fw: i === 2 ? 600 : 400, fg: i === 2 ? '#0E5A63' : '#4F5B57', line: i === 2 ? '#0E5A63' : 'transparent' }));
+    const buckets = [
+      { label: '15–30 days late', amount: '₹3,12,400', count: '96 students', color: '#17201D' },
+      { label: '31–60 days late', amount: '₹2,21,300', count: '52 students', color: '#8F4A09' },
+      { label: 'Over 60 days late', amount: '₹2,33,800', count: '36 students · report cards on hold', color: '#8F4A09' }
+    ];
+    const raw = [
+      ['Kunal Mehra', '7-C', 'Ajay Mehra', '98290 2xxxx', 33800, 86, 'WhatsApp · 1 Oct', 'Promised by 15 Oct'],
+      ['Harsh Vardhan', '8-A', 'Anita Vardhan', '98870 5xxxx', 21800, 86, 'WhatsApp · 1 Oct', ''],
+      ['Tanya Saini', '6-C', 'Mukesh Saini', '94140 7xxxx', 16900, 86, 'SMS · 20 Sep', 'Asked for a payment plan'],
+      ['Ananya Sharma', '5-A', 'Kavita Sharma', '94140 2xxxx', 12500, 24, 'Not sent', ''],
+      ['Kunal Rathore', '10-A', 'Manju Rathore', '94600 7xxxx', 8400, 24, 'App · 2 Oct', ''],
+      ['Pihu Sethi', '11-Commerce', 'Neelam Sethi', '95870 0xxxx', 6000, 18, 'Not sent', 'Sibling concession pending']
+    ];
+    const sel = this.state.sel;
+    const rows = raw.map(([name, cls, guardian, mobile, amt, days, last, note], i) => ({
+      name, cls, guardian, mobile, days: String(days), last, note: note || '—',
+      amount: '₹' + amt.toLocaleString('en-IN'), on: !!sel[i], bg: sel[i] ? '#F4F9F9' : '#FFFFFF',
+      toggle: () => this.setState({ sel: Object.assign({}, sel, { [i]: !sel[i] }) })
+    }));
+    const n = raw.filter((_, i) => sel[i]).length;
+    const total = raw.reduce((s, r, i) => s + (sel[i] ? r[4] : 0), 0);
+    return { tabs, buckets, rows, selText: n ? n + ' selected · ₹' + total.toLocaleString('en-IN') : 'Select students to send reminders', barBg: n ? '#E3EFEF' : '#F9FAF8' };
+  }
+}
+</script>
+</body>
+</html>

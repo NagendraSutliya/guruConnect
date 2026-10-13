@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Application Review</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="admissions" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57"><a href="Admissions.dc.html">Admissions</a> › Application <span style="font-family: 'IBM Plex Mono', monospace">APP/2728/0142</span></div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Navya Jangid · Class 1</h1>
+          <div style="font-size: 14px; color: #4F5B57">Applied online 28 Sep · Counsellor Neha Saini · Source: Walk-in</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Mark as lost</button>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Send for principal approval</button>
+        </div>
+      </div>
+
+      <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px">
+        <sc-for list="{{stages}}" as="s" hint-placeholder-count="8">
+          <li style="padding: 8px 12px; border-radius: 999px; background: {{s.bg}}; color: {{s.fg}}; font-weight: {{s.fw}}">{{s.label}}</li>
+        </sc-for>
+      </ol>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Application details</h2>
+            <dl style="margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 24px">
+              <sc-for list="{{facts}}" as="f" hint-placeholder-count="9">
+                <div style="display: flex; flex-direction: column; gap: 2px">
+                  <dt style="font-size: 12px; color: #4F5B57">{{f.k}}</dt>
+                  <dd style="margin: 0; font-size: 14px; font-weight: 500">{{f.v}}</dd>
+                </div>
+              </sc-for>
+            </dl>
+            <div style="padding: 10px 14px; border-radius: 10px; background: #E4F1E8; color: #1E5A33; font-size: 13.5px">Age check passed: 6 years 2 months on 31 Mar 2027 (minimum 6 years for Class 1).</div>
+          </section>
+
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+            <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; gap: 12px"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Documents</h2><span style="font-size: 13px; color: #4F5B57">4 of 5 verified</span></div>
+            <sc-for list="{{docs}}" as="d" hint-placeholder-count="5">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #EEF1EF">
+                <div style="display: flex; flex-direction: column; gap: 2px">
+                  <span style="font-size: 14px; font-weight: 500">{{d.name}}</span>
+                  <span style="font-size: 12.5px; color: #4F5B57">{{d.meta}}</span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center">
+                  <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: {{d.bg}}; color: {{d.fg}}">{{d.status}}</span>
+                  <button style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; color: #17201D">{{d.action}}</button>
+                </div>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+
+        <aside style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 600">Interaction</h2>
+            <div style="font-size: 14px">Sat, 13 Oct · 10:30 am · Room 4</div>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Outcome
+              <select style="min-height: 42px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Not held yet</option><option>Recommended</option><option>Not recommended</option></select>
+            </label>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 600">Seats in Class 1 · 2027-28</h2>
+            <div style="display: flex; justify-content: space-between; font-size: 14px"><span>Available</span><span style="font-family: 'IBM Plex Mono', monospace">23 of 120</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px"><span>RTE seats available</span><span style="font-family: 'IBM Plex Mono', monospace">9 of 30</span></div>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 600">Follow-up log</h2>
+            <sc-for list="{{log}}" as="l" hint-placeholder-count="3">
+              <div style="display: flex; flex-direction: column; gap: 2px; padding-top: 8px; border-top: 1px solid #EEF1EF">
+                <span style="font-size: 12px; color: #4F5B57">{{l.when}} · {{l.how}}</span>
+                <span style="font-size: 13.5px">{{l.note}}</span>
+              </div>
+            </sc-for>
+            <button style="min-height: 40px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Add follow-up</button>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const labels = ['Enquiry', 'Follow-up', 'Application', 'Documents verified', 'Interaction', 'Approved', 'Fee paid', 'Enrolled'];
+    const cur = 3;
+    const stages = labels.map((label, i) => ({ label: (i < cur ? '✓ ' : '') + label,
+      bg: i === cur ? '#0E5A63' : i < cur ? '#E3EFEF' : '#E7EBE8', fg: i === cur ? '#FFFFFF' : i < cur ? '#08393F' : '#4F5B57', fw: i === cur ? 600 : 500 }));
+    const facts = [
+      { k: 'Date of birth', v: '18 Jan 2021' }, { k: 'Gender', v: 'Female' }, { k: 'Category', v: 'OBC' },
+      { k: 'Father', v: 'Mahendra Jangid · 98281 xxxxx' }, { k: 'Mother', v: 'Sushila Jangid · 94142 xxxxx' }, { k: 'Address', v: 'Sector 7, Mansarovar, Jaipur' },
+      { k: 'Previous school', v: 'Little Steps Play School (UKG)' }, { k: 'Sibling in school', v: 'No' }, { k: 'Transport needed', v: 'Yes · Mansarovar sector 7' }
+    ];
+    const d = (name, meta, status) => {
+      const ok = status === 'Verified';
+      return { name, meta, status, action: ok ? 'View' : 'Request re-upload', bg: ok ? '#E4F1E8' : '#FFF6EC', fg: ok ? '#1E5A33' : '#7A4106' };
+    };
+    const docs = [
+      d('Birth certificate', 'PDF · 412 KB · verified by Neha S.', 'Verified'),
+      d('Child photo', 'JPG · 180 KB', 'Verified'),
+      d('Address proof', 'Electricity bill · PDF', 'Verified'),
+      d('UKG report card', 'PDF · 1.1 MB', 'Verified'),
+      d('Category certificate', 'Image is blurred, name not readable', 'Pending')
+    ];
+    const log = [
+      { when: '04 Oct', how: 'Call', note: 'Asked to re-upload category certificate.' },
+      { when: '30 Sep', how: 'Visit', note: 'Parents toured campus, interested in transport.' },
+      { when: '26 Sep', how: 'Walk-in', note: 'Enquiry created at front office.' }
+    ];
+    return { stages, facts, docs, log };
+  }
+}
+</script>
+</body>
+</html>

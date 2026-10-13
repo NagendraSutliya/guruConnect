@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Users</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="admin" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <nav aria-label="Users and audit" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <a href="Users.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid #0E5A63; text-decoration: none; font-size: 14px; font-weight: 600; color: #0E5A63">Users</a>
+        <a href="Roles.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Roles &amp; permissions</a>
+        <a href="AuditLog.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Audit log</a>
+      </nav>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Users</h1>
+          <div style="font-size: 14px; color: #4F5B57">108 staff logins · 2,031 parent logins (1,412 active in the app)</div>
+        </div>
+        <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Invite staff user</button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{chips}}" as="c" hint-placeholder-count="4">
+          <button aria-pressed="{{c.on}}" style="min-height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; font: inherit; font-size: 13px; font-weight: 500">{{c.label}}</button>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; font-weight: 600">User</th><th style="padding: 12px 16px; font-weight: 600">Roles</th><th style="padding: 12px 16px; font-weight: 600">Scope</th><th style="padding: 12px 16px; font-weight: 600">Two-step login</th><th style="padding: 12px 16px; font-weight: 600">Last active</th><th style="padding: 12px 16px; font-weight: 600"></th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px"><span style="display: flex; flex-direction: column"><span style="font-weight: 600">{{r.name}}</span><span style="font-size: 12px; color: #4F5B57">{{r.login}}</span></span></td>
+                  <td style="padding: 10px 16px">
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap">
+                      <sc-for list="{{r.roles}}" as="role" hint-placeholder-count="1"><span style="font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: #E3EFEF; color: #08393F">{{role}}</span></sc-for>
+                    </div>
+                  </td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{r.scope}}</td>
+                  <td style="padding: 10px 16px"><span style="font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: {{r.mBg}}; color: {{r.mFg}}">{{r.mfa}}</span></td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{r.last}}</td>
+                  <td style="padding: 8px 16px; text-align: right"><button style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; color: #17201D">{{r.action}}</button></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const chip = (label, on) => ({ label, on: on ? 'true' : 'false', bg: on ? '#12302D' : '#FFFFFF', fg: on ? '#FFFFFF' : '#17201D', border: on ? '#12302D' : '#C9D1CD' });
+    const chips = [chip('Staff · 108', true), chip('Parents · 2,031', false), chip('Locked · 1', false), chip('Two-step missing · 2', false)];
+    const raw = [
+      ['Meera Kumawat', 'meera.k', ['School Admin'], 'Whole school', 'On', '2 min ago', 'Edit'],
+      ['Dr. Kavita Rao', 'principal', ['Principal'], 'Whole school', 'On', '1 h ago', 'Edit'],
+      ['Rekha Jain', 'rekha.j', ['Accountant (Mansarovar)'], 'Mansarovar campus', 'On', '10 min ago', 'Edit'],
+      ['Anil Sharma', 'anil.s', ['Subject Teacher', 'Exam Coordinator'], 'Classes 9–12 · exams', 'Required, not set', '35 min ago', 'Remind'],
+      ['Sunita Rathore', '98290 3xxxx', ['Class Teacher', 'Subject Teacher'], '8-B · Science 7–8', 'Not needed', '5 min ago', 'Edit'],
+      ['Counter 2', 'counter2', ['Fee Counter Clerk'], 'Mansarovar campus', 'Not needed', 'Locked 08:47', 'Unlock'],
+      ['Neha Saini', 'neha.s', ['Front Office'], 'Mansarovar campus', 'Not needed', 'Yesterday', 'Edit'],
+      ['Vikram Singh', '99280 6xxxx', ['Subject Teacher'], 'Maths 7–8', 'Not needed', '20 min ago', 'Edit']
+    ];
+    const rows = raw.map(([name, login, roles, scope, mfa, last, action]) => ({ name, login, roles, scope, mfa, last, action,
+      mBg: mfa === 'On' ? '#E4F1E8' : mfa.startsWith('Required') ? '#FFF6EC' : '#F1F2EF',
+      mFg: mfa === 'On' ? '#1E5A33' : mfa.startsWith('Required') ? '#7A4106' : '#4F5B57' }));
+    return { chips, rows };
+  }
+}
+</script>
+</body>
+</html>

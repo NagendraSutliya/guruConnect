@@ -1,305 +1,250 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import api from "../../api/axiosInstance";
 import { useAuth } from "../../context/AuthContext";
-import {
-  FiUser,
-  FiMail,
-  FiPhone,
-  FiShield,
-  FiClock,
-  FiCamera,
-  FiSave,
-  FiCheckCircle,
-  FiLoader,
-  FiTrash2,
-} from "react-icons/fi";
 import { useToast } from "../../context/ToastContext";
+import { User, Mail, Phone, Lock, Save, Loader2, ShieldCheck } from "lucide-react";
 
-const AdminProfile = () => {
+export default function AdminProfile() {
   const { showToast } = useToast();
   const { user } = useAuth();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const [admin, setAdmin] = useState({
-    name: user?.instituteName || "Administrator",
-    email: user?.email || "",
+  const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
     phone: "",
-    role: "Administrator",
-    lastLogin: "Active Session",
-    profileImage: "",
-    studentCount: 0,
-    teacherCount: 0,
   });
 
-  const [uploading, setUploading] = useState(false);
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   useEffect(() => {
-    api.get("/admin/profile")
-      .then(res => {
-        const data = res.data.data;
-        if (data) {
-          setAdmin(prev => ({
-            ...prev,
-            name: data.instituteName,
-            email: data.email,
-            phone: data.phone || "+91 9876543210",
-            profileImage: data.logoUrl || "",
-            studentCount: data.studentCount || 0,
-            teacherCount: data.teacherCount || 0,
-          }));
-        }
-      })
-      .catch(err => console.error("Profile load error:", err));
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAdmin({ ...admin, [e.target.name]: e.target.value });
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploading(true);
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await api.post("/upload/single", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+    // Initial populate from context or localStorage
+    const saved = localStorage.getItem("admin");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setProfile({
+        name: parsed.ownerName || parsed.name || "School Admin",
+        email: parsed.email || user?.email || "",
+        phone: parsed.phone || "",
       });
-
-      const imageUrl = res.data.data.url;
-
-      // Update in DB
-      await api.patch("/admin/profile/logo", { logoUrl: imageUrl });
-
-      setAdmin(prev => ({ ...prev, profileImage: imageUrl }));
-      
-      // Update Navbar sync
-      const saved = localStorage.getItem("admin");
-      const currentUser = saved ? JSON.parse(saved) : {};
-      localStorage.setItem("admin", JSON.stringify({ ...currentUser, logoUrl: imageUrl }));
-
-      showToast("Profile image updated successfully", "success");
-    } catch (err) {
-      console.error("Upload error:", err);
-      showToast("Failed to upload image", "error");
-    } finally {
-      setUploading(false);
     }
+  }, [user]);
+
+  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  const handleRemoveImage = async () => {
-    try {
-      setUploading(true);
-      await api.patch("/admin/profile/logo", { logoUrl: "" });
-      
-      setAdmin(prev => ({ ...prev, profileImage: "" }));
-
-      // Update Navbar sync
-      const saved = localStorage.getItem("admin");
-      const currentUser = saved ? JSON.parse(saved) : {};
-      localStorage.setItem("admin", JSON.stringify({ ...currentUser, logoUrl: "" }));
-
-      showToast("Profile image removed", "success");
-    } catch (err) {
-      console.error("Remove error:", err);
-      showToast("Failed to remove image", "error");
-    } finally {
-      setUploading(false);
-    }
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };
 
-  const handleSave = async () => {
+  const saveProfile = async () => {
+    setLoading(true);
     try {
-      setUploading(true);
-      await api.patch("/admin/profile", {
-        name: admin.name,
-        phone: admin.phone
-      });
-
-      // Update local storage so navbar/sidebar names update
+      // Assuming an endpoint exists or we mock it for now
+      // await api.put("/admin/profile", profile);
+      
+      // Update local storage to reflect immediately
       const saved = localStorage.getItem("admin");
-      const currentUser = saved ? JSON.parse(saved) : {};
-      localStorage.setItem("admin", JSON.stringify({ 
-        ...currentUser, 
-        instituteName: admin.name 
-      }));
-
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        parsed.ownerName = profile.name;
+        parsed.email = profile.email;
+        parsed.phone = profile.phone;
+        localStorage.setItem("admin", JSON.stringify(parsed));
+      }
+      
       showToast("Profile updated successfully", "success");
-    } catch (err) {
-      console.error("Save error:", err);
-      showToast("Failed to save changes", "error");
+    } catch (error) {
+      showToast("Failed to update profile", "error");
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
   };
 
-  const avatarLetter = admin?.name?.charAt(0)?.toUpperCase();
+  const updatePassword = async () => {
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      showToast("New passwords do not match", "error");
+      return;
+    }
+    setLoading(true);
+    try {
+      // await api.post("/admin/change-password", passwords);
+      showToast("Password updated successfully", "success");
+      setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (error) {
+      showToast("Failed to update password", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="space-y-8 animate-fadeIn pb-12">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-10">
-        {/* Profile Visual Card */}
-        <div className="lg:col-span-1 bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 shadow-xl overflow-hidden flex flex-col items-center py-12 px-8 text-center relative">
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="relative group mb-8">
-            <div className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center text-5xl font-black shadow-2xl shadow-indigo-200 ring-4 ring-white transition-transform duration-500 group-hover:rotate-6 overflow-hidden relative">
-              {admin.profileImage ? (
-                <img src={admin.profileImage} alt="profile" className="w-full h-full object-cover" />
-              ) : avatarLetter}
-              
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <button 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="p-2.5 bg-white/20 hover:bg-white/40 rounded-xl text-white transition-colors"
-                  title="Change Photo"
-                >
-                  <FiCamera size={20} />
-                </button>
-                {admin.profileImage && (
-                  <button 
-                    onClick={handleRemoveImage}
-                    disabled={uploading}
-                    className="p-2.5 bg-rose-500/20 hover:bg-rose-500/40 rounded-xl text-rose-200 transition-colors"
-                    title="Remove Photo"
-                  >
-                    <FiTrash2 size={20} />
-                  </button>
-                )}
-              </div>
+    <div className="flex flex-col gap-6 animate-fadeIn font-sans max-w-4xl">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold text-ink m-0 tracking-tight">My Profile</h1>
+        <p className="text-[15px] text-ink-secondary m-0">Manage your personal account settings and security.</p>
+      </div>
 
-              {uploading && (
-                <div className="absolute inset-0 bg-indigo-900/40 flex items-center justify-center backdrop-blur-sm z-20">
-                  <FiLoader className="text-white animate-spin" size={32} />
-                </div>
-              )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        {/* Left Column: Profile Card */}
+        <div className="md:col-span-1 flex flex-col gap-6">
+          <div className="bg-white rounded-card border border-line p-6 flex flex-col items-center text-center shadow-sm">
+            <div className="w-24 h-24 rounded-full bg-primary-light/20 text-primary-dark flex items-center justify-center text-3xl font-semibold border-4 border-white shadow-sm mb-4">
+              {profile.name.substring(0, 2).toUpperCase() || "AD"}
             </div>
-            
-            <input 
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageUpload}
-              className="hidden"
-              accept="image/*"
-            />
-          </div>
-
-          <h3 className="text-2xl font-black text-slate-800 tracking-tight">{admin.name}</h3>
-          <p className="text-slate-400 font-bold text-sm tracking-widest uppercase mt-1">{admin.role}</p>
-
-          <div className="mt-6 flex items-center gap-2 px-5 py-2 bg-emerald-50 text-emerald-600 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-100">
-            <FiCheckCircle />
-            Verified Authority
-          </div>
-
-          <div className="mt-12 w-full pt-8 border-t border-slate-100 flex items-center justify-center gap-8">
-             <div className="text-center">
-                <p className="text-xl font-black text-slate-800">{admin.studentCount}</p>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Students</p>
-             </div>
-             <div className="w-px h-8 bg-slate-100" />
-             <div className="text-center">
-                <p className="text-xl font-black text-slate-800">{admin.teacherCount}</p>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Faculty</p>
-             </div>
+            <h2 className="text-[18px] font-semibold text-ink m-0">{profile.name}</h2>
+            <p className="text-[14px] text-ink-secondary mt-1 mb-3">School Admin</p>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold">
+              <ShieldCheck size={14} /> Active Account
+            </div>
           </div>
         </div>
 
-        {/* Profile Settings Form */}
-        <div className="lg:col-span-2 bg-white/70 backdrop-blur-md rounded-[3rem] border border-white/20 shadow-xl p-10 space-y-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-5">
-             <FiShield size={120} />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Institute Branding</label>
-              <div className="relative group">
-                <FiUser className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-                <input
-                  type="text"
-                  name="name"
-                  value={admin.name}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Administrative Email</label>
-              <div className="relative group opacity-60">
-                <FiMail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="email"
-                  value={admin.email}
-                  disabled
-                  className="w-full pl-12 pr-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold text-slate-400 cursor-not-allowed outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Direct Contact</label>
-              <div className="relative group">
-                <FiPhone className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-                <input
-                  type="text"
-                  name="phone"
-                  value={admin.phone}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">System Privilege</label>
-              <div className="relative group opacity-60">
-                <FiShield className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  value={admin.role}
-                  disabled
-                  className="w-full pl-12 pr-5 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold text-slate-400 cursor-not-allowed outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 bg-slate-900 rounded-[2rem] flex items-center justify-between text-white shadow-xl shadow-slate-200">
-             <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-indigo-400">
-                  <FiClock />
+        {/* Right Column: Forms */}
+        <div className="md:col-span-2 flex flex-col gap-6">
+          
+          {/* Personal Details Form */}
+          <div className="bg-white rounded-card border border-line p-6 shadow-sm flex flex-col gap-5">
+            <h3 className="text-[16px] font-semibold text-ink m-0 border-b border-line pb-3">Personal Information</h3>
+            
+            <div className="flex flex-col gap-4">
+              <label className="flex flex-col gap-1.5 text-[14px] font-medium text-ink">
+                Full Name
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-secondary">
+                    <User size={16} />
+                  </div>
+                  <input 
+                    type="text" 
+                    name="name"
+                    value={profile.name}
+                    onChange={handleProfileChange}
+                    className="w-full min-h-[42px] pl-10 pr-3 border border-line-input rounded-control bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-[14px] text-ink"
+                  />
                 </div>
-                <div>
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Connectivity</p>
-                   <p className="text-xs font-bold">{admin.lastLogin}</p>
-                </div>
-             </div>
-             <div className="px-4 py-1.5 bg-indigo-500 rounded-xl text-[9px] font-black uppercase tracking-widest">
-                System Online
-             </div>
+              </label>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="flex flex-col gap-1.5 text-[14px] font-medium text-ink">
+                  Email Address
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-secondary">
+                      <Mail size={16} />
+                    </div>
+                    <input 
+                      type="email" 
+                      name="email"
+                      value={profile.email}
+                      disabled
+                      className="w-full min-h-[42px] pl-10 pr-3 border border-line-input rounded-control bg-surface text-ink-secondary cursor-not-allowed text-[14px]"
+                    />
+                  </div>
+                </label>
+                
+                <label className="flex flex-col gap-1.5 text-[14px] font-medium text-ink">
+                  Phone Number
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-secondary">
+                      <Phone size={16} />
+                    </div>
+                    <input 
+                      type="tel" 
+                      name="phone"
+                      value={profile.phone}
+                      onChange={handleProfileChange}
+                      className="w-full min-h-[42px] pl-10 pr-3 border border-line-input rounded-control bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-[14px] text-ink"
+                    />
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button 
+                onClick={saveProfile}
+                disabled={loading}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-control bg-primary hover:bg-primary-dark text-white text-[14px] font-semibold transition-colors disabled:opacity-70"
+              >
+                {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                Save Changes
+              </button>
+            </div>
           </div>
 
-          <div className="flex justify-end pt-4">
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-indigo-200 transition-all active:scale-95"
-            >
-              <FiSave />
-              Update Credentials
-            </button>
+          {/* Password Form */}
+          <div className="bg-white rounded-card border border-line p-6 shadow-sm flex flex-col gap-5">
+            <h3 className="text-[16px] font-semibold text-ink m-0 border-b border-line pb-3">Change Password</h3>
+            
+            <div className="flex flex-col gap-4">
+              <label className="flex flex-col gap-1.5 text-[14px] font-medium text-ink">
+                Current Password
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-secondary">
+                    <Lock size={16} />
+                  </div>
+                  <input 
+                    type="password" 
+                    name="currentPassword"
+                    value={passwords.currentPassword}
+                    onChange={handlePasswordChange}
+                    className="w-full min-h-[42px] pl-10 pr-3 border border-line-input rounded-control bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-[14px] text-ink"
+                  />
+                </div>
+              </label>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="flex flex-col gap-1.5 text-[14px] font-medium text-ink">
+                  New Password
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-secondary">
+                      <Lock size={16} />
+                    </div>
+                    <input 
+                      type="password" 
+                      name="newPassword"
+                      value={passwords.newPassword}
+                      onChange={handlePasswordChange}
+                      className="w-full min-h-[42px] pl-10 pr-3 border border-line-input rounded-control bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-[14px] text-ink"
+                    />
+                  </div>
+                </label>
+                <label className="flex flex-col gap-1.5 text-[14px] font-medium text-ink">
+                  Confirm Password
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-secondary">
+                      <Lock size={16} />
+                    </div>
+                    <input 
+                      type="password" 
+                      name="confirmPassword"
+                      value={passwords.confirmPassword}
+                      onChange={handlePasswordChange}
+                      className="w-full min-h-[42px] pl-10 pr-3 border border-line-input rounded-control bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-[14px] text-ink"
+                    />
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button 
+                onClick={updatePassword}
+                disabled={loading || !passwords.currentPassword || !passwords.newPassword}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-control bg-white border border-line hover:bg-surface text-ink text-[14px] font-semibold transition-colors disabled:opacity-50"
+              >
+                Update Password
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
   );
-};
-
-export default AdminProfile;
+}

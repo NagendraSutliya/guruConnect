@@ -2,408 +2,831 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
   ShieldCheck, 
-  Zap, 
-  BarChart3, 
-  Users, 
-  GraduationCap, 
   CheckCircle2,
-  X,
-  ArrowRight,
-  LayoutDashboard
+  ChevronDown,
+  Check,
+  Database,
+  Eye,
+  Server,
+  LockKeyhole,
+  FileCheck
 } from "lucide-react";
+import { BookDemoModal } from "../components/landing/BookDemoModal";
+import { CookieNotice } from "../components/landing/CookieNotice";
+import { PublicHeader, PublicFooter } from "../components/landing/PublicLayoutElements";
+import { LoginPortalModal } from "../components/landing/LoginPortalModal";
 
-const Landing = () => {
+export default function Landing() {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [checkingSession, setCheckingSession] = useState(true);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    const token = localStorage.getItem("adminToken") || 
-                  localStorage.getItem("teacherToken") || 
-                  localStorage.getItem("studentToken");
-    
-    if (role && token) {
-      setUserRole(role);
-    }
-    setCheckingSession(false);
+    const handleScroll = () => {
+      const sectionIds = ["faq", "pricing", "how", "features"];
+      const scrollPos = window.scrollY + 200;
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(id);
+          return;
+        }
+      }
+      setActiveSection("");
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const [heroData] = useState({
-    title: "Empowering Tomorrow's Leaders",
-    subtitle: "At Gyansthali, we blend traditional values with cutting-edge education technology.",
-    button1: "Apply Online",
-    button2: "Take a Virtual Tour",
-    announcement: "Now Enrolling for 2026-27"
-  });
-
-  const getDashboardLink = () => {
-    switch (userRole) {
-      case "admin": return "/admin/dashboard";
-      case "teacher": return "/teacher/dashboard";
-      case "student": return "/student/dashboard";
-      default: return "#";
-    }
+  const toggleFaq = (index: number) => {
+    setActiveFaq(activeFaq === index ? null : index);
   };
 
+  const erpModules = [
+    {
+      num: "01",
+      title: "Admissions CRM",
+      desc: "Enquiries, follow-ups, online registration forms and document verification until enrolled."
+    },
+    {
+      num: "02",
+      title: "Students & Certificates",
+      desc: "Complete student profiles, siblings linking, ID card generator, TC and bonafide certificates."
+    },
+    {
+      num: "03",
+      title: "Smart Attendance",
+      desc: "Biometric and RFID support, 30-sec teacher app entry, instant SMS/WhatsApp alerts to parents."
+    },
+    {
+      num: "04",
+      title: "Timetable & Substitutions",
+      desc: "Clash-free class schedules, periods management, and automatic same-day teacher substitution."
+    },
+    {
+      num: "05",
+      title: "Homework & Syllabus",
+      desc: "Daily digital diary for parents, syllabus milestones, and lesson plan monitoring."
+    },
+    {
+      num: "06",
+      title: "Exams & Report Cards",
+      desc: "CBSE & RBSE grading engines, encrypted marks lock, and one-click bulk report card printing."
+    },
+    {
+      num: "07",
+      title: "Fees & Online Payments",
+      desc: "Installment plans, sibling concessions, late fine calculation, instant UPI QR receipts."
+    },
+    {
+      num: "08",
+      title: "Accounts & Tally Export",
+      desc: "Day book, multi-head vouchers, expense tracker, bank reconciliation, and XML export for Tally."
+    },
+    {
+      num: "09",
+      title: "Staff, HR & Payroll",
+      desc: "Biometric staff attendance, leave approval hierarchy, salary with PF/ESI/TDS and payslips."
+    },
+    {
+      num: "10",
+      title: "Transport & Hostel",
+      desc: "Bus routes, stops, vehicle fitness alerts, hostel rooms, bed allotment, and night outpasses."
+    },
+    {
+      num: "11",
+      title: "Library & Inventory",
+      desc: "Barcode book circulation, overdue fines, departmental asset management, and stock alerts."
+    },
+    {
+      num: "12",
+      title: "Parent Communication",
+      desc: "Multi-channel notices, 2-way teacher chat, PTM slot scheduling, and parent grievance tickets."
+    }
+  ];
+
+  const pricingPlans = [
+    {
+      name: "Starter",
+      tagline: "For single schools getting started with core operations.",
+      badge: null,
+      isPopular: false,
+      features: [
+        "Students & Admissions CRM",
+        "Attendance with instant parent alerts",
+        "Fee counter, receipts & online UPI payments",
+        "Notice board & Parent mobile app",
+        "Essential admin reports & export"
+      ]
+    },
+    {
+      name: "Standard",
+      tagline: "For modern schools managing academics, exams & staff in one unified flow.",
+      badge: "Recommended",
+      isPopular: true,
+      features: [
+        "Everything included in Starter",
+        "Timetable & daily teacher substitutions",
+        "Exams engine & CBSE/RBSE report cards",
+        "HR, biometric leave & staff payroll",
+        "Day book accounts & Tally integration",
+        "ID Card & Transfer Certificate generation"
+      ]
+    },
+    {
+      name: "Premium",
+      tagline: "For progressive institutions, large schools & multi-branch groups.",
+      badge: null,
+      isPopular: false,
+      features: [
+        "Everything included in Standard",
+        "Transport GPS, Hostel & Library barcode",
+        "Multi-branch group centralized analytics",
+        "WhatsApp API automated notifications",
+        "Dedicated onboarding manager & priority 24/7 support",
+        "Custom report card & fee voucher formats"
+      ]
+    }
+  ];
+
+  const faqs = [
+    {
+      q: "We currently use paper registers or Excel sheets. Can we migrate our existing data?",
+      a: "Yes, completely! You can import all your students, parent contacts, staff profiles, and opening fee balances straight from Excel. Our support team verifies your data and assists with sample uploads during your free trial so you don't face any downtime."
+    },
+    {
+      q: "Does guruConnect support coaching institutes as well as K-12 schools?",
+      a: "Yes. During onboarding or initial setup, you can switch between 'School' and 'Coaching Institute' mode. In coaching mode, the system automatically tailors itself for batches, courses, installment fees, and test series rather than classes and sections."
+    },
+    {
+      q: "Which academic boards and grading schemes are supported?",
+      a: "We provide out-of-the-box support for CBSE, RBSE, ICSE, and custom State Boards. Grading scales, co-scholastic rubrics, grace marks, and multi-term weightages are fully configurable to match your institution's specific requirements."
+    },
+    {
+      q: "Can teachers mark attendance without an active internet connection?",
+      a: "Yes. The teacher mobile app caches class rosters locally. Teachers can mark attendance inside classrooms even with weak or zero signal, and records sync automatically as soon as the device reconnects to Wi-Fi or mobile data."
+    },
+    {
+      q: "How safe is student data and who has access to it?",
+      a: "Data privacy is strictly protected. In compliance with India's DPDP Act 2023, student records and sensitive details are encrypted at rest and in transit. Role-based access ensures teachers only view their assigned classes and parents see solely their own children. Even our support team can only view data upon explicit, time-bounded admin permission."
+    },
+    {
+      q: "What happens if our school decides to cancel or transition later?",
+      a: "Your school retains 100% ownership of its data. You can download comprehensive data exports in Excel/CSV formats at any time without any exit penalty or vendor lock-in."
+    }
+  ];
+
   return (
-    <div className={`min-h-screen bg-white text-slate-900 font-sans selection:bg-orange-100 transition-all ${showLoginModal ? 'overflow-hidden' : ''}`}>
-      
-      {/* ================= LOGIN MODAL ================= */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300"
-            onClick={() => setShowLoginModal(false)}
-          />
-          
-          {/* Modal Content */}
-          <div className="relative bg-white w-full max-w-4xl max-h-[90vh] md:max-h-full rounded-3xl md:rounded-[40px] shadow-2xl overflow-y-auto animate-in zoom-in-95 duration-300">
-            <button 
-              onClick={() => setShowLoginModal(false)}
-              className="absolute top-2 right-4 p-3 hover:bg-slate-100 rounded-full transition-colors z-10"
-            >
-              <X className="w-6 h-6 text-slate-400" />
-            </button>
+    <div className="min-h-screen bg-page text-ink font-sans selection:bg-gold selection:text-nav-bg">
 
-            <div className="flex flex-col md:flex-row h-full">
-              {/* Left Side: Branding */}
-              <div className="w-full md:w-1/3 bg-orange-600 p-6 md:p-12 text-white flex flex-col justify-between relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-8">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                      <GraduationCap className="text-orange-600 w-6 h-6" />
-                    </div>
-                    <span className="text-xl font-black tracking-tighter">guruConnect</span>
-                  </div>
-                  <h3 className="text-3xl font-extrabold mb-4 leading-tight">Welcome Back!</h3>
-                  <p className="text-orange-100 font-medium">Select your portal to continue your journey.</p>
-                </div>
-                <div className="text-sm text-orange-200 mt-6 md:mt-0">
-                  Need help? <a href="#" className="underline font-bold text-white">Contact Support</a>
-                </div>
-              </div>
-
-              {/* Right Side: Role Selector */}
-              <div className="w-full md:w-2/3 p-6 md:p-12 bg-slate-50">
-                <div className="grid gap-4">
-                  {[
-                    { 
-                      role: "Administrator", 
-                      desc: "Full institute control & insights", 
-                      icon: <ShieldCheck className="w-6 h-6" />, 
-                      link: "/auth/login",
-                      color: "text-blue-600",
-                      bg: "bg-blue-50"
-                    },
-                    { 
-                      role: "Teacher", 
-                      desc: "Assignments, attendance & marks", 
-                      icon: <Users className="w-6 h-6" />, 
-                      link: "/teacher/login",
-                      color: "text-indigo-600",
-                      bg: "bg-indigo-50"
-                    },
-                    { 
-                      role: "Student", 
-                      desc: "Learning, results & schedule", 
-                      icon: <GraduationCap className="w-6 h-6" />, 
-                      link: "/student/login",
-                      color: "text-orange-600",
-                      bg: "bg-orange-50"
-                    }
-                  ].map((item, i) => (
-                    <Link 
-                      key={i} 
-                      to={item.link}
-                      className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-2xl md:rounded-3xl border border-slate-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/50 transition-all duration-300"
-                    >
-                      <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 ${item.bg} ${item.color} rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        {item.icon}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-lg font-bold text-slate-900 mb-1">{item.role}</h4>
-                        <p className="text-sm text-slate-500 font-medium">{item.desc}</p>
-                      </div>
-                      <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-                        <ArrowRight className="w-5 h-5" />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* ================= NAVIGATION ================= */}
-      <nav className="fixed top-0 w-full z-50 bg-white shadow-sm border-b border-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img 
-              src="/guruconnect-logo.png" 
-              alt="guruConnect Logo" 
-              className="h-10 sm:h-14 w-auto object-contain"
-            />
-            <div className="hidden sm:flex flex-col justify-center">
-              <span className="text-xl font-black tracking-tighter leading-none">
-                <span className="text-orange-600">guru</span>
-                <span className="text-blue-600">Connect</span>
-              </span>
-            </div>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-            <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-blue-600 transition-colors">Workflows</a>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            {!checkingSession && (
-              userRole ? (
-                <Link to={getDashboardLink()}>
-                  <button className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-2 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95 text-sm sm:text-base">
-                    <LayoutDashboard className="w-4 h-4 text-orange-500" />
-                    <span className="hidden sm:inline">Go to Dashboard</span>
-                    <span className="sm:hidden">Dashboard</span>
-                  </button>
-                </Link>
-              ) : (
-                <>
-                  <button 
-                    onClick={() => setShowLoginModal(true)}
-                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2 rounded-xl text-slate-600 font-bold hover:bg-slate-50 transition-all border border-slate-100 text-sm sm:text-base"
-                  >
-                    <Users className="hidden sm:block w-4 h-4 text-orange-500" />
-                    <span className="text-xs sm:text-base whitespace-nowrap">Sign In</span>
-                  </button>
-                  <Link to="/auth/register">
-                    <button className="bg-orange-600 text-white px-3 sm:px-7 py-2 sm:py-2 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95 text-xs sm:text-base whitespace-nowrap">
-                      Get Started
-                    </button>
-                  </Link>
-                </>
-              )
-            )}
-          </div>
-        </div>
-      </nav>
+      {/* ================= TOP NAVIGATION ================= */}
+      <PublicHeader 
+        activeSection={activeSection}
+        onOpenLoginModal={() => setShowLoginModal(true)}
+        onOpenDemoModal={() => setShowDemoModal(true)}
+      />
 
       {/* ================= HERO SECTION ================= */}
-      <section className="relative pt-10 pb-10 md:pt-12 md:pb-8 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[120px] opacity-60" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-[120px] opacity-60" />
-        </div>
+      <section id="top" className="pt-12 sm:pt-16 pb-16 px-4 sm:px-6 bg-gradient-to-b from-primary-tint/70 via-primary-row to-surface-subtle border-b border-line relative overflow-hidden">
+        {/* Subtle decorative background ambient glows */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-tint/50 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
+        <div className="absolute top-1/2 right-10 w-80 h-80 bg-gold/15 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          <div className="text-center lg:text-left">
-            {heroData.announcement && (
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-100 rounded-full mb-8">
-                <Zap className="text-orange-600 w-4 h-4 fill-orange-600" />
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-orange-600">{heroData.announcement}</span>
-              </div>
-            )}
-            
-            <h1 className="text-4xl md:text-6xl md:font-extrabold tracking-tight text-slate-900 leading-[1.05]">
-              {heroData.title}
+        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-14 relative z-10">
+          
+          {/* Left Text Column */}
+          <div className="flex-1 flex flex-col items-start gap-5 max-w-2xl">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold text-primary-dark bg-primary-tint border border-primary-soft/40 px-3.5 py-1.5 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              For schools and coaching institutes · CBSE and RBSE ready
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold leading-[1.12] tracking-tight text-ink">
+              Run your whole school from one place.
             </h1>
 
-            <p className="mt-8 text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              {heroData.subtitle}
+            <p className="text-xl sm:text-2xl font-medium text-primary-dark leading-snug font-sans">
+              प्रवेश से परिणाम तक — पूरा स्कूल एक जगह।
             </p>
 
-             <div className="flex mt-8 items-center justify-center lg:justify-start">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
-                      <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
-                    </div>
-                  ))}
-                  <div className="w-10 h-10 rounded-full border-2 border-white bg-blue-600 flex items-center justify-center text-[10px] text-white font-bold">
-                    500+
-                  </div>
-                </div>
-                <span className="ml-4 text-xs sm:text-sm font-medium text-slate-500">Trusted by 500+ Schools</span>
-              </div>
+            <p className="text-base sm:text-lg text-ink-body2 leading-relaxed">
+              Admissions, attendance, fees, exams, staff, and parent communication in one integrated system. Office staff work on the web, teachers and parents on their phones, in English or Hindi.
+            </p>
 
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
-              {!checkingSession && (
-                userRole ? (
-                  <Link to={getDashboardLink()} className="w-full sm:w-auto">
-                    <button className="w-full bg-slate-900 text-white p-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-all shadow-xl flex items-center justify-center gap-3 group">
-                      Back to My Dashboard
-                      <LayoutDashboard className="w-6 h-6 text-orange-500 group-hover:rotate-12 transition-transform" />
-                    </button>
-                  </Link>
-                ) : (
-                  <div className="flex flex-row gap-2 sm:gap-4 w-full sm:w-auto">
-                    <Link to="/auth/register" className="flex-1 sm:w-auto">
-                      <button className="w-full bg-orange-600 text-white px-3 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl font-bold text-xs sm:text-base md:text-lg hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 sm:gap-3 group whitespace-nowrap">
-                        {heroData.button1}
-                        <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 group-hover:translate-x-1 sm:group-hover:translate-x-2 transition-transform shrink-0" />
-                      </button>
-                    </Link>
-                    <button className="flex-1 sm:w-auto w-full bg-white text-slate-900 border border-slate-200 px-3 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl font-bold text-xs sm:text-base md:text-lg hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-2 sm:gap-3 whitespace-nowrap">
-                      {heroData.button2}
-                    </button>
-                  </div>
-                )
-              )}
-             
+            {/* Exact Action Buttons from Requirement */}
+            <div className="pt-2 flex flex-wrap items-center gap-3.5 w-full sm:w-auto">
+              <Link
+                to="/auth/register"
+                className="w-full sm:w-auto px-7 py-3.5 bg-primary hover:bg-primary-dark text-white text-[15px] font-semibold rounded-control shadow-sm transition-all active:scale-[0.98] text-center"
+              >
+                Start free trial
+              </Link>
+
+              <button
+                onClick={() => setShowDemoModal(true)}
+                className="w-full sm:w-auto px-7 py-3.5 bg-gold border border-line-input hover:border-primary hover:bg-gold-hover text-ink text-[15px] font-medium rounded-control shadow-2xs transition-all text-center"
+              >
+                Book a demo
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-ink-secondary pt-1">
+              <ShieldCheck className="w-4 h-4 text-success-text shrink-0" />
+              <span>No card needed for the trial · Data stored in India · Setup help included</span>
             </div>
           </div>
 
-          <div className="relative group">
-            <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-[2.5rem] opacity-20 blur-2xl group-hover:opacity-30 transition-opacity" />
-            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/20">
-              <img
-                src="/images/hero.png"
-                alt="guruConnect Platform"
-                className="w-full h-auto object-cover transform transition-transform duration-700 hover:scale-105"
-              />
+          {/* Right Live Dashboard Preview Showcase */}
+          <div className="flex-1 w-full max-w-[660px]">
+            <div className="bg-white border border-line rounded-[16px] shadow-2xl overflow-hidden group hover:shadow-xl transition-all duration-300">
+              
+              {/* Browser Header Bar */}
+              <div className="h-9 bg-surface-head border-b border-line px-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-line-input" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-line-input" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-line-input" />
+                </div>
+                <div className="text-[11px] font-mono text-ink-secondary bg-white px-3 py-0.5 rounded-md border border-line">
+                  app.guruconnect.in/admin
+                </div>
+                <div className="w-10" />
+              </div>
+
+              {/* Exact High-Resolution Dashboard Mockup */}
+              <div className="relative aspect-[16/11] w-full overflow-hidden bg-page">
+                <img 
+                  src="/images/dashboard-preview.png" 
+                  alt="guruConnect School Management System Dashboard Showcase" 
+                  className="w-full h-full object-cover object-left-top"
+                  loading="eager"
+                />
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= 4 PERSONA VALUE PROPOSITIONS ================= */}
+      <section className="py-16 bg-white border-b border-line px-4 sm:px-6">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">Tailored for Every Stakeholder</span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+              Built for everyone who makes a school run
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-surface-subtle border border-line rounded-card-m p-6 flex flex-col gap-2.5 hover:border-primary-soft hover:bg-white transition-all shadow-2xs hover:shadow-md">
+              <span className="text-xs font-bold tracking-wider uppercase text-primary">School office</span>
+              <h3 className="text-lg font-bold text-ink leading-snug">No more registers at the counter</h3>
+              <p className="text-sm text-ink-body2 leading-relaxed">
+                Admissions, fee collection, instant receipts, certificates and visitors handled from one clean screen.
+              </p>
+            </div>
+
+            <div className="bg-surface-subtle border border-line rounded-card-m p-6 flex flex-col gap-2.5 hover:border-primary-soft hover:bg-white transition-all shadow-2xs hover:shadow-md">
+              <span className="text-xs font-bold tracking-wider uppercase text-primary">Principal & Management</span>
+              <h3 className="text-lg font-bold text-ink leading-snug">The whole school on one dashboard</h3>
+              <p className="text-sm text-ink-body2 leading-relaxed">
+                Attendance, fees collected, defaulter lists, and approvals waiting for you, updated live every minute.
+              </p>
+            </div>
+
+            <div className="bg-surface-subtle border border-line rounded-card-m p-6 flex flex-col gap-2.5 hover:border-primary-soft hover:bg-white transition-all shadow-2xs hover:shadow-md">
+              <span className="text-xs font-bold tracking-wider uppercase text-primary">Teachers</span>
+              <h3 className="text-lg font-bold text-ink leading-snug">Attendance in 30 seconds</h3>
+              <p className="text-sm text-ink-body2 leading-relaxed">
+                Mark attendance offline, post evening homework, enter exam marks and see the day's timetable on phone.
+              </p>
+            </div>
+
+            <div className="bg-surface-subtle border border-line rounded-card-m p-6 flex flex-col gap-2.5 hover:border-primary-soft hover:bg-white transition-all shadow-2xs hover:shadow-md">
+              <span className="text-xs font-bold tracking-wider uppercase text-primary">Parents & Students</span>
+              <h3 className="text-lg font-bold text-ink leading-snug">Everything in one mobile app</h3>
+              <p className="text-sm text-ink-body2 leading-relaxed">
+                Absence alerts, homework, fees by UPI, report cards and circulars, in English or Hindi.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ================= FEATURES SECTION ================= */}
-      <section id="features" className="py-8 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
-              Why Schools Choose GuruConnect
+      {/* ================= 12 CONNECTED MODULES GRID ================= */}
+      <section id="features" className="py-20 bg-white border-y border-line px-4 sm:px-6">
+        <div className="max-w-[1200px] mx-auto space-y-12">
+          
+          <div className="max-w-2xl space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">Complete ERP System</span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-ink">
+              Everything a school runs on, already connected
             </h2>
-            <p className="text-lg text-slate-600">
-              Built with cutting-edge technology to handle everything from complex academic structures to simple daily tasks.
+            <p className="text-base text-ink-body2 leading-relaxed">
+              Data is entered once. A fee paid in the parent app shows on the receipt, the student ledger, the accounts day book, and the principal's dashboard at the same exact moment.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Safe and Confidential",
-                desc: "Enterprise-grade security ensuring all data and feedback remain anonymous and protected.",
-                icon: <ShieldCheck className="w-8 h-8 text-blue-600" />,
-                img: "/images/safe.png"
-              },
-              {
-                title: "Easy and Accessible",
-                desc: "Intuitive interfaces for students, teachers, and admins on any device, anywhere.",
-                icon: <Zap className="w-8 h-8 text-amber-500" />,
-                img: "/images/easy.png"
-              },
-              {
-                title: "Actionable Insights",
-                desc: "Powerful AI analytics to uncover trends, identify issues, and drive institutional growth.",
-                icon: <BarChart3 className="w-8 h-8 text-indigo-600" />,
-                img: "/images/insights.png"
-              },
-            ].map((feature, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-line rounded-card-m overflow-hidden border border-line shadow-sm">
+            {erpModules.map((module) => (
+              <div key={module.num} className="bg-white p-6 flex flex-col gap-2 hover:bg-page transition-colors">
+                <span className="font-mono text-xs font-bold text-primary">{module.num}</span>
+                <h3 className="text-base font-bold text-ink">{module.title}</h3>
+                <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">{module.desc}</p>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= PARENT MOBILE APP SHOWCASE (DARK EMERALD THEME) ================= */}
+      <section id="parent-app" className="py-20 bg-nav-bg text-nav-text px-4 sm:px-6 overflow-hidden">
+        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center gap-14">
+          
+          {/* Left App Details */}
+          <div className="flex-1 space-y-6">
+            <span className="inline-block text-xs font-bold text-nav-bg bg-gold px-3.5 py-1.5 rounded-full">
+              Parent App for iOS & Android
+            </span>
+
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight leading-tight">
+              Parents see the day as it happens — and pay fees in two taps
+            </h2>
+
+            <ul className="space-y-4 text-sm sm:text-base">
+              <li className="flex items-start gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-gold shrink-0 mt-1.5" />
+                <span>
+                  <strong className="text-white">Instant Absent Alerts: </strong>
+                  Notification within minutes if a student is marked absent during morning roll call.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-gold shrink-0 mt-1.5" />
+                <span>
+                  <strong className="text-white">2-Tap UPI Fee Payment: </strong>
+                  Direct payment via Google Pay, PhonePe, Paytm or Net Banking with immediate digital receipt.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-gold shrink-0 mt-1.5" />
+                <span>
+                  <strong className="text-white">Daily Homework Diary: </strong>
+                  Subject-wise homework, attachments, and tomorrow's timetable right on their smartphone.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-gold shrink-0 mt-1.5" />
+                <span>
+                  <strong className="text-white">Report Cards & Results: </strong>
+                  Instant access to digital report cards as soon as published by the school.
+                </span>
+              </li>
+
+              <li className="flex items-start gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-gold shrink-0 mt-1.5" />
+                <span>
+                  <strong className="text-white">Single Login for Siblings: </strong>
+                  Switch seamlessly between children attending different classes without logging out.
+                </span>
+              </li>
+            </ul>
+
+            <div className="pt-2 text-xs sm:text-sm text-nav-muted">
+              Android and iOS · One login for all siblings · Available in English and Hindi
+            </div>
+          </div>
+
+          {/* Right Mobile Phone Device Mockup */}
+          <div className="flex-1 flex justify-center w-full">
+            <div className="w-[300px] sm:w-[320px] bg-black p-3 rounded-[40px] shadow-2xl border-4 border-nav-divider">
+              
+              {/* Phone Screen Container */}
+              <div className="w-full bg-page rounded-[30px] overflow-hidden flex flex-col text-ink border border-line">
+                
+                {/* Phone Top Header */}
+                <div className="bg-nav-bg text-white p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-[11px] text-nav-muted">Namaste, Rohit</div>
+                      <div className="text-sm font-bold">Shiksha Public School</div>
+                    </div>
+                    <span className="w-7 h-7 rounded-full bg-nav-active flex items-center justify-center text-xs text-gold font-bold">
+                      2
+                    </span>
+                  </div>
+
+                  {/* Sibling Switcher Tabs */}
+                  <div className="flex gap-2">
+                    <button className="flex-1 py-1.5 px-2 bg-nav-active border-2 border-gold rounded-control text-left">
+                      <div className="text-xs font-bold text-white">Aarav</div>
+                      <div className="text-[10px] text-nav-muted">Class 5-A</div>
+                    </button>
+                    <button className="flex-1 py-1.5 px-2 bg-transparent border border-nav-dot rounded-control text-left opacity-75">
+                      <div className="text-xs font-bold text-white">Saanvi</div>
+                      <div className="text-[10px] text-nav-muted">Class 2-B</div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Phone Scroll Content */}
+                <div className="p-3.5 space-y-3 text-xs">
+                  
+                  {/* Today Attendance + Fee Card */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-white p-2.5 rounded-control border border-line shadow-xs">
+                      <span className="text-[10px] text-ink-secondary">Today</span>
+                      <div className="text-sm font-bold text-success-text">Present</div>
+                      <span className="text-[9px] text-ink-secondary">Marked 8:52 am</span>
+                    </div>
+
+                    <div className="bg-warning-bg p-2.5 rounded-control border border-warning-border shadow-xs">
+                      <span className="text-[10px] text-warning-text font-medium">Due 15 Nov</span>
+                      <div className="text-sm font-mono font-bold text-warning-strong">₹17,100</div>
+                      <span className="text-[10px] font-bold text-warning-accent flex items-center">
+                        Pay now ›
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Homework Widget */}
+                  <div className="bg-white p-3 rounded-control border border-line shadow-xs space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-ink text-[11px]">Homework for tomorrow</span>
+                      <span className="text-[10px] text-ink-secondary">3 subjects</span>
+                    </div>
+                    <div className="space-y-1.5 text-[11px]">
+                      <div className="flex gap-2">
+                        <span className="font-semibold text-primary w-12 shrink-0">Maths:</span>
+                        <span className="text-ink-secondary">Ex 4.2 Q 1-8 in notebook</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="font-semibold text-primary w-12 shrink-0">English:</span>
+                        <span className="text-ink-secondary">Read Ch. 6, 5 new words</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="font-semibold text-primary w-12 shrink-0">Hindi:</span>
+                        <span className="text-ink-secondary">पाठ 5 का सुलेख, एक पृष्ठ</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* School Notice */}
+                  <div className="bg-white p-3 rounded-control border border-line shadow-xs space-y-1">
+                    <span className="text-[9px] font-bold uppercase text-primary tracking-wider">
+                      Circular · 2 hrs ago
+                    </span>
+                    <div className="text-xs font-bold text-ink">School closed 20-24 Oct for Diwali</div>
+                    <div className="text-[10px] text-ink-secondary">Classes resume Monday, 26 October.</div>
+                  </div>
+
+                  {/* Bus Tracking */}
+                  <div className="bg-white p-3 rounded-control border border-line shadow-xs flex justify-between items-center">
+                    <div>
+                      <div className="font-bold text-ink text-xs">Bus Route 4 · Drop</div>
+                      <div className="text-[10px] text-ink-secondary">Gopalpura Bypass ~ 2:35 pm</div>
+                    </div>
+                    <span className="text-[10px] font-bold bg-primary-tint text-primary-dark px-2 py-0.5 rounded-full">
+                      On Time
+                    </span>
+                  </div>
+
+                </div>
+
+                {/* Phone Bottom Nav */}
+                <div className="mt-auto bg-white border-t border-line py-2 px-4 flex justify-between text-[10px] text-ink-secondary font-medium">
+                  <span className="text-primary font-bold">Home</span>
+                  <span>Fees</span>
+                  <span>Results</span>
+                  <span>Messages</span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= 3-STEP ONBOARDING ("LIVE IN DAYS, NOT MONTHS") ================= */}
+      <section id="how" className="py-20 bg-white border-b border-line px-4 sm:px-6">
+        <div className="max-w-[1200px] mx-auto space-y-12">
+          
+          <div className="max-w-2xl space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">Effortless Setup</span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-ink">
+              Live in days, not months
+            </h2>
+            <p className="text-base text-ink-body2 leading-relaxed">
+              We make sure transition doesn't disrupt your ongoing classes or fee collections.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div className="bg-surface-subtle border border-line rounded-card-m p-7 space-y-4 shadow-2xs hover:bg-white hover:border-primary-soft hover:shadow-md transition-all group">
+              <span className="w-10 h-10 rounded-full bg-primary text-white font-mono font-bold text-base flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                1
+              </span>
+              <h3 className="text-lg font-bold text-ink">Create your school account</h3>
+              <p className="text-sm text-ink-body2 leading-relaxed">
+                Sign up with your mobile number, verify OTP, and activate your 30-day free trial. Takes about five minutes.
+              </p>
+            </div>
+
+            <div className="bg-surface-subtle border border-line rounded-card-m p-7 space-y-4 shadow-2xs hover:bg-white hover:border-primary-soft hover:shadow-md transition-all group">
+              <span className="w-10 h-10 rounded-full bg-primary text-white font-mono font-bold text-base flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                2
+              </span>
+              <h3 className="text-lg font-bold text-ink">Set up classes, fees & staff</h3>
+              <p className="text-sm text-ink-body2 leading-relaxed">
+                Use our guided step-by-step setup wizard, or send us your existing Excel files and we import students, staff, and opening balances for you.
+              </p>
+            </div>
+
+            <div className="bg-surface-subtle border border-line rounded-card-m p-7 space-y-4 shadow-2xs hover:bg-white hover:border-primary-soft hover:shadow-md transition-all group">
+              <span className="w-10 h-10 rounded-full bg-primary text-white font-mono font-bold text-base flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                3
+              </span>
+              <h3 className="text-lg font-bold text-ink">Go live seamlessly</h3>
+              <p className="text-sm text-ink-body2 leading-relaxed">
+                Teachers start marking attendance immediately, parents install the app, and the office collects fees from day one.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= DPDP ACT & DATA SECURITY COMPLIANCE ================= */}
+      <section className="py-20 bg-surface-subtle border-b border-line px-4 sm:px-6">
+        <div className="max-w-[1200px] mx-auto bg-white border border-primary-tint/80 rounded-hero p-8 sm:p-12 shadow-sm flex flex-col lg:flex-row gap-10">
+          
+          <div className="lg:w-1/3 space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">Compliance & Trust</span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+              Children's data, treated with care
+            </h2>
+            <p className="text-sm sm:text-base text-ink-body2 leading-relaxed">
+              Architected specifically for India's <strong>Digital Personal Data Protection Act, 2023 (DPDP)</strong>. Your school owns 100% of its data; we only process it securely on your behalf.
+            </p>
+          </div>
+
+          <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+            
+            <div className="bg-primary-row/60 border border-primary-tint/50 rounded-card p-4 space-y-1.5 hover:border-primary-soft transition-all shadow-2xs">
+              <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
+                <Server className="w-4 h-4 text-primary shrink-0" />
+                Data Stored in India
+              </h4>
+              <p className="text-xs text-ink-secondary leading-relaxed">
+                All production servers and daily encrypted backups reside in Indian tier-4 data centres.
+              </p>
+            </div>
+
+            <div className="bg-primary-row/60 border border-primary-tint/50 rounded-card p-4 space-y-1.5 hover:border-primary-soft transition-all shadow-2xs">
+              <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                Parental Consent Built-in
+              </h4>
+              <p className="text-xs text-ink-secondary leading-relaxed">
+                Consent is recorded during admission as required by DPDP regulations for minors.
+              </p>
+            </div>
+
+            <div className="bg-primary-row/60 border border-primary-tint/50 rounded-card p-4 space-y-1.5 hover:border-primary-soft transition-all shadow-2xs">
+              <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
+                <Eye className="w-4 h-4 text-primary shrink-0" />
+                Strict Role Isolation
+              </h4>
+              <p className="text-xs text-ink-secondary leading-relaxed">
+                Teachers only view assigned classes; parents access only their own children.
+              </p>
+            </div>
+
+            <div className="bg-primary-row/60 border border-primary-tint/50 rounded-card p-4 space-y-1.5 hover:border-primary-soft transition-all shadow-2xs">
+              <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
+                <FileCheck className="w-4 h-4 text-primary shrink-0" />
+                Complete Audit Trail
+              </h4>
+              <p className="text-xs text-ink-secondary leading-relaxed">
+                Every marks change, fee cancellation, and TC generation maintains a tamper-proof log.
+              </p>
+            </div>
+
+            <div className="bg-primary-row/60 border border-primary-tint/50 rounded-card p-4 space-y-1.5 hover:border-primary-soft transition-all shadow-2xs">
+              <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
+                <LockKeyhole className="w-4 h-4 text-primary shrink-0" />
+                Sensitive Info Masked
+              </h4>
+              <p className="text-xs text-ink-secondary leading-relaxed">
+                Student Aadhaar, staff PAN, and bank accounts are encrypted with masking.
+              </p>
+            </div>
+
+            <div className="bg-primary-row/60 border border-primary-tint/50 rounded-card p-4 space-y-1.5 hover:border-primary-soft transition-all shadow-2xs">
+              <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
+                <Database className="w-4 h-4 text-primary shrink-0" />
+                Daily Automated Backups
+              </h4>
+              <p className="text-xs text-ink-secondary leading-relaxed">
+                Point-in-time recovery with regular disaster recovery and restore drills.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= PRICING SECTION ================= */}
+      <section id="pricing" className="py-20 bg-page border-b border-line px-4 sm:px-6">
+        <div className="max-w-[1200px] mx-auto space-y-12">
+          
+          <div className="max-w-2xl space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">Transparent Investment</span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-ink">
+              Simple pricing per student
+            </h2>
+            <p className="text-base text-ink-body2 leading-relaxed">
+              Every plan starts with a free 30-day trial. Pay only for active students; add optional modules whenever your institution expands.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            {pricingPlans.map((plan, i) => (
               <div
                 key={i}
-                className="group bg-white rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-blue-100"
+                className={`rounded-hero p-8 flex flex-col justify-between transition-all ${
+                  plan.isPopular
+                    ? "bg-primary-row border-2 border-primary shadow-lg relative"
+                    : "bg-white border border-line shadow-xs"
+                }`}
               >
-                <div className="w-full h-48 bg-slate-50 rounded-2xl mb-8 overflow-hidden">
-                  <img src={feature.img} alt={feature.title} className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-110" />
+                <div>
+                  <div className="flex justify-between items-center gap-2 mb-2">
+                    <h3 className="text-xl font-bold text-ink">{plan.name}</h3>
+                    {plan.badge && (
+                      <span className="text-xs font-bold bg-primary text-white px-3 py-1 rounded-full">
+                        {plan.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-ink-secondary mb-6 leading-relaxed">
+                    {plan.tagline}
+                  </p>
+
+                  <div className="mb-6 flex items-baseline gap-2">
+                    <span className="font-mono text-2xl sm:text-3xl font-bold text-ink">Custom Quote</span>
+                    <span className="text-xs text-ink-secondary">/ student / year</span>
+                  </div>
+
+                  <ul className="space-y-3 mb-8 text-xs sm:text-sm">
+                    {plan.features.map((feat, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5">
+                        <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                        <span className="text-ink">{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">
-                  {feature.desc}
-                </p>
+
+                <div className="pt-2">
+                  <Link
+                    to="/auth/register"
+                    className={`w-full py-3 rounded-control text-sm font-semibold flex items-center justify-center transition-all ${
+                      plan.isPopular
+                        ? "bg-primary hover:bg-primary-dark text-white shadow-md"
+                        : "bg-white hover:bg-page border border-line-input text-ink"
+                    }`}
+                  >
+                    Start free trial
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
+
+          <div className="text-xs sm:text-sm text-ink-secondary text-center">
+            Prices exclude applicable GST. SMS & WhatsApp notification credits billed on actuals. Multi-school trusts:{" "}
+            <button
+              onClick={() => setShowDemoModal(true)}
+              className="text-primary font-semibold hover:underline"
+            >
+              Talk to our team
+            </button>
+            .
+          </div>
+
         </div>
       </section>
 
-      {/* ================= ROLE SELECTOR ================= */}
-      <section id="portals" className="py-8 bg-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-8">
-            Tailored Experience for Every User
-          </h2>
+      {/* ================= FREQUENTLY ASKED QUESTIONS ================= */}
+      <section id="faq" className="py-20 bg-white border-b border-line px-4 sm:px-6">
+        <div className="max-w-[840px] mx-auto space-y-8">
           
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { role: "Admin", icon: <ShieldCheck />, link: "/auth/login", color: "bg-blue-600" },
-              { role: "Teacher", icon: <Users />, link: "/teacher/login", color: "bg-indigo-600" },
-              { role: "Student", icon: <GraduationCap />, link: "/student/login", color: "bg-slate-900" }
-            ].map((item, i) => (
-              <Link 
-                to={item.link} 
-                key={i}
-                className="group relative overflow-hidden rounded-2xl md:rounded-3xl p-5 md:p-10 text-left transition-all hover:-translate-y-2 border border-slate-100 hover:border-transparent"
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">Clear Answers</span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+              Questions schools ask us
+            </h2>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => (
+              <div
+                key={idx}
+                className="bg-surface-subtle border border-line rounded-card overflow-hidden transition-all shadow-2xs hover:border-primary-soft"
               >
-                <div className={`absolute inset-0 ${item.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
-                <div className="relative z-10 flex items-center md:block gap-4 md:gap-0">
-                  <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-xl md:rounded-2xl flex items-center justify-center md:mb-6 transition-colors ${item.color} text-white group-hover:bg-white group-hover:text-slate-900`}>
-                    {item.icon}
+                <button
+                  type="button"
+                  onClick={() => toggleFaq(idx)}
+                  className="w-full p-5 text-left flex justify-between items-center gap-4 hover:bg-page transition-colors"
+                >
+                  <span className="text-sm sm:text-base font-semibold text-ink leading-snug">
+                    {faq.q}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-ink-secondary shrink-0 transition-transform ${
+                      activeFaq === idx ? "rotate-180 text-primary" : ""
+                    }`}
+                  />
+                </button>
+
+                {activeFaq === idx && (
+                  <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-ink-body2 leading-relaxed border-t border-line/60 bg-white animate-in fade-in duration-200">
+                    {faq.a}
                   </div>
-                  <div>
-                    <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 group-hover:text-white transition-colors">{item.role} Portal</h3>
-                    <p className="text-sm md:text-base text-slate-500 group-hover:text-white/80 transition-colors">Access your dedicated workspace and tools.</p>
-                  </div>
-                </div>
-              </Link>
+                )}
+              </div>
             ))}
           </div>
+
         </div>
       </section>
 
-      {/* ================= HOW IT WORKS ================= */}
-      <section id="how-it-works" className="py-12 bg-slate-900 text-white overflow-hidden relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-blue-500/10 rounded-full blur-[120px]" />
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Simple 3-Step Integration</h2>
-            <p className="text-slate-400 text-lg">Getting your institute online has never been easier.</p>
+      {/* ================= BOTTOM CTA BANNER ================= */}
+      <section className="py-20 bg-surface-subtle px-4 sm:px-6">
+        <div className="max-w-[1200px] mx-auto bg-primary rounded-hero p-8 sm:p-14 text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
+          <div className="space-y-3 max-w-xl">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
+              Set up your school this week
+            </h2>
+            <p className="text-sm sm:text-base text-primary-tint/90 leading-relaxed">
+              Create an account in five minutes. Our onboarding engineering team will assist in importing all students, teachers, and opening fee ledgers.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
-            {[
-              { step: "01", title: "Registration", desc: "Admins register the institute and define the academic structure." },
-              { step: "02", title: "Onboarding", desc: "Teachers and students are onboarded via bulk upload or unique codes." },
-              { step: "03", title: "Launch", desc: "Start managing attendance, exams, results, and materials instantly." }
-            ].map((item, i) => (
-              <div key={i} className="relative">
-                <div className="text-8xl font-black text-white/5 absolute -top-10 -left-6">{item.step}</div>
-                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                  <CheckCircle2 className="text-blue-500 w-6 h-6" />
-                  {item.title}
-                </h3>
-                <p className="text-slate-400 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            {/* Mustard CTA in Banner */}
+            <Link
+              to="/auth/register"
+              className="px-7 py-3.5 bg-gold hover:bg-gold-hover text-nav-bg font-bold rounded-control text-sm sm:text-base shadow-md transition-all active:scale-[0.98] text-center"
+            >
+              Start free trial
+            </Link>
+
+            <button
+              onClick={() => setShowDemoModal(true)}
+              className="px-6 py-3.5 bg-transparent hover:bg-white/10 border border-primary-soft text-white font-semibold rounded-control text-sm sm:text-base transition-all text-center"
+            >
+              Book a demo
+            </button>
           </div>
         </div>
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="py-12 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-              <GraduationCap className="text-white w-5 h-5" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">guruConnect</span>
-          </div>
-          <p className="text-slate-500 text-sm">© 2026 GuruConnect AI. All rights reserved.</p>
-          <div className="flex gap-6 text-sm font-medium text-slate-400">
-            <a href="#" className="hover:text-slate-900 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-slate-900 transition-colors">Terms</a>
-            <a href="#" className="hover:text-slate-900 transition-colors">Contact</a>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter onOpenDemoModal={() => setShowDemoModal(true)} />
+
+      {/* Cookie Notice Bar */}
+      <CookieNotice />
+
+      {/* ================= LOGIN PORTAL MODAL ================= */}
+      <LoginPortalModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
+
+      {/* ================= BOOK A DEMO MODAL ================= */}
+      <BookDemoModal
+        isOpen={showDemoModal}
+        onClose={() => setShowDemoModal(false)}
+        onStartTrial={() => {}}
+      />
+
     </div>
   );
-};
-
-export default Landing;
+}

@@ -8,7 +8,7 @@ const { successResponse, errorResponse } = require("../../utils/response");
 /* ================= INSTITUTE REGISTER ================= */
 exports.registerInstitute = async (req, res) => {
   try {
-    const { instituteName, instituteType, email, phone, password } = req.body;
+    const { instituteName, instituteType, ownerName, city, board, studentCount, email, phone, password } = req.body;
 
     if (!instituteName || !email || !phone || !password) {
       return errorResponse(res, "Missing required fields", 400);
@@ -36,6 +36,10 @@ exports.registerInstitute = async (req, res) => {
     await Institute.create({
       instituteName,
       instituteType,
+      ownerName,
+      city,
+      board,
+      studentCount: studentCount || 0,
       email,
       phone,
       password: hashed,

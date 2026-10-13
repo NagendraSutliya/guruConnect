@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Online Payment Reconciliation</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="fees" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <nav aria-label="Fees" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+          <a href="{{t.href}}" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid {{t.line}}; text-decoration: none; font-size: 14px; font-weight: {{t.fw}}; color: {{t.fg}}; white-space: nowrap">{{t.label}}</a>
+        </sc-for>
+      </nav>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Online payments · 8 Oct 2026</h1>
+          <div style="font-size: 14px; color: #4F5B57">Gateway settlement file matched automatically at 6:00 am. Pending orders are re-checked every 30 minutes.</div>
+        </div>
+        <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Upload settlement file</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+          <div style="background: {{k.bg}}; border: 1px solid {{k.border}}; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12.5px; color: {{k.labelColor}}; font-weight: 500">{{k.label}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: {{k.valueColor}}">{{k.value}}</span>
+            <span style="font-size: 12.5px; color: {{k.labelColor}}">{{k.sub}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Exceptions to resolve</h2></div>
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 880px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; font-weight: 600">Order</th><th style="padding: 12px 16px; font-weight: 600">Student</th><th style="padding: 12px 16px; font-weight: 600; text-align: right">Amount</th><th style="padding: 12px 16px; font-weight: 600">Problem</th><th style="padding: 12px 16px; font-weight: 600">Suggested action</th><th style="padding: 12px 16px"></th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ex}}" as="e" hint-placeholder-count="4">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px">{{e.order}}</td>
+                  <td style="padding: 10px 16px">{{e.student}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{e.amount}}</td>
+                  <td style="padding: 10px 16px; color: #8F4A09">{{e.problem}}</td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{e.fix}}</td>
+                  <td style="padding: 8px 16px; text-align: right"><button style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 0; background: #E3EFEF; color: #08393F; font: inherit; font-size: 13px; font-weight: 600">{{e.btn}}</button></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600">How a payment is confirmed</h2>
+        <ol style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.7; color: #3B4643">
+          <li>Order created on the server with the exact amount due.</li>
+          <li>Parent pays in the app or through the payment link.</li>
+          <li>Verified gateway webhook (or status check) marks it paid; a repeated webhook never creates a second receipt.</li>
+          <li>Receipt and ledger entry are posted together; settlement is matched the next morning.</li>
+        </ol>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const tabs = [['Counter', 'FeeCounter.dc.html'], ['Fee structure', 'FeeStructure.dc.html'], ['Defaulters', 'Defaulters.dc.html'], ['Online payments', 'Reconciliation.dc.html'], ['Accounts', 'Accounts.dc.html']]
+      .map(([label, href], i) => ({ label, href, fw: i === 3 ? 600 : 400, fg: i === 3 ? '#0E5A63' : '#4F5B57', line: i === 3 ? '#0E5A63' : 'transparent' }));
+    const k = (label, value, sub, warn) => ({ label, value, sub, bg: warn ? '#FFF6EC' : '#FFFFFF', border: warn ? '#EBC99C' : '#DDE2DE', labelColor: warn ? '#7A4106' : '#4F5B57', valueColor: warn ? '#7A4106' : '#17201D' });
+    const kpis = [k('Paid orders', '₹4,96,300', '142 receipts issued'), k('Settled by gateway', '₹4,91,040', 'after ₹5,260 charges'), k('Matched', '138 of 142', 'receipt = settlement line'), k('Exceptions', '4', 'need a person to decide', true)];
+    const ex = [
+      { order: 'ord_8Kq2…7Fz', student: 'Myra Joshi · 3-B', amount: '₹17,100', problem: 'Paid at bank, no webhook received', fix: 'Status check confirms paid → create receipt', btn: 'Create receipt' },
+      { order: 'ord_8Kp9…1Ad', student: 'Om Prakash · 5-A', amount: '₹16,900', problem: 'Paid twice within 2 minutes', fix: 'Refund second payment or keep as advance', btn: 'Decide' },
+      { order: 'ord_8Kn3…Q2s', student: 'Ira Joshi · 9-C', amount: '₹1,200', problem: 'Missing from settlement file', fix: 'Wait one more day, then raise with gateway', btn: 'Snooze' },
+      { order: 'ord_8Km7…bX4', student: 'Dev Saini · 8-B', amount: '₹17,900', problem: 'Amount differs from due (₹16,900)', fix: 'Excess ₹1,000 kept as student credit', btn: 'Confirm' }
+    ];
+    return { tabs, kpis, ex };
+  }
+}
+</script>
+</body>
+</html>

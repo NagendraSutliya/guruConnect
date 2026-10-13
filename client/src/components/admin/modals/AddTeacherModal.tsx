@@ -19,6 +19,10 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
   loading = false,
   isEdit = false,
 }) => {
+  const [currentStep, setCurrentStep] = React.useState(1);
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
@@ -48,9 +52,40 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
           </button>
         </div>
 
+        {/* Wizard Indicators */}
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+          <div className={`flex items-center gap-2 transition-all duration-500 ${currentStep >= 1 ? 'text-indigo-600' : 'text-slate-400'}`}>
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 shadow-sm ${currentStep >= 1 ? 'bg-indigo-600 text-white shadow-indigo-200' : 'bg-slate-100'}`}>1</div>
+            <span className="text-[11px] font-black uppercase tracking-widest hidden sm:block">Account</span>
+          </div>
+          
+          <div className="flex-1 h-1.5 mx-3 sm:mx-4 rounded-full overflow-hidden bg-slate-100">
+             <div className={`h-full transition-all duration-700 ease-in-out ${currentStep >= 2 ? 'w-full bg-indigo-500' : 'w-0 bg-indigo-500'}`}></div>
+          </div>
+          
+          <div className={`flex items-center gap-2 transition-all duration-500 ${currentStep >= 2 ? 'text-purple-600' : 'text-slate-400'}`}>
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 shadow-sm ${currentStep >= 2 ? 'bg-purple-600 text-white shadow-purple-200' : 'bg-slate-100'}`}>2</div>
+            <span className="text-[11px] font-black uppercase tracking-widest hidden sm:block">Professional</span>
+          </div>
+          
+          <div className="flex-1 h-1.5 mx-3 sm:mx-4 rounded-full overflow-hidden bg-slate-100">
+             <div className={`h-full transition-all duration-700 ease-in-out ${currentStep >= 3 ? 'w-full bg-purple-500' : 'w-0 bg-purple-500'}`}></div>
+          </div>
+          
+          <div className={`flex items-center gap-2 transition-all duration-500 ${currentStep >= 3 ? 'text-emerald-600' : 'text-slate-400'}`}>
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 shadow-sm ${currentStep >= 3 ? 'bg-emerald-600 text-white shadow-emerald-200' : 'bg-slate-100'}`}>3</div>
+            <span className="text-[11px] font-black uppercase tracking-widest hidden sm:block">Financial</span>
+          </div>
+        </div>
+
         {/* Form Body */}
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-6 overflow-y-auto space-y-6 min-h-[300px]">
+          
+          {/* STEP 1: Account Details */}
+          {currentStep === 1 && (
+            <section className="animate-fadeIn">
+              <h4 className="text-sm font-black text-slate-800 border-b border-slate-200 pb-2 mb-4 uppercase tracking-widest">Account Details</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Name */}
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Full Name <span className="text-rose-500">*</span></label>
@@ -103,23 +138,16 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
                 />
               </div>
             </div>
-
-            {/* Phone */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Phone</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <FiPhone size={14} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="+1 (555) 000"
-                  value={form.phone || ""}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
-                />
-              </div>
             </div>
+          </section>
+        )}
+
+        {/* STEP 2: Professional Details */}
+        {currentStep === 2 && (
+          <section className="animate-fadeIn">
+            <h4 className="text-sm font-black text-slate-800 border-b border-slate-200 pb-2 mb-4 uppercase tracking-widest">Professional Details</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
 
             {/* Employee ID */}
             <div className="space-y-1">
@@ -178,6 +206,56 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
               />
             </div>
+
+            {/* Joining Date */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Joining Date</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiCalendar size={14} />
+                </div>
+                <input
+                  type="date"
+                  value={form.joiningDate || ""}
+                  onChange={(e) => setForm({ ...form, joiningDate: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+            </div>
+          </section>
+        )}
+
+        {/* STEP 3: Financial Details */}
+        {currentStep === 3 && (
+          <section className="animate-fadeIn">
+            <h4 className="text-sm font-black text-slate-800 border-b border-slate-200 pb-2 mb-4 uppercase tracking-widest">Financial Details</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            {/* Joining Date */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Joining Date</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <FiCalendar size={14} />
+                </div>
+                <input
+                  type="date"
+                  value={form.joiningDate || ""}
+                  onChange={(e) => setForm({ ...form, joiningDate: e.target.value })}
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
+                />
+              </div>
+            </div>
+          </div>
+          </section>
+        )}
+
+        {/* STEP 3: Financial Details */}
+        {currentStep === 3 && (
+          <section className="animate-fadeIn">
+            <h4 className="text-sm font-black text-slate-800 border-b border-slate-200 pb-2 mb-4 uppercase tracking-widest">Financial Details</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Emergency Phone */}
             <div className="space-y-1">
@@ -241,50 +319,53 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
               />
             </div>
-
-            {/* Joining Date */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Joining Date</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <FiCalendar size={14} />
-                </div>
-                <input
-                  type="date"
-                  value={form.joiningDate || ""}
-                  onChange={(e) => setForm({ ...form, joiningDate: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm"
-                />
-              </div>
+            
             </div>
-          </div>
+          </section>
+        )}
+
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3">
+        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-between gap-3 rounded-b-2xl">
           <button
-            onClick={onClose}
+            onClick={() => {
+              if (currentStep === 1) onClose();
+              else prevStep();
+            }}
             disabled={loading}
             className="px-5 py-2 rounded-lg text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-800 transition-all shadow-sm disabled:opacity-50"
           >
-            Cancel
+            {currentStep === 1 ? "Cancel" : "Back"}
           </button>
-          <button
-            onClick={onSave}
-            disabled={loading}
-            className="flex items-center justify-center min-w-[120px] px-5 py-2 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-sm shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Saving...</span>
-              </div>
-            ) : isEdit ? (
-              "Update"
+          
+          <div className="flex gap-3">
+            {currentStep < 3 ? (
+              <button
+                onClick={nextStep}
+                className="flex items-center justify-center min-w-[120px] px-5 py-2 rounded-lg text-sm font-bold text-white bg-slate-800 hover:bg-slate-900 transition-all shadow-sm active:scale-95"
+              >
+                Next Step
+              </button>
             ) : (
-              "Save Teacher"
+              <button
+                onClick={onSave}
+                disabled={loading}
+                className="flex items-center justify-center min-w-[120px] px-5 py-2 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-sm shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Saving...</span>
+                  </div>
+                ) : isEdit ? (
+                  "Update Teacher"
+                ) : (
+                  "Save Teacher"
+                )}
+              </button>
             )}
-          </button>
+          </div>
         </div>
       </div>
     </div>

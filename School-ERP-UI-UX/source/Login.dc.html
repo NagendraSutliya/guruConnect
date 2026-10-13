@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Login</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D; background: #F5F6F3">
+  <section style="flex: 1 1 420px; background: #12302D; color: #D5E4E0; padding: 56px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 40px">
+    <div style="display: flex; align-items: center; gap: 14px">
+      <div style="width: 48px; height: 48px; border-radius: 12px; background: #E9B872; color: #12302D; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px">SP</div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <div style="font-weight: 600; font-size: 17px; color: #FFFFFF">Shiksha Public School</div>
+        <div style="font-size: 13px; color: #A9C2BD">School ERP</div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 16px; max-width: 460px">
+      <h1 style="margin: 0; font-size: 38px; line-height: 1.15; font-weight: 600; color: #FFFFFF; letter-spacing: -0.015em">Admissions, attendance, fees and results in one place.</h1>
+      <p lang="hi" style="margin: 0; font-size: 18px; line-height: 1.6; color: #D5E4E0">प्रवेश, उपस्थिति, फीस और परिणाम — सब एक जगह।</p>
+    </div>
+    <div style="font-size: 13px; color: #A9C2BD">Data stored in India · Protected under the DPDP Act, 2023</div>
+  </section>
+
+  <section style="flex: 1 1 460px; display: flex; align-items: center; justify-content: center; padding: 48px 24px; box-sizing: border-box">
+    <div style="width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 24px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <h2 style="margin: 0; font-size: 24px; font-weight: 600">Sign in</h2>
+        <div style="display: flex; border: 1px solid #C9D1CD; border-radius: 8px; overflow: hidden">
+          <button style="min-height: 36px; padding: 0 12px; border: 0; background: #12302D; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600">English</button>
+          <button lang="hi" style="min-height: 36px; padding: 0 12px; border: 0; background: #FFFFFF; color: #17201D; font: inherit; font-size: 13px">हिंदी</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #E7EBE8; border-radius: 10px; padding: 4px">
+        <button style="min-height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #17201D">Staff</button>
+        <button style="min-height: 44px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 14px; font-weight: 500; color: #4F5B57">Parent / Student</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Username or mobile number
+          <input type="text" value="meera.k" style="min-height: 46px; padding: 0 14px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D; background: #FFFFFF">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Password
+          <input type="password" value="password123" style="min-height: 46px; padding: 0 14px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D; background: #FFFFFF">
+        </label>
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 14px">
+          <label style="display: flex; align-items: center; gap: 8px"><input type="checkbox" style="width: 18px; height: 18px">Keep me signed in</label>
+          <a href="#forgot">Forgot password?</a>
+        </div>
+      </div>
+
+      <a href="Main.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 8px; background: #0E5A63; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Sign in</a>
+      <button style="min-height: 48px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 15px; font-weight: 500; color: #17201D">Sign in with OTP instead</button>
+
+      <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #4F5B57">Admins, principals and accountants confirm a one-time code after the password. Parents sign in with their registered mobile number.</p>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

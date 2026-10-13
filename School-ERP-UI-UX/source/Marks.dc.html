@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Marks Entry</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="exams" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Examinations › Term 1 · CBSE Middle (VI–VIII) scheme</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Science · Class 8-B</h1>
+          <div style="font-size: 14px; color: #4F5B57">Subject teacher: Sunita Rathore · autosaved 10:42 am</div>
+        </div>
+        <ol style="list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; flex-wrap: wrap; font-size: 13px">
+          <li style="padding: 8px 12px; border-radius: 999px; background: #0E5A63; color: #FFFFFF; font-weight: 600">1 Draft</li>
+          <li style="padding: 8px 12px; border-radius: 999px; background: #E7EBE8; color: #4F5B57">2 Submitted</li>
+          <li style="padding: 8px 12px; border-radius: 999px; background: #E7EBE8; color: #4F5B57">3 Verified</li>
+          <li style="padding: 8px 12px; border-radius: 999px; background: #E7EBE8; color: #4F5B57">4 Final (locked)</li>
+        </ol>
+      </div>
+
+      <div style="background: #FFF6EC; border: 1px solid #EBC99C; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #5E3305">1 entry needs fixing before submit: Roll 06 Half-Yearly is 84, maximum is 80.</div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 860px">
+            <thead>
+              <tr style="background: #F2F4F2; text-align: left">
+                <th style="padding: 12px 16px; font-weight: 600">Roll</th>
+                <th style="padding: 12px 16px; font-weight: 600">Student</th>
+                <th style="padding: 12px 10px; font-weight: 600; text-align: center">Periodic Test<br><span style="font-weight: 400; font-size: 12px; color: #4F5B57">best of 2 · /10</span></th>
+                <th style="padding: 12px 10px; font-weight: 600; text-align: center">Notebook<br><span style="font-weight: 400; font-size: 12px; color: #4F5B57">/5</span></th>
+                <th style="padding: 12px 10px; font-weight: 600; text-align: center">Sub. Enrichment<br><span style="font-weight: 400; font-size: 12px; color: #4F5B57">/5</span></th>
+                <th style="padding: 12px 10px; font-weight: 600; text-align: center">Half-Yearly<br><span style="font-weight: 400; font-size: 12px; color: #4F5B57">/80</span></th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">Total /100</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: center">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="10">
+                <tr style="border-top: 1px solid #EEF1EF; background: {{r.bg}}">
+                  <td style="padding: 8px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4F5B57">{{r.roll}}</td>
+                  <td style="padding: 8px 16px; font-weight: 500">{{r.name}}</td>
+                  <sc-for list="{{r.cells}}" as="c" hint-placeholder-count="4">
+                    <td style="padding: 6px 10px; text-align: center">
+                      <input aria-label="{{c.label}}" value="{{c.v}}" style="width: 64px; min-height: 38px; box-sizing: border-box; text-align: center; border-radius: 6px; border: {{c.border}}; background: {{c.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #17201D">
+                    </td>
+                  </sc-for>
+                  <td style="padding: 8px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.total}}</td>
+                  <td style="padding: 8px 16px; text-align: center"><span style="display: inline-block; min-width: 34px; padding: 3px 8px; border-radius: 6px; background: #E3EFEF; color: #08393F; font-weight: 600; font-size: 13px">{{r.grade}}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 16px; border-top: 1px solid #EEF1EF">
+          <span style="font-size: 13px; color: #4F5B57">Allowed values: a number, AB (absent), ML (medical leave), EX (exempt). After the coordinator finalises, changes need an unlock request.</span>
+          <div style="display: flex; gap: 10px">
+            <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Import from Excel</button>
+            <button disabled style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #9DB5B5; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Submit for verification</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const data = [
+      ['Aditi Sharma', 9, 5, 4, 71], ['Bhavesh Kumar', 8, 4, 4, 62], ['Charu Mehta', 10, 5, 5, 76], ['Dev Saini', 'AB', 3, 4, 48],
+      ['Esha Gupta', 7, 4, 3, 55], ['Faizan Ali', 9, 5, 5, 84], ['Garima Joshi', 6, 3, 4, 39], ['Hitesh Yadav', 8, 4, 4, 'ML'],
+      ['Isha Kanwar', 10, 5, 5, 79], ['Jatin Soni', 5, 3, 3, 22]
+    ];
+    const max = [10, 5, 5, 80];
+    const labels = ['Periodic Test', 'Notebook', 'Subject Enrichment', 'Half-Yearly'];
+    const grade = t => t >= 91 ? 'A1' : t >= 81 ? 'A2' : t >= 71 ? 'B1' : t >= 61 ? 'B2' : t >= 51 ? 'C1' : t >= 41 ? 'C2' : t >= 33 ? 'D' : 'E';
+    const rows = data.map(([name, ...m], i) => {
+      let bad = false;
+      const cells = m.map((v, j) => {
+        const over = typeof v === 'number' && v > max[j];
+        if (over) bad = true;
+        return { v: String(v), label: labels[j] + ' for ' + name, border: over ? '2px solid #B4610E' : '1px solid #C9D1CD', bg: over ? '#FFF6EC' : '#FFFFFF' };
+      });
+      const nums = m.map(v => typeof v === 'number' ? v : 0);
+      const total = nums.reduce((a, b) => a + b, 0);
+      const special = m.some(v => v === 'ML');
+      return { roll: String(i + 1).padStart(2, '0'), name, cells, bg: bad ? '#FFFBF6' : '#FFFFFF',
+        total: bad ? '—' : special ? 'ML' : String(total), grade: bad || special ? '—' : grade(total) };
+    });
+    return { rows };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add Student</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="students" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57"><a href="Students.dc.html">Students</a> › Add student</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Add a student</h1>
+          <div style="font-size: 14px; color: #4F5B57">Fields marked * are required. Admission number is generated on save: <span style="font-family: 'IBM Plex Mono', monospace">2026/0219</span></div>
+        </div>
+        <a href="#import" style="font-size: 14px; font-weight: 500">Import many from Excel instead</a>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <nav aria-label="Form sections" style="flex: 1 1 200px; max-width: 220px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 2px">
+          <sc-for list="{{sections}}" as="s" hint-placeholder-count="6">
+            <a href="{{s.href}}" style="min-height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; border-radius: 8px; text-decoration: none; font-size: 14px; background: {{s.bg}}; color: #17201D; font-weight: {{s.fw}}">{{s.label}}<span style="font-size: 12px; color: {{s.markColor}}">{{s.mark}}</span></a>
+          </sc-for>
+        </nav>
+
+        <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <section id="student" style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Student</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">First name *<input value="Kiaan" style="min-height: 44px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D"></label>
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Last name<input value="Gupta" style="min-height: 44px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D"></label>
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Name in Hindi<input lang="hi" value="कियान गुप्ता" style="min-height: 44px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D"></label>
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Date of birth *<input type="date" value="2022-07-11" style="min-height: 44px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D"></label>
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Gender *<select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 15px; color: #17201D"><option>Male</option><option>Female</option></select></label>
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Category<select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 15px; color: #17201D"><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select></label>
+            </div>
+          </section>
+
+          <section id="guardians" style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Guardians</h2>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500; max-width: 320px">Father's mobile *<input value="98290 1xxxx" style="min-height: 44px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #17201D"></label>
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #F4F9F9; border: 1px solid #CFE2E2">
+              <span style="font-size: 14px; line-height: 1.5">This mobile belongs to <b style="font-weight: 600">Rohit Gupta</b>, guardian of Aarav Gupta (5-A) and Saanvi Gupta (2-B). Link as sibling? Third-child concession (15%) will apply.</span>
+              <button style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600">Link existing guardians</button>
+            </div>
+          </section>
+
+          <section id="class" style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Class, fees and transport</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Class and section *<select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 15px; color: #17201D"><option>Nursery-A (28 of 30)</option></select></label>
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Fee category<select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 15px; color: #17201D"><option>Regular · new admission</option><option>RTE</option><option>Staff ward</option></select></label>
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Transport<select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 15px; color: #17201D"><option>Bus 4 · Gopalpura bypass</option><option>No transport</option></select></label>
+            </div>
+          </section>
+
+          <section id="consent" style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Parent consent</h2>
+            <label style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5"><input type="checkbox" checked="{{ true }}" style="width: 18px; height: 18px; flex: none; margin-top: 2px">Guardian has given consent to process the child's data for school purposes (notice v2.1, English and Hindi). Required.</label>
+            <label style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5"><input type="checkbox" style="width: 18px; height: 18px; flex: none; margin-top: 2px">Photos may appear in the school's public gallery. Optional.</label>
+            <label style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5"><input type="checkbox" checked="{{ true }}" style="width: 18px; height: 18px; flex: none; margin-top: 2px">WhatsApp messages from school. Optional.</label>
+          </section>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap">
+            <button style="min-height: 46px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Save as draft</button>
+            <button style="min-height: 46px; padding: 0 20px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Save student and collect admission fee</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const sections = [['Student', '#student', 'Done'], ['Guardians', '#guardians', '1 to check'], ['Address', '#address', ''], ['Class, fees, transport', '#class', 'Done'], ['Documents', '#docs', '0 of 4'], ['Consent', '#consent', 'Done']]
+      .map(([label, href, mark], i) => ({ label, href, mark, bg: i === 1 ? '#E3EFEF' : 'transparent', fw: i === 1 ? 600 : 400,
+        markColor: mark === 'Done' ? '#1E5A33' : (mark ? '#8F4A09' : '#4F5B57') }));
+    return { sections };
+  }
+}
+</script>
+</body>
+</html>

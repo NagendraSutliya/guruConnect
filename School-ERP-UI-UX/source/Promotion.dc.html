@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Year-end Promotion</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="students" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57"><a href="Students.dc.html">Students</a> › Promotion · 2026-27 → 2027-28</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Promote Class 5-A to Class 6</h1>
+          <div style="font-size: 14px; color: #4F5B57">Suggested decisions come from the published annual result. Change any of them with a reason.</div>
+        </div>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Section in new class
+          <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Keep same section (6-A)</option><option>Balance by gender</option><option>Alphabetical across sections</option></select>
+        </label>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px">
+        <sc-for list="{{summary}}" as="s" hint-placeholder-count="4">
+          <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12.5px; color: #4F5B57; font-weight: 500">{{s.label}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 24px; color: {{s.color}}">{{s.value}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px">
+            <thead>
+              <tr style="background: #F2F4F2; text-align: left">
+                <th style="padding: 12px 16px; font-weight: 600">Roll</th>
+                <th style="padding: 12px 16px; font-weight: 600">Student</th>
+                <th style="padding: 12px 16px; font-weight: 600">Annual result</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">Attendance</th>
+                <th style="padding: 12px 16px; font-weight: 600">Decision</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+                <tr style="border-top: 1px solid #EEF1EF; background: {{r.bg}}">
+                  <td style="padding: 10px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4F5B57">{{r.roll}}</td>
+                  <td style="padding: 10px 16px; font-weight: 500">{{r.name}}</td>
+                  <td style="padding: 10px 16px; color: {{r.resColor}}">{{r.result}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.att}}</td>
+                  <td style="padding: 8px 16px">
+                    <div role="radiogroup" aria-label="Decision for {{r.name}}" style="display: flex; gap: 6px">
+                      <sc-for list="{{r.options}}" as="o" hint-placeholder-count="3">
+                        <button onClick="{{o.pick}}" aria-pressed="{{o.on}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid {{o.border}}; background: {{o.bg}}; color: {{o.fg}}; font: inherit; font-size: 13px; font-weight: 600">{{o.label}}</button>
+                      </sc-for>
+                    </div>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 16px; border-top: 1px solid #EEF1EF">
+          <span style="font-size: 13px; color: #4F5B57; max-width: 640px">Confirming creates 2027-28 enrolments, new roll numbers and fee plans. Unpaid 2026-27 dues carry forward. Each student can be reversed until the first attendance of the new session.</span>
+          <button style="min-height: 46px; padding: 0 20px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Confirm decisions for 40 students</button>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { d: { 5: 'Detain', 7: 'Leave' } };
+  }
+  renderVals() {
+    const raw = [
+      ['Aanya Bhatt', 'Pass · A2', 95], ['Aarav Gupta', 'Pass · A2', 96], ['Ananya Sharma', 'Pass · B1', 92], ['Aryan Kumawat', 'Pass · B2', 88],
+      ['Bhavya Jain', 'Pass · A1', 97], ['Chirag Saini', 'Fail in Maths, Hindi', 71], ['Devansh Tak', 'Pass · C1', 84], ['Gauri Vyas', 'Pass · B1 · TC requested', 90]
+    ];
+    const pick = (i, v) => this.setState({ d: Object.assign({}, this.state.d, { [i]: v }) });
+    const tone = { Promote: '#0E5A63', Detain: '#B4610E', Leave: '#6D6A5E' };
+    const rows = raw.map(([name, result, att], i) => {
+      const cur = this.state.d[i] || 'Promote';
+      return {
+        roll: String(i + 1).padStart(2, '0'), name, result, att: att + '%',
+        resColor: result.startsWith('Fail') ? '#8F4A09' : '#17201D',
+        bg: cur === 'Promote' ? '#FFFFFF' : '#FFFBF6',
+        options: ['Promote', 'Detain', 'Leave'].map(label => {
+          const on = label === cur;
+          return { label, on: on ? 'true' : 'false', pick: () => pick(i, label), bg: on ? tone[label] : '#FFFFFF', fg: on ? '#FFFFFF' : '#4F5B57', border: on ? tone[label] : '#C9D1CD' };
+        })
+      };
+    });
+    const count = v => raw.filter((_, i) => (this.state.d[i] || 'Promote') === v).length + (v === 'Promote' ? 32 : 0);
+    const summary = [
+      { label: 'Students in 5-A', value: '40', color: '#17201D' },
+      { label: 'Promote to Class 6', value: String(count('Promote')), color: '#0E5A63' },
+      { label: 'Detain in Class 5', value: String(count('Detain')), color: '#8F4A09' },
+      { label: 'Leaving (TC)', value: String(count('Leave')), color: '#17201D' }
+    ];
+    return { rows, summary };
+  }
+}
+</script>
+</body>
+</html>

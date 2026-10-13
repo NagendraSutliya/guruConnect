@@ -25,10 +25,10 @@ type AnalyticsChartProps = {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-900/90 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl animate-fadeIn">
-        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">{label}</p>
+      <div className="bg-nav-bg/90 backdrop-blur-md border border-white/10 p-4 rounded-card shadow-2xl animate-fadeIn">
+        <p className="text-[10px] font-black text-gold uppercase tracking-widest mb-1">{label}</p>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-500" />
+          <div className="w-2 h-2 rounded-full bg-success-text" />
           <p className="text-sm font-bold text-white">
             {payload[0].value} <span className="text-white/40 font-medium">Units</span>
           </p>
@@ -137,15 +137,15 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ stats, activeCategory, 
 
   if (!activeCategory) {
     return (
-      <div className="bg-white/70 backdrop-blur-md rounded-3xl p-12 border border-slate-100 shadow-sm mt-8 text-center animate-fadeIn">
+      <div className="bg-surface/70 backdrop-blur-md rounded-card p-12 border border-line shadow-sm mt-8 text-center animate-fadeIn">
         <div className="max-w-xs mx-auto space-y-4">
-          <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300">
+          <div className="w-16 h-16 bg-surface-subtle rounded-card flex items-center justify-center mx-auto text-ink-secondary">
             <FaChartArea size={32} />
           </div>
-          <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">
+          <p className="text-ink-secondary text-sm font-bold uppercase tracking-widest">
             Select a metric card above to view analytics
           </p>
-          <p className="text-slate-300 text-[10px] font-medium uppercase tracking-wider">
+          <p className="text-ink-secondary/70 text-[10px] font-medium uppercase tracking-wider">
             Growth metrics and trends will appear here
           </p>
         </div>
@@ -156,39 +156,39 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ stats, activeCategory, 
   const axisStyle = {
     fontSize: '10px',
     fontWeight: 700,
-    fontFamily: 'Inter, sans-serif',
-    fill: '#94a3b8',
+    fontFamily: '"IBM Plex Sans", sans-serif',
+    fill: '#4F5B57',
   };
 
   return (
-    <div className="bg-white/70 backdrop-blur-md rounded-3xl p-8 border border-slate-100 shadow-sm mt-8 animate-fadeIn overflow-hidden">
+    <div className="bg-surface/70 backdrop-blur-md rounded-card p-8 border border-line shadow-sm mt-8 animate-fadeIn overflow-hidden">
       <div className="flex flex-col xl:flex-row items-center justify-between mb-10 gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-inner">
+          <div className="w-10 h-10 rounded-control bg-primary-tint text-primary flex items-center justify-center shadow-inner">
             {chartType === "line" && <FaChartLine size={20} />}
             {chartType === "bar" && <FaChartBar size={20} />}
             {chartType === "pie" && <FaChartPie size={20} />}
           </div>
           <div>
-            <h3 className="text-base font-black text-slate-800 tracking-tight uppercase">
+            <h3 className="text-base font-black text-ink tracking-tight uppercase">
               {activeCategory} Intelligence
             </h3>
-            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-widest">
+            <p className="text-ink-secondary text-[11px] font-bold uppercase tracking-widest">
               Range: {selectedRange === '7days' ? 'Last Week' : selectedRange === '30days' ? 'Last Month' : 'Last Year'}
             </p>
           </div>
         </div>
 
         <div className="flex flex-col gap-4 items-center">
-            <div className="flex gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200/50">
+            <div className="flex gap-1 p-1 bg-surface-subtle rounded-control border border-line">
             {(["line", "pie", "bar"] as const).map((type) => (
                 <button
                 key={type}
                 onClick={() => setChartType(type)}
-                className={`px-6 py-2 text-[10px] font-black rounded-lg transition-all capitalize tracking-widest ${
+                className={`px-6 py-2 text-[10px] font-black rounded-control transition-all capitalize tracking-widest ${
                     chartType === type
-                    ? "bg-indigo-600 text-white shadow-xl shadow-indigo-200"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-primary text-white shadow-sm shadow-line-input"
+                    : "text-ink-secondary hover:text-ink"
                 }`}
                 >
                 {type}
@@ -196,7 +196,7 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ stats, activeCategory, 
             ))}
             </div>
 
-             <div className="flex gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200/50">
+             <div className="flex gap-1 p-1 bg-surface-subtle rounded-control border border-line">
             {[
                 { label: "7D", value: "7days" },
                 { label: "30D", value: "30days" },
@@ -205,10 +205,10 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ stats, activeCategory, 
                 <button
                 key={r.value}
                 onClick={() => onRangeChange(r.value)}
-                className={`px-4 py-1.5 text-[9px] font-black rounded-lg transition-all tracking-tighter ${
+                className={`px-4 py-1.5 text-[9px] font-black rounded-control transition-all tracking-tighter ${
                     selectedRange === r.value
-                    ? "bg-white text-indigo-600 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-surface text-primary shadow-sm border border-line-input"
+                    : "text-ink-secondary hover:text-ink"
                 }`}
                 >
                 {r.label}
@@ -242,31 +242,31 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ stats, activeCategory, 
               </PieChart>
             ) : chartType === "bar" ? (
               <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} dy={15} label={{ value: 'Time Period', position: 'insideBottom', offset: -20, fill: '#94a3b8', fontSize: 10, fontWeight: 900 }} />
-                <YAxis axisLine={false} tickLine={false} tick={axisStyle} dx={-10} label={{ value: 'Entries', angle: -90, position: 'insideLeft', offset: 15, fill: '#94a3b8', fontSize: 10, fontWeight: 900 }} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EEF1EF" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} dy={15} label={{ value: 'Time Period', position: 'insideBottom', offset: -20, fill: '#4F5B57', fontSize: 10, fontWeight: 900 }} />
+                <YAxis axisLine={false} tickLine={false} tick={axisStyle} dx={-10} label={{ value: 'Entries', angle: -90, position: 'insideLeft', offset: 15, fill: '#4F5B57', fontSize: 10, fontWeight: 900 }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#F5F6F3' }} />
                 <Bar dataKey="value" fill="url(#barGradient)" radius={[10, 10, 0, 0]} barSize={selectedRange === '30days' ? 12 : 45} />
                 <defs>
                   <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366f1" />
-                    <stop offset="100%" stopColor="#8b5cf6" />
+                    <stop offset="0%" stopColor="#9CC3C4" />
+                    <stop offset="100%" stopColor="#0E5A63" />
                   </linearGradient>
                 </defs>
               </BarChart>
             ) : (
               <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} dy={15} label={{ value: 'Time Period', position: 'insideBottom', offset: -20, fill: '#94a3b8', fontSize: 10, fontWeight: 900 }} />
-                <YAxis axisLine={false} tickLine={false} tick={axisStyle} dx={-10} label={{ value: 'Entries', angle: -90, position: 'insideLeft', offset: 15, fill: '#94a3b8', fontSize: 10, fontWeight: 900 }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EEF1EF" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} dy={15} label={{ value: 'Time Period', position: 'insideBottom', offset: -20, fill: '#4F5B57', fontSize: 10, fontWeight: 900 }} />
+                <YAxis axisLine={false} tickLine={false} tick={axisStyle} dx={-10} label={{ value: 'Entries', angle: -90, position: 'insideLeft', offset: 15, fill: '#4F5B57', fontSize: 10, fontWeight: 900 }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={4} dot={{ fill: '#6366f1', strokeWidth: 2, r: selectedRange === '30days' ? 3 : 6, stroke: '#fff' }} activeDot={{ r: 9, strokeWidth: 0 }} />
+                <Line type="monotone" dataKey="value" stroke="#0E5A63" strokeWidth={4} dot={{ fill: '#0E5A63', strokeWidth: 2, r: selectedRange === '30days' ? 3 : 6, stroke: '#fff' }} activeDot={{ r: 9, strokeWidth: 0 }} />
               </LineChart>
             )}
           </ResponsiveContainer>
         ) : (
           <div className="h-[400px] flex items-center justify-center">
-            <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         )}
       </div>

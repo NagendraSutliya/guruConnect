@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Notices and Communication</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="communication" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 13px; color: #4F5B57">Communication › New notice · <a href="PTM.dc.html">PTM</a> · <a href="Complaints.dc.html">Complaints</a></div>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600">Send a notice</h1>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 999 1 480px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 18px">
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Title
+            <input value="School closed on 20 October for Diwali break" style="min-height: 46px; padding: 0 14px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Message
+            <textarea rows="4" style="padding: 12px 14px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; line-height: 1.5; color: #17201D; resize: vertical">Dear parents, the school will remain closed from 20 to 24 October for the Diwali break. Classes resume on Monday, 26 October.</textarea>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500"><span>Hindi version <span style="font-weight: 400; color: #4F5B57">(optional)</span></span>
+            <textarea lang="hi" rows="2" style="padding: 12px 14px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; line-height: 1.6; color: #17201D; resize: vertical">प्रिय अभिभावक, दीपावली अवकाश के कारण विद्यालय 20 से 24 अक्टूबर तक बंद रहेगा।</textarea>
+          </label>
+
+          <fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px">
+            <legend style="font-size: 14px; font-weight: 500; padding: 0 0 8px">Who receives it</legend>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <sc-for list="{{audience}}" as="a" hint-placeholder-count="6">
+                <button aria-pressed="{{a.on}}" style="min-height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid {{a.border}}; background: {{a.bg}}; color: {{a.fg}}; font: inherit; font-size: 13px; font-weight: 500">{{a.label}}</button>
+              </sc-for>
+            </div>
+            <span style="font-size: 13px; color: #4F5B57">1,248 students · 2,031 guardians · 96 staff</span>
+          </fieldset>
+
+          <fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px">
+            <legend style="font-size: 14px; font-weight: 500; padding: 0 0 8px">Channels</legend>
+            <sc-for list="{{channels}}" as="c" hint-placeholder-count="3">
+              <label style="display: flex; align-items: center; gap: 10px; font-size: 14px">
+                <input type="checkbox" checked="{{c.on}}" style="width: 18px; height: 18px">
+                <span style="flex: 1">{{c.label}}</span>
+                <span style="font-size: 13px; color: #4F5B57">{{c.cost}}</span>
+              </label>
+            </sc-for>
+          </fieldset>
+
+          <label style="display: flex; align-items: center; gap: 10px; font-size: 14px"><input type="checkbox" style="width: 18px; height: 18px">Ask parents to acknowledge (Yes / No)</label>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; padding-top: 6px; border-top: 1px solid #EEF1EF">
+            <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Schedule</button>
+            <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Send for principal approval</button>
+          </div>
+        </section>
+
+        <aside style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 600">Preview in parent app</h2>
+            <div style="border: 1px solid #DDE2DE; border-radius: 14px; padding: 14px; background: #F9FAF8; display: flex; flex-direction: column; gap: 6px">
+              <span style="font-size: 12px; font-weight: 600; color: #0E5A63; text-transform: uppercase; letter-spacing: 0.04em">Notice · Shiksha Public School</span>
+              <span style="font-size: 15px; font-weight: 600">School closed on 20 October for Diwali break</span>
+              <span style="font-size: 13.5px; line-height: 1.5; color: #3B4643">Dear parents, the school will remain closed from 20 to 24 October…</span>
+            </div>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 4px">
+            <h2 style="margin: 0 0 8px; font-size: 15px; font-weight: 600">Recent notices</h2>
+            <sc-for list="{{recent}}" as="r" hint-placeholder-count="4">
+              <div style="display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-top: 1px solid #EEF1EF">
+                <div style="display: flex; justify-content: space-between; gap: 8px; font-size: 14px"><span style="font-weight: 500">{{r.title}}</span><span style="font-size: 12px; color: #4F5B57; white-space: nowrap">{{r.date}}</span></div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <span style="flex: 1; height: 6px; background: #E1E6E3; border-radius: 999px; overflow: hidden"><span style="display: block; height: 100%; width: {{r.pct}}; background: #0E5A63"></span></span>
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4F5B57">{{r.pct}} read</span>
+                </div>
+              </div>
+            </sc-for>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const chip = (label, on) => ({ label, on: on ? 'true' : 'false', bg: on ? '#12302D' : '#FFFFFF', fg: on ? '#FFFFFF' : '#17201D', border: on ? '#12302D' : '#C9D1CD' });
+    const audience = [chip('Whole school', true), chip('Pre-primary', false), chip('Primary', false), chip('Class / section…', false), chip('Bus route…', false), chip('Staff only', false)];
+    const channels = [
+      { label: 'App notification', cost: 'Free', on: true },
+      { label: 'WhatsApp (approved template)', cost: '≈ 2,031 credits', on: true },
+      { label: 'SMS (only if app not opened in 10 min)', cost: 'Up to 2,031 credits', on: false }
+    ];
+    const recent = [
+      { title: 'PTM for Class 6 on 9 Oct', date: '02 Oct', pct: '88%' },
+      { title: 'Half-yearly date sheet', date: '28 Sep', pct: '94%' },
+      { title: 'Fee installment 3 reminder', date: '25 Sep', pct: '76%' },
+      { title: 'Annual sports day consent', date: '20 Sep', pct: '81%' }
+    ];
+    return { audience, channels, recent };
+  }
+}
+</script>
+</body>
+</html>

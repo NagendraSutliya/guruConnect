@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Exam Setup and Date Sheet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="exams" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Examinations › Setup · <a href="Marks.dc.html">Marks entry</a> · <a href="ReportCards.dc.html">Results</a></div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Half-Yearly Exam · Classes 6–8</h1>
+          <div style="font-size: 14px; color: #4F5B57">Term 1 · Scheme: CBSE Middle (VI–VIII), version 2026-27 · 3 classes, 9 sections</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Print admit cards</button>
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Seating plan</button>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Publish date sheet</button>
+        </div>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600">Assessment components for Term 1</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px">
+          <sc-for list="{{components}}" as="c" hint-placeholder-count="4">
+            <div style="border: 1px solid {{c.border}}; background: {{c.bg}}; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+              <span style="font-size: 14px; font-weight: 600">{{c.name}}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">{{c.max}}</span>
+              <span style="font-size: 12.5px; color: #4F5B57">{{c.rule}}</span>
+            </div>
+          </sc-for>
+        </div>
+        <span style="font-size: 13px; color: #4F5B57">Total 100 per subject · 8-point grade scale A1 (91–100) to E (32 and below) · pass mark 33% per subject</span>
+      </section>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Date sheet</h2>
+          <span style="font-size: 12px; font-weight: 600; color: #7A4106; background: #FFF6EC; padding: 4px 10px; border-radius: 999px">Invigilator missing for 2 papers</span>
+        </div>
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 860px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; font-weight: 600">Date</th><th style="padding: 12px 16px; font-weight: 600">Time</th><th style="padding: 12px 16px; font-weight: 600">Class 6</th><th style="padding: 12px 16px; font-weight: 600">Class 7</th><th style="padding: 12px 16px; font-weight: 600">Class 8</th><th style="padding: 12px 16px; font-weight: 600">Invigilators</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{sheet}}" as="r" hint-placeholder-count="7">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px; font-weight: 600; white-space: nowrap">{{r.date}}</td>
+                  <td style="padding: 10px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4F5B57">09:00–11:30</td>
+                  <td style="padding: 10px 16px">{{r.c6}}</td>
+                  <td style="padding: 10px 16px">{{r.c7}}</td>
+                  <td style="padding: 10px 16px">{{r.c8}}</td>
+                  <td style="padding: 10px 16px; color: {{r.invColor}}; font-weight: {{r.invWeight}}">{{r.inv}}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const comp = (name, max, rule, main) => ({ name, max, rule, bg: main ? '#F4F9F9' : '#FFFFFF', border: main ? '#9CC3C4' : '#DDE2DE' });
+    const components = [comp('Periodic Test', '10', 'Best 1 of 2 tests, scaled to 10'), comp('Notebook', '5', 'Regularity and completion'), comp('Subject Enrichment', '5', 'Lab / project / speaking'), comp('Half-Yearly Exam', '80', 'Written paper, 2.5 hours', true)];
+    const sheet = [
+      ['Mon 16 Nov', 'English', 'English', 'English', '9 assigned'],
+      ['Wed 18 Nov', 'Maths', 'Maths', 'Maths', '9 assigned'],
+      ['Fri 20 Nov', 'Science', 'Science', 'Science', '7 of 9 assigned'],
+      ['Mon 23 Nov', 'Hindi', 'Hindi', 'Hindi', '9 assigned'],
+      ['Wed 25 Nov', 'Social Science', 'Social Science', 'Social Science', '8 of 9 assigned'],
+      ['Fri 27 Nov', 'Sanskrit', 'Sanskrit', 'Sanskrit', '9 assigned'],
+      ['Sat 28 Nov', 'Computer', 'Computer', 'Computer', '9 assigned']
+    ].map(([date, c6, c7, c8, inv]) => ({ date, c6, c7, c8, inv, invColor: inv.includes('of') ? '#8F4A09' : '#4F5B57', invWeight: inv.includes('of') ? 600 : 400 }));
+    return { components, sheet };
+  }
+}
+</script>
+</body>
+</html>

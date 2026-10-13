@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Library Issue and Return</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="library" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Library › Circulation desk</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Issue and return</h1>
+        </div>
+        <div style="display: flex; gap: 20px; font-size: 13px; color: #4F5B57; flex-wrap: wrap">
+          <span>Issued today <b style="font-family: 'IBM Plex Mono', monospace; color: #17201D">46</b></span>
+          <span>Returned <b style="font-family: 'IBM Plex Mono', monospace; color: #17201D">31</b></span>
+          <span>Overdue <b style="font-family: 'IBM Plex Mono', monospace; color: #8F4A09">58</b></span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #E7EBE8; border-radius: 10px; padding: 4px; max-width: 360px">
+        <button style="min-height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #17201D">Issue</button>
+        <button style="min-height: 44px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 14px; font-weight: 500; color: #4F5B57">Return / renew</button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 1 1 360px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">1. Scan member card or type admission no.
+            <input value="2019/0211" style="min-height: 48px; padding: 0 14px; border: 2px solid #0E5A63; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: #17201D">
+          </label>
+          <div style="display: flex; gap: 12px; align-items: center; padding: 12px; background: #F4F9F9; border-radius: 10px">
+            <div style="width: 40px; height: 40px; border-radius: 999px; background: #E3EFEF; color: #08393F; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px">AM</div>
+            <div style="display: flex; flex-direction: column; gap: 2px; font-size: 13px">
+              <span style="font-weight: 600; font-size: 14px">Arjun Meena · 6-B</span>
+              <span style="color: #4F5B57">Student member · 1 of 2 books issued · no fines</span>
+            </div>
+          </div>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">2. Scan book barcode
+            <input value="ACC-004812" style="min-height: 48px; padding: 0 14px; border: 1px solid #C9D1CD; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: #17201D">
+          </label>
+          <div style="display: flex; gap: 12px; padding: 12px; border: 1px solid #DDE2DE; border-radius: 10px">
+            <div style="width: 52px; height: 72px; flex: none; border-radius: 4px; background: #E9DFC8; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #5A4A24; text-align: center">[Cover]</div>
+            <div style="display: flex; flex-direction: column; gap: 3px; font-size: 13px">
+              <span style="font-weight: 600; font-size: 14px">Panchatantra Stories (Hindi)</span>
+              <span style="color: #4F5B57">Children's fiction · Rack C-3 · 4 of 6 copies available</span>
+              <span style="color: #4F5B57">Due back: <b style="color: #17201D">23 Oct 2026</b> (14 days)</span>
+            </div>
+          </div>
+          <button style="min-height: 48px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600">Issue book</button>
+        </section>
+
+        <section style="flex: 999 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+          <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Overdue books</h2>
+            <button style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Remind all guardians</button>
+          </div>
+          <div style="overflow-x: auto">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px">
+              <thead><tr style="background: #F2F4F2; text-align: left"><th style="padding: 10px 16px; font-weight: 600">Book</th><th style="padding: 10px 16px; font-weight: 600">Member</th><th style="padding: 10px 16px; font-weight: 600; text-align: right">Days late</th><th style="padding: 10px 16px; font-weight: 600; text-align: right">Fine</th></tr></thead>
+              <tbody>
+                <sc-for list="{{overdue}}" as="o" hint-placeholder-count="6">
+                  <tr style="border-top: 1px solid #EEF1EF">
+                    <td style="padding: 10px 16px">{{o.book}}</td>
+                    <td style="padding: 10px 16px; color: #4F5B57">{{o.who}}</td>
+                    <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: #8F4A09">{{o.days}}</td>
+                    <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{o.fine}}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding: 12px 20px; font-size: 13px; color: #4F5B57; border-top: 1px solid #EEF1EF">Fines (₹1 per day) are added to the student's fee ledger when the book is returned.</div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const overdue = [
+      ['Wings of Fire', 'Kunal Rathore · 10-A', 12], ['NCERT Exemplar Maths 9', 'Ira Joshi · 9-C', 9], ['Malgudi Days', 'Diya Choudhary · 7-B', 7],
+      ['Godaan (Hindi)', 'Rachna Bose · Staff', 5], ['Atlas of India', 'Harsh Vardhan · 8-A', 4], ['Ruskin Bond Omnibus', 'Pihu Sethi · 11-Commerce', 2]
+    ].map(([book, who, d]) => ({ book, who, days: String(d), fine: '₹' + d }));
+    return { overdue };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Homework and Syllabus</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="academics" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Academics › <a href="Timetable.dc.html">Timetable</a> · Homework · Syllabus</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Homework and syllabus · Class 8-B</h1>
+        </div>
+        <span style="font-size: 13px; color: #4F5B57">Daily diary goes to parents at 4:00 pm</span>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 1 1 340px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Post homework</h2>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Class
+              <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>8-B</option><option>8-A</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Subject
+              <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Science</option></select>
+            </label>
+          </div>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Topic
+            <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Ch. 6 Combustion and Flame — Types of combustion</option></select>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">What to do
+            <textarea rows="3" style="padding: 10px 12px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 14px; line-height: 1.5; color: #17201D; resize: vertical">Answer questions 1–5 at the end of the chapter. Draw a labelled diagram of a candle flame.</textarea>
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Due date
+              <input type="date" value="2026-10-12" style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 14px; color: #17201D">
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Submission
+              <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Photo upload in app</option><option>In notebook only</option></select>
+            </label>
+          </div>
+          <button style="min-height: 44px; border-radius: 8px; border: 1px dashed #9AA8A3; background: #F9FAF8; font: inherit; font-size: 13.5px; color: #4F5B57">Attach PDF or image (up to 10 MB)</button>
+          <button style="min-height: 46px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Post to 38 students</button>
+        </section>
+
+        <div style="flex: 999 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 6px 20px">
+            <h2 style="margin: 14px 0 6px; font-size: 16px; font-weight: 600">Recent homework</h2>
+            <sc-for list="{{hw}}" as="h" hint-placeholder-count="4">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #EEF1EF">
+                <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 500">{{h.title}}</span><span style="font-size: 12.5px; color: #4F5B57">{{h.meta}}</span></span>
+                <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none">
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px">{{h.sub}}</span>
+                  <span style="width: 120px; height: 6px; background: #E1E6E3; border-radius: 999px; overflow: hidden; display: block"><span style="display: block; height: 100%; width: {{h.pct}}; background: #0E5A63"></span></span>
+                </span>
+              </div>
+            </sc-for>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Syllabus completed vs planned</h2><span style="font-size: 12.5px; color: #4F5B57">Black tick = planned by today</span></div>
+            <sc-for list="{{syl}}" as="s" hint-placeholder-count="6">
+              <div style="display: grid; grid-template-columns: 110px 1fr 48px; gap: 12px; align-items: center; font-size: 13.5px">
+                <span style="font-weight: 500">{{s.subject}}</span>
+                <span style="position: relative; height: 12px; background: #EEF1EF; border-radius: 4px; display: block">
+                  <span style="display: block; height: 100%; width: {{s.done}}; background: {{s.fill}}; border-radius: 4px"></span>
+                  <span style="position: absolute; top: -3px; bottom: -3px; left: {{s.plan}}; width: 2px; background: #17201D"></span>
+                </span>
+                <span style="font-family: 'IBM Plex Mono', monospace; text-align: right">{{s.done}}</span>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const hw = [
+      ['Science · Ch. 5 Coal and Petroleum, Q1–8', 'Due 9 Oct · photo upload', 34, 38],
+      ['Maths · Ex. 7.2 Cubes and cube roots', 'Due 8 Oct · notebook', 38, 38],
+      ['English · Letter to the editor', 'Due 7 Oct · photo upload', 29, 38],
+      ['Hindi · पाठ 4 के प्रश्न-उत्तर', 'Due 6 Oct · notebook', 36, 38]
+    ].map(([title, meta, a, b]) => ({ title, meta, sub: a + '/' + b + ' checked', pct: Math.round(a / b * 100) + '%' }));
+    const syl = [['Science', 52, 55], ['Maths', 48, 55], ['English', 58, 55], ['Hindi', 55, 55], ['Social Sc.', 41, 55], ['Sanskrit', 50, 50]]
+      .map(([subject, d, p]) => ({ subject, done: d + '%', plan: p + '%', fill: d + 5 < p ? '#C2701A' : '#0E5A63' }));
+    return { hw, syl };
+  }
+}
+</script>
+</body>
+</html>

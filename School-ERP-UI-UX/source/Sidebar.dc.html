@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sidebar navigation</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<nav aria-label="Main" style="width: 100%; min-height: 56.25rem; box-sizing: border-box; background: #12302D; color: #D5E4E0; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; padding: 20px 14px; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; align-items: center; gap: 12px; padding: 4px 6px 16px; border-bottom: 1px solid #24504A">
+    <div style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: #E9B872; color: #12302D; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px">SP</div>
+    <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+      <div style="font-weight: 600; font-size: 14px; color: #FFFFFF">Shiksha Public School</div>
+      <div style="font-size: 12px; color: #A9C2BD">Mansarovar campus · CBSE</div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 2px">
+    <sc-for list="{{items}}" as="item" hint-placeholder-count="13">
+      <a href="{{item.href}}" style="display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0 12px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: {{item.fw}}; color: {{item.fg}}; background: {{item.bg}}">
+        <span style="width: 6px; height: 6px; border-radius: 999px; flex: none; background: {{item.dot}}"></span>
+        <span>{{item.label}}</span>
+      </a>
+    </sc-for>
+  </div>
+  <div style="margin-top: auto; font-size: 12px; color: #A9C2BD; padding: 0 6px">v2.0 · Help &amp; support</div>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"active":{"editor":"enum","options":["dashboard","admissions","students","attendance","academics","exams","fees","accounts","staff","hr","transport","hostel","library","inventory","frontoffice","communication","reports","settings","admin"],"default":"dashboard"},"$preview":{"width":232,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const active = this.props.active ?? 'dashboard';
+    const list = [
+      ['dashboard', 'Dashboard', 'Main.dc.html'],
+      ['admissions', 'Admissions', 'Admissions.dc.html'],
+      ['students', 'Students', 'Students.dc.html'],
+      ['attendance', 'Attendance', 'Attendance.dc.html'],
+      ['academics', 'Academics & Timetable', 'Timetable.dc.html'],
+      ['exams', 'Examinations', 'Marks.dc.html'],
+      ['fees', 'Fees', 'FeeCounter.dc.html'],
+      ['accounts', 'Accounts', 'Accounts.dc.html'],
+      ['staff', 'Staff & Leave', 'Staff.dc.html'],
+      ['hr', 'Payroll', 'Payroll.dc.html'],
+      ['transport', 'Transport', 'Transport.dc.html'],
+      ['hostel', 'Hostel', 'Hostel.dc.html'],
+      ['library', 'Library', 'Library.dc.html'],
+      ['inventory', 'Inventory & Assets', 'Inventory.dc.html'],
+      ['frontoffice', 'Front Office', 'Visitors.dc.html'],
+      ['communication', 'Communication', 'Notices.dc.html'],
+      ['reports', 'Reports', 'Reports.dc.html'],
+      ['settings', 'Settings', 'SetupWizard.dc.html'],
+      ['admin', 'Users & Audit', 'Roles.dc.html']
+    ];
+    return {
+      items: list.map(([key, label, href]) => {
+        const on = key === active;
+        return {
+          label, href,
+          fw: on ? 600 : 400,
+          fg: on ? '#FFFFFF' : '#D5E4E0',
+          bg: on ? '#21524C' : 'transparent',
+          dot: on ? '#E9B872' : '#3E6A64'
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

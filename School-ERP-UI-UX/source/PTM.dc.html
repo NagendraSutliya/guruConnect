@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Parent-Teacher Meeting</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="communication" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Communication › <a href="Notices.dc.html">Notices</a> · PTM</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Class 6 PTM · today, 12:30–2:30 pm</h1>
+          <div style="font-size: 14px; color: #4F5B57">10-minute slots · parents booked from the app · Half-yearly marks summary shared with each teacher</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Remind unbooked parents</button>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">New PTM</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+          <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12.5px; color: #4F5B57; font-weight: 500">{{k.label}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">{{k.value}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Slots by class teacher</h2>
+          <div style="display: flex; gap: 14px; font-size: 12.5px; color: #4F5B57; flex-wrap: wrap">
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #0E5A63"></span>Booked</span>
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #9CC3C4"></span>Met</span>
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #D9822B"></span>No-show</span>
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; border: 1px dashed #4F5B57"></span>Free</span>
+          </div>
+        </div>
+        <div style="overflow-x: auto">
+          <div style="display: grid; grid-template-columns: 180px repeat(12, minmax(44px, 1fr)); min-width: 860px">
+            <div style="padding: 10px 16px; background: #F2F4F2; font-size: 13px; font-weight: 600">Teacher</div>
+            <sc-for list="{{times}}" as="t" hint-placeholder-count="12"><div style="padding: 10px 2px; background: #F2F4F2; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; text-align: center; color: #4F5B57">{{t}}</div></sc-for>
+            <sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+              <div style="padding: 10px 16px; border-top: 1px solid #EEF1EF; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 600">{{r.cls}}</span><span style="font-size: 12px; color: #4F5B57">{{r.teacher}}</span></div>
+              <sc-for list="{{r.slots}}" as="s" hint-placeholder-count="12">
+                <div style="padding: 8px 3px; border-top: 1px solid #EEF1EF"><span title="{{s.tip}}" style="display: block; height: 34px; border-radius: 6px; background: {{s.bg}}; border: {{s.border}}; box-sizing: border-box"></span></div>
+              </sc-for>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600">Latest meeting notes</h2>
+        <div style="font-size: 14px; line-height: 1.5">12:40 · 6-A · Parent of Kabir Saxena: maths practice at home for 20 minutes daily; follow up after unit test 2. <span style="color: #4F5B57">— Ankit Sharma</span></div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const times = ['12:30', '12:40', '12:50', '1:00', '1:10', '1:20', '1:30', '1:40', '1:50', '2:00', '2:10', '2:20'];
+    const kpis = [{ label: 'Slots', value: '36' }, { label: 'Booked', value: '31' }, { label: 'Met so far', value: '4' }, { label: 'No-shows', value: '1' }];
+    const map = { M: ['#9CC3C4', '1px solid #9CC3C4', 'Met'], B: ['#0E5A63', '1px solid #0E5A63', 'Booked'], N: ['#D9822B', '1px solid #D9822B', 'No-show'], F: ['#FFFFFF', '1px dashed #4F5B57', 'Free'] };
+    const rows = [['6-A', 'Ankit Sharma', 'MMBBBFBBBBBB'], ['6-B', 'Hemant Vyas', 'MNBBBBBFBBBB'], ['6-C', 'Farah Ali', 'MBBFBBBBBFBF']]
+      .map(([cls, teacher, s]) => ({ cls, teacher, slots: s.split('').map(c => ({ bg: map[c][0], border: map[c][1], tip: map[c][2] })) }));
+    return { times, kpis, rows };
+  }
+}
+</script>
+</body>
+</html>

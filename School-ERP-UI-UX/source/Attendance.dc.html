@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Daily Attendance</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="attendance" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Attendance › Daily</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Class 5-A · Friday, 9 Oct 2026</h1>
+          <div style="font-size: 14px; color: #4F5B57">Everyone starts as Present. Tap only the exceptions. Cut-off 10:00 am.</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Class
+            <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>5-A</option><option>5-B</option><option>5-C</option></select>
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Date
+            <input type="date" value="2026-10-09" style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D">
+          </label>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px">
+        <sc-for list="{{summary}}" as="s" hint-placeholder-count="5">
+          <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; color: #4F5B57; font-weight: 500">{{s.label}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 24px; color: {{s.color}}">{{s.value}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #EEF1EF">
+          <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #4F5B57">
+            <span>P Present</span><span>A Absent</span><span>L Leave</span><span>HD Half day</span><span>LT Late</span>
+          </div>
+          <button onClick="{{resetAll}}" style="min-height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Mark all present</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr))">
+          <sc-for list="{{students}}" as="st" hint-placeholder-count="12">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #EEF1EF; background: {{st.rowBg}}">
+              <div style="display: flex; align-items: center; gap: 10px; min-width: 0">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4F5B57; width: 22px">{{st.roll}}</span>
+                <span style="display: flex; flex-direction: column; min-width: 0">
+                  <span style="font-size: 14px; font-weight: 500">{{st.name}}</span>
+                  <span style="font-size: 12px; color: #8F4A09">{{st.note}}</span>
+                </span>
+              </div>
+              <div role="radiogroup" aria-label="Status for {{st.name}}" style="display: flex; gap: 4px; flex: none">
+                <sc-for list="{{st.options}}" as="o" hint-placeholder-count="5">
+                  <button onClick="{{o.pick}}" aria-pressed="{{o.on}}" style="min-width: 36px; min-height: 36px; padding: 0 6px; border-radius: 6px; border: 1px solid {{o.border}}; background: {{o.bg}}; color: {{o.fg}}; font: inherit; font-size: 12px; font-weight: 600">{{o.code}}</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 16px">
+          <span style="font-size: 13px; color: #4F5B57">Guardians of absent and late students get a push notification within 5 minutes of submitting.</span>
+          <button style="min-height: 46px; padding: 0 22px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600">Submit attendance</button>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { marks: { 4: 'A', 9: 'LT', 13: 'L' } };
+  }
+  renderVals() {
+    const names = ['Aanya Bhatt', 'Aarav Gupta', 'Ananya Sharma', 'Aryan Kumawat', 'Bhavya Jain', 'Chirag Saini', 'Devansh Tak', 'Gauri Vyas', 'Hridaan Soni', 'Ishita Rao', 'Kavya Mathur', 'Lakshya Verma', 'Mahi Agarwal', 'Navya Jangid', 'Om Prakash', 'Riddhi Paliwal'];
+    const marks = this.state.marks;
+    const codes = ['P', 'A', 'L', 'HD', 'LT'];
+    const style = { P: ['#0E5A63', '#FFFFFF'], A: ['#B4610E', '#FFFFFF'], L: ['#5B8E90', '#FFFFFF'], HD: ['#6D6A5E', '#FFFFFF'], LT: ['#8C6B1F', '#FFFFFF'] };
+    const notes = { A: 'Absent — guardian will be notified', LT: 'Late arrival', L: 'Approved leave (parent request)', HD: 'Half day' };
+    const set = (i, c) => this.setState({ marks: Object.assign({}, this.state.marks, { [i]: c }) });
+    const students = names.map((name, i) => {
+      const cur = marks[i] || 'P';
+      return {
+        roll: String(i + 1).padStart(2, '0'), name,
+        note: notes[cur] || '',
+        rowBg: cur === 'A' ? '#FFF8F0' : '#FFFFFF',
+        options: codes.map(code => {
+          const on = code === cur;
+          return { code, on: on ? 'true' : 'false', pick: () => set(i, code),
+            bg: on ? style[code][0] : '#FFFFFF', fg: on ? style[code][1] : '#4F5B57', border: on ? style[code][0] : '#C9D1CD' };
+        })
+      };
+    });
+    const count = c => names.filter((_, i) => (marks[i] || 'P') === c).length;
+    const weight = { P: 1, LT: 1, HD: 0.5, A: 0, L: 0 };
+    const pct = names.reduce((s, _, i) => s + weight[marks[i] || 'P'], 0) / names.length * 100;
+    const summary = [
+      { label: 'Present', value: String(count('P') + count('LT')), color: '#17201D' },
+      { label: 'Absent', value: String(count('A')), color: '#8F4A09' },
+      { label: 'On leave', value: String(count('L')), color: '#17201D' },
+      { label: 'Half day', value: String(count('HD')), color: '#17201D' },
+      { label: "Today's %", value: pct.toFixed(1) + '%', color: '#0E5A63' }
+    ];
+    return { students, summary, resetAll: () => this.setState({ marks: {} }) };
+  }
+}
+</script>
+</body>
+</html>

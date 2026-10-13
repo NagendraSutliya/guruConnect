@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Day-end Cash Closing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="fees" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 13px; color: #4F5B57"><a href="FeeCounter.dc.html">Fee counter</a> › Day-end closing</div>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600">Counter 1 · cash closing for 9 Oct 2026</h1>
+        <div style="font-size: 14px; color: #4F5B57">Count the cash in the drawer. A supervisor signs off before the counter can open tomorrow.</div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 999 1 480px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+          <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Notes and coins counted</h2></div>
+          <sc-for list="{{denoms}}" as="d" hint-placeholder-count="7">
+            <div style="display: grid; grid-template-columns: 90px 1fr 140px; gap: 16px; align-items: center; padding: 10px 20px; border-bottom: 1px solid #EEF1EF">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500">₹{{d.face}}</span>
+              <div style="display: flex; align-items: center; gap: 8px">
+                <button onClick="{{d.dec}}" aria-label="One less ₹{{d.face}}" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 18px; color: #17201D">−</button>
+                <span style="min-width: 56px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 15px">{{d.count}}</span>
+                <button onClick="{{d.inc}}" aria-label="One more ₹{{d.face}}" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 18px; color: #17201D">+</button>
+              </div>
+              <span style="text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 15px">{{d.total}}</span>
+            </div>
+          </sc-for>
+        </section>
+
+        <aside style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; font-size: 14px">
+            <h2 style="margin: 0 0 4px; font-size: 16px; font-weight: 600">Summary</h2>
+            <div style="display: flex; justify-content: space-between"><span style="color: #4F5B57">Cash receipts in system (37)</span><span style="font-family: 'IBM Plex Mono', monospace">₹2,84,600</span></div>
+            <div style="display: flex; justify-content: space-between"><span style="color: #4F5B57">Opening float</span><span style="font-family: 'IBM Plex Mono', monospace">₹0</span></div>
+            <div style="display: flex; justify-content: space-between"><span style="color: #4F5B57">Cash counted</span><span style="font-family: 'IBM Plex Mono', monospace">{{counted}}</span></div>
+            <div style="display: flex; justify-content: space-between; padding: 10px 12px; margin-top: 4px; border-radius: 8px; background: {{diffBg}}; color: {{diffFg}}; font-weight: 600"><span>{{diffLabel}}</span><span style="font-family: 'IBM Plex Mono', monospace">{{diff}}</span></div>
+            <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid #EEF1EF"><span style="color: #4F5B57">UPI / card / cheque today</span><span style="font-family: 'IBM Plex Mono', monospace">₹1,12,300</span></div>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Note for the supervisor
+              <textarea rows="2" placeholder="Explain any difference" style="padding: 10px 12px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 14px; color: #17201D; resize: vertical"></textarea>
+            </label>
+            <button style="min-height: 46px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Submit for supervisor sign-off</button>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { c: { 500: 520, 200: 90, 100: 51, 50: 20, 20: 15, 10: 10, 5: 0 } }; }
+  renderVals() {
+    const inr = n => '₹' + Math.abs(n).toLocaleString('en-IN');
+    const c = this.state.c;
+    const set = (f, v) => this.setState({ c: Object.assign({}, c, { [f]: Math.max(0, v) }) });
+    const faces = [500, 200, 100, 50, 20, 10, 5];
+    const denoms = faces.map(f => ({ face: String(f), count: String(c[f]), total: inr(f * c[f]), inc: () => set(f, c[f] + 1), dec: () => set(f, c[f] - 1) }));
+    const counted = faces.reduce((s, f) => s + f * c[f], 0);
+    const d = counted - 284600;
+    return { denoms, counted: inr(counted),
+      diff: d === 0 ? '₹0' : (d > 0 ? '+' : '−') + inr(d),
+      diffLabel: d === 0 ? 'Matches the system' : d > 0 ? 'Excess cash' : 'Short',
+      diffBg: d === 0 ? '#E4F1E8' : '#FFF6EC', diffFg: d === 0 ? '#1E5A33' : '#7A4106' };
+  }
+}
+</script>
+</body>
+</html>

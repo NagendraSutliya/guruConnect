@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Leave Approvals</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="staff" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <nav aria-label="Staff" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <a href="Staff.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Directory</a>
+        <a href="Leave.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid #0E5A63; text-decoration: none; font-size: 14px; font-weight: 600; color: #0E5A63">Leave</a>
+        <a href="StaffAttendance.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Staff attendance</a>
+        <a href="Payroll.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Payroll</a>
+      </nav>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600">Leave requests waiting for you</h1>
+        <div style="font-size: 14px; color: #4F5B57">Approved leave updates attendance and payroll, and opens the periods for substitution.</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{reqs}}" as="r" hint-placeholder-count="4">
+          <article style="background: #FFFFFF; border: 1px solid {{r.border}}; border-radius: 12px; padding: 18px 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between">
+            <div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 4px">
+              <span style="font-size: 15px; font-weight: 600">{{r.name}} <span style="font-weight: 400; color: #4F5B57">· {{r.role}}</span></span>
+              <span style="font-size: 14px">{{r.type}} · {{r.dates}} · <b style="font-weight: 600">{{r.days}}</b></span>
+              <span style="font-size: 13px; color: #4F5B57">Reason: {{r.reason}}</span>
+            </div>
+            <div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 4px; font-size: 13px">
+              <span>Balance after: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">{{r.balance}}</b></span>
+              <span style="color: {{r.impactColor}}">{{r.impact}}</span>
+            </div>
+            <sc-if value="{{r.pending}}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; gap: 8px">
+                <button onClick="{{r.reject}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Reject</button>
+                <button onClick="{{r.approve}}" style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Approve</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{r.decided}}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: {{r.dBg}}; color: {{r.dFg}}">{{r.decision}}</span>
+            </sc-if>
+          </article>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600">Leave types this year</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; font-size: 13.5px">
+          <span><b style="font-weight: 600">Casual (CL)</b> · 12 days</span>
+          <span><b style="font-weight: 600">Sick (SL)</b> · 10 days</span>
+          <span><b style="font-weight: 600">Earned (EL)</b> · 15 days, carry 30</span>
+          <span><b style="font-weight: 600">Maternity</b> · as per law</span>
+          <span><b style="font-weight: 600">Without pay (LWP)</b> · no limit</span>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { d: {} }; }
+  renderVals() {
+    const raw = [
+      ['Vikram Singh', 'TGT Maths', 'Casual leave', '12–14 Oct', '3 days', 'Family function', 'CL 5 of 12', '6 periods need substitutes', true],
+      ['Kamla Devi', 'TGT Hindi', 'Sick leave', '10 Oct', '1 day', 'Medical certificate attached', 'SL 7 of 10', '4 periods tomorrow — urgent', true],
+      ['Mohan Lal', 'Driver · Bus 4', 'Casual leave', '17 Oct', '1 day', 'Personal work', 'CL 9 of 12', 'Bus 4 needs a relief driver', true],
+      ['Farah Ali', 'Art teacher', 'Earned leave', '2–6 Nov', '5 days', 'Travel', 'EL 13 of 15', 'Overlaps Half-Yearly invigilation', true]
+    ];
+    const set = (i, v) => this.setState({ d: Object.assign({}, this.state.d, { [i]: v }) });
+    const reqs = raw.map(([name, role, type, dates, days, reason, balance, impact, warn], i) => {
+      const dec = this.state.d[i];
+      return { name, role, type, dates, days, reason, balance, impact,
+        impactColor: warn ? '#8F4A09' : '#4F5B57', pending: !dec, decided: !!dec, decision: dec || '',
+        dBg: dec === 'Approved' ? '#E4F1E8' : '#F1F2EF', dFg: dec === 'Approved' ? '#1E5A33' : '#4F5B57',
+        border: dec ? '#DDE2DE' : (i === 1 ? '#EBC99C' : '#DDE2DE'),
+        approve: () => set(i, 'Approved'), reject: () => set(i, 'Rejected') };
+    });
+    return { reqs };
+  }
+}
+</script>
+</body>
+</html>

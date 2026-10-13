@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Audit Log</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="admin" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <nav aria-label="Users and audit" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <a href="Users.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Users</a>
+        <a href="Roles.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Roles &amp; permissions</a>
+        <a href="AuditLog.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid #0E5A63; text-decoration: none; font-size: 14px; font-weight: 600; color: #0E5A63">Audit log</a>
+      </nav>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Audit log</h1>
+          <div style="font-size: 14px; color: #4F5B57">Every change to students, marks, fees, payroll, roles and settings. Entries cannot be edited or deleted.</div>
+        </div>
+        <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Export (watermarked)</button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 10px">
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Module
+          <select style="min-height: 40px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>All modules</option><option>Fees</option><option>Marks</option></select>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">User
+          <select style="min-height: 40px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Anyone</option></select>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Date
+          <input type="date" value="2026-10-09" style="min-height: 40px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D">
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 14px"><input type="checkbox" style="width: 18px; height: 18px">Sensitive actions only</label>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+          <div style="display: grid; grid-template-columns: 70px 1fr; gap: 16px; padding: 14px 20px; border-bottom: 1px solid #EEF1EF">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4F5B57; padding-top: 2px">{{r.time}}</span>
+            <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+                <span style="font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: {{r.aBg}}; color: {{r.aFg}}">{{r.action}}</span>
+                <span style="font-size: 14px; font-weight: 600">{{r.what}}</span>
+              </div>
+              <span style="font-size: 13px; color: #3B4643">{{r.detail}}</span>
+              <span style="font-size: 12.5px; color: #4F5B57">{{r.who}}</span>
+            </div>
+          </div>
+        </sc-for>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const tone = { UPDATE: ['#E3EFEF', '#08393F'], CREATE: ['#E4F1E8', '#1E5A33'], CANCEL: ['#FFF6EC', '#7A4106'], UNLOCK: ['#FFF6EC', '#7A4106'], LOGIN: ['#F1F2EF', '#4F5B57'], EXPORT: ['#F1EEE6', '#5A4A24'] };
+    const raw = [
+      ['10:42', 'UNLOCK', 'Marks · Half-Yearly Science 8-B', 'Roll 06: 84 → 74 · reason: typing error', 'Sunita Rathore (request) · approved by Exam Coordinator · 10.0.4.21'],
+      ['10:31', 'CANCEL', 'Receipt RCP/2627/004190', '₹16,900 · wrong student selected · reversal entry posted', 'Accountant Rekha Jain · approved by Principal'],
+      ['10:12', 'UPDATE', "Student · Aarav Gupta · father's mobile", '98290 1xxxx → 98290 7xxxx · parent request from app', 'Meera Kumawat · School Admin'],
+      ['09:58', 'CREATE', 'Concession · Pihu Sethi', 'Sibling 10% on tuition, 2026-27', 'Accountant Rekha Jain · pending approval'],
+      ['09:40', 'EXPORT', 'Student list · Class 10 (52 rows)', 'Excel, watermarked', 'Exam Coordinator Anil Sharma'],
+      ['09:05', 'UPDATE', 'Role · Fee Counter Clerk', 'Removed: fees.receipt.cancel', 'Meera Kumawat · School Admin'],
+      ['08:47', 'LOGIN', 'Failed login × 3', 'Account locked for 15 minutes', 'username: counter2 · 49.36.x.x']
+    ];
+    const rows = raw.map(([time, action, what, detail, who]) => ({ time, action, what, detail, who, aBg: tone[action][0], aFg: tone[action][1] }));
+    return { rows };
+  }
+}
+</script>
+</body>
+</html>

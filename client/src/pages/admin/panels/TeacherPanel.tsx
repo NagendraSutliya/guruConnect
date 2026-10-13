@@ -15,7 +15,7 @@ import {
   FiDownload,
 } from "react-icons/fi";
 import { FaUserPlus, FaUsers, FaUserCheck, FaUserTimes } from "react-icons/fa";
-import Pagination from "../../../components/common/Pagination";
+import DataGrid from "../../../components/common/DataGrid";
 
 const TeacherPanel = () => {
   /** --------------------- State Variables --------------------- **/
@@ -362,169 +362,141 @@ const TeacherPanel = () => {
         </div>
 
         {/* Data Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/80 text-slate-600 text-[11px] uppercase tracking-wider font-black border-b border-slate-100">
-                <th className="px-5 py-3 rounded-tl-2xl">Teacher Info</th>
-                <th className="px-5 py-3">Contact</th>
-                <th className="px-5 py-3">Joined Date</th>
-                <th className="px-5 py-3">Status</th>
-                <th className="px-5 py-3 text-right rounded-tr-2xl">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {loading ? (
-                <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500">
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                      <span className="font-medium">Loading faculty data...</span>
+        <DataGrid
+          data={paginatedTeachers}
+          keyExtractor={(t) => t._id}
+          isLoading={loading}
+          emptyStateMessage="No teachers found"
+          emptyStateSubMessage="Try adjusting your filters or search terms."
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          setItemsPerPage={setItemsPerPage}
+          setCurrentPage={setCurrentPage}
+          columns={[
+            {
+              header: "Teacher Info",
+              accessor: "name",
+              sortable: true,
+              render: (teacher: any) => {
+                const initials = teacher?.name?.substring(0, 2)?.toUpperCase() ?? "??";
+                return (
+                  <div className="flex items-center gap-3">
+                    {teacher.profileImage ? (
+                      <img 
+                        src={teacher.profileImage} 
+                        alt={teacher.name} 
+                        className="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-white"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                        {initials}
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">
+                        {teacher.name || "Unnamed"}
+                      </p>
+                      <p className="text-[10px] text-slate-400 font-medium">
+                        ID: {teacher._id?.slice(-6).toUpperCase()}
+                      </p>
                     </div>
-                  </td>
-                </tr>
-              ) : filteredTeachers.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="p-12 text-center text-slate-500">
-                    <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <FiSearch className="text-2xl text-slate-300" />
-                    </div>
-                    <p className="text-lg font-medium text-slate-700">No teachers found</p>
-                    <p className="text-sm mt-1">Try adjusting your filters or search terms.</p>
-                  </td>
-                </tr>
-              ) : (
-                paginatedTeachers.map((teacher: any) => {
-                  const initials = teacher?.name?.substring(0, 2)?.toUpperCase() ?? "??";
-                  const isLoading = actionLoading === teacher._id;
-
-                  return (
-                    <tr
-                      key={teacher._id}
-                      className="group hover:bg-slate-50/50 transition-colors duration-200"
+                  </div>
+                );
+              }
+            },
+            {
+              header: "Contact",
+              accessor: "email",
+              sortable: true,
+              render: (teacher: any) => (
+                <span className="text-xs text-slate-600 font-medium">{teacher.email}</span>
+              )
+            },
+            {
+              header: "Joined Date",
+              accessor: "createdAt",
+              sortable: true,
+              render: (teacher: any) => (
+                <span className="text-xs text-slate-600 font-medium">
+                  {teacher.createdAt
+                    ? new Date(teacher.createdAt).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })
+                    : "N/A"}
+                </span>
+              )
+            },
+            {
+              header: "Status",
+              accessor: "status",
+              sortable: true,
+              render: (teacher: any) => (
+                <span
+                  className={`inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
+                    teacher.status === "active"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-rose-100 text-rose-700"
+                  }`}
+                >
+                  {teacher.status}
+                </span>
+              )
+            },
+            {
+              header: "Actions",
+              render: (teacher: any) => {
+                const isLoading = actionLoading === teacher._id;
+                return (
+                  <div className="flex items-center justify-end gap-1">
+                    <button
+                      onClick={() => viewTeacher(teacher)}
+                      className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                      title="View Details"
                     >
-                      {/* Teacher Info */}
-                      <td className="px-5 py-3">
-                        <div className="flex items-center gap-3">
-                          {teacher.profileImage ? (
-                            <img 
-                              src={teacher.profileImage} 
-                              alt={teacher.name} 
-                              className="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-white"
-                            />
-                          ) : (
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                              {initials}
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">
-                              {teacher.name || "Unnamed"}
-                            </p>
-                            <p className="text-[10px] text-slate-400 font-medium">
-                              ID: {teacher._id?.slice(-6).toUpperCase()}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Email */}
-                      <td className="px-5 py-3">
-                        <span className="text-xs text-slate-600 font-medium">{teacher.email}</span>
-                      </td>
-
-                      {/* Joined Date */}
-                      <td className="px-5 py-3">
-                        <span className="text-xs text-slate-600 font-medium">
-                          {teacher.createdAt
-                            ? new Date(teacher.createdAt).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })
-                            : "N/A"}
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-5 py-3">
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
-                            teacher.status === "active"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-rose-100 text-rose-700"
-                          }`}
-                        >
-                          {teacher.status}
-                        </span>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="px-5 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => viewTeacher(teacher)}
-                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                            title="View Details"
-                          >
-                            <FiEye size={16} />
-                          </button>
-
-                          <button
-                            onClick={() => editTeacher(teacher)}
-                            className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
-                            title="Edit Teacher"
-                          >
-                            <FiEdit size={16} />
-                          </button>
-
-                          <button
-                            onClick={() => toggleTeacher(teacher)}
-                            disabled={isLoading}
-                            className={`p-1.5 rounded-lg transition-all ${
-                              teacher.status === "active"
-                                ? "text-slate-400 hover:text-rose-600 hover:bg-rose-50"
-                                : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
-                            }`}
-                            title={teacher.status === "active" ? "Deactivate Account" : "Activate Account"}
-                          >
-                            {isLoading ? (
-                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                            ) : teacher.status === "active" ? (
-                              <FiToggleLeft size={16} />
-                            ) : (
-                              <FiToggleRight size={16} />
-                            )}
-                          </button>
-
-                          <button
-                            onClick={() => deleteTeacher(teacher)}
-                            disabled={isLoading}
-                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                            title="Delete Teacher"
-                          >
-                            {isLoading ? (
-                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                            ) : (
-                              <FiTrash2 size={16} />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination Controls */}
-        {!loading && filteredTeachers.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            itemsPerPage={itemsPerPage}
-            setItemsPerPage={setItemsPerPage}
-            setCurrentPage={setCurrentPage}
-          />
-        )}
+                      <FiEye size={16} />
+                    </button>
+                    <button
+                      onClick={() => editTeacher(teacher)}
+                      className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
+                      title="Edit Teacher"
+                    >
+                      <FiEdit size={16} />
+                    </button>
+                    <button
+                      onClick={() => toggleTeacher(teacher)}
+                      disabled={isLoading}
+                      className={`p-1.5 rounded-lg transition-all ${
+                        teacher.status === "active"
+                          ? "text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                          : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                      }`}
+                      title={teacher.status === "active" ? "Deactivate Account" : "Activate Account"}
+                    >
+                      {isLoading ? (
+                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                      ) : teacher.status === "active" ? (
+                        <FiToggleLeft size={16} />
+                      ) : (
+                        <FiToggleRight size={16} />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => deleteTeacher(teacher)}
+                      disabled={isLoading}
+                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                      title="Delete Teacher"
+                    >
+                      {isLoading ? (
+                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <FiTrash2 size={16} />
+                      )}
+                    </button>
+                  </div>
+                );
+              }
+            }
+          ]}
+        />
       </div>
 
       {/* Modals */}

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hostel Rooms</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="hostel" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Hostel › Rooms · Roll call · Outpass · Visitors</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Boys hostel · Aravali block, first floor</h1>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Floor
+            <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>First floor</option><option>Ground floor</option><option>Second floor</option></select>
+          </label>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Allocate bed</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+          <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12.5px; color: #4F5B57; font-weight: 500">{{k.label}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">{{k.value}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 999 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Rooms</h2>
+            <div style="display: flex; gap: 14px; font-size: 12.5px; color: #4F5B57">
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #0E5A63"></span>Occupied</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; border: 1px dashed #4F5B57"></span>Vacant</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #D9822B"></span>Out on pass</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px">
+            <sc-for list="{{rooms}}" as="r" hint-placeholder-count="12">
+              <div style="border: 1px solid #DDE2DE; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+                <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 600">Room {{r.no}}</span><span style="font-family: 'IBM Plex Mono', monospace; color: #4F5B57">{{r.used}}</span></div>
+                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+                  <sc-for list="{{r.beds}}" as="b" hint-placeholder-count="4">
+                    <span title="{{b.tip}}" style="height: 28px; border-radius: 6px; background: {{b.bg}}; border: {{b.border}}; box-sizing: border-box"></span>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <aside style="flex: 1 1 300px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+          <h2 style="margin: 0; font-size: 15px; font-weight: 600">Outpass requests</h2>
+          <sc-for list="{{passes}}" as="p" hint-placeholder-count="3">
+            <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 1px solid #EEF1EF">
+              <span style="font-size: 14px; font-weight: 600">{{p.name}}</span>
+              <span style="font-size: 13px; color: #4F5B57">{{p.when}}</span>
+              <span style="font-size: 12.5px; font-weight: 600; color: {{p.color}}">{{p.status}}</span>
+            </div>
+          </sc-for>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const kpis = [{ label: 'Beds on this floor', value: '48' }, { label: 'Occupied', value: '43' }, { label: 'Night roll call', value: '41 + 2 on pass' }, { label: 'Mess fee due', value: '₹62,400' }];
+    const layouts = ['OOOO', 'OOOV', 'OOPO', 'OOOO', 'OVVO', 'OOOO', 'OOOP', 'OOOO', 'OOVO', 'OOOO', 'OOOV', 'OOOO'];
+    const map = { O: ['#0E5A63', '1px solid #0E5A63', 'Occupied'], V: ['#FFFFFF', '1px dashed #4F5B57', 'Vacant'], P: ['#D9822B', '1px solid #D9822B', 'Out on pass'] };
+    const rooms = layouts.map((l, i) => ({ no: String(101 + i), used: l.split('').filter(c => c !== 'V').length + '/4',
+      beds: l.split('').map(c => ({ bg: map[c][0], border: map[c][1], tip: map[c][2] })) }));
+    const passes = [
+      { name: 'Yash Rathore · 9-B · Room 103', when: 'Sat 10 Oct, 4 pm → Sun 11 Oct, 6 pm · with father', status: 'Parent approved in app', color: '#1E5A33' },
+      { name: 'Aditya Shekhawat · 11-Sci · Room 107', when: 'Out since 8 Oct · return 9 Oct, 7 pm', status: 'Out now', color: '#8F4A09' },
+      { name: 'Rohan Bishnoi · 10-A · Room 110', when: 'Fri 16 Oct → Sun 18 Oct · with uncle', status: 'Waiting for parent approval', color: '#4F5B57' }
+    ];
+    return { kpis, rooms, passes };
+  }
+}
+</script>
+</body>
+</html>

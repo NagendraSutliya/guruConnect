@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admission CRM</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="admissions" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; width: 100%; box-sizing: border-box; min-width: 0">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Admissions › Pipeline · Session 2027-28 intake</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Admission pipeline</h1>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Copy application form link</button>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Add enquiry</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Class
+          <select style="min-height: 40px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>All classes</option><option>Nursery</option><option>Class 1</option><option>Class 11</option></select>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Source
+          <select style="min-height: 40px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>All sources</option><option>Walk-in</option><option>Website</option><option>Referral</option></select>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Counsellor
+          <select style="min-height: 40px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Everyone</option><option>Neha Saini</option><option>Arjun Yadav</option></select>
+        </label>
+        <span style="margin-left: auto; font-size: 13px; font-weight: 600; color: #7A4106; background: #FFF6EC; padding: 6px 12px; border-radius: 999px">5 follow-ups overdue</span>
+      </div>
+
+      <div style="overflow-x: auto; padding-bottom: 8px">
+        <div style="display: flex; gap: 14px; align-items: flex-start; min-width: max-content">
+          <sc-for list="{{columns}}" as="col" hint-placeholder-count="6">
+            <section style="width: 248px; flex: none; background: #ECEFEC; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 2px 4px">
+                <h2 style="margin: 0; font-size: 14px; font-weight: 600">{{col.title}}</h2>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4F5B57; background: #FFFFFF; padding: 2px 8px; border-radius: 999px">{{col.count}}</span>
+              </div>
+              <sc-for list="{{col.cards}}" as="card" hint-placeholder-count="3">
+                <article style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+                  <div style="display: flex; justify-content: space-between; gap: 8px; align-items: flex-start">
+                    <div style="font-weight: 600; font-size: 14px">{{card.child}}</div>
+                    <span style="font-size: 12px; font-weight: 600; color: #08393F; background: #E3EFEF; padding: 2px 8px; border-radius: 6px; white-space: nowrap">{{card.cls}}</span>
+                  </div>
+                  <div style="font-size: 13px; color: #4F5B57">{{card.parent}}</div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 8px; border-top: 1px solid #EEF1EF">
+                    <span style="font-size: 12px; color: #4F5B57">{{card.source}}</span>
+                    <span style="font-size: 12px; font-weight: 600; color: {{card.dueColor}}">{{card.due}}</span>
+                  </div>
+                </article>
+              </sc-for>
+            </section>
+          </sc-for>
+        </div>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600">Seats left for 2027-28</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px">
+          <sc-for list="{{seats}}" as="s" hint-placeholder-count="4">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 600">{{s.cls}}</span><span style="font-family: 'IBM Plex Mono', monospace; color: #4F5B57">{{s.left}} of {{s.cap}}</span></div>
+              <div style="height: 8px; background: #E1E6E3; border-radius: 999px; overflow: hidden"><div style="height: 100%; width: {{s.pct}}; background: #0E5A63"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const late = '#8F4A09', ok = '#4F5B57';
+    const c = (child, cls, parent, source, due, overdue) => ({ child, cls, parent, source, due, dueColor: overdue ? late : ok });
+    const columns = [
+      { title: 'Enquiry', count: 48, cards: [
+        c('Ishaan Agarwal', 'Nursery', 'Father · 98290 xxxxx', 'Website', 'Call today', true),
+        c('Myra Khandelwal', 'Class 1', 'Mother · 94140 xxxxx', 'Walk-in', 'Tomorrow', false),
+        c('Kabir Saxena', 'Class 6', 'Father · 99280 xxxxx', 'Referral', '12 Oct', false)
+      ]},
+      { title: 'Follow-up', count: 31, cards: [
+        c('Anaya Mathur', 'LKG', 'Mother · 97720 xxxxx', 'Facebook lead', '2 days late', true),
+        c('Vihaan Soni', 'Class 1', 'Father · 98870 xxxxx', 'Walk-in', 'Today 4 pm', false)
+      ]},
+      { title: 'Application', count: 22, cards: [
+        c('Sara Bansal', 'Nursery', 'Mother · 96490 xxxxx', 'Website', 'Docs pending', true),
+        c('Aditya Rawat', 'Class 11', 'Father · 94600 xxxxx', 'Referral', 'Form complete', false)
+      ]},
+      { title: 'Documents verified', count: 14, cards: [
+        c('Navya Jangid', 'Class 1', 'Mother · 98281 xxxxx', 'Walk-in', 'Interaction 13 Oct', false)
+      ]},
+      { title: 'Test / interaction', count: 9, cards: [
+        c('Reyansh Tak', 'Class 6', 'Father · 99830 xxxxx', 'Website', 'Result pending', false),
+        c('Kiara Purohit', 'Nursery', 'Mother · 95870 xxxxx', 'RTE portal', 'RTE · lottery list', false)
+      ]},
+      { title: 'Approved', count: 6, cards: [
+        c('Dhruv Mehta', 'Class 1', 'Father · 98290 xxxxx', 'Referral', 'Fee due 15 Oct', false)
+      ]},
+      { title: 'Enrolled', count: 18, cards: [
+        c('Aarohi Sethi', 'Nursery', 'Mother · 94130 xxxxx', 'Website', 'Adm. no. 2027/0018', false)
+      ]}
+    ];
+    const seats = [['Nursery', 60, 41], ['Class 1', 120, 23], ['Class 6', 120, 8], ['Class 11', 120, 37]]
+      .map(([cls, cap, left]) => ({ cls, cap, left, pct: Math.round(((cap - left) / cap) * 100) + '%' }));
+    return { columns, seats };
+  }
+}
+</script>
+</body>
+</html>

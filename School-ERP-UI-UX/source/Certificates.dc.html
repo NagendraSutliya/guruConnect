@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Transfer Certificate</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="students" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 13px; color: #4F5B57"><a href="Students.dc.html">Students</a> › Certificates</div>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600">Transfer certificate · Riya Choudhary (10-A)</h1>
+      </div>
+      <div role="tablist" aria-label="Certificate type" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <sc-for list="{{types}}" as="t" hint-placeholder-count="6">
+          <button role="tab" aria-selected="{{t.on}}" style="min-height: 44px; padding: 0 16px; border: 0; border-bottom: 3px solid {{t.line}}; background: transparent; font: inherit; font-size: 14px; font-weight: {{t.fw}}; color: {{t.fg}}; white-space: nowrap">{{t.label}}</button>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <div style="flex: 1 1 380px; display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 4px">
+            <h2 style="margin: 0 0 8px; font-size: 16px; font-weight: 600">Clearance checks</h2>
+            <sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #EEF1EF">
+                <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 500">{{c.name}}</span><span style="font-size: 12.5px; color: #4F5B57">{{c.meta}}</span></span>
+                <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E4F1E8; color: #1E5A33">Cleared</span>
+              </div>
+            </sc-for>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Details for the certificate</h2>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Date of leaving
+              <input type="date" value="2026-10-09" style="min-height: 44px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D">
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Reason for leaving
+              <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 15px; color: #17201D"><option>Parent's transfer to another city</option><option>Completed the course</option><option>Other</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">General conduct
+              <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 15px; color: #17201D"><option>Good</option><option>Very good</option><option>Satisfactory</option></select>
+            </label>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; padding-top: 4px">
+              <button style="min-height: 46px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Approve and issue TC</button>
+              <button style="min-height: 46px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Save draft</button>
+            </div>
+            <span style="font-size: 12.5px; color: #4F5B57">Issuing marks the student as Left. TC numbers never repeat; a cancelled TC keeps its number.</span>
+          </section>
+        </div>
+
+        <section aria-label="Certificate preview" style="flex: 1 1 420px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 28px 32px; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding-bottom: 14px; border-bottom: 2px solid #17201D">
+            <div style="display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 18px; font-weight: 600">Shiksha Public School</span>
+              <span style="font-size: 12px; color: #4F5B57">Affiliated to CBSE · Affiliation no. [NUMBER] · School code [CODE]</span>
+            </div>
+            <div style="width: 64px; height: 64px; flex: none; border: 1px dashed #9AA8A3; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #4F5B57; text-align: center">[QR]</div>
+          </div>
+          <div style="text-align: center; font-size: 15px; font-weight: 600; letter-spacing: 0.08em">TRANSFER CERTIFICATE</div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px"><span>TC no. <span style="font-family: 'IBM Plex Mono', monospace">TC/2627/0031</span></span><span>Adm. no. <span style="font-family: 'IBM Plex Mono', monospace">2016/0112</span></span></div>
+          <sc-for list="{{fields}}" as="f" hint-placeholder-count="9">
+            <div style="display: grid; grid-template-columns: 24px 1fr 1fr; gap: 8px; font-size: 13px; padding: 6px 0; border-bottom: 1px dotted #C9D1CD">
+              <span style="color: #4F5B57">{{f.n}}</span><span style="color: #3B4643">{{f.k}}</span><span style="font-weight: 600">{{f.v}}</span>
+            </div>
+          </sc-for>
+          <div style="display: flex; justify-content: space-between; padding-top: 28px; font-size: 12.5px; color: #4F5B57"><span>Prepared by</span><span>Checked by</span><span>Principal</span></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const types = ['Transfer certificate', 'Bonafide', 'Character', 'Fee paid', 'Date of birth', 'Issued register'].map((label, i) => ({
+      label, on: i === 0 ? 'true' : 'false', fw: i === 0 ? 600 : 400, fg: i === 0 ? '#0E5A63' : '#4F5B57', line: i === 0 ? '#0E5A63' : 'transparent' }));
+    const checks = [
+      { name: 'Fee dues', meta: 'All 2026-27 installments paid · ledger balance ₹0' },
+      { name: 'Library', meta: 'No books issued' },
+      { name: 'Transport', meta: 'Bus 2 removed from 10 Oct' },
+      { name: 'Exam records', meta: 'Half-yearly result published' }
+    ];
+    const fields = [
+      ['Name of student', 'Riya Choudhary'], ["Father's name", 'Sunil Choudhary'], ["Mother's name", 'Rekha Choudhary'],
+      ['Date of birth (in figures)', '09-01-2011'], ['Date of birth (in words)', 'Ninth January Two Thousand Eleven'],
+      ['Class last studied', 'Class 10'], ['Date of admission', '02-04-2016'], ['Date of leaving', '09-10-2026'], ['Reason for leaving', "Parent's transfer to another city"]
+    ].map(([k, v], i) => ({ n: String(i + 1) + '.', k, v }));
+    return { types, checks, fields };
+  }
+}
+</script>
+</body>
+</html>

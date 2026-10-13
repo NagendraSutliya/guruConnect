@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Complaints and Discipline</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="frontoffice" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Front Office › <a href="Visitors.dc.html">Visitors</a> · Complaints · Discipline</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Parent complaints</h1>
+          <div style="font-size: 14px; color: #4F5B57">Every complaint gets a ticket number and a 72-hour response target. Overdue tickets go to the principal.</div>
+        </div>
+        <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Log complaint</button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{chips}}" as="c" hint-placeholder-count="4">
+          <button aria-pressed="{{c.on}}" style="min-height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; font: inherit; font-size: 13px; font-weight: 500">{{c.label}}</button>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; font-weight: 600">Ticket</th><th style="padding: 12px 16px; font-weight: 600">Subject</th><th style="padding: 12px 16px; font-weight: 600">Raised by</th><th style="padding: 12px 16px; font-weight: 600">Assigned to</th><th style="padding: 12px 16px; font-weight: 600">Response due</th><th style="padding: 12px 16px; font-weight: 600">Status</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px">{{r.no}}</td>
+                  <td style="padding: 10px 16px"><span style="display: flex; flex-direction: column"><span style="font-weight: 500">{{r.subject}}</span><span style="font-size: 12px; color: #4F5B57">{{r.cat}}</span></span></td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{r.by}}</td>
+                  <td style="padding: 10px 16px">{{r.to}}</td>
+                  <td style="padding: 10px 16px; color: {{r.dueColor}}; font-weight: {{r.dueWeight}}">{{r.due}}</td>
+                  <td style="padding: 10px 16px"><span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: {{r.sBg}}; color: {{r.sFg}}">{{r.status}}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px">
+        <section style="flex: 1 1 360px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Discipline incidents</h2>
+          <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #3B4643">Visible only to the class teacher, counsellor and principal. 3 incidents this month; 1 needs a parent meeting.</p>
+          <a href="#incidents" style="font-size: 13px; font-weight: 500">Open incident register</a>
+        </section>
+        <section style="flex: 1 1 360px; background: #F4F9F9; border: 1px solid #CFE2E2; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Child-protection reports</h2>
+          <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #3B4643">These follow a separate, restricted workflow. Only members of the designated committee can see them; nothing appears on this page.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const chip = (label, on) => ({ label, on: on ? 'true' : 'false', bg: on ? '#12302D' : '#FFFFFF', fg: on ? '#FFFFFF' : '#17201D', border: on ? '#12302D' : '#C9D1CD' });
+    const chips = [chip('Open · 7', true), chip('Overdue · 2', false), chip('Resolved this month · 19', false), chip('All categories', false)];
+    const st = { Open: ['#F1F2EF', '#4F5B57'], 'In progress': ['#E3EFEF', '#08393F'], Escalated: ['#FFF6EC', '#7A4106'], Resolved: ['#E4F1E8', '#1E5A33'] };
+    const raw = [
+      ['CMP/2627/0088', 'Bus 3 reached stop 20 minutes late, three days in a row', 'Transport', 'Parent of Ishita Rao (5-A)', 'Transport manager', 'Overdue by 6 h', true, 'Escalated'],
+      ['CMP/2627/0091', 'Homework diary not received on app since Monday', 'App / communication', 'Parent of Kabir Saxena (6-B)', 'IT admin', 'Today 3:00 pm', false, 'In progress'],
+      ['CMP/2627/0092', 'Water cooler on ground floor not cooling', 'Facilities', 'Class teacher 4-B', 'Store keeper', 'Overdue by 1 day', true, 'Escalated'],
+      ['CMP/2627/0094', 'Request to change section for sibling together', 'Academics', 'Parent of Navya Jangid', 'Vice principal', 'Sat 10 Oct', false, 'Open'],
+      ['CMP/2627/0095', 'Receipt shows wrong installment name', 'Fees', 'Parent of Om Prakash (5-A)', 'Accountant', 'Sat 10 Oct', false, 'In progress'],
+      ['CMP/2627/0083', 'Library fine charged after book was returned', 'Library', 'Parent of Diya Choudhary (7-B)', 'Librarian', 'Closed 7 Oct', false, 'Resolved']
+    ];
+    const rows = raw.map(([no, subject, cat, by, to, due, late, status]) => ({ no, subject, cat, by, to, due, status,
+      dueColor: late ? '#8F4A09' : '#4F5B57', dueWeight: late ? 600 : 400, sBg: st[status][0], sFg: st[status][1] }));
+    return { chips, rows };
+  }
+}
+</script>
+</body>
+</html>

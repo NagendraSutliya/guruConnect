@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payroll Run</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="hr" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">HR &amp; Payroll › Payroll runs</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">September 2026 payroll</h1>
+        </div>
+        <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Send for principal approval</button>
+      </div>
+
+      <ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px">
+        <sc-for list="{{steps}}" as="s" hint-placeholder-count="5">
+          <li style="padding: 12px 14px; border-radius: 10px; background: {{s.bg}}; border: 1px solid {{s.border}}; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 12px; font-weight: 600; color: {{s.tone}}">{{s.state}}</span>
+            <span style="font-size: 14px; font-weight: 600">{{s.label}}</span>
+          </li>
+        </sc-for>
+      </ol>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+          <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12.5px; color: #4F5B57; font-weight: 500">{{k.label}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">{{k.value}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 4px">
+        <h2 style="margin: 0 0 8px; font-size: 16px; font-weight: 600">4 exceptions to review</h2>
+        <sc-for list="{{exceptions}}" as="e" hint-placeholder-count="4">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #EEF1EF; font-size: 14px">
+            <span><b style="font-weight: 600">{{e.who}}</b> <span style="color: #4F5B57">· {{e.what}}</span></span>
+            <button style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Open</button>
+          </div>
+        </sc-for>
+      </section>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px">
+            <thead>
+              <tr style="background: #F2F4F2; text-align: left">
+                <th style="padding: 12px 16px; font-weight: 600">Employee</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">Payable days</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">Gross</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">PF</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">ESI</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">TDS</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">Other ded.</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">Net pay</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px"><div style="display: flex; flex-direction: column"><span style="font-weight: 600">{{r.name}}</span><span style="font-size: 12px; color: #4F5B57">{{r.role}}</span></div></td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: {{r.daysColor}}">{{r.days}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.gross}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.pf}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.esi}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.tds}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.other}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-weight: 600">{{r.net}}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const inr = n => n ? '₹' + n.toLocaleString('en-IN') : '—';
+    const st = (label, state) => {
+      const done = state === 'Done', cur = state === 'In progress';
+      return { label, state, bg: cur ? '#E3EFEF' : '#FFFFFF', border: cur ? '#0E5A63' : '#DDE2DE', tone: done ? '#1E5A33' : cur ? '#0E5A63' : '#4F5B57' };
+    };
+    const steps = [st('Lock attendance', 'Done'), st('Calculate', 'Done'), st('Review exceptions', 'In progress'), st('Principal approval', 'Waiting'), st('Bank file & payslips', 'Waiting')];
+    const kpis = [
+      { label: 'Employees', value: '86' },
+      { label: 'Gross salary', value: '₹31,48,200' },
+      { label: 'Deductions', value: '₹3,92,640' },
+      { label: 'Net payable', value: '₹27,55,560' }
+    ];
+    const exceptions = [
+      { who: 'Pooja Meena', what: 'joined 16 Sep, pro-rata pay for 15 days' },
+      { who: 'Vikram Singh', what: '2 days leave without pay, 4 late arrivals (0.5 day deducted)' },
+      { who: 'Rakesh Jain', what: 'salary revision from 1 Sep, arrears for August pending' },
+      { who: 'Kamla Devi', what: 'loan EMI ₹3,000 ends this month' }
+    ];
+    const raw = [
+      ['Sunita Rathore', 'TGT Science', 30, 52400, 1800, 0, 2100, 200],
+      ['Vikram Singh', 'TGT Maths', 27.5, 46480, 1800, 0, 1200, 200],
+      ['Rachna Bose', 'PGT English', 30, 61800, 1800, 0, 3900, 200],
+      ['Pooja Meena', 'PRT', 15, 14250, 1710, 107, 0, 0],
+      ['Deepak Choudhary', 'PET', 30, 34600, 1800, 0, 0, 200],
+      ['Kamla Devi', 'TGT Hindi', 30, 44200, 1800, 0, 600, 3200],
+      ['Mohan Lal', 'Driver, Bus 4', 30, 19800, 1800, 149, 0, 0]
+    ];
+    const rows = raw.map(([name, role, days, gross, pf, esi, tds, other]) => ({
+      name, role, days: String(days), daysColor: days < 30 ? '#8F4A09' : '#17201D',
+      gross: inr(gross), pf: inr(pf), esi: inr(esi), tds: inr(tds), other: inr(other),
+      net: inr(gross - pf - esi - tds - other)
+    }));
+    return { steps, kpis, exceptions, rows };
+  }
+}
+</script>
+</body>
+</html>

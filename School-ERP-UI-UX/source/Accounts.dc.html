@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Accounts Day Book</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="accounts" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Accounts › Day book · Cash book · Bank book · Ledgers · Trial balance</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Day book · 8 Oct 2026</h1>
+          <div style="font-size: 14px; color: #4F5B57">Fee receipts and payroll post vouchers automatically; expenses are entered here.</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Export to Tally (XML)</button>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">New expense voucher</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+          <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12.5px; color: #4F5B57; font-weight: 500">{{k.label}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">{{k.value}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; font-weight: 600">Voucher</th><th style="padding: 12px 16px; font-weight: 600">Type</th><th style="padding: 12px 16px; font-weight: 600">Ledger / narration</th><th style="padding: 12px 16px; font-weight: 600">Source</th><th style="padding: 12px 16px; font-weight: 600; text-align: right">Debit</th><th style="padding: 12px 16px; font-weight: 600; text-align: right">Credit</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px">{{r.no}}</td>
+                  <td style="padding: 10px 16px"><span style="font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: {{r.tBg}}; color: {{r.tFg}}">{{r.type}}</span></td>
+                  <td style="padding: 10px 16px"><span style="display: flex; flex-direction: column"><span style="font-weight: 500">{{r.ledger}}</span><span style="font-size: 12px; color: #4F5B57">{{r.note}}</span></span></td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{r.src}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.dr}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.cr}}</td>
+                </tr>
+              </sc-for>
+              <tr style="border-top: 2px solid #DDE2DE; background: #F9FAF8">
+                <td colspan="4" style="padding: 12px 16px; font-weight: 600">Total · balanced</td>
+                <td style="padding: 12px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-weight: 600">{{totalDr}}</td>
+                <td style="padding: 12px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-weight: 600">{{totalCr}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const kpis = [{ label: 'Cash in hand', value: '₹1,18,450' }, { label: 'HDFC current a/c', value: '₹42,36,900' }, { label: 'Fee income today', value: '₹7,80,900' }, { label: 'Expenses today', value: '₹38,600' }];
+    const type = { Receipt: ['#E4F1E8', '#1E5A33'], Payment: ['#FFF6EC', '#7A4106'], Journal: ['#E3EFEF', '#08393F'], Contra: ['#F1EEE6', '#5A4A24'] };
+    const raw = [
+      ['RV/2627/1184', 'Receipt', 'Cash a/c', 'Counter 1 · 37 receipts', 'Fee counter', 284600, 0],
+      ['RV/2627/1184', 'Receipt', 'Tuition fee income', 'Installment 3 collections', 'Fee counter', 0, 284600],
+      ['RV/2627/1185', 'Receipt', 'Payment gateway clearing', '142 online receipts', 'Online fees', 496300, 0],
+      ['RV/2627/1185', 'Receipt', 'Tuition and transport income', 'Online collections', 'Online fees', 0, 496300],
+      ['PV/2627/0412', 'Payment', 'Electricity expense', 'JVVNL bill Sep · bill attached', 'Manual', 38600, 0],
+      ['PV/2627/0412', 'Payment', 'HDFC current a/c', 'NEFT ref [REF]', 'Manual', 0, 38600],
+      ['CV/2627/0098', 'Contra', 'HDFC current a/c', 'Cash deposited', 'Manual', 250000, 0],
+      ['CV/2627/0098', 'Contra', 'Cash a/c', 'Deposit slip 4471', 'Manual', 0, 250000]
+    ];
+    const inr = n => n ? '₹' + n.toLocaleString('en-IN') : '';
+    const rows = raw.map(([no, t, ledger, note, src, dr, cr]) => ({ no, type: t, ledger, note, src, dr: inr(dr), cr: inr(cr), tBg: type[t][0], tFg: type[t][1] }));
+    const td = raw.reduce((s, r) => s + r[5], 0), tc = raw.reduce((s, r) => s + r[6], 0);
+    return { kpis, rows, totalDr: inr(td), totalCr: inr(tc) };
+  }
+}
+</script>
+</body>
+</html>

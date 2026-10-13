@@ -11,11 +11,12 @@ import {
   ShieldCheck,
   Eye,
   EyeOff,
+  CheckCircle2,
+  Sparkles
 } from "lucide-react";
-
 import PortalSlider from "../../components/PortalSlider";
 
-const AdminLogin = () => {
+export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -47,155 +48,207 @@ const AdminLogin = () => {
 
       nav("/admin/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
+      setError(err.response?.data?.message || "Login failed. Please check your official credentials.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="h-full bg-white flex overflow-hidden">
+    <div className="h-full min-h-screen bg-page flex overflow-hidden font-sans text-ink">
+      
       {/* ================= LEFT SIDE: VISUAL ANCHOR ================= */}
-      <div className="hidden md:flex md:w-[45%] lg:w-1/2 bg-slate-950 relative items-center justify-center p-0 overflow-hidden">
-        {/* Deep Field Image */}
+      <div className="hidden md:flex md:w-[45%] lg:w-1/2 bg-nav-bg relative items-center justify-center p-0 overflow-hidden select-none">
+        {/* Background Visual */}
         <img 
           src="/images/admin_login.png" 
           alt="Admin Command Center" 
-          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-110 blur-[2px]"
+          className="absolute inset-0 w-full h-full object-cover opacity-45 scale-105"
         />
         
-        {/* Dynamic Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-transparent" />
+        {/* Deep Gradient Overlays matching design tokens */}
+        <div className="absolute inset-0 bg-gradient-to-t from-nav-bg via-nav-bg/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-nav-bg/90 via-nav-bg/40 to-transparent" />
 
-        <div className="relative z-10 w-full px-8 lg:px-12 xl:px-20 mt-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-600/20 border border-orange-500/30 text-orange-400 text-[10px] font-black uppercase tracking-widest mb-6">
-             <ShieldCheck size={12} /> Institutional Command
-          </div>
+        {/* Content Container */}
+        <div className="relative z-10 w-full px-8 lg:px-12 xl:px-16 flex flex-col justify-between h-full py-12">
           
-          <h2 className="text-3xl lg:text-5xl xl:text-6xl font-black text-white mb-4 lg:mb-6 leading-[1.1] lg:leading-[1.05] tracking-tighter">
-            The Master Hub for Your <br className="hidden xl:block" /><span className="text-orange-500">Institute.</span>
-          </h2>
-          
-          <p className="text-slate-300 text-sm lg:text-lg mb-8 lg:mb-10 leading-relaxed font-medium max-w-md">
-            Take total control of your academic ecosystem. Manage staff, oversee students, and drive institutional growth with precision.
-          </p>
-          
-          <div className="grid grid-cols-2 gap-4 max-w-md">
-            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl p-5 border border-white/10 relative overflow-hidden group">
-              <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1 relative z-10">System Status</p>
-              <p className="text-xl font-bold text-white tracking-tight relative z-10">99.9% Operational</p>
-              <div className="absolute -right-2 -bottom-2 w-12 h-12 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-all" />
+          {/* Top Brand with Official Logo */}
+          <Link to="/" className="flex items-center gap-3 self-start group">
+            <img 
+              src="/guruconnect-logo.png" 
+              alt="guruConnect Logo" 
+              className="h-12 w-auto object-contain transition-transform group-hover:scale-105"
+            />
+            <div className="flex flex-col">
+              <span className="font-extrabold text-xl text-white tracking-tight">
+                guru<span className="text-gold">Connect</span>
+              </span>
+              <span className="text-[10px] text-nav-muted font-medium tracking-wide">
+                Campus Operating System
+              </span>
             </div>
-            <div className="bg-white/5 backdrop-blur-2xl rounded-2xl p-5 border border-white/10 relative overflow-hidden group">
-              <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1 relative z-10">Security Sync</p>
-              <p className="text-xl font-bold text-white tracking-tight relative z-10">Encrypted Nodes</p>
-              <div className="absolute -right-2 -bottom-2 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all" />
+          </Link>
+
+          {/* Central Pitch */}
+          <div className="my-auto max-w-lg">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-gold text-xs font-bold uppercase tracking-wider mb-5">
+              <ShieldCheck className="w-3.5 h-3.5 text-gold" />
+              <span>Institutional Command</span>
+            </div>
+            
+            <h2 className="text-3xl lg:text-5xl font-extrabold text-white mb-4 leading-[1.15] tracking-tight">
+              The Master Hub for Your <span className="text-gold">Institute.</span>
+            </h2>
+            
+            <p className="text-nav-text text-sm lg:text-base mb-8 leading-relaxed font-normal">
+              Take complete control of your academic ecosystem. Manage staff rosters, supervise student admissions, and govern institutional finance with precision.
+            </p>
+            
+            {/* Real-time telemetry badges */}
+            <div className="grid grid-cols-2 gap-3.5">
+              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-gold uppercase tracking-wider">System Status</span>
+                <span className="text-lg font-bold text-white mt-1">99.9% Uptime SLA</span>
+                <span className="text-[11px] text-nav-muted mt-0.5">High availability cluster</span>
+              </div>
+              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Security Sync</span>
+                <span className="text-lg font-bold text-white mt-1">DPDP 2023 Compliant</span>
+                <span className="text-[11px] text-nav-muted mt-0.5">Hardware 2FA & AES-256</span>
+              </div>
             </div>
           </div>
+
+          {/* Bottom Security Note */}
+          <div className="text-xs text-nav-muted flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-gold" />
+            <span>Multi-tenant encrypted database isolation</span>
+          </div>
+
         </div>
-
-        {/* Decorative Element */}
-        <div className="absolute bottom-10 right-10 w-32 h-32 bg-orange-600/20 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* ================= RIGHT SIDE: FORM ================= */}
-      <div className="w-full md:w-[55%] lg:w-1/2 flex flex-col items-center min-h-screen bg-white relative overflow-y-auto custom-scrollbar px-6 lg:px-12">
+      {/* ================= RIGHT SIDE: LOGIN FORM ================= */}
+      <div className="w-full md:w-[55%] lg:w-1/2 flex flex-col min-h-screen bg-white relative overflow-y-auto custom-scrollbar">
         
-        {/* PORTAL SLIDER HEADER */}
+        {/* Sticky Portal Selector */}
         <PortalSlider activePortal="admin" />
 
-        <div className="w-full max-w-lg py-10 flex-1 flex flex-col justify-start pt-16">
-          <div className="flex justify-end w-full mb-4 lg:mb-8">
-            <Link to="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-orange-600 transition-all group font-bold text-[10px] uppercase tracking-widest z-10">
-              <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-              Back to Portal
-            </Link>
-          </div>
-          {/* Slider removed from here */}
+        <div className="w-full max-w-md mx-auto px-6 sm:px-8 py-8 sm:py-12 flex-1 flex flex-col justify-center">
           
-          <div className="mb-8">
-            <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Admin Portal</h1>
-            <p className="text-slate-500 font-medium text-lg">Manage your institute efficiently.</p>
+          {/* Back Link */}
+          <div className="flex justify-between items-center mb-6">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-secondary hover:text-primary transition-colors group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+              <span>Back to Home</span>
+            </Link>
+
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-primary-tint text-primary border border-primary-soft/40">
+              Admin Portal
+            </span>
           </div>
 
+          {/* Title Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight m-0">
+              Admin Sign In
+            </h1>
+            <p className="text-xs sm:text-sm text-ink-secondary mt-1.5 mb-0 leading-relaxed">
+              Enter your registered administrator email to access your campus dashboard.
+            </p>
+          </div>
+
+          {/* Error Message */}
           {error && (
-            <div className="mb-8 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-2xl text-xs font-bold animate-shake">
+            <div className="mb-6 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold animate-fadeIn">
               {error}
             </div>
           )}
 
-          <form onSubmit={login} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-wider">Official Email Address</label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
+          {/* Form */}
+          <form onSubmit={login} className="space-y-4 text-xs sm:text-sm">
+            
+            {/* Email Field */}
+            <div>
+              <label className="block text-xs font-bold text-ink mb-1.5">Official Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
                 <input
                   type="email"
-                  placeholder="admin@institute.com"
+                  required
+                  placeholder="admin@institute.edu"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-orange-600 focus:bg-white focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-400 text-base"
-                  required
+                  className="w-full bg-surface border border-line rounded-xl py-3 pl-10 pr-4 text-ink text-xs sm:text-sm font-medium outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-ink-muted"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between ml-1">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Password</label>
-                <a href="#" className="text-xs font-bold text-orange-600 hover:underline">Forgot?</a>
+            {/* Password Field */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-bold text-ink">Master Password</label>
+                <a href="#forgot" onClick={(e) => { e.preventDefault(); alert("Please contact platform support to initiate password recovery for your administrator account."); }} className="text-xs font-semibold text-primary hover:underline cursor-pointer">
+                  Forgot password?
+                </a>
               </div>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
                 <input
                   type={showPassword ? "text" : "password"}
+                  required
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-4 pl-12 pr-12 outline-none focus:border-orange-600 focus:bg-white focus:ring-4 focus:ring-orange-50 transition-all font-semibold text-slate-900 placeholder:text-slate-400 text-base"
-                  required
+                  className="w-full bg-surface border border-line rounded-xl py-3 pl-10 pr-11 text-ink text-xs sm:text-sm font-medium outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-ink-muted"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-600 transition-colors focus:outline-none"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink transition-colors cursor-pointer"
+                  tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
+            {/* Submit Button */}
             <button
+              type="submit"
               disabled={loading}
-              className="w-full bg-orange-600 text-white py-2 rounded-2xl font-black text-base hover:bg-orange-700 transition-all flex items-center justify-center gap-3 mt-6 active:scale-[0.98] disabled:opacity-70 shadow-2xl shadow-orange-100"
+              className="w-full mt-2 bg-primary hover:bg-primary-dark text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Authenticating...
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Authenticating...</span>
                 </>
               ) : (
                 <>
-                  Sign In
-                  <ArrowRight className="w-5 h-5" />
+                  <span>Sign In to Admin Portal</span>
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
+
           </form>
 
-          <div className="mt-6 pt-8 border-t border-slate-100">
-            <p className="text-center text-slate-500 font-medium text-sm">
-              New Institute?{" "}
-              <Link to="/auth/register" className="text-orange-600 hover:underline font-black ml-1">
-                Register Now
-              </Link>
-            </p>
+          {/* New Registration Prompt */}
+          <div className="mt-8 pt-6 border-t border-line text-center text-xs text-ink-secondary">
+            Don't have an institution account yet?{" "}
+            <Link to="/auth/register" className="text-primary font-bold hover:underline ml-1">
+              Start 30-Day Free Trial
+            </Link>
           </div>
+
         </div>
       </div>
+
     </div>
   );
-};
-
-export default AdminLogin;
+}

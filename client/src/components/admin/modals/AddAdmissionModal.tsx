@@ -23,7 +23,6 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
   classes,
   sections,
 }) => {
-  const [isWizardMode, setIsWizardMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
@@ -42,16 +41,6 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
                 <h3 className="text-xl font-black text-slate-800 tracking-tight">
                   {isEdit ? "Update Admission Application" : "Draft Admission Application"}
                 </h3>
-                <button 
-                  onClick={() => {
-                    setIsWizardMode(!isWizardMode);
-                    setCurrentStep(1); // Reset to step 1 when toggling
-                  }}
-                  className="text-[10px] px-3 py-1 rounded-full bg-slate-200/80 text-slate-600 font-bold uppercase tracking-wider hover:bg-slate-300 transition-colors"
-                  title="Toggle between Multi-step Wizard and Full Page Form"
-                >
-                  {isWizardMode ? "Switch to Full Form" : "Switch to Stepper"}
-                </button>
               </div>
               <p className="text-xs font-medium text-slate-500 mt-1">
                 {isEdit ? "Modify the details for this student." : "Enter the details to create a new student account."}
@@ -66,7 +55,6 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
           </div>
 
           {/* Wizard Indicators */}
-          {isWizardMode && (
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
               <div className={`flex items-center gap-2 transition-all duration-500 ${currentStep >= 1 ? 'text-indigo-600' : 'text-slate-400'}`}>
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 shadow-sm ${currentStep >= 1 ? 'bg-indigo-600 text-white shadow-indigo-200' : 'bg-slate-100'}`}>1</div>
@@ -91,15 +79,14 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
                 <span className="text-[11px] font-black uppercase tracking-widest hidden sm:block">Contact</span>
               </div>
             </div>
-          )}
         </div>
 
         {/* Form Body */}
         <div className="p-6 overflow-y-auto space-y-8 custom-scrollbar">
           
           {/* ================= ACADEMIC DETAILS ================= */}
-          {(!isWizardMode || currentStep === 1) && (
-            <section className={isWizardMode ? "animate-fadeIn" : ""}>
+          {currentStep === 1 && (
+            <section className="animate-fadeIn">
               <h4 className="text-sm font-black text-slate-800 border-b border-slate-200 pb-2 mb-4 uppercase tracking-widest flex items-center gap-2">
                 <FiLayers className="text-indigo-500" /> Academic & Enrollment Details
               </h4>
@@ -211,8 +198,8 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
           )}
 
           {/* ================= PERSONAL DETAILS ================= */}
-          {(!isWizardMode || currentStep === 2) && (
-            <section className={isWizardMode ? "animate-fadeIn" : ""}>
+          {currentStep === 2 && (
+            <section className="animate-fadeIn">
               <h4 className="text-sm font-black text-slate-800 border-b border-slate-200 pb-2 mb-4 uppercase tracking-widest flex items-center gap-2">
                 <FiUser className="text-purple-500" /> Personal Details
               </h4>
@@ -382,8 +369,8 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
           )}
 
           {/* ================= CONTACT & GUARDIAN DETAILS ================= */}
-          {(!isWizardMode || currentStep === 3) && (
-            <section className={isWizardMode ? "animate-fadeIn" : ""}>
+          {currentStep === 3 && (
+            <section className="animate-fadeIn">
               <h4 className="text-sm font-black text-slate-800 border-b border-slate-200 pb-2 mb-4 uppercase tracking-widest flex items-center gap-2">
                 <FiPhone className="text-emerald-500" /> Contact & Guardian Details
               </h4>
@@ -461,29 +448,19 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-between gap-3 shrink-0 rounded-b-2xl">
-          {isWizardMode ? (
-            <button
-              onClick={() => {
-                if (currentStep === 1) onClose();
-                else prevStep();
-              }}
-              disabled={loading}
-              className="px-5 py-2 rounded-lg text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-800 transition-all shadow-sm disabled:opacity-50"
-            >
-              {currentStep === 1 ? "Cancel" : "Back"}
-            </button>
-          ) : (
-            <button
-              onClick={onClose}
-              disabled={loading}
-              className="px-5 py-2 rounded-lg text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-800 transition-all shadow-sm disabled:opacity-50"
-            >
-              Cancel
-            </button>
-          )}
+          <button
+            onClick={() => {
+              if (currentStep === 1) onClose();
+              else prevStep();
+            }}
+            disabled={loading}
+            className="px-5 py-2 rounded-lg text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-800 transition-all shadow-sm disabled:opacity-50"
+          >
+            {currentStep === 1 ? "Cancel" : "Back"}
+          </button>
 
           <div className="flex gap-3">
-            {isWizardMode && currentStep < 3 ? (
+            {currentStep < 3 ? (
               <button
                 onClick={nextStep}
                 className="flex items-center justify-center min-w-[120px] px-5 py-2 rounded-lg text-sm font-bold text-white bg-slate-800 hover:bg-slate-900 transition-all shadow-sm active:scale-95"

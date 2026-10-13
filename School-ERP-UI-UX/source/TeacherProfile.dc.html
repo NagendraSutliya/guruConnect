@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Teacher Profile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 68.75rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="staff" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="font-size: 13px; color: #4F5B57"><a href="Staff.dc.html">Staff</a> › Sunita Rathore</div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 24px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center">
+        <div style="width: 88px; height: 88px; flex: none; border-radius: 16px; background: #E3EFEF; color: #08393F; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 600">SR</div>
+        <div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
+            <h1 style="margin: 0; font-size: 26px; font-weight: 600">Sunita Rathore</h1>
+            <span lang="hi" style="font-size: 18px; color: #4F5B57">सुनीता राठौड़</span>
+          </div>
+          <div style="font-size: 14px; color: #4F5B57">TGT Science · Science department · Code <span style="font-family: 'IBM Plex Mono', monospace">EMP-0142</span> · Joined 1 Jul 2019 · Permanent</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px">
+            <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E4F1E8; color: #1E5A33">Present today</span>
+            <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E3EFEF; color: #08393F">Class teacher 8-B</span>
+            <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #F1EEE6; color: #5A4A24">Reports to: Vice Principal</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Message</button>
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Print ID card</button>
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Edit</button>
+        </div>
+      </section>
+
+      <div role="tablist" aria-label="Teacher profile sections" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="8">
+          <button role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="min-height: 44px; padding: 0 16px; border: 0; border-bottom: 3px solid {{t.line}}; background: transparent; font: inherit; font-size: 14px; font-weight: {{t.fw}}; color: {{t.fg}}; white-space: nowrap">{{t.label}}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{show.overview}}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px">
+            <sc-for list="{{overviewKpis}}" as="k" hint-placeholder-count="5">
+              <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+                <span style="font-size: 12.5px; color: #4F5B57; font-weight: 500">{{k.label}}</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: {{k.color}}">{{k.value}}</span>
+                <span style="font-size: 12.5px; color: #4F5B57">{{k.sub}}</span>
+              </div>
+            </sc-for>
+          </div>
+          <section style="background: #FFF6EC; border: 1px solid #EBC99C; border-radius: 12px; padding: 16px 20px; display: flex; flex-direction: column; gap: 6px">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 600; color: #7A4106">Needs attention</h2>
+            <span style="font-size: 14px; color: #5E3305">Medical fitness certificate expires 15 Dec 2026 · Half-Yearly Science 8-B marks due 12 Oct · CPD hours 32 of 50 for this year</span>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{show.personal}}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; align-items: start">
+          <sc-for list="{{personalGroups}}" as="g" hint-placeholder-count="4">
+            <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+              <h2 style="margin: 0; font-size: 16px; font-weight: 600">{{g.title}}</h2>
+              <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px">
+                <sc-for list="{{g.items}}" as="f" hint-placeholder-count="6">
+                  <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: #4F5B57">{{f.k}}</dt><dd style="margin: 0; font-size: 14px; font-weight: 500">{{f.v}}</dd></div>
+                </sc-for>
+              </dl>
+            </section>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{show.qualifications}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+            <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Qualifications and eligibility</h2></div>
+            <div style="overflow-x: auto">
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 720px">
+                <thead><tr style="background: #F2F4F2; text-align: left"><th style="padding: 10px 16px; font-weight: 600">Qualification</th><th style="padding: 10px 16px; font-weight: 600">Subject</th><th style="padding: 10px 16px; font-weight: 600">Board / university</th><th style="padding: 10px 16px; font-weight: 600">Year</th><th style="padding: 10px 16px; font-weight: 600">Verified</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{quals}}" as="q" hint-placeholder-count="5">
+                    <tr style="border-top: 1px solid #EEF1EF"><td style="padding: 10px 16px; font-weight: 500">{{q.name}}</td><td style="padding: 10px 16px">{{q.subject}}</td><td style="padding: 10px 16px; color: #4F5B57">{{q.board}}</td><td style="padding: 10px 16px; font-family: 'IBM Plex Mono', monospace">{{q.year}}</td><td style="padding: 10px 16px; color: #1E5A33; font-weight: 600">{{q.ok}}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+            <h2 style="margin: 0 0 4px; font-size: 16px; font-weight: 600">Previous experience · 3 years before joining</h2>
+            <span style="font-size: 14px">Delhi Public Academy, Jaipur · PRT Science · Jul 2016 – Jun 2019 · relieving letter on file</span>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+            <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; gap: 12px"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Documents</h2><button style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; color: #17201D">Upload</button></div>
+            <sc-for list="{{docs}}" as="d" hint-placeholder-count="8">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 20px; border-bottom: 1px solid #EEF1EF">
+                <span style="font-size: 14px; font-weight: 500">{{d.name}}</span>
+                <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: {{d.bg}}; color: {{d.fg}}">{{d.status}}</span>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{show.teaching}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px">
+            <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12.5px; color: #4F5B57">Periods per week</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">26 / 30 max</span></div>
+            <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12.5px; color: #4F5B57">Daily load limit</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">7 periods</span></div>
+            <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12.5px; color: #4F5B57">Substitutions this month</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">1</span></div>
+            <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12.5px; color: #4F5B57">Can also teach</span><span style="font-size: 15px; font-weight: 600">Chemistry XI–XII, Science VI</span></div>
+          </div>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+            <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; gap: 12px"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Subject allocation · 2026-27</h2><a href="Timetable.dc.html" style="font-size: 13px; font-weight: 500">Open teacher timetable</a></div>
+            <div style="overflow-x: auto">
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px">
+                <thead><tr style="background: #F2F4F2; text-align: left"><th style="padding: 10px 16px; font-weight: 600">Class</th><th style="padding: 10px 16px; font-weight: 600">Subject</th><th style="padding: 10px 16px; font-weight: 600; text-align: right">Periods / week</th><th style="padding: 10px 16px; font-weight: 600; text-align: right">Students</th><th style="padding: 10px 16px; font-weight: 600; text-align: right">Syllabus done</th><th style="padding: 10px 16px; font-weight: 600">Marks entry</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{alloc}}" as="a" hint-placeholder-count="5">
+                    <tr style="border-top: 1px solid #EEF1EF"><td style="padding: 10px 16px; font-weight: 600">{{a.cls}}</td><td style="padding: 10px 16px">{{a.subject}}</td><td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{a.periods}}</td><td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{a.students}}</td><td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{a.syl}}</td><td style="padding: 10px 16px; color: {{a.mColor}}; font-weight: {{a.mWeight}}">{{a.marks}}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 6px">
+            <h2 style="margin: 0 0 4px; font-size: 16px; font-weight: 600">Other duties</h2>
+            <span style="font-size: 14px">Science lab in-charge · Eco club coordinator · Half-Yearly invigilation: 3 papers · House: Aravali (house mistress)</span>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{show.attendance}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px">
+            <sc-for list="{{leaveBal}}" as="l" hint-placeholder-count="5">
+              <div style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 12.5px; color: #4F5B57; font-weight: 500">{{l.type}}</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">{{l.left}}</span>
+                <span style="height: 6px; background: #E1E6E3; border-radius: 999px; overflow: hidden; display: block"><span style="display: block; height: 100%; width: {{l.pct}}; background: #0E5A63"></span></span>
+              </div>
+            </sc-for>
+          </div>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">This session</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 24px; font-size: 14px">
+              <span>Attendance <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">98.6%</b></span>
+              <span>Late arrivals <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">2</b></span>
+              <span>Leave without pay <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">0 days</b></span>
+              <span>Punch source: biometric, main gate</span>
+            </div>
+            <a href="StaffAttendance.dc.html" style="font-size: 13px; font-weight: 500">Open attendance register</a>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 6px 20px">
+            <h2 style="margin: 14px 0 6px; font-size: 16px; font-weight: 600">Leave history</h2>
+            <sc-for list="{{leaveHist}}" as="h" hint-placeholder-count="3">
+              <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #EEF1EF; font-size: 14px"><span>{{h.what}}</span><span style="color: #4F5B57">{{h.status}}</span></div>
+            </sc-for>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{show.salary}}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; align-items: start">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+            <h2 style="margin: 0 0 6px; font-size: 16px; font-weight: 600">Salary structure · from 1 Apr 2026</h2>
+            <sc-for list="{{salary}}" as="s" hint-placeholder-count="9">
+              <div style="display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; border-top: 1px solid {{s.line}}; font-weight: {{s.fw}}"><span style="color: {{s.color}}">{{s.k}}</span><span style="font-family: 'IBM Plex Mono', monospace">{{s.v}}</span></div>
+            </sc-for>
+          </section>
+          <div style="display: flex; flex-direction: column; gap: 16px">
+            <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+              <h2 style="margin: 0; font-size: 16px; font-weight: 600">Bank and tax</h2>
+              <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px">
+                <sc-for list="{{bank}}" as="f" hint-placeholder-count="6">
+                  <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: #4F5B57">{{f.k}}</dt><dd style="margin: 0; font-size: 14px; font-weight: 500">{{f.v}}</dd></div>
+                </sc-for>
+              </dl>
+              <span style="font-size: 12.5px; color: #4F5B57">Account number and PAN are encrypted; showing them needs HR permission and is audited.</span>
+            </section>
+            <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 6px 20px">
+              <h2 style="margin: 14px 0 6px; font-size: 16px; font-weight: 600">Payslips</h2>
+              <sc-for list="{{slips}}" as="p" hint-placeholder-count="3">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #EEF1EF; font-size: 14px"><span>{{p.month}}</span><span style="display: flex; gap: 12px; align-items: center"><span style="font-family: 'IBM Plex Mono', monospace">{{p.net}}</span><a href="#pdf" style="min-height: 40px; display: flex; align-items: center; font-weight: 600">PDF</a></span></div>
+              </sc-for>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{show.training}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Professional development hours · 2026-27</h2><span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px">32 / 50 h</span></div>
+            <span style="height: 10px; background: #E1E6E3; border-radius: 999px; overflow: hidden; display: block"><span style="display: block; height: 100%; width: 64%; background: #0E5A63"></span></span>
+            <sc-for list="{{cpd}}" as="c" hint-placeholder-count="4">
+              <div style="display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid #EEF1EF; font-size: 14px"><span>{{c.what}}</span><span style="color: #4F5B57; white-space: nowrap">{{c.hours}}</span></div>
+            </sc-for>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+            <h2 style="margin: 0 0 4px; font-size: 16px; font-weight: 600">Appraisal</h2>
+            <span style="font-size: 14px">2025-26 · rated by Vice Principal · class observation 2 of 2 done · student result in Science: 94% pass</span>
+            <span style="font-size: 14px">2026-27 · self-review opens 1 Feb 2027</span>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{show.login}}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; align-items: start">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Login</h2>
+            <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px">
+              <sc-for list="{{login}}" as="f" hint-placeholder-count="6">
+                <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: #4F5B57">{{f.k}}</dt><dd style="margin: 0; font-size: 14px; font-weight: 500">{{f.v}}</dd></div>
+              </sc-for>
+            </dl>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; padding-top: 6px">
+              <button style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Reset password</button>
+              <button style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Sign out all devices</button>
+            </div>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Roles and access</h2>
+            <sc-for list="{{roles}}" as="r" hint-placeholder-count="3">
+              <div style="display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid #EEF1EF; font-size: 14px"><span style="font-weight: 600">{{r.role}}</span><span style="color: #4F5B57; text-align: right">{{r.scope}}</span></div>
+            </sc-for>
+            <a href="Roles.dc.html" style="font-size: 13px; font-weight: 500">Manage roles</a>
+          </section>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'overview' }; }
+  renderVals() {
+    const list = [['overview', 'Overview'], ['personal', 'Personal & IDs'], ['qualifications', 'Qualifications & documents'], ['teaching', 'Teaching'], ['attendance', 'Attendance & leave'], ['salary', 'Salary'], ['training', 'Training & appraisal'], ['login', 'Login & roles']];
+    const tab = this.state.tab;
+    const tabs = list.map(([key, label]) => { const on = key === tab; return { label, on: on ? 'true' : 'false', pick: () => this.setState({ tab: key }), fw: on ? 600 : 400, fg: on ? '#0E5A63' : '#4F5B57', line: on ? '#0E5A63' : 'transparent' }; });
+    const show = {}; list.forEach(([key]) => { show[key] = key === tab; });
+    const kv = (k, v) => ({ k, v });
+    const overviewKpis = [
+      { label: 'Periods per week', value: '26', sub: '4 sections · Science', color: '#17201D' },
+      { label: 'Attendance this session', value: '98.6%', sub: '2 late arrivals', color: '#17201D' },
+      { label: 'Leave left', value: 'CL 8 · SL 9', sub: 'EL 22 days', color: '#17201D' },
+      { label: 'Experience', value: '10 yrs', sub: '7 years in this school', color: '#17201D' },
+      { label: 'Net pay, September', value: '₹48,300', sub: 'Paid 1 Oct', color: '#17201D' }
+    ];
+    const personalGroups = [
+      { title: 'Personal', items: [kv('Date of birth', '[DATE OF BIRTH]'), kv('Gender', 'Female'), kv('Marital status', 'Married'), kv('Blood group', 'O+'), kv('Languages', 'Hindi, English'), kv('Category', 'General')] },
+      { title: 'Contact', items: [kv('Mobile', '98290 3xxxx'), kv('Email', 'sunita.r@[school-domain]'), kv('Current address', 'Shyam Nagar, Jaipur'), kv('Permanent address', 'Same as current'), kv('Emergency contact', 'Husband · 94140 8xxxx'), kv('Transport', 'Own vehicle')] },
+      { title: 'Government IDs', items: [kv('PAN', 'xxxxx1234x'), kv('Aadhaar', 'xxxx xxxx 2290'), kv('UAN (PF)', '[UAN]'), kv('ESI number', 'Not applicable'), kv('Teacher ID (state / board)', '[ID]'), kv('Police verification', 'Valid to Mar 2028')] },
+      { title: 'Employment', items: [kv('Employment type', 'Permanent'), kv('Probation confirmed', '1 Jan 2020'), kv('Grade / pay level', 'TGT · Level 2'), kv('Department', 'Science'), kv('Reporting to', 'Vice Principal'), kv('Notice period', '60 days')] }
+    ];
+    const quals = [['M.Sc.', 'Chemistry', 'University of Rajasthan', '2014'], ['B.Sc.', 'Physics, Chemistry, Botany', 'University of Rajasthan', '2012'], ['B.Ed.', 'Science and Maths methods', '[College name]', '2016'], ['CTET Paper II', 'Maths and Science', 'CBSE', '2017'], ['Class XII', 'Science (PCB)', 'RBSE', '2009']]
+      .map(([name, subject, board, year]) => ({ name, subject, board, year, ok: 'Yes' }));
+    const doc = (name, status, warn) => ({ name, status, bg: warn ? '#FFF6EC' : '#E4F1E8', fg: warn ? '#7A4106' : '#1E5A33' });
+    const docs = [doc('Appointment letter', 'On file'), doc('Degree and B.Ed. certificates', 'Verified'), doc('CTET certificate', 'Verified'), doc('Police verification', 'Valid to Mar 2028'), doc('Medical fitness certificate', 'Expires 15 Dec 2026', true), doc('Relieving letter (previous school)', 'On file'), doc('PAN and Aadhaar copies', 'Verified'), doc('Signed code of conduct and child-protection policy', 'Signed Apr 2026')];
+    const alloc = [['7-A', 'Science', 6, 40, '49%', 'Submitted'], ['7-B', 'Science', 6, 40, '47%', 'Submitted'], ['8-A', 'Science', 6, 39, '51%', 'Submitted'], ['8-B', 'Science', 6, 38, '52%', 'Draft · 1 error'], ['8-B', 'Class teacher period', 2, 38, '—', '—']]
+      .map(([cls, subject, p, s, syl, marks]) => ({ cls, subject, periods: String(p), students: String(s), syl, marks, mColor: marks.startsWith('Draft') ? '#8F4A09' : '#4F5B57', mWeight: marks.startsWith('Draft') ? 600 : 400 }));
+    const leaveBal = [['Casual (CL)', 8, 12], ['Sick (SL)', 9, 10], ['Earned (EL)', 22, 30], ['Maternity', 'As per law', 0], ['Without pay', '0 used', 0]]
+      .map(([type, left, total]) => ({ type, left: total ? left + ' of ' + total + ' left' : String(left), pct: total ? Math.round(left / total * 100) + '%' : '0%' }));
+    const leaveHist = [{ what: 'CL · 2 days · 18–19 Aug · family function', status: 'Approved' }, { what: 'CL · 1 day · 3 Jul', status: 'Approved' }, { what: 'SL · 1 day · 22 Apr · certificate attached', status: 'Approved' }];
+    const s = (k, v, kind) => ({ k, v, fw: kind === 'total' ? 600 : 400, color: kind === 'ded' ? '#4F5B57' : '#17201D', line: kind === 'total' ? '#DDE2DE' : '#EEF1EF' });
+    const salary = [s('Basic', '₹29,000'), s('Dearness allowance', '₹8,700'), s('House rent allowance', '₹8,700'), s('Conveyance', '₹2,000'), s('Special allowance', '₹4,000'), s('Gross monthly', '₹52,400', 'total'), s('PF (employee)', '− ₹1,800', 'ded'), s('TDS (new regime)', '− ₹2,100', 'ded'), s('Staff welfare fund', '− ₹200', 'ded'), s('Net monthly', '₹48,300', 'total')];
+    const bank = [kv('Bank', 'HDFC Bank, Mansarovar'), kv('Account', 'xxxxxx4471'), kv('IFSC', '[IFSC]'), kv('Tax regime', 'New regime'), kv('Investment declaration', 'Submitted 20 Apr'), kv('Form 16 (2025-26)', 'Issued 12 Jun')];
+    const slips = [{ month: 'September 2026', net: '₹48,300' }, { month: 'August 2026', net: '₹48,300' }, { month: 'July 2026', net: '₹48,300' }];
+    const cpd = [{ what: 'CBSE capacity building — Competency-based assessment', hours: '12 h · Aug' }, { what: 'In-school workshop — Lab safety', hours: '6 h · Jul' }, { what: 'Online course — Inclusive classrooms', hours: '10 h · May' }, { what: 'Peer observation and feedback', hours: '4 h · Sep' }];
+    const login = [kv('Username', '98290 3xxxx (mobile)'), kv('Login method', 'OTP on mobile'), kv('Two-step login', 'Not required for this role'), kv('Last active', '5 min ago, teacher app'), kv('Devices', 'Android phone, school laptop'), kv('Account created', '1 Jul 2019')];
+    const roles = [{ role: 'Class Teacher', scope: '8-B · attendance, remarks, parent messages' }, { role: 'Subject Teacher', scope: 'Science · 7-A, 7-B, 8-A, 8-B' }, { role: 'Lab in-charge', scope: 'Inventory: lab items issue and stock' }];
+    return { tabs, show, overviewKpis, personalGroups, quals, docs, alloc, leaveBal, leaveHist, salary, bank, slips, cpd, login, roles };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Results and Report Cards</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="exams" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Examinations › <a href="ExamSetup.dc.html">Setup</a> · <a href="Marks.dc.html">Marks entry</a> · Results</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Term 1 results · Classes 6–8</h1>
+          <div style="font-size: 14px; color: #4F5B57">A section can be published only when every subject is Final and remarks are complete.</div>
+        </div>
+        <label style="display: flex; align-items: center; gap: 10px; font-size: 14px"><input type="checkbox" checked="{{ true }}" style="width: 18px; height: 18px">Withhold report cards for fee dues over 60 days</label>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; font-weight: 600">Section</th>
+              <th style="padding: 12px 16px; font-weight: 600">Subjects final</th>
+              <th style="padding: 12px 16px; font-weight: 600">Remarks</th>
+              <th style="padding: 12px 16px; font-weight: 600; text-align: right">Pass %</th>
+              <th style="padding: 12px 16px; font-weight: 600">Report cards</th>
+              <th style="padding: 12px 16px; font-weight: 600"></th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="9">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px; font-weight: 600">{{r.sec}}</td>
+                  <td style="padding: 10px 16px"><span style="font-family: 'IBM Plex Mono', monospace; color: {{r.subColor}}">{{r.subs}}</span></td>
+                  <td style="padding: 10px 16px; color: {{r.remColor}}">{{r.rem}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.pass}}</td>
+                  <td style="padding: 10px 16px"><span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: {{r.stBg}}; color: {{r.stFg}}">{{r.status}}</span></td>
+                  <td style="padding: 8px 16px; text-align: right"><button disabled="{{r.disabled}}" style="min-height: 38px; padding: 0 14px; border-radius: 8px; border: 0; background: {{r.btnBg}}; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600">{{r.action}}</button></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 1 1 360px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Withheld for fee dues · 11 students</h2>
+          <sc-for list="{{held}}" as="h" hint-placeholder-count="3">
+            <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding-top: 8px; border-top: 1px solid #EEF1EF">
+              <span>{{h.name}}</span><span style="font-family: 'IBM Plex Mono', monospace; color: #8F4A09">{{h.due}}</span>
+            </div>
+          </sc-for>
+          <a href="Defaulters.dc.html" style="font-size: 13px; font-weight: 500">Open defaulter list</a>
+        </section>
+        <section style="flex: 1 1 360px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Subjects with lowest pass %</h2>
+          <sc-for list="{{low}}" as="l" hint-placeholder-count="3">
+            <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding-top: 8px; border-top: 1px solid #EEF1EF">
+              <span>{{l.what}}</span><span style="font-family: 'IBM Plex Mono', monospace">{{l.pct}}</span>
+            </div>
+          </sc-for>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const mk = (sec, f, rem, pass, status) => {
+      const ready = f === 7 && rem === 'Done';
+      const map = {
+        Published: ['#E4F1E8', '#1E5A33', 'View', '#4F5B57', false],
+        Generated: ['#E3EFEF', '#08393F', 'Publish', '#0E5A63', false],
+        'Not ready': ['#F1F2EF', '#4F5B57', 'Generate', '#9DB5B5', true]
+      }[status];
+      return { sec, subs: f + ' / 7', subColor: f < 7 ? '#8F4A09' : '#17201D', rem, remColor: rem === 'Done' ? '#17201D' : '#8F4A09',
+        pass: pass ? pass + '%' : '—', status, stBg: map[0], stFg: map[1], action: map[2], btnBg: map[3], disabled: map[4] && !ready };
+    };
+    const rows = [
+      mk('6-A', 7, 'Done', 97.5, 'Published'), mk('6-B', 7, 'Done', 95.0, 'Published'), mk('6-C', 7, 'Done', 92.5, 'Generated'),
+      mk('7-A', 7, 'Done', 94.7, 'Generated'), mk('7-B', 6, '31 of 40', null, 'Not ready'), mk('7-C', 7, 'Done', 90.0, 'Generated'),
+      mk('8-A', 7, 'Done', 92.1, 'Generated'), mk('8-B', 5, '12 of 38', null, 'Not ready'), mk('8-C', 7, '38 of 39', null, 'Not ready')
+    ];
+    const held = [{ name: 'Harsh Vardhan · 8-A', due: '₹21,800' }, { name: 'Kunal Mehra · 7-C', due: '₹33,800' }, { name: 'Tanya Saini · 6-C', due: '₹16,900' }];
+    const low = [{ what: 'Maths · 7-C', pct: '82.5%' }, { what: 'Science · 8-A', pct: '86.8%' }, { what: 'Sanskrit · 6-C', pct: '87.5%' }];
+    return { rows, held, low };
+  }
+}
+</script>
+</body>
+</html>

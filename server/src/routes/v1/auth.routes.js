@@ -8,6 +8,7 @@ const {
 } = require("../../controllers/auth/AdminAuthController");
 
 const { loginTeacher } = require("../../controllers/auth/TeacherAuthController");
+const { loginParent } = require("../../controllers/auth/ParentAuthController");
 
 /* Institute Auth */
 router.post("/register", registerInstitute);
@@ -16,5 +17,8 @@ router.post("/login", loginInstitute);
 
 /* Teacher Auth */
 router.post("/teacher/login", loginTeacher);
+
+/* Parent Auth */
+router.post("/parent/login", loginParent);
 
 module.exports = router;

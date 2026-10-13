@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Front Office Visitors</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="frontoffice" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 13px; color: #4F5B57">Front Office › Visitors · Early pickup · <a href="Complaints.dc.html">Complaints</a></div>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600">Gate and visitors · today</h1>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 1 1 340px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <div role="tablist" aria-label="Entry type" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #E7EBE8; border-radius: 10px; padding: 4px">
+            <button role="tab" aria-selected="true" style="min-height: 42px; border: 0; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #17201D">Visitor entry</button>
+            <button role="tab" aria-selected="false" style="min-height: 42px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 14px; color: #4F5B57">Early pickup</button>
+          </div>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Mobile number
+            <span style="display: flex; gap: 8px"><input value="98290 4xxxx" style="flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #17201D"><button style="min-height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Send OTP</button></span>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Name
+            <input value="Suresh Kumawat" style="min-height: 44px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 15px; color: #17201D">
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">Purpose
+              <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Vendor delivery</option><option>Meet teacher</option><option>Admission enquiry</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500">To meet
+              <select style="min-height: 44px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D"><option>Store keeper</option></select>
+            </label>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: center">
+            <div style="width: 72px; height: 72px; border-radius: 10px; border: 1px dashed #9AA8A3; background: #F9FAF8; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #4F5B57; text-align: center">[Photo]</div>
+            <button style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Take photo</button>
+          </div>
+          <button style="min-height: 46px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Check in and print gate pass</button>
+        </section>
+
+        <section style="flex: 999 1 460px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+          <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Inside campus now · 6</h2><span style="font-size: 13px; color: #4F5B57">31 visitors today</span></div>
+          <sc-for list="{{inside}}" as="v" hint-placeholder-count="6">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #EEF1EF">
+              <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+                <span style="font-size: 14px; font-weight: 600">{{v.name}}</span>
+                <span style="font-size: 12.5px; color: #4F5B57">{{v.meta}}</span>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center; flex: none">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: {{v.timeColor}}">{{v.time}}</span>
+                <button style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Check out</button>
+              </div>
+            </div>
+          </sc-for>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const inside = [
+      ['Rohit Gupta', 'Parent of Aarav (5-A) · meet class teacher', 'In 10:05 · 25 min', false],
+      ['Anil Traders', 'Vendor · stationery delivery · store', 'In 09:40 · 50 min', false],
+      ['Priya Nair', 'Admission enquiry · Class 1 · counsellor', 'In 10:12 · 18 min', false],
+      ['Rajesh (electrician)', 'Contractor · utility block', 'In 08:15 · 2 h 15 min', true],
+      ['Seema Kanwar', 'Parent · fee counter', 'In 10:20 · 10 min', false],
+      ['CBSE inspection team (2)', 'Pre-approved pass · principal office', 'In 09:30 · 1 h', false]
+    ].map(([name, meta, time, long]) => ({ name, meta, time, timeColor: long ? '#8F4A09' : '#4F5B57' }));
+    return { inside };
+  }
+}
+</script>
+</body>
+</html>

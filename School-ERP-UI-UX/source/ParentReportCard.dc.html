@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Parent app — Report card</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D; display: flex; flex-direction: column; overflow: hidden">
+  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2DE; padding: 14px 12px; display: flex; align-items: center; gap: 8px">
+    <a href="ParentHome.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#17201D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; flex: 1">
+      <span style="font-size: 17px; font-weight: 600">Term 1 report card</span>
+      <span style="font-size: 12px; color: #4F5B57">Aarav · Class 5-A · published 6 Oct</span>
+    </div>
+    <button aria-label="Download PDF" style="width: 44px; height: 44px; border-radius: 10px; border: 1px solid #DDE2DE; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#17201D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="M7 10l5 5 5-5"></path><path d="M5 20h14"></path></svg>
+    </button>
+  </header>
+
+  <div style="flex: 1; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+    <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 14px; padding: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center">
+      <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">86.3%</span><span style="font-size: 12px; color: #4F5B57">Overall</span></div>
+      <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 22px; font-weight: 600; color: #0E5A63">A2</span><span style="font-size: 12px; color: #4F5B57">Grade</span></div>
+      <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 22px">96%</span><span style="font-size: 12px; color: #4F5B57">Attendance</span></div>
+    </section>
+
+    <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 14px; padding: 6px 14px">
+      <sc-for list="{{subjects}}" as="s" hint-placeholder-count="6">
+        <div style="display: grid; grid-template-columns: 1fr 120px 40px; gap: 10px; align-items: center; padding: 11px 0; border-bottom: 1px solid {{s.line}}">
+          <span style="font-size: 14px; font-weight: 500">{{s.name}}</span>
+          <span style="height: 8px; background: #EEF1EF; border-radius: 999px; overflow: hidden; display: block"><span style="display: block; height: 100%; width: {{s.pct}}; background: #0E5A63"></span></span>
+          <span style="font-size: 13px; font-weight: 600; text-align: right">{{s.grade}}</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 15px; font-weight: 600">Co-scholastic</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px">
+        <span style="padding: 6px 10px; border-radius: 8px; background: #F1F2EF">Art education · A</span>
+        <span style="padding: 6px 10px; border-radius: 8px; background: #F1F2EF">Health &amp; PE · A</span>
+        <span style="padding: 6px 10px; border-radius: 8px; background: #F1F2EF">Discipline · B</span>
+      </div>
+    </section>
+
+    <section style="background: #F4F9F9; border: 1px solid #CFE2E2; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; font-weight: 600; color: #0E5A63">Class teacher's remark</span>
+      <span style="font-size: 13.5px; line-height: 1.5">Aarav participates actively and his maths has improved well this term. He should give more time to handwriting in Hindi.</span>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const raw = [['English', 88, 'A2'], ['Hindi', 74, 'B1'], ['Mathematics', 93, 'A1'], ['EVS', 89, 'A2'], ['Computer', 91, 'A1'], ['Sanskrit', 83, 'A2']];
+    const subjects = raw.map(([name, p, grade], i) => ({ name, grade, pct: p + '%', line: i === raw.length - 1 ? 'transparent' : '#EEF1EF' }));
+    return { subjects };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Staff Directory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="staff" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <nav aria-label="Staff" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <a href="Staff.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid #0E5A63; text-decoration: none; font-size: 14px; font-weight: 600; color: #0E5A63">Directory</a>
+        <a href="Leave.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Leave</a>
+        <a href="StaffAttendance.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Staff attendance</a>
+        <a href="Payroll.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid transparent; text-decoration: none; font-size: 14px; color: #4F5B57">Payroll</a>
+      </nav>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Staff <span style="font-weight: 400; color: #4F5B57; font-size: 18px">· 96 active</span></h1>
+          <div style="font-size: 14px; color: #4F5B57">58 teaching · 23 admin and support · 15 transport</div>
+        </div>
+        <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Add employee</button>
+      </div>
+
+      <div style="background: #FFF6EC; border: 1px solid #EBC99C; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #5E3305">3 documents expire within 30 days: police verification (2), medical fitness (1).</div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px">
+        <sc-for list="{{people}}" as="p" hint-placeholder-count="9">
+          <article style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; gap: 12px; align-items: center">
+              <div style="width: 44px; height: 44px; flex: none; border-radius: 999px; background: #E3EFEF; color: #08393F; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px">{{p.ini}}</div>
+              <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+                <a href="TeacherProfile.dc.html" style="font-weight: 600; font-size: 15px; color: #17201D">{{p.name}}</a>
+                <span style="font-size: 13px; color: #4F5B57">{{p.role}}</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #3B4643">
+              <span>{{p.dept}}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #4F5B57">{{p.code}} · joined {{p.joined}}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #EEF1EF">
+              <span style="font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: {{p.sBg}}; color: {{p.sFg}}">{{p.status}}</span>
+              <span style="font-size: 12.5px; color: #4F5B57">{{p.extra}}</span>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = { 'Present': ['#E4F1E8', '#1E5A33'], 'On leave': ['#FFF6EC', '#7A4106'], 'Probation': ['#E3EFEF', '#08393F'] };
+    const raw = [
+      ['Sunita Rathore', 'TGT Science · Class teacher 8-B', 'Science department', 'EMP-0142', 'Jul 2019', 'Present', '26 periods/week'],
+      ['Vikram Singh', 'TGT Maths', 'Maths department', 'EMP-0118', 'Apr 2017', 'Present', '28 periods/week'],
+      ['Rachna Bose', 'PGT English', 'Languages', 'EMP-0097', 'Jul 2015', 'On leave', 'Back 12 Oct'],
+      ['Pooja Meena', 'PRT · Class teacher 2-B', 'Primary wing', 'EMP-0231', 'Sep 2026', 'Probation', 'Confirms Mar 2027'],
+      ['Rakesh Jain', 'PGT Accountancy', 'Commerce', 'EMP-0104', 'Apr 2016', 'Present', '24 periods/week'],
+      ['Kamla Devi', 'TGT Hindi', 'Languages', 'EMP-0076', 'Jul 2012', 'Present', 'Police verif. due'],
+      ['Neha Saini', 'Admission counsellor', 'Front office', 'EMP-0188', 'Jan 2022', 'Present', '48 open enquiries'],
+      ['Deepak Choudhary', 'PET', 'Sports', 'EMP-0150', 'Jul 2020', 'Present', '30 periods/week'],
+      ['Mohan Lal', 'Driver · Bus 4', 'Transport', 'EMP-0164', 'Apr 2021', 'Present', 'Licence to Mar 2029']
+    ];
+    const people = raw.map(([name, role, dept, code, joined, status, extra]) => ({ name, role, dept, code, joined, status, extra,
+      ini: name.split(' ').map(w => w[0]).join(''), sBg: st[status][0], sFg: st[status][1] }));
+    return { people };
+  }
+}
+</script>
+</body>
+</html>

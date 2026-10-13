@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fee Collection Counter</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="fees" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Fees &amp; Finance › Counter 1 · <a href="FeeStructure.dc.html">Fee structure</a> · <a href="Defaulters.dc.html">Defaulters</a> · <a href="Reconciliation.dc.html">Online payments</a></div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Collect fee</h1>
+        </div>
+        <div style="display: flex; gap: 16px; font-size: 13px; color: #4F5B57; flex-wrap: wrap">
+          <span>Today at this counter: <b style="color: #17201D; font-family: 'IBM Plex Mono', monospace">₹2,84,600</b> · 37 receipts</span>
+          <a href="CashClosing.dc.html" style="font-weight: 500">Day-end cash closing</a>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between">
+            <div style="display: flex; gap: 14px; align-items: center">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #E3EFEF; color: #08393F; display: flex; align-items: center; justify-content: center; font-weight: 600">HV</div>
+              <div style="display: flex; flex-direction: column; gap: 2px">
+                <div style="font-weight: 600; font-size: 16px">Harsh Vardhan · 8-A</div>
+                <div style="font-size: 13px; color: #4F5B57">Adm. 2017/0064 · Guardian Anita Vardhan · 98870 5xxxx · Staff ward concession</div>
+              </div>
+            </div>
+            <button style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #17201D">Change student</button>
+          </section>
+
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+            <div style="padding: 14px 20px; border-bottom: 1px solid #EEF1EF; display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+              <h2 style="margin: 0; font-size: 16px; font-weight: 600">Dues by installment</h2>
+              <span style="font-size: 13px; color: #4F5B57">Oldest dues are selected first</span>
+            </div>
+            <sc-for list="{{inst}}" as="it" hint-placeholder-count="4">
+              <label style="display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid #EEF1EF; background: {{it.bg}}">
+                <input type="checkbox" checked="{{it.on}}" onChange="{{it.toggle}}" style="width: 20px; height: 20px; flex: none">
+                <span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+                  <span style="font-weight: 600; font-size: 14px">{{it.name}}</span>
+                  <span style="font-size: 12.5px; color: #4F5B57">{{it.heads}}</span>
+                </span>
+                <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px">{{it.amountText}}</span>
+                  <span style="font-size: 12px; font-weight: 600; color: {{it.dueColor}}">{{it.dueText}}</span>
+                </span>
+              </label>
+            </sc-for>
+          </section>
+        </div>
+
+        <aside style="flex: 1 1 320px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Payment</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+            <sc-for list="{{modes}}" as="m" hint-placeholder-count="5">
+              <button onClick="{{m.pick}}" aria-pressed="{{m.on}}" style="min-height: 44px; border-radius: 8px; border: 1px solid {{m.border}}; background: {{m.bg}}; color: {{m.fg}}; font: inherit; font-size: 13px; font-weight: 600">{{m.label}}</button>
+            </sc-for>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px; padding-top: 4px">
+            <div style="display: flex; justify-content: space-between"><span style="color: #4F5B57">Selected dues</span><span style="font-family: 'IBM Plex Mono', monospace">{{subtotal}}</span></div>
+            <div style="display: flex; justify-content: space-between"><span style="color: #4F5B57">Late fee (₹20/day, cap ₹500)</span><span style="font-family: 'IBM Plex Mono', monospace">{{late}}</span></div>
+            <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid #DDE2DE; font-weight: 600; font-size: 18px"><span>Total</span><span style="font-family: 'IBM Plex Mono', monospace">{{total}}</span></div>
+          </div>
+          <sc-if value="{{isUpi}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px dashed #9AA8A3; border-radius: 10px">
+              <div style="width: 84px; height: 84px; flex: none; border-radius: 6px; background: #F1F2EF; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #4F5B57; text-align: center">[Dynamic UPI QR]</div>
+              <div style="font-size: 13px; line-height: 1.5; color: #4F5B57">Parent scans to pay. The receipt is created only after the gateway confirms payment.</div>
+            </div>
+          </sc-if>
+          <button style="min-height: 50px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600">Collect {{total}} and print receipt</button>
+          <div style="font-size: 12.5px; color: #4F5B57; line-height: 1.5">Receipt RCP/2627/004218 will be generated. Cancelling a receipt later needs accountant approval.</div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { picked: { 0: true, 1: true }, mode: 'Cash' };
+  }
+  renderVals() {
+    const inr = n => '₹' + n.toLocaleString('en-IN');
+    const rows = [
+      { name: 'Installment 2 · Jul–Sep', heads: 'Tuition ₹13,300 · Transport ₹3,600 · Lab ₹1,000', amount: 17900, due: '15 Jul', overdue: true },
+      { name: 'Installment 3 · Oct–Dec', heads: 'Tuition ₹13,300 · Transport ₹3,600', amount: 16900, due: '15 Oct', overdue: false },
+      { name: 'Installment 4 · Jan–Mar', heads: 'Tuition ₹13,300 · Transport ₹3,600', amount: 16900, due: '15 Jan', overdue: false },
+      { name: 'Annual trip (optional)', heads: 'Jaipur heritage walk', amount: 1200, due: '30 Oct', overdue: false }
+    ];
+    const picked = this.state.picked;
+    const toggle = i => this.setState({ picked: Object.assign({}, picked, { [i]: !picked[i] }) });
+    const inst = rows.map((r, i) => ({
+      name: r.name, heads: r.heads, on: !!picked[i], toggle: () => toggle(i),
+      amountText: inr(r.amount),
+      dueText: r.overdue ? 'Overdue since ' + r.due : 'Due ' + r.due,
+      dueColor: r.overdue ? '#8F4A09' : '#4F5B57',
+      bg: picked[i] ? '#F4F9F9' : '#FFFFFF'
+    }));
+    const sub = rows.reduce((s, r, i) => s + (picked[i] ? r.amount : 0), 0);
+    const lateFee = picked[0] ? 500 : 0;
+    const modes = ['Cash', 'UPI QR', 'Cheque', 'Card', 'Bank'].map(label => {
+      const on = this.state.mode === label;
+      return { label, on: on ? 'true' : 'false', pick: () => this.setState({ mode: label }),
+        bg: on ? '#12302D' : '#FFFFFF', fg: on ? '#FFFFFF' : '#17201D', border: on ? '#12302D' : '#C9D1CD' };
+    });
+    return { inst, modes, subtotal: inr(sub), late: inr(lateFee), total: inr(sub + lateFee), isUpi: this.state.mode === 'UPI QR' };
+  }
+}
+</script>
+</body>
+</html>

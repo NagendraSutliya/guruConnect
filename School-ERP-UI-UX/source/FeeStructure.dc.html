@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fee Structure</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="fees" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <nav aria-label="Fees" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+          <a href="{{t.href}}" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-bottom: 3px solid {{t.line}}; text-decoration: none; font-size: 14px; font-weight: {{t.fw}}; color: {{t.fg}}; white-space: nowrap">{{t.label}}</a>
+        </sc-for>
+      </nav>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Fee structure · 2027-28 (draft)</h1>
+          <div style="font-size: 14px; color: #4F5B57">Annual amounts per student, category: Regular. Copied from 2026-27 on 1 Oct.</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Add fee head</button>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Send for approval</button>
+        </div>
+      </div>
+
+      <div style="background: #FFF6EC; border: 1px solid #EBC99C; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #5E3305">Tuition for Classes 9–10 is 12.0% higher than 2026-27, above the 10% limit set for this school. Add a reason or lower the amount.</div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px">
+            <thead><tr style="background: #F2F4F2; text-align: left">
+              <th style="padding: 12px 16px; font-weight: 600">Fee head</th>
+              <th style="padding: 12px 16px; font-weight: 600">Frequency</th>
+              <sc-for list="{{groups}}" as="g" hint-placeholder-count="5"><th style="padding: 12px 16px; font-weight: 600; text-align: right">{{g}}</th></sc-for>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{heads}}" as="h" hint-placeholder-count="6">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px"><span style="display: flex; flex-direction: column"><span style="font-weight: 600">{{h.name}}</span><span style="font-size: 12px; color: #4F5B57">{{h.note}}</span></span></td>
+                  <td style="padding: 10px 16px; color: #4F5B57">{{h.freq}}</td>
+                  <sc-for list="{{h.cells}}" as="c" hint-placeholder-count="5">
+                    <td style="padding: 8px 16px; text-align: right"><input aria-label="Amount" value="{{c.v}}" style="width: 96px; min-height: 36px; box-sizing: border-box; padding: 0 8px; text-align: right; border-radius: 6px; border: {{c.border}}; background: {{c.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; color: #17201D"></td>
+                  </sc-for>
+                </tr>
+              </sc-for>
+              <tr style="border-top: 2px solid #DDE2DE; background: #F9FAF8">
+                <td style="padding: 12px 16px; font-weight: 600">Annual total</td><td></td>
+                <sc-for list="{{totals}}" as="t" hint-placeholder-count="5"><td style="padding: 12px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-weight: 600">{{t}}</td></sc-for>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 1 1 340px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Installment plan · quarterly</h2>
+          <sc-for list="{{plan}}" as="p" hint-placeholder-count="4">
+            <div style="display: flex; justify-content: space-between; font-size: 14px; padding-top: 8px; border-top: 1px solid #EEF1EF"><span>{{p.name}}</span><span style="color: #4F5B57">Due {{p.due}} · {{p.share}}</span></div>
+          </sc-for>
+          <span style="font-size: 12.5px; color: #4F5B57">Late fee ₹20 per day after 7 grace days, capped at ₹500 per installment.</span>
+        </section>
+        <section style="flex: 1 1 340px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600">Concession rules</h2>
+          <sc-for list="{{rules}}" as="r" hint-placeholder-count="4">
+            <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding-top: 8px; border-top: 1px solid #EEF1EF"><span>{{r.name}}</span><span style="color: #4F5B57; text-align: right">{{r.rule}}</span></div>
+          </sc-for>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const tabs = [['Counter', 'FeeCounter.dc.html'], ['Fee structure', 'FeeStructure.dc.html'], ['Defaulters', 'Defaulters.dc.html'], ['Online payments', 'Reconciliation.dc.html'], ['Accounts', 'Accounts.dc.html']]
+      .map(([label, href], i) => ({ label, href, fw: i === 1 ? 600 : 400, fg: i === 1 ? '#0E5A63' : '#4F5B57', line: i === 1 ? '#0E5A63' : 'transparent' }));
+    const groups = ['Nursery–UKG', 'Class 1–5', 'Class 6–8', 'Class 9–10', 'Class 11–12'];
+    const data = [
+      ['Tuition', 'Quarterly', 'Exempt from GST', [36000, 48000, 54000, 60480, 66000], 3],
+      ['Admission', 'One-time', 'New students only', [15000, 15000, 15000, 15000, 15000], -1],
+      ['Annual charges', 'Annual', 'Activities, sports, insurance', [6000, 7200, 8400, 9600, 9600], -1],
+      ['Computer', 'Annual', 'Class 1 onwards', [0, 3000, 3600, 3600, 4200], -1],
+      ['Lab', 'Annual', 'Science stream adds ₹2,400', [0, 0, 1800, 2400, 3600], -1],
+      ['Caution deposit', 'One-time', 'Refundable', [5000, 5000, 5000, 5000, 5000], -1]
+    ];
+    const inr = n => n ? n.toLocaleString('en-IN') : '0';
+    const heads = data.map(([name, freq, note, vals, flag]) => ({ name, freq, note,
+      cells: vals.map((v, j) => ({ v: inr(v), border: j === flag ? '2px solid #B4610E' : '1px solid #C9D1CD', bg: j === flag ? '#FFF6EC' : '#FFFFFF' })) }));
+    const totals = groups.map((_, j) => '₹' + data.reduce((s, d) => s + d[3][j], 0).toLocaleString('en-IN'));
+    const plan = [['Installment 1', '15 Apr', '25% + one-time + annual'], ['Installment 2', '15 Jul', '25% of tuition'], ['Installment 3', '15 Oct', '25% of tuition'], ['Installment 4', '15 Jan', '25% of tuition']]
+      .map(([name, due, share]) => ({ name, due, share }));
+    const rules = [
+      { name: 'Sibling — 2nd child', rule: '10% of tuition · auto' }, { name: 'Sibling — 3rd child', rule: '15% of tuition · auto' },
+      { name: 'Staff ward', rule: '50% of tuition · HR verified' }, { name: 'RTE', rule: '100% of tuition · state portal no.' },
+      { name: 'Merit / need-based', rule: 'Up to 25% · principal approval' }
+    ];
+    return { tabs, groups, heads, totals, plan, rules };
+  }
+}
+</script>
+</body>
+</html>

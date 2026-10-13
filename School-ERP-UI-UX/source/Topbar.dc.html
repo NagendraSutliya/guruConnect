@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Top bar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<header style="width: 100%; min-height: 64px; box-sizing: border-box; background: #FFFFFF; border-bottom: 1px solid #DDE2DE; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 32px; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <label style="flex: 1 1 280px; max-width: 440px; display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 12px; border: 1px solid #C9D1CD; border-radius: 8px; background: #F9FAF8">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F5B57" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+    <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search</span>
+    <input type="search" placeholder="Search student, admission no. or parent mobile" style="flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 14px; color: #17201D; outline: none">
+  </label>
+  <div style="flex: 1 1 0"></div>
+  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4F5B57">Session
+    <select style="min-height: 40px; padding: 0 10px; border: 1px solid #C9D1CD; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #17201D">
+      <option>2026-27 (current)</option>
+      <option>2025-26 (closed)</option>
+    </select>
+  </label>
+  <button aria-label="Notifications, 4 unread" style="position: relative; width: 44px; height: 44px; border-radius: 8px; border: 1px solid #DDE2DE; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#17201D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>
+    <span style="position: absolute; top: 8px; right: 9px; width: 8px; height: 8px; border-radius: 999px; background: #B4610E"></span>
+  </button>
+  <div style="display: flex; align-items: center; gap: 10px">
+    <div style="width: 36px; height: 36px; border-radius: 999px; background: #E3EFEF; color: #08393F; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px">MK</div>
+    <div style="display: flex; flex-direction: column">
+      <span style="font-size: 14px; font-weight: 600">Meera Kumawat</span>
+      <span style="font-size: 12px; color: #4F5B57">School Admin</span>
+    </div>
+  </div>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1048,"height":64}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

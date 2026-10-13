@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Timetable</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="academics" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Academics › Timetable · Draft v3, effective 12 Oct</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Class 7-B timetable</h1>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <div style="display: flex; border: 1px solid #C9D1CD; border-radius: 8px; overflow: hidden">
+            <button style="min-height: 44px; padding: 0 14px; border: 0; background: #12302D; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600">Class view</button>
+            <button style="min-height: 44px; padding: 0 14px; border: 0; background: #FFFFFF; color: #17201D; font: inherit; font-size: 13px">Teacher view</button>
+            <button style="min-height: 44px; padding: 0 14px; border: 0; background: #FFFFFF; color: #17201D; font: inherit; font-size: 13px">Room view</button>
+          </div>
+          <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Publish timetable</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 999 1 640px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow-x: auto">
+          <div style="display: grid; grid-template-columns: 96px repeat(6, minmax(110px, 1fr)); min-width: 780px">
+            <div style="padding: 12px; background: #F2F4F2; font-size: 12px; font-weight: 600; color: #4F5B57">Period</div>
+            <sc-for list="{{days}}" as="d" hint-placeholder-count="6">
+              <div style="padding: 12px; background: #F2F4F2; font-size: 13px; font-weight: 600; border-left: 1px solid #E5E9E6">{{d}}</div>
+            </sc-for>
+            <sc-for list="{{rows}}" as="r" hint-placeholder-count="9">
+              <div style="padding: 10px 12px; border-top: 1px solid #E5E9E6; display: flex; flex-direction: column; gap: 2px; background: {{r.headBg}}">
+                <span style="font-size: 13px; font-weight: 600">{{r.label}}</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #4F5B57">{{r.time}}</span>
+              </div>
+              <sc-for list="{{r.cells}}" as="c" hint-placeholder-count="6">
+                <div style="padding: 8px; border-top: 1px solid #E5E9E6; border-left: 1px solid #E5E9E6; background: {{r.headBg}}">
+                  <div style="height: 100%; min-height: 44px; box-sizing: border-box; border-radius: 8px; padding: 6px 8px; display: flex; flex-direction: column; gap: 2px; background: {{c.bg}}; border: {{c.border}}">
+                    <span style="font-size: 13px; font-weight: 600; color: {{c.fg}}">{{c.subject}}</span>
+                    <span style="font-size: 11.5px; color: #4F5B57">{{c.teacher}}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </sc-for>
+          </div>
+        </section>
+
+        <aside style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFF6EC; border: 1px solid #EBC99C; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 600; color: #7A4106">1 clash blocks publishing</h2>
+            <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #5E3305">Wed, Period 5: Vikram Singh is also teaching Maths in 8-A. Move one of the two periods.</p>
+            <button style="align-self: flex-start; min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #C98A3D; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #5E3305">Show free slots</button>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 600">Weekly load check</h2>
+            <sc-for list="{{load}}" as="l" hint-placeholder-count="6">
+              <div style="display: flex; justify-content: space-between; font-size: 13px; gap: 8px">
+                <span>{{l.subject}}</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; color: {{l.color}}">{{l.text}}</span>
+              </div>
+            </sc-for>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 600">Today's substitutions</h2>
+            <div style="font-size: 13px; color: #4F5B57">Rachna Bose on leave · 3 periods vacant</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; padding-top: 8px; border-top: 1px solid #EEF1EF">
+              <span>P4 · 6-A English</span>
+              <select aria-label="Substitute for P4" style="min-height: 38px; border: 1px solid #C9D1CD; border-radius: 8px; font: inherit; font-size: 13px; background: #FFFFFF; color: #17201D"><option>Sunita Rathore (free, 1 sub this month)</option></select>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const T = { Maths: 'Vikram Singh', English: 'Rachna Bose', Hindi: 'Kamla Devi', Science: 'Sunita Rathore', 'Social Sc.': 'Ankit Sharma', Sanskrit: 'Hemant Vyas', Computer: 'Neha Saini', Art: 'Farah Ali', 'Games': 'Deepak Choudhary', Library: 'Librarian' };
+    const tint = { Maths: '#E3EFEF', English: '#EEF0F7', Hindi: '#F4EEE4', Science: '#E8F1E9', 'Social Sc.': '#F2ECF4', Sanskrit: '#F4EEE4', Computer: '#EEF0F7', Art: '#F7ECEC', Games: '#E8F1E9', Library: '#F1F2EF' };
+    const grid = [
+      ['Maths', 'English', 'Maths', 'Hindi', 'Science', 'Maths'],
+      ['English', 'Maths', 'Science', 'English', 'Maths', 'English'],
+      ['Science', 'Hindi', 'English', 'Maths', 'Social Sc.', 'Computer'],
+      ['Hindi', 'Social Sc.', 'Hindi', 'Science', 'English', 'Art'],
+      null,
+      ['Social Sc.', 'Science', 'Maths', 'Social Sc.', 'Hindi', 'Games'],
+      ['Sanskrit', 'Computer', 'Social Sc.', 'Sanskrit', 'Sanskrit', 'Library'],
+      ['Games', 'Art', 'Library', 'Computer', 'Games', '—']
+    ];
+    const times = ['08:00', '08:40', '09:20', '10:00', '10:40', '11:10', '11:50', '12:30'];
+    let p = 0;
+    const rows = grid.map((r, i) => {
+      if (!r) return { label: 'Lunch', time: '10:40', headBg: '#F7F8F6', cells: days.map(() => ({ subject: '', teacher: '', bg: 'transparent', border: '0', fg: '#17201D' })) };
+      p += 1;
+      return {
+        label: 'P' + p, time: times[i], headBg: '#FFFFFF',
+        cells: r.map((s, d) => {
+          const clash = p === 5 && d === 2;
+          if (s === '—') return { subject: 'Free', teacher: '', bg: '#FFFFFF', border: '1px dashed #C9D1CD', fg: '#4F5B57' };
+          return { subject: s, teacher: T[s], fg: clash ? '#5E3305' : '#17201D', bg: clash ? '#FFF6EC' : tint[s], border: clash ? '2px solid #B4610E' : '1px solid transparent' };
+        })
+      };
+    });
+    const load = [['Maths', 7, 7], ['English', 6, 6], ['Science', 5, 6], ['Hindi', 5, 5], ['Social Sc.', 5, 5], ['Sanskrit', 3, 3]].map(([subject, have, need]) => ({
+      subject, text: have + ' / ' + need + ' periods', color: have < need ? '#8F4A09' : '#4F5B57'
+    }));
+    return { days, rows, load };
+  }
+}
+</script>
+</body>
+</html>

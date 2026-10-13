@@ -1,0 +1,539 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Accounts.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Accounts — Day Book",
+      "w": 1280,
+      "x": 0,
+      "y": 8160
+    },
+    "AdmissionForm.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Application Review",
+      "w": 1280,
+      "x": 0,
+      "y": 5100
+    },
+    "Admissions.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Admission CRM",
+      "w": 1280,
+      "x": 0,
+      "y": 1020
+    },
+    "Attendance.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Daily Attendance",
+      "w": 1280,
+      "x": 0,
+      "y": 2040
+    },
+    "AuditLog.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Audit Log",
+      "w": 1280,
+      "x": 2720,
+      "y": 10200
+    },
+    "Certificates.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Transfer Certificate",
+      "w": 1280,
+      "x": 2720,
+      "y": 5100
+    },
+    "Complaints.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Complaints & Discipline",
+      "w": 1280,
+      "x": 0,
+      "y": 10200
+    },
+    "Defaulters.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Defaulters & Reminders",
+      "w": 1280,
+      "x": 1360,
+      "y": 7140
+    },
+    "ExamSetup.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Exam Setup & Date Sheet",
+      "w": 1280,
+      "x": 1360,
+      "y": 6120
+    },
+    "FeeCounter.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Fee Collection Counter",
+      "w": 1280,
+      "x": 0,
+      "y": 3060
+    },
+    "FeeStructure.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Fee Structure",
+      "w": 1280,
+      "x": 0,
+      "y": 7140
+    },
+    "Homework.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Homework & Syllabus",
+      "w": 1280,
+      "x": 0,
+      "y": 6120
+    },
+    "Hostel.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Hostel Rooms",
+      "w": 1280,
+      "x": 0,
+      "y": 9180
+    },
+    "Inventory.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Inventory & Assets",
+      "w": 1280,
+      "x": 1360,
+      "y": 9180
+    },
+    "Leave.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Leave Approvals",
+      "w": 1280,
+      "x": 2720,
+      "y": 8160
+    },
+    "Library.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Library Issue & Return",
+      "w": 1280,
+      "x": 0,
+      "y": 4080
+    },
+    "Login.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "page": "web",
+      "title": "Login",
+      "w": 1280,
+      "x": 0,
+      "y": 0
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Admin Dashboard",
+      "w": 1280,
+      "x": 1360,
+      "y": 0
+    },
+    "Marks.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Marks Entry",
+      "w": 1280,
+      "x": 2720,
+      "y": 2040
+    },
+    "Notices.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Notices & Communication",
+      "w": 1280,
+      "x": 1360,
+      "y": 4080
+    },
+    "ParentFees.dc.html": {
+      "h": 844,
+      "page": "mobile",
+      "title": "Parent — Fees & Pay",
+      "w": 390,
+      "x": 470,
+      "y": 0
+    },
+    "ParentHome.dc.html": {
+      "h": 844,
+      "page": "mobile",
+      "title": "Parent — Home",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "ParentReportCard.dc.html": {
+      "h": 844,
+      "page": "mobile",
+      "title": "Parent — Report Card",
+      "w": 390,
+      "x": 940,
+      "y": 0
+    },
+    "Payroll.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Payroll Run",
+      "w": 1280,
+      "x": 1360,
+      "y": 3060
+    },
+    "Promotion.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Year-end Promotion",
+      "w": 1280,
+      "x": 1360,
+      "y": 5100
+    },
+    "Reconciliation.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Online Payment Reconciliation",
+      "w": 1280,
+      "x": 2720,
+      "y": 7140
+    },
+    "ReportCards.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Results & Report Cards",
+      "w": 1280,
+      "x": 2720,
+      "y": 6120
+    },
+    "Reports.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Reports & KPIs",
+      "w": 1280,
+      "x": 2720,
+      "y": 4080
+    },
+    "Roles.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Roles & Permissions",
+      "w": 1280,
+      "x": 1360,
+      "y": 10200
+    },
+    "SetupWizard.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "School Setup Wizard",
+      "w": 1280,
+      "x": 2720,
+      "y": 0
+    },
+    "Sidebar.dc.html": {
+      "h": 900,
+      "page": "web",
+      "title": "Component: Sidebar",
+      "w": 232,
+      "x": -392,
+      "y": 0
+    },
+    "Staff.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Staff Directory",
+      "w": 1280,
+      "x": 1360,
+      "y": 8160
+    },
+    "StudentProfile.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Student Profile",
+      "w": 1280,
+      "x": 2720,
+      "y": 1020
+    },
+    "Students.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Student List",
+      "w": 1280,
+      "x": 1360,
+      "y": 1020
+    },
+    "TeacherAttendance.dc.html": {
+      "h": 844,
+      "page": "mobile",
+      "title": "Teacher — Mark Attendance",
+      "w": 390,
+      "x": 1880,
+      "y": 0
+    },
+    "TeacherHome.dc.html": {
+      "h": 844,
+      "page": "mobile",
+      "title": "Teacher — Home",
+      "w": 390,
+      "x": 1410,
+      "y": 0
+    },
+    "Timetable.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Timetable",
+      "w": 1280,
+      "x": 1360,
+      "y": 2040
+    },
+    "Topbar.dc.html": {
+      "h": 64,
+      "page": "web",
+      "title": "Component: Topbar",
+      "w": 1048,
+      "x": -1392,
+      "y": 1020
+    },
+    "Transport.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Transport Routes",
+      "w": 1280,
+      "x": 2720,
+      "y": 3060
+    },
+    "Visitors.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Front Office — Visitors",
+      "w": 1280,
+      "x": 2720,
+      "y": 9180
+    },
+    "AddStudent.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Add Student",
+      "w": 1280,
+      "x": 0,
+      "y": 11220
+    },
+    "StaffAttendance.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Staff Attendance",
+      "w": 1280,
+      "x": 1360,
+      "y": 11220
+    },
+    "Users.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Users",
+      "w": 1280,
+      "x": 2720,
+      "y": 11220
+    },
+    "PTM.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Parent-Teacher Meeting",
+      "w": 1280,
+      "x": 0,
+      "y": 12240
+    },
+    "CashClosing.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Day-end Cash Closing",
+      "w": 1280,
+      "x": 1360,
+      "y": 12240
+    },
+    "TeacherProfile.dc.html": {
+      "expand": "fill",
+      "h": 1100,
+      "is_interactive": true,
+      "page": "web",
+      "title": "Teacher Profile",
+      "w": 1280,
+      "x": 2720,
+      "y": 12240
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-09T10:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "page": "web",
+    "view": "canvas"
+  },
+  "notes": {
+    "mobiletitle": {
+      "kind": "title1",
+      "maxW": 2270,
+      "page": "mobile",
+      "text": "Mobile app — parents & teachers",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "webtitle": {
+      "kind": "title1",
+      "maxW": 4000,
+      "page": "web",
+      "text": "Web app — admin, office & staff screens",
+      "w": 240,
+      "x": 0,
+      "y": -602
+    }
+  },
+  "order": [
+    "ParentHome.dc.html",
+    "ParentFees.dc.html",
+    "ParentReportCard.dc.html",
+    "TeacherHome.dc.html",
+    "TeacherAttendance.dc.html",
+    "Main.dc.html",
+    "Login.dc.html",
+    "SetupWizard.dc.html",
+    "Admissions.dc.html",
+    "Students.dc.html",
+    "StudentProfile.dc.html",
+    "Attendance.dc.html",
+    "Timetable.dc.html",
+    "Marks.dc.html",
+    "FeeCounter.dc.html",
+    "Payroll.dc.html",
+    "Transport.dc.html",
+    "Library.dc.html",
+    "Notices.dc.html",
+    "Reports.dc.html",
+    "Sidebar.dc.html",
+    "Topbar.dc.html",
+    "AdmissionForm.dc.html",
+    "Promotion.dc.html",
+    "Certificates.dc.html",
+    "Homework.dc.html",
+    "ExamSetup.dc.html",
+    "ReportCards.dc.html",
+    "FeeStructure.dc.html",
+    "Defaulters.dc.html",
+    "Reconciliation.dc.html",
+    "Accounts.dc.html",
+    "Staff.dc.html",
+    "Leave.dc.html",
+    "Hostel.dc.html",
+    "Inventory.dc.html",
+    "Visitors.dc.html",
+    "Complaints.dc.html",
+    "Roles.dc.html",
+    "AuditLog.dc.html",
+    "AddStudent.dc.html",
+    "StaffAttendance.dc.html",
+    "Users.dc.html",
+    "PTM.dc.html",
+    "CashClosing.dc.html",
+    "TeacherProfile.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "web",
+      "name": "Web app (admin & staff)"
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile app (parent & teacher)"
+    }
+  ],
+  "title": "School ERP — UI/UX Screens"
+}

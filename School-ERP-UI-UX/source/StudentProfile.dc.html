@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Student Profile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="students" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="font-size: 13px; color: #4F5B57"><a href="Students.dc.html">Students</a> › Aarav Gupta</div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 24px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center">
+        <div style="width: 88px; height: 88px; flex: none; border-radius: 16px; background: #E3EFEF; color: #08393F; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 600">AG</div>
+        <div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
+            <h1 style="margin: 0; font-size: 26px; font-weight: 600">Aarav Gupta</h1>
+            <span lang="hi" style="font-size: 18px; color: #4F5B57">आरव गुप्ता</span>
+          </div>
+          <div style="font-size: 14px; color: #4F5B57">Class 5-A · Roll 03 · Adm. no. <span style="font-family: 'IBM Plex Mono', monospace">2021/0142</span> · House: Aravali</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px">
+            <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E4F1E8; color: #1E5A33">Active</span>
+            <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #F1EEE6; color: #5A4A24">Sibling: Saanvi Gupta (2-B)</span>
+            <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #F1EEE6; color: #5A4A24">Bus 4 · Stop: Gopalpura</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Message guardian</button>
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Issue certificate</button>
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Edit</button>
+        </div>
+      </section>
+
+      <div role="tablist" aria-label="Profile sections" style="display: flex; gap: 4px; border-bottom: 1px solid #DDE2DE; overflow-x: auto">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="7">
+          <button role="tab" aria-selected="{{t.on}}" style="min-height: 44px; padding: 0 16px; border: 0; border-bottom: 3px solid {{t.line}}; background: transparent; font: inherit; font-size: 14px; font-weight: {{t.fw}}; color: {{t.fg}}; white-space: nowrap">{{t.label}}</button>
+        </sc-for>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; align-items: start">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Personal and government IDs</h2>
+            <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px">
+              <sc-for list="{{facts}}" as="f" hint-placeholder-count="8">
+                <div style="display: flex; flex-direction: column; gap: 2px">
+                  <dt style="font-size: 12px; color: #4F5B57">{{f.k}}</dt>
+                  <dd style="margin: 0; font-size: 14px; font-weight: 500">{{f.v}}</dd>
+                </div>
+              </sc-for>
+            </dl>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 4px">
+            <h2 style="margin: 0 0 8px; font-size: 16px; font-weight: 600">Guardians</h2>
+            <sc-for list="{{guardians}}" as="g" hint-placeholder-count="2">
+              <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid #EEF1EF">
+                <div style="display: flex; flex-direction: column; gap: 2px">
+                  <div style="font-weight: 600; font-size: 14px">{{g.name}} <span style="font-weight: 400; color: #4F5B57">· {{g.rel}}</span></div>
+                  <div style="font-size: 13px; color: #4F5B57">{{g.meta}}</div>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; color: #08393F; background: #E3EFEF; padding: 4px 10px; border-radius: 999px">{{g.badge}}</span>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Fees · 2026-27</h2><a href="FeeCounter.dc.html" style="font-size: 13px; font-weight: 500">Collect fee</a></div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+              <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #4F5B57">Annual demand</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 17px">₹68,400</span></div>
+              <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #4F5B57">Paid</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 17px">₹34,200</span></div>
+              <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #4F5B57">Due now</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 17px">₹0</span></div>
+            </div>
+            <div style="font-size: 13px; color: #4F5B57">Next installment ₹17,100 due 15 Nov · Sibling concession 10% applied on tuition</div>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Attendance · this session</h2><span style="font-family: 'IBM Plex Mono', monospace; font-size: 17px">96.2%</span></div>
+            <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+              <sc-for list="{{days}}" as="d" hint-placeholder-count="28">
+                <div title="{{d.tip}}" style="height: 22px; border-radius: 4px; background: {{d.bg}}"></div>
+              </sc-for>
+            </div>
+            <div style="display: flex; gap: 16px; font-size: 12px; color: #4F5B57; flex-wrap: wrap">
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #0E5A63"></span>Present</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #D9822B"></span>Absent</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #9CC3C4"></span>Leave</span>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #E6E9E7"></span>Holiday</span>
+            </div>
+          </section>
+          <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">Recent changes</h2>
+            <div style="font-size: 13px; color: #4F5B57">Father's mobile updated · approved by Meera K. · 02 Oct</div>
+            <div style="font-size: 13px; color: #4F5B57">Promoted 4-A → 5-A · 01 Apr</div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const tabs = ['Overview', 'Guardians', 'Attendance', 'Fees', 'Exams', 'Documents', 'History'].map((label, i) => ({
+      label, on: i === 0 ? 'true' : 'false', fw: i === 0 ? 600 : 400, fg: i === 0 ? '#0E5A63' : '#4F5B57', line: i === 0 ? '#0E5A63' : 'transparent'
+    }));
+    const facts = [
+      { k: 'Date of birth', v: '14 Mar 2016 (10 y 6 m)' },
+      { k: 'Gender', v: 'Male' },
+      { k: 'Blood group', v: 'B+' },
+      { k: 'Category', v: 'General' },
+      { k: 'APAAR ID', v: '[APAAR ID]' },
+      { k: 'PEN (UDISE+)', v: '[PEN]' },
+      { k: 'Aadhaar', v: 'xxxx xxxx 4417' },
+      { k: 'Admitted on', v: '05 Apr 2021, Class 1' }
+    ];
+    const guardians = [
+      { name: 'Rohit Gupta', rel: 'Father', meta: '98290 1xxxx · Business · App active', badge: 'Primary contact' },
+      { name: 'Shalini Gupta', rel: 'Mother', meta: '94130 5xxxx · Teacher · App active', badge: 'Can pick up' }
+    ];
+    const pattern = 'PPPPPHPPAPPPPHPPPPLPHPPPPPPH';
+    const color = { P: '#0E5A63', A: '#D9822B', L: '#9CC3C4', H: '#E6E9E7' };
+    const tip = { P: 'Present', A: 'Absent', L: 'Leave', H: 'Holiday' };
+    const days = pattern.split('').map(c => ({ bg: color[c], tip: tip[c] }));
+    return { tabs, facts, guardians, days };
+  }
+}
+</script>
+</body>
+</html>

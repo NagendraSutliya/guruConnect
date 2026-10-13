@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>School Setup Wizard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="settings" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 24px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 13px; color: #4F5B57">Settings › School setup</div>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600">Set up your school</h1>
+        <div style="font-size: 14px; color: #4F5B57">Step 4 of 9 · progress saves automatically, you can leave and come back</div>
+      </div>
+      <div style="height: 8px; background: #E1E6E3; border-radius: 999px; overflow: hidden"><div style="width: 38%; height: 100%; background: #0E5A63"></div></div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+        <ol style="flex: 1 1 240px; max-width: 280px; margin: 0; padding: 8px; list-style: none; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; display: flex; flex-direction: column; gap: 2px">
+          <sc-for list="{{steps}}" as="s" hint-placeholder-count="9">
+            <li style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 10px; border-radius: 8px; background: {{s.bg}}; width: 227px; height: 48px">
+              <span style="width: 26px; height: 26px; flex: none; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; background: {{s.badgeBg}}; color: {{s.badgeFg}}">{{s.mark}}</span>
+              <span style="font-size: 14px; font-weight: {{s.fw}}; color: {{s.fg}}">{{s.label}}</span>
+            </li>
+          </sc-for>
+        </ol>
+
+        <section style="flex: 999 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: flex-start">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 style="margin: 0; font-size: 18px; font-weight: 600">Classes and sections</h2>
+              <p style="margin: 0; font-size: 14px; color: #4F5B57; max-width: 560px">Add the sections for each class and the seats in each. Seat counts drive admission availability and the RTE 25% quota.</p>
+            </div>
+            <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Copy from 2025-26</button>
+          </div>
+
+          <div style="overflow-x: auto; border: 1px solid #DDE2DE; border-radius: 10px">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 620px">
+              <thead>
+                <tr style="background: #F2F4F2; text-align: left">
+                  <th style="padding: 12px 14px; font-weight: 600">Class</th>
+                  <th style="padding: 12px 14px; font-weight: 600">Wing</th>
+                  <th style="padding: 12px 14px; font-weight: 600">Sections</th>
+                  <th style="padding: 12px 14px; font-weight: 600; text-align: right">Seats per section</th>
+                  <th style="padding: 12px 14px; font-weight: 600; text-align: right">Total seats</th>
+                  <th style="padding: 12px 14px; font-weight: 600; text-align: right">RTE seats</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{classes}}" as="c" hint-placeholder-count="8">
+                  <tr style="border-top: 1px solid #EEF1EF">
+                    <td style="padding: 10px 14px; font-weight: 600">{{c.name}}</td>
+                    <td style="padding: 10px 14px; color: #4F5B57">{{c.wing}}</td>
+                    <td style="padding: 10px 14px">
+                      <div style="display: flex; gap: 6px; flex-wrap: wrap">
+                        <sc-for list="{{c.sections}}" as="sec" hint-placeholder-count="3">
+                          <span style="padding: 4px 10px; border-radius: 6px; background: #E3EFEF; color: #08393F; font-weight: 600; font-size: 13px">{{sec}}</span>
+                        </sc-for>
+                        <button aria-label="Add section" style="width: 28px; height: 28px; border-radius: 6px; border: 1px dashed #9AA8A3; background: #FFFFFF; color: #4F5B57; font: inherit; font-size: 16px; line-height: 1">+</button>
+                      </div>
+                    </td>
+                    <td style="padding: 10px 14px; text-align: right"><input aria-label="Seats per section" type="number" value="{{c.seats}}" style="width: 72px; min-height: 36px; padding: 0 8px; border: 1px solid #C9D1CD; border-radius: 6px; font: inherit; text-align: right"></td>
+                    <td style="padding: 10px 14px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{c.total}}</td>
+                    <td style="padding: 10px 14px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: #4F5B57">{{c.rte}}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid #EEF1EF">
+            <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Back: Academic session</button>
+            <button style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #0E5A63; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600">Save and continue: Subjects</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const labels = ['School profile', 'Branches', 'Academic session', 'Classes & sections', 'Subjects', 'Timings & holidays', 'Number series', 'Grading scheme', 'Staff & roles'];
+    const current = 3;
+    const steps = labels.map((label, i) => {
+      const done = i < current, on = i === current;
+      return {
+        label,
+        mark: done ? '✓' : String(i + 1),
+        bg: on ? '#E3EFEF' : 'transparent',
+        fw: on ? 600 : 400,
+        fg: i > current ? '#4F5B57' : '#17201D',
+        badgeBg: done ? '#0E5A63' : (on ? '#FFFFFF' : '#EEF1EF'),
+        badgeFg: done ? '#FFFFFF' : (on ? '#0E5A63' : '#4F5B57')
+      };
+    });
+    const rows = [
+      ['Nursery', 'Pre-primary', ['A', 'B'], 30, true],
+      ['LKG', 'Pre-primary', ['A', 'B'], 30, false],
+      ['UKG', 'Pre-primary', ['A', 'B'], 30, false],
+      ['Class 1', 'Primary', ['A', 'B', 'C'], 40, true],
+      ['Class 2', 'Primary', ['A', 'B', 'C'], 40, false],
+      ['Class 6', 'Middle', ['A', 'B', 'C'], 40, false],
+      ['Class 9', 'Secondary', ['A', 'B', 'C'], 42, false],
+      ['Class 11', 'Senior secondary', ['Science', 'Commerce', 'Humanities'], 40, false]
+    ];
+    const classes = rows.map(([name, wing, sections, seats, entry]) => {
+      const total = sections.length * seats;
+      return { name, wing, sections, seats, total, rte: entry ? Math.ceil(total * 0.25) : '—' };
+    });
+    return { steps, classes };
+  }
+}
+</script>
+</body>
+</html>

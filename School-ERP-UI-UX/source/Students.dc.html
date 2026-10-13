@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Student List</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="students" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Students · <a href="Promotion.dc.html">Promotion</a> · <a href="Certificates.dc.html">Certificates</a></div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">All students <span style="font-weight: 400; color: #4F5B57; font-size: 18px">· 1,248 active</span></h1>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Import from Excel</button>
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Print ID cards</button>
+          <a href="AddStudent.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 8px; background: #0E5A63; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600">Add student</a>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{chips}}" as="chip" hint-placeholder-count="6">
+          <button style="min-height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid {{chip.border}}; background: {{chip.bg}}; color: {{chip.fg}}; font: inherit; font-size: 13px; font-weight: 500">{{chip.label}}</button>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 860px">
+            <thead>
+              <tr style="background: #F2F4F2; text-align: left">
+                <th style="padding: 12px 16px; width: 28px"><input type="checkbox" aria-label="Select all" style="width: 18px; height: 18px"></th>
+                <th style="padding: 12px 8px; font-weight: 600">Student</th>
+                <th style="padding: 12px 16px; font-weight: 600">Adm. no.</th>
+                <th style="padding: 12px 16px; font-weight: 600">Class</th>
+                <th style="padding: 12px 16px; font-weight: 600">Guardian</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">Attendance</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right">Fee due</th>
+                <th style="padding: 12px 16px; font-weight: 600">Tags</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="10">
+                <tr style="border-top: 1px solid #EEF1EF">
+                  <td style="padding: 10px 16px"><input type="checkbox" aria-label="Select student" style="width: 18px; height: 18px"></td>
+                  <td style="padding: 10px 8px">
+                    <a href="StudentProfile.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #17201D">
+                      <span style="width: 34px; height: 34px; flex: none; border-radius: 999px; background: #E3EFEF; color: #08393F; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">{{r.ini}}</span>
+                      <span style="display: flex; flex-direction: column"><span style="font-weight: 600">{{r.name}}</span><span style="font-size: 12px; color: #4F5B57">{{r.gender}} · {{r.dob}}</span></span>
+                    </a>
+                  </td>
+                  <td style="padding: 10px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px">{{r.adm}}</td>
+                  <td style="padding: 10px 16px">{{r.cls}}</td>
+                  <td style="padding: 10px 16px"><div style="display: flex; flex-direction: column"><span>{{r.guardian}}</span><span style="font-size: 12px; color: #4F5B57">{{r.mobile}}</span></div></td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: {{r.attColor}}">{{r.att}}</td>
+                  <td style="padding: 10px 16px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: {{r.dueColor}}">{{r.due}}</td>
+                  <td style="padding: 10px 16px">
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap">
+                      <sc-for list="{{r.tags}}" as="t" hint-placeholder-count="1">
+                        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: #F1EEE6; color: #5A4A24">{{t}}</span>
+                      </sc-for>
+                    </div>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 16px; border-top: 1px solid #EEF1EF; font-size: 13px; color: #4F5B57">
+          <span>Showing 1–10 of 1,248</span>
+          <div style="display: flex; gap: 8px">
+            <button style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; color: #17201D">Previous</button>
+            <button style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 13px; color: #17201D">Next</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const chip = (label, on) => ({ label, bg: on ? '#12302D' : '#FFFFFF', fg: on ? '#FFFFFF' : '#17201D', border: on ? '#12302D' : '#C9D1CD' });
+    const chips = [chip('Status: Active', true), chip('Class: All', false), chip('Section: All', false), chip('Category: All', false), chip('Fee dues only', false), chip('RTE', false), chip('Transport users', false)];
+    const raw = [
+      ['Aarav Gupta', 'M', '14-03-2016', '2021/0142', '5-A', 'Rohit Gupta', '98290 1xxxx', 96.2, 0, ['Sibling']],
+      ['Ananya Sharma', 'F', '02-11-2015', '2020/0087', '5-A', 'Kavita Sharma', '94140 2xxxx', 91.8, 12500, []],
+      ['Arjun Meena', 'M', '21-07-2014', '2019/0211', '6-B', 'Ramesh Meena', '99280 3xxxx', 72.4, 0, ['RTE']],
+      ['Diya Choudhary', 'F', '09-01-2013', '2018/0175', '7-B', 'Sunil Choudhary', '97720 4xxxx', 94.0, 0, ['Bus 4']],
+      ['Harsh Vardhan', 'M', '30-05-2012', '2017/0064', '8-A', 'Anita Vardhan', '98870 5xxxx', 88.5, 21800, ['Staff ward']],
+      ['Ira Joshi', 'F', '17-08-2011', '2016/0198', '9-C', 'Deepak Joshi', '96490 6xxxx', 97.1, 0, []],
+      ['Kunal Rathore', 'M', '05-12-2010', '2015/0120', '10-A', 'Manju Rathore', '94600 7xxxx', 81.3, 8400, ['Bus 2']],
+      ['Muskan Khan', 'F', '11-04-2010', '2022/0033', '10-B', 'Imran Khan', '98281 8xxxx', 93.6, 0, ['CWSN']],
+      ['Nikhil Prajapat', 'M', '23-09-2009', '2014/0156', '11-Science', 'Mahesh Prajapat', '99830 9xxxx', 89.9, 0, []],
+      ['Pihu Sethi', 'F', '28-02-2009', '2014/0170', '11-Commerce', 'Neelam Sethi', '95870 0xxxx', 95.4, 6000, ['Sibling']]
+    ];
+    const inr = n => '₹' + n.toLocaleString('en-IN');
+    const rows = raw.map(([name, g, dob, adm, cls, guardian, mobile, att, due, tags]) => ({
+      name, dob, adm, cls, guardian, mobile, tags,
+      ini: name.split(' ').map(w => w[0]).join(''),
+      gender: g === 'M' ? 'Male' : 'Female',
+      att: att.toFixed(1) + '%',
+      attColor: att < 75 ? '#8F4A09' : '#17201D',
+      due: due ? inr(due) : '—',
+      dueColor: due ? '#8F4A09' : '#4F5B57'
+    }));
+    return { chips, rows };
+  }
+}
+</script>
+</body>
+</html>

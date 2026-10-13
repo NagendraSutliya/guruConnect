@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reports and KPIs</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Noto+Sans+Devanagari:wght@400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A63}a:hover{color:#08393F}
+</style>
+</helmet>
+<div style="min-height: 56.25rem; display: flex; flex-wrap: wrap; background: #F5F6F3; font-family: 'IBM Plex Sans', 'Noto Sans Devanagari', system-ui, sans-serif; color: #17201D">
+  <div style="flex: 1 1 232px; display: flex">
+    <dc-import name="Sidebar" active="reports" hint-size="232px,900px"></dc-import>
+  </div>
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <dc-import name="Topbar" hint-size="100%,64px"></dc-import>
+    <main style="padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; width: 100%; box-sizing: border-box">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 13px; color: #4F5B57">Reports</div>
+          <h1 style="margin: 0; font-size: 26px; font-weight: 600">Fee collection efficiency by class</h1>
+          <div style="font-size: 14px; color: #4F5B57">Collected against demand due till 9 Oct 2026 · refreshed 15 minutes ago</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Export Excel</button>
+          <button style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9D1CD; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; color: #17201D">Email daily at 6 pm</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section style="flex: 999 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 600">School average 82.4% · target 90%</h2>
+            <span style="font-size: 13px; color: #4F5B57">Orange = below 75%</span>
+          </div>
+          <sc-for list="{{classes}}" as="c" hint-placeholder-count="10">
+            <div style="display: grid; grid-template-columns: 90px 1fr 64px 110px; gap: 12px; align-items: center; font-size: 13.5px">
+              <span style="font-weight: 600">{{c.name}}</span>
+              <span style="position: relative; height: 14px; background: #EEF1EF; border-radius: 4px; overflow: hidden; display: block">
+                <span style="display: block; height: 100%; width: {{c.pct}}; background: {{c.fill}}; border-radius: 4px"></span>
+                <span style="position: absolute; top: -2px; bottom: -2px; left: 90%; width: 2px; background: #17201D"></span>
+              </span>
+              <span style="font-family: 'IBM Plex Mono', monospace; text-align: right">{{c.pct}}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; color: #4F5B57; text-align: right">{{c.out}} due</span>
+            </div>
+          </sc-for>
+          <div style="font-size: 12.5px; color: #4F5B57; padding-top: 6px">Black line marks the 90% target.</div>
+        </section>
+
+        <aside style="flex: 1 1 300px; background: #FFFFFF; border: 1px solid #DDE2DE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+          <h2 style="margin: 0; font-size: 15px; font-weight: 600">Report library</h2>
+          <sc-for list="{{groups}}" as="g" hint-placeholder-count="5">
+            <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 1px solid #EEF1EF">
+              <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #0E5A63">{{g.title}}</span>
+              <sc-for list="{{g.items}}" as="i" hint-placeholder-count="3">
+                <a href="#report" style="font-size: 14px; text-decoration: none; color: #17201D; padding: 4px 0">{{i}}</a>
+              </sc-for>
+            </div>
+          </sc-for>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const inr = n => '₹' + n.toLocaleString('en-IN');
+    const classes = [['Nursery', 91, 18400], ['Class 1', 88, 42600], ['Class 2', 86, 51200], ['Class 3', 84, 60800], ['Class 4', 79, 88300], ['Class 5', 83, 70100], ['Class 6', 71, 132400], ['Class 7', 77, 104900], ['Class 8', 74, 118600], ['Class 9', 85, 79300]]
+      .map(([name, p, out]) => ({ name, pct: p + '%', out: inr(out), fill: p < 75 ? '#C2701A' : '#0E5A63' }));
+    const groups = [
+      { title: 'Students', items: ['Strength register', 'Category and gender', 'RTE register', 'UDISE+ data sheet'] },
+      { title: 'Attendance', items: ['Monthly class register', 'Chronic absentees', 'Staff register'] },
+      { title: 'Fees', items: ['Daily collection', 'Defaulters with contact', 'Concession register', 'Online settlement match'] },
+      { title: 'Exams', items: ['Tabulation register', 'Subject analysis', 'Result summary'] },
+      { title: 'HR', items: ['Payroll register', 'PF / ESI / TDS statements'] }
+    ];
+    return { classes, groups };
+  }
+}
+</script>
+</body>
+</html>
