@@ -1,251 +1,609 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  FiPlus,
-  FiSearch,
-  FiCopy,
-  FiCheck,
-  FiFilter,
-  FiPhone,
-  FiClock,
-  FiAlertCircle,
-  FiChevronRight,
-  FiList,
-  FiColumns,
-  FiUserPlus,
-  FiCalendar
-} from "react-icons/fi";
+  Search,
+  Copy,
+  Check,
+  Filter,
+  Phone,
+  Clock,
+  AlertCircle,
+  Columns,
+  List,
+  UserPlus,
+  FileSpreadsheet,
+  ChevronRight,
+  ChevronLeft,
+  Calendar,
+  Sparkles,
+  ArrowRight,
+  X
+} from "lucide-react";
 import { useToast } from "../../../context/ToastContext";
 import AdmissionsPanel from "../student/AdmissionsPanel";
+import ApplicationReviewDrawer, { type ApplicationDetail } from "../../../components/admin/admissions/ApplicationReviewDrawer";
+import AddStudentModal from "../../../components/admin/admissions/AddStudentModal";
 
-interface PipelineLead {
-  id: string;
-  name: string;
-  classGrade: string;
-  guardian: string;
-  phone: string;
-  source: "Walk-in" | "Website" | "Referral" | "Facebook" | "RTE";
-  stage: "enquiry" | "followup" | "application" | "verification" | "test" | "approved" | "enrolled";
+interface PipelineLead extends ApplicationDetail {
   followUpText: string;
   isOverdue?: boolean;
-  date: string;
 }
 
-const INITIAL_LEADS: PipelineLead[] = [
+const INITIAL_PIPELINE_LEADS: PipelineLead[] = [
   {
     id: "ENQ-101",
+    applicationNo: "APP/2728/0101",
     name: "Ishaan Agarwal",
     classGrade: "Nursery",
-    guardian: "Father",
-    phone: "98290 12345",
+    appliedDate: "14 Oct",
+    counsellor: "Neha Saini",
     source: "Website",
     stage: "enquiry",
     followUpText: "Call today",
     isOverdue: false,
-    date: "14 Oct"
+    dob: "15 Sep 2022",
+    gender: "Male",
+    category: "General",
+    fatherName: "Sanjay Agarwal",
+    fatherPhone: "98290 12345",
+    motherName: "Pooja Agarwal",
+    motherPhone: "98290 54321",
+    address: "B-12, Vaishali Nagar, Jaipur",
+    previousSchool: "None (First admission)",
+    siblingInSchool: "No",
+    transportNeeded: "Yes · Route 4",
+    ageCheckText: "Age check passed: 4 years 6 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Mon, 19 Oct · 11:00 am · Room 2",
+      outcome: "Not held yet",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 350 KB", status: "Verified" },
+      { id: "d2", title: "Child photo", meta: "JPG · 120 KB", status: "Verified" },
+      { id: "d3", title: "Address proof", meta: "Aadhaar · PDF", status: "Verified" },
+      { id: "d4", title: "Category certificate", meta: "Not applicable", status: "Verified" },
+    ],
+    seatsSnapshot: { available: "41 of 60", rteAvailable: "12 of 15" },
+    followUps: [
+      { id: "fu1", dateType: "14 Oct · Web form", text: "Enquiry submitted via school admission landing page." }
+    ]
   },
   {
     id: "ENQ-102",
+    applicationNo: "APP/2728/0102",
     name: "Myra Khandelwal",
     classGrade: "Class 1",
-    guardian: "Mother",
-    phone: "94140 88921",
+    appliedDate: "14 Oct",
+    counsellor: "Arjun Yadav",
     source: "Walk-in",
     stage: "enquiry",
     followUpText: "Tomorrow",
     isOverdue: false,
-    date: "14 Oct"
+    dob: "12 May 2020",
+    gender: "Female",
+    category: "General",
+    fatherName: "Deepak Khandelwal",
+    fatherPhone: "94140 88921",
+    motherName: "Ritu Khandelwal",
+    motherPhone: "94140 88922",
+    address: "Flat 402, Royal Palms, Mansarovar, Jaipur",
+    previousSchool: "Kidzee Play School",
+    siblingInSchool: "No",
+    transportNeeded: "No",
+    ageCheckText: "Age check passed: 6 years 10 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Tue, 20 Oct · 10:00 am · Room 1",
+      outcome: "Not held yet",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 410 KB", status: "Verified" },
+      { id: "d2", title: "Child photo", meta: "JPG · 150 KB", status: "Verified" },
+      { id: "d3", title: "UKG report card", meta: "PDF · 890 KB", status: "Verified" },
+      { id: "d4", title: "Address proof", meta: "Electricity bill", status: "Verified" },
+    ],
+    seatsSnapshot: { available: "23 of 120", rteAvailable: "9 of 30" },
+    followUps: [
+      { id: "fu1", dateType: "14 Oct · Walk-in", text: "Parents visited front office. Requested prospectus." }
+    ]
   },
   {
     id: "ENQ-103",
+    applicationNo: "APP/2728/0103",
     name: "Kabir Saxena",
     classGrade: "Class 6",
-    guardian: "Father",
-    phone: "99280 44512",
+    appliedDate: "13 Oct",
+    counsellor: "Neha Saini",
     source: "Referral",
     stage: "enquiry",
     followUpText: "16 Oct",
     isOverdue: false,
-    date: "13 Oct"
+    dob: "24 Nov 2015",
+    gender: "Male",
+    category: "General",
+    fatherName: "Alok Saxena",
+    fatherPhone: "99280 44512",
+    motherName: "Kavita Saxena",
+    motherPhone: "99280 44513",
+    address: "18, Malviya Nagar, Jaipur",
+    previousSchool: "St. Xavier's Senior School",
+    siblingInSchool: "Yes · Tanvi Saxena (9-B)",
+    transportNeeded: "Yes · Route 7",
+    ageCheckText: "Age check passed: 11 years 4 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Thu, 22 Oct · 12:30 pm · Room 3",
+      outcome: "Not held yet",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 500 KB", status: "Verified" },
+      { id: "d2", title: "Class 5 Marksheet", meta: "PDF · 1.2 MB", status: "Verified" },
+      { id: "d3", title: "Transfer certificate", meta: "Pending previous school clearance", status: "Pending" }
+    ],
+    seatsSnapshot: { available: "8 of 120", rteAvailable: "0 of 30" },
+    followUps: [
+      { id: "fu1", dateType: "13 Oct · Call", text: "Referral from Tanvi's parents. Sibling admission discount discussed." }
+    ]
   },
   {
     id: "ENQ-104",
+    applicationNo: "APP/2728/0104",
     name: "Anaya Mathur",
     classGrade: "LKG",
-    guardian: "Mother",
-    phone: "97720 90123",
+    appliedDate: "10 Oct",
+    counsellor: "Arjun Yadav",
     source: "Facebook",
     stage: "followup",
     followUpText: "2 days late",
     isOverdue: true,
-    date: "10 Oct"
+    dob: "19 Dec 2021",
+    gender: "Female",
+    category: "General",
+    fatherName: "Vikram Mathur",
+    fatherPhone: "97720 90123",
+    motherName: "Divya Mathur",
+    motherPhone: "97720 90124",
+    address: "C-44, Shyam Nagar, Jaipur",
+    previousSchool: "Little Angels",
+    siblingInSchool: "No",
+    transportNeeded: "Yes · Route 2",
+    ageCheckText: "Age check passed: 5 years 3 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Wed, 21 Oct · 11:30 am · Room 2",
+      outcome: "Not held yet",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 300 KB", status: "Verified" },
+      { id: "d2", title: "Child photo", meta: "Pending", status: "Pending" },
+    ],
+    seatsSnapshot: { available: "18 of 60", rteAvailable: "5 of 15" },
+    followUps: [
+      { id: "fu1", dateType: "10 Oct · Facebook lead", text: "Inquired via Facebook ad campaign." },
+      { id: "fu2", dateType: "12 Oct · Call", text: "Phone busy, need to follow up again." }
+    ]
   },
   {
     id: "ENQ-105",
+    applicationNo: "APP/2728/0105",
     name: "Vihaan Soni",
     classGrade: "Class 1",
-    guardian: "Father",
-    phone: "98870 55142",
+    appliedDate: "14 Oct",
+    counsellor: "Neha Saini",
     source: "Walk-in",
     stage: "followup",
     followUpText: "Today 4 pm",
     isOverdue: false,
-    date: "14 Oct"
+    dob: "08 Aug 2020",
+    gender: "Male",
+    category: "OBC",
+    fatherName: "Gopal Soni",
+    fatherPhone: "98870 55142",
+    motherName: "Suman Soni",
+    motherPhone: "98870 55143",
+    address: "Plot 89, Tonk Road, Jaipur",
+    previousSchool: "EuroKids",
+    siblingInSchool: "No",
+    transportNeeded: "Yes · Route 7",
+    ageCheckText: "Age check passed: 6 years 7 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Sat, 24 Oct · 10:00 am · Room 1",
+      outcome: "Not held yet",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 412 KB", status: "Verified" },
+      { id: "d2", title: "OBC certificate", meta: "Pending verification", status: "Pending" }
+    ],
+    seatsSnapshot: { available: "23 of 120", rteAvailable: "9 of 30" },
+    followUps: [
+      { id: "fu1", dateType: "14 Oct · Walk-in", text: "Walked in for fee quote and brochure." }
+    ]
   },
   {
     id: "APP-201",
+    applicationNo: "APP/2728/0201",
     name: "Sara Bansal",
     classGrade: "Nursery",
-    guardian: "Mother",
-    phone: "96490 33211",
+    appliedDate: "12 Oct",
+    counsellor: "Neha Saini",
     source: "Website",
     stage: "application",
     followUpText: "Docs pending",
     isOverdue: true,
-    date: "12 Oct"
+    dob: "14 Feb 2022",
+    gender: "Female",
+    category: "General",
+    fatherName: "Rohit Bansal",
+    fatherPhone: "96490 33211",
+    motherName: "Priyanka Bansal",
+    motherPhone: "96490 33212",
+    address: "65, Vidyadhar Nagar, Jaipur",
+    previousSchool: "None",
+    siblingInSchool: "No",
+    transportNeeded: "No",
+    ageCheckText: "Age check passed: 5 years 1 month on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Fri, 23 Oct · 9:30 am · Room 4",
+      outcome: "Not held yet",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 520 KB", status: "Verified" },
+      { id: "d2", title: "Immunization record", meta: "Image blurred", status: "Pending" }
+    ],
+    seatsSnapshot: { available: "41 of 60", rteAvailable: "12 of 15" },
+    followUps: [
+      { id: "fu1", dateType: "12 Oct · Online portal", text: "Online application fee paid. Verification awaited." }
+    ]
   },
   {
     id: "APP-202",
+    applicationNo: "APP/2728/0202",
     name: "Aditya Rawat",
     classGrade: "Class 11",
-    guardian: "Father",
-    phone: "94600 77123",
+    appliedDate: "13 Oct",
+    counsellor: "Arjun Yadav",
     source: "Referral",
     stage: "application",
     followUpText: "Form complete",
     isOverdue: false,
-    date: "13 Oct"
+    dob: "05 Apr 2010",
+    gender: "Male",
+    category: "General",
+    fatherName: "Rajendra Rawat",
+    fatherPhone: "94600 77123",
+    motherName: "Meenakshi Rawat",
+    motherPhone: "94600 77124",
+    address: "A-15, Civil Lines, Jaipur",
+    previousSchool: "DPS Jaipur",
+    siblingInSchool: "No",
+    transportNeeded: "No",
+    ageCheckText: "Age check passed: 16 years 11 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Sat, 24 Oct · 2:00 pm · Room 5",
+      outcome: "Not held yet",
+    },
+    documents: [
+      { id: "d1", title: "Class 10 CBSE Marksheet", meta: "PDF · 1.5 MB · 92.4%", status: "Verified" },
+      { id: "d2", title: "Migration certificate", meta: "PDF · 600 KB", status: "Verified" }
+    ],
+    seatsSnapshot: { available: "37 of 120", rteAvailable: "0 of 0" },
+    followUps: [
+      { id: "fu1", dateType: "13 Oct · Visit", text: "Opted for PCM with Computer Science stream." }
+    ]
   },
   {
     id: "APP-203",
+    applicationNo: "APP/2728/0142",
     name: "Navya Jangid",
     classGrade: "Class 1",
-    guardian: "Mother",
-    phone: "98281 99042",
+    appliedDate: "28 Sep",
+    counsellor: "Neha Saini",
     source: "Walk-in",
     stage: "verification",
-    followUpText: "Interaction 15 Oct",
+    followUpText: "Interaction 13 Oct",
     isOverdue: false,
-    date: "11 Oct"
+    dob: "18 Jan 2021",
+    gender: "Female",
+    category: "OBC",
+    fatherName: "Mahendra Jangid",
+    fatherPhone: "98281 99042",
+    motherName: "Sushila Jangid",
+    motherPhone: "94142 55190",
+    address: "Sector 7, Mansarovar, Jaipur",
+    previousSchool: "Little Steps Play School (UKG)",
+    siblingInSchool: "No",
+    transportNeeded: "Yes · Mansarovar sector 7",
+    ageCheckText: "Age check passed: 6 years 2 months on 31 Mar 2027 (minimum 6 years for Class 1).",
+    interactionSchedule: {
+      dateTimeRoom: "Sat, 13 Oct · 10:30 am · Room 4",
+      outcome: "Recommended",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 412 KB · verified by Neha S.", status: "Verified", verifiedBy: "Neha S." },
+      { id: "d2", title: "Child photo", meta: "JPG · 180 KB", status: "Verified" },
+      { id: "d3", title: "Address proof", meta: "Electricity bill · PDF", status: "Verified" },
+      { id: "d4", title: "UKG report card", meta: "PDF · 1.1 MB", status: "Verified" },
+      { id: "d5", title: "Category certificate", meta: "Image is blurred, name not readable", status: "Pending" },
+    ],
+    seatsSnapshot: {
+      available: "23 of 120",
+      rteAvailable: "9 of 30",
+    },
+    followUps: [
+      { id: "f1", dateType: "04 Oct · Call", text: "Asked to re-upload category certificate." },
+      { id: "f2", dateType: "30 Sep · Visit", text: "Parents toured campus, interested in transport." },
+      { id: "f3", dateType: "26 Sep · Walk-in", text: "Enquiry created at front office." },
+    ]
   },
   {
     id: "APP-204",
+    applicationNo: "APP/2728/0204",
     name: "Reyansh Tak",
     classGrade: "Class 6",
-    guardian: "Father",
-    phone: "99830 11984",
+    appliedDate: "13 Oct",
+    counsellor: "Arjun Yadav",
     source: "Website",
     stage: "test",
     followUpText: "Result pending",
     isOverdue: false,
-    date: "13 Oct"
+    dob: "11 Aug 2015",
+    gender: "Male",
+    category: "General",
+    fatherName: "Kailash Tak",
+    fatherPhone: "99830 11984",
+    motherName: "Pooja Tak",
+    motherPhone: "99830 11985",
+    address: "56, Raja Park, Jaipur",
+    previousSchool: "Tagore Public School",
+    siblingInSchool: "No",
+    transportNeeded: "No",
+    ageCheckText: "Age check passed: 11 years 7 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Fri, 16 Oct · 11:00 am · Lab 2",
+      outcome: "Not held yet",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 400 KB", status: "Verified" },
+      { id: "d2", title: "Class 5 Marks card", meta: "PDF · 800 KB", status: "Verified" }
+    ],
+    seatsSnapshot: { available: "8 of 120", rteAvailable: "0 of 30" },
+    followUps: [
+      { id: "fu1", dateType: "13 Oct · Test scheduled", text: "Written assessment scheduled for English & Math." }
+    ]
   },
   {
     id: "APP-205",
+    applicationNo: "APP/2728/0205",
     name: "Kiara Purohit",
     classGrade: "Nursery",
-    guardian: "Mother",
-    phone: "95870 33412",
+    appliedDate: "12 Oct",
+    counsellor: "Neha Saini",
     source: "RTE",
     stage: "test",
     followUpText: "RTE · lottery list",
     isOverdue: false,
-    date: "12 Oct"
+    dob: "03 Mar 2022",
+    gender: "Female",
+    category: "EWS",
+    fatherName: "Mukesh Purohit",
+    fatherPhone: "95870 33412",
+    motherName: "Kanta Purohit",
+    motherPhone: "95870 33413",
+    address: "Ward 12, Sanganer, Jaipur",
+    previousSchool: "None",
+    siblingInSchool: "No",
+    transportNeeded: "No",
+    ageCheckText: "Age check passed: 5 years on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Mon, 19 Oct · 10:00 am · Front Office",
+      outcome: "Recommended",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "PDF · 300 KB", status: "Verified" },
+      { id: "d2", title: "Income certificate (EWS)", meta: "Tehsildar verified", status: "Verified" }
+    ],
+    seatsSnapshot: { available: "41 of 60", rteAvailable: "12 of 15" },
+    followUps: [
+      { id: "fu1", dateType: "12 Oct · RTE Portal", text: "Allotted via Rajasthan RTE first round lottery." }
+    ]
   },
   {
     id: "APP-206",
+    applicationNo: "APP/2728/0206",
     name: "Dhruv Mehta",
     classGrade: "Class 1",
-    guardian: "Father",
-    phone: "98290 88214",
+    appliedDate: "10 Oct",
+    counsellor: "Arjun Yadav",
     source: "Referral",
     stage: "approved",
-    followUpText: "Fee due 18 Oct",
+    followUpText: "Fee due 15 Oct",
     isOverdue: false,
-    date: "10 Oct"
+    dob: "21 Sep 2020",
+    gender: "Male",
+    category: "General",
+    fatherName: "Nitin Mehta",
+    fatherPhone: "98290 88214",
+    motherName: "Shilpa Mehta",
+    motherPhone: "98290 88215",
+    address: "B-22, Gandhi Nagar, Jaipur",
+    previousSchool: "Bachpan Play School",
+    siblingInSchool: "No",
+    transportNeeded: "Yes · Route 3",
+    ageCheckText: "Age check passed: 6 years 6 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Interaction completed",
+      outcome: "Recommended",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "Verified", status: "Verified" },
+      { id: "d2", title: "Address proof", meta: "Verified", status: "Verified" }
+    ],
+    seatsSnapshot: { available: "23 of 120", rteAvailable: "9 of 30" },
+    followUps: [
+      { id: "fu1", dateType: "10 Oct · Principal Approval", text: "Principal signed off on admission. Fee invoice generated." }
+    ]
   },
   {
     id: "APP-207",
+    applicationNo: "APP/2728/0018",
     name: "Aarohi Sethi",
     classGrade: "Nursery",
-    guardian: "Mother",
-    phone: "94130 55190",
+    appliedDate: "08 Oct",
+    counsellor: "Neha Saini",
     source: "Website",
     stage: "enrolled",
-    followUpText: "Adm. 2026/0018",
+    followUpText: "Adm. no. 2027/0018",
     isOverdue: false,
-    date: "08 Oct"
+    dob: "14 Jan 2022",
+    gender: "Female",
+    category: "General",
+    fatherName: "Manish Sethi",
+    fatherPhone: "94130 55190",
+    motherName: "Ritu Sethi",
+    motherPhone: "94130 55191",
+    address: "C-11, C-Scheme, Jaipur",
+    previousSchool: "None",
+    siblingInSchool: "No",
+    transportNeeded: "No",
+    ageCheckText: "Age check passed: 5 years 2 months on 31 Mar 2027.",
+    interactionSchedule: {
+      dateTimeRoom: "Completed",
+      outcome: "Recommended",
+    },
+    documents: [
+      { id: "d1", title: "Birth certificate", meta: "Verified", status: "Verified" },
+      { id: "d2", title: "Fee Receipt", meta: "Paid ₹35,000", status: "Verified" }
+    ],
+    seatsSnapshot: { available: "41 of 60", rteAvailable: "12 of 15" },
+    followUps: [
+      { id: "fu1", dateType: "08 Oct · Admission Office", text: "Admission confirmed. Admission No: 2027/0018 allotted." }
+    ]
   }
 ];
 
-const STAGES: { key: PipelineLead["stage"]; label: string; count: number }[] = [
+const STAGE_COLUMNS: { key: PipelineLead["stage"]; label: string; count: number }[] = [
   { key: "enquiry", label: "Enquiry", count: 48 },
   { key: "followup", label: "Follow-up", count: 31 },
   { key: "application", label: "Application", count: 22 },
-  { key: "verification", label: "Docs Verified", count: 14 },
-  { key: "test", label: "Test / Interview", count: 9 },
+  { key: "verification", label: "Documents verified", count: 14 },
+  { key: "test", label: "Test / interaction", count: 9 },
   { key: "approved", label: "Approved", count: 6 },
   { key: "enrolled", label: "Enrolled", count: 18 }
 ];
 
-const SEATS = [
-  { className: "Nursery", filled: 41, total: 60 },
-  { className: "Class 1", filled: 23, total: 120 },
-  { className: "Class 6", filled: 8, total: 120 },
-  { className: "Class 11", filled: 37, total: 120 }
+const SEATS_METRICS = [
+  { className: "Nursery", filled: 41, total: 60, percent: 68 },
+  { className: "Class 1", filled: 23, total: 120, percent: 19 },
+  { className: "Class 6", filled: 8, total: 120, percent: 7 },
+  { className: "Class 11", filled: 37, total: 120, percent: 31 }
 ];
 
 export default function AdmissionsCRM() {
   const { showToast } = useToast();
   const [viewMode, setViewMode] = useState<"kanban" | "table">("kanban");
-  const [leads, setLeads] = useState<PipelineLead[]>(INITIAL_LEADS);
+  const [leads, setLeads] = useState<PipelineLead[]>(INITIAL_PIPELINE_LEADS);
   const [classFilter, setClassFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
+  const [counsellorFilter, setCounsellorFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const [overdueOnly, setOverdueOnly] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // New enquiry form state
-  const [newEnquiry, setNewEnquiry] = useState({
+  // Modals & Drawers state
+  const [selectedApplication, setSelectedApplication] = useState<ApplicationDetail | null>(null);
+  const [isReviewDrawerOpen, setIsReviewDrawerOpen] = useState(false);
+  const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+  const [isAddEnquiryOpen, setIsAddEnquiryOpen] = useState(false);
+
+  // Quick Enquiry Form state
+  const [enquiryForm, setEnquiryForm] = useState({
     name: "",
     classGrade: "Nursery",
     guardian: "Father",
     phone: "",
-    source: "Walk-in" as PipelineLead["source"]
+    source: "Walk-in",
+    counsellor: "Neha Saini",
   });
 
   const handleCopyLink = () => {
     const link = `${window.location.origin}/admissions/apply`;
     navigator.clipboard.writeText(link);
     setCopiedLink(true);
-    showToast("Application link copied to clipboard!", "success");
+    showToast("Application form link copied to clipboard!", "success");
     setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleCardClick = (lead: PipelineLead) => {
+    setSelectedApplication(lead);
+    setIsReviewDrawerOpen(true);
+  };
+
+  const handleStatusChange = (appId: string, newStage: ApplicationDetail["stage"]) => {
+    setLeads((prev) =>
+      prev.map((l) => (l.id === appId ? { ...l, stage: newStage } : l))
+    );
+  };
+
+  const handleMarkLost = (appId: string) => {
+    setLeads((prev) => prev.filter((l) => l.id !== appId));
+    setIsReviewDrawerOpen(false);
   };
 
   const handleCreateEnquiry = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newEnquiry.name || !newEnquiry.phone) {
+    if (!enquiryForm.name || !enquiryForm.phone) {
       showToast("Please provide applicant name and phone number.", "error");
       return;
     }
-    const lead: PipelineLead = {
+
+    const newLead: PipelineLead = {
       id: `ENQ-${Math.floor(100 + Math.random() * 900)}`,
-      name: newEnquiry.name,
-      classGrade: newEnquiry.classGrade,
-      guardian: newEnquiry.guardian,
-      phone: newEnquiry.phone,
-      source: newEnquiry.source,
+      applicationNo: `APP/2728/${Math.floor(1000 + Math.random() * 9000)}`,
+      name: enquiryForm.name,
+      classGrade: enquiryForm.classGrade,
+      appliedDate: "Today",
+      counsellor: enquiryForm.counsellor,
+      source: enquiryForm.source,
       stage: "enquiry",
-      followUpText: "Follow-up scheduled",
+      followUpText: "Call today",
       isOverdue: false,
-      date: "Today"
+      dob: "2021-05-10",
+      gender: "Male",
+      category: "General",
+      fatherName: enquiryForm.guardian === "Father" ? "Guardian" : "",
+      fatherPhone: enquiryForm.phone,
+      motherName: "",
+      motherPhone: "",
+      address: "Jaipur",
+      previousSchool: "None",
+      siblingInSchool: "No",
+      transportNeeded: "No",
+      ageCheckText: "Age check passed for intake session.",
+      interactionSchedule: {
+        dateTimeRoom: "To be scheduled",
+        outcome: "Not held yet",
+      },
+      documents: [
+        { id: "d1", title: "Birth certificate", meta: "Awaited", status: "Pending" }
+      ],
+      seatsSnapshot: { available: "Seats open", rteAvailable: "RTE open" },
+      followUps: [
+        { id: "fu1", dateType: "Today · Enquiry", text: "Direct enquiry logged via Admin Portal." }
+      ]
     };
-    setLeads([lead, ...leads]);
-    setIsAddModalOpen(false);
-    setNewEnquiry({ name: "", classGrade: "Nursery", guardian: "Father", phone: "", source: "Walk-in" });
-    showToast(`Enquiry for ${lead.name} added successfully!`, "success");
+
+    setLeads([newLead, ...leads]);
+    setIsAddEnquiryOpen(false);
+    setEnquiryForm({
+      name: "",
+      classGrade: "Nursery",
+      guardian: "Father",
+      phone: "",
+      source: "Walk-in",
+      counsellor: "Neha Saini",
+    });
+    showToast(`Enquiry for ${newLead.name} added!`, "success");
   };
 
-  const moveStage = (leadId: string, direction: "next" | "prev") => {
+  const moveStage = (leadId: string, direction: "next" | "prev", e: React.MouseEvent) => {
+    e.stopPropagation();
     const stageOrder: PipelineLead["stage"][] = [
       "enquiry",
       "followup",
@@ -255,8 +613,8 @@ export default function AdmissionsCRM() {
       "approved",
       "enrolled"
     ];
-    setLeads(prev =>
-      prev.map(item => {
+    setLeads((prev) =>
+      prev.map((item) => {
         if (item.id === leadId) {
           const currentIndex = stageOrder.indexOf(item.stage);
           const nextIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
@@ -269,91 +627,112 @@ export default function AdmissionsCRM() {
     );
   };
 
-  const filteredLeads = leads.filter(l => {
+  const filteredLeads = leads.filter((l) => {
     const matchesSearch =
       l.name.toLowerCase().includes(search.toLowerCase()) ||
-      l.phone.includes(search) ||
-      l.id.toLowerCase().includes(search.toLowerCase());
+      l.fatherPhone.includes(search) ||
+      l.applicationNo.toLowerCase().includes(search.toLowerCase());
     const matchesClass = classFilter === "All" || l.classGrade === classFilter;
     const matchesSource = sourceFilter === "All" || l.source === sourceFilter;
-    return matchesSearch && matchesClass && matchesSource;
+    const matchesCounsellor = counsellorFilter === "All" || l.counsellor === counsellorFilter;
+    const matchesOverdue = !overdueOnly || l.isOverdue;
+    return matchesSearch && matchesClass && matchesSource && matchesCounsellor && matchesOverdue;
   });
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto text-navy">
-      {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold text-navy-muted tracking-wide uppercase">
-            Admissions › Pipeline · Session 2026-27 Intake
+    <div className="flex flex-col gap-6 animate-fadeIn font-sans w-full max-w-content mx-auto">
+      
+      {/* Breadcrumb & Header Section (06-Admissions.html) */}
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-small text-ink-secondary">
+            Admissions › Pipeline · Session 2026-27 intake
           </div>
-          <h1 className="text-2xl font-bold text-navy mt-1">Admission Pipeline</h1>
+          <h1 className="m-0 text-title font-semibold tracking-tight text-ink">
+            Admission pipeline
+          </h1>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
+          {/* View Mode Toggle */}
           <div className="flex items-center bg-surface border border-line rounded-control p-1">
             <button
               onClick={() => setViewMode("kanban")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-control text-xs font-semibold transition ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control text-small font-semibold transition-colors cursor-pointer ${
                 viewMode === "kanban"
-                  ? "bg-nav-bg text-gold shadow-sm"
-                  : "text-navy-muted hover:text-navy"
+                  ? "bg-nav-bg text-gold shadow-xs"
+                  : "text-ink-secondary hover:text-ink"
               }`}
             >
-              <FiColumns size={14} /> Pipeline
+              <Columns size={14} /> Pipeline
             </button>
             <button
               onClick={() => setViewMode("table")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-control text-xs font-semibold transition ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control text-small font-semibold transition-colors cursor-pointer ${
                 viewMode === "table"
-                  ? "bg-nav-bg text-gold shadow-sm"
-                  : "text-navy-muted hover:text-navy"
+                  ? "bg-nav-bg text-gold shadow-xs"
+                  : "text-ink-secondary hover:text-ink"
               }`}
             >
-              <FiList size={14} /> Table View
+              <List size={14} /> Table View
             </button>
           </div>
 
+          <Link
+            to="/admin/students/import"
+            className="inline-flex items-center gap-2 min-h-[44px] px-3.5 rounded-control border border-line-input bg-surface hover:bg-surface-subtle text-body font-medium text-ink transition-colors"
+          >
+            <FileSpreadsheet size={15} className="text-emerald-700" />
+            <span>Import from Excel</span>
+          </Link>
+
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-2 px-3.5 py-2 border border-line rounded-control bg-surface hover:bg-page text-xs font-medium text-navy transition"
+            className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-control border border-line-input bg-surface hover:bg-surface-subtle text-body font-medium text-ink transition-colors cursor-pointer"
           >
-            {copiedLink ? <FiCheck className="text-emerald-600" /> : <FiCopy />}
-            <span>Copy application link</span>
+            {copiedLink ? <Check size={16} className="text-emerald-700" /> : <Copy size={16} />}
+            <span>Copy application form link</span>
           </button>
 
           <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-control bg-teal hover:bg-teal-hover text-white text-xs font-semibold shadow-sm transition"
+            onClick={() => setIsAddEnquiryOpen(true)}
+            className="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-control bg-primary hover:bg-primary-dark text-white text-body font-semibold transition-colors cursor-pointer"
           >
-            <FiUserPlus size={15} /> Add Enquiry
+            <UserPlus size={16} /> Add enquiry
           </button>
         </div>
       </div>
 
       {viewMode === "table" ? (
-        <AdmissionsPanel />
+        <AdmissionsPanel
+          isEmbedded={true}
+          onOpenReviewDrawer={(appDetail) => {
+            setSelectedApplication(appDetail);
+            setIsReviewDrawerOpen(true);
+          }}
+          onOpenAddStudent={() => setIsAddStudentOpen(true)}
+        />
       ) : (
         <>
-          {/* Filter Bar */}
-          <div className="flex flex-wrap items-center gap-3 bg-surface border border-line rounded-panel p-3.5 shadow-sm">
-            <div className="relative flex-1 min-w-[220px]">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-muted" size={15} />
+          {/* Filters Bar (06-Admissions.html) */}
+          <div className="flex flex-wrap items-center gap-3 bg-surface border border-line rounded-card p-3.5">
+            <div className="relative flex-1 min-w-[240px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-secondary" size={16} />
               <input
                 type="text"
-                placeholder="Search student, applicant or phone..."
+                placeholder="Search student, admission no. or parent mobile..."
                 value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 bg-page border border-line rounded-control text-xs text-navy focus:outline-none focus:border-teal"
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full min-h-[40px] pl-9 pr-3 bg-surface-subtle border border-line-input rounded-control text-body text-ink focus:outline-none focus:border-primary focus:bg-surface"
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-navy-muted font-medium">Class:</span>
+            <label className="flex items-center gap-2 text-small text-ink-secondary font-medium">
+              Class
               <select
                 value={classFilter}
-                onChange={e => setClassFilter(e.target.value)}
-                className="bg-page border border-line rounded-control px-2.5 py-1.5 text-xs text-navy font-medium focus:outline-none"
+                onChange={(e) => setClassFilter(e.target.value)}
+                className="min-h-[40px] px-3 border border-line-input rounded-control bg-surface text-body text-ink focus:outline-none focus:border-primary"
               >
                 <option value="All">All classes</option>
                 <option value="Nursery">Nursery</option>
@@ -362,14 +741,14 @@ export default function AdmissionsCRM() {
                 <option value="Class 6">Class 6</option>
                 <option value="Class 11">Class 11</option>
               </select>
-            </div>
+            </label>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-navy-muted font-medium">Source:</span>
+            <label className="flex items-center gap-2 text-small text-ink-secondary font-medium">
+              Source
               <select
                 value={sourceFilter}
-                onChange={e => setSourceFilter(e.target.value)}
-                className="bg-page border border-line rounded-control px-2.5 py-1.5 text-xs text-navy font-medium focus:outline-none"
+                onChange={(e) => setSourceFilter(e.target.value)}
+                className="min-h-[40px] px-3 border border-line-input rounded-control bg-surface text-body text-ink focus:outline-none focus:border-primary"
               >
                 <option value="All">All sources</option>
                 <option value="Walk-in">Walk-in</option>
@@ -378,228 +757,289 @@ export default function AdmissionsCRM() {
                 <option value="Facebook">Facebook</option>
                 <option value="RTE">RTE</option>
               </select>
-            </div>
+            </label>
 
-            <div className="ml-auto flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                <FiClock size={12} /> 5 follow-ups overdue
-              </span>
-            </div>
+            <label className="flex items-center gap-2 text-small text-ink-secondary font-medium">
+              Counsellor
+              <select
+                value={counsellorFilter}
+                onChange={(e) => setCounsellorFilter(e.target.value)}
+                className="min-h-[40px] px-3 border border-line-input rounded-control bg-surface text-body text-ink focus:outline-none focus:border-primary"
+              >
+                <option value="All">Everyone</option>
+                <option value="Neha Saini">Neha Saini</option>
+                <option value="Arjun Yadav">Arjun Yadav</option>
+              </select>
+            </label>
+
+            <button
+              onClick={() => setOverdueOnly(!overdueOnly)}
+              className={`ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-small font-semibold transition-colors cursor-pointer ${
+                overdueOnly
+                  ? "bg-warning-accent text-white"
+                  : "bg-warning-bg text-warning-text border border-warning-border hover:bg-warning-bg/80"
+              }`}
+            >
+              <Clock size={13} />
+              <span>5 follow-ups overdue</span>
+            </button>
           </div>
 
-          {/* Kanban Board */}
-          <div className="overflow-x-auto pb-4">
+          {/* Kanban Board (7 Columns matching 06-Admissions.html) */}
+          <div className="overflow-x-auto pb-4 custom-scrollbar">
             <div className="flex gap-3.5 min-w-max items-start">
-              {STAGES.map(stage => {
-                const stageLeads = filteredLeads.filter(l => l.stage === stage.key);
+              {STAGE_COLUMNS.map((stage) => {
+                const stageLeads = filteredLeads.filter((l) => l.stage === stage.key);
                 return (
-                  <div
+                  <section
                     key={stage.key}
-                    className="w-64 bg-slate-50/80 border border-line/80 rounded-panel p-3 flex flex-col gap-2.5 shrink-0"
+                    className="w-[248px] shrink-0 bg-[#ECEFEC] rounded-card p-3 flex flex-col gap-2.5"
                   >
-                    <div className="flex items-center justify-between px-1">
-                      <h3 className="font-semibold text-xs text-navy uppercase tracking-wider">{stage.label}</h3>
-                      <span className="font-mono text-xs px-2 py-0.5 bg-surface border border-line rounded-full text-navy-muted">
+                    {/* Column Header */}
+                    <div className="flex justify-between items-center px-1">
+                      <h2 className="m-0 text-small font-semibold text-ink">
+                        {stage.label}
+                      </h2>
+                      <span className="font-mono text-caption text-ink-secondary bg-surface px-2 py-0.5 rounded-full border border-line/40">
                         {stageLeads.length}
                       </span>
                     </div>
 
-                    <div className="space-y-2.5 min-h-[140px]">
+                    {/* Column Leads */}
+                    <div className="space-y-2.5 min-h-[160px]">
                       {stageLeads.length === 0 ? (
-                        <div className="h-24 border border-dashed border-line rounded-control flex items-center justify-center text-xs text-navy-muted italic">
-                          No leads in stage
+                        <div className="h-24 border border-dashed border-line rounded-control flex items-center justify-center text-caption text-ink-secondary italic">
+                          No applicants
                         </div>
                       ) : (
-                        stageLeads.map(lead => (
-                          <div
+                        stageLeads.map((lead) => (
+                          <article
                             key={lead.id}
-                            className="bg-surface border border-line rounded-control p-3 shadow-xs hover:shadow-sm transition space-y-2 group"
+                            onClick={() => handleCardClick(lead)}
+                            className="bg-surface border border-line rounded-control p-3 shadow-none hover:border-primary hover:shadow-xs transition-all flex flex-col gap-2 cursor-pointer group"
                           >
-                            <div className="flex items-start justify-between gap-1.5">
-                              <div>
-                                <div className="font-semibold text-sm text-navy">{lead.name}</div>
-                                <div className="text-xs text-navy-muted">
-                                  {lead.guardian} · {lead.phone}
-                                </div>
+                            <div className="flex justify-between items-start gap-2">
+                              <div className="font-semibold text-body text-ink group-hover:text-primary transition-colors">
+                                {lead.name}
                               </div>
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal/10 text-teal border border-teal/20">
+                              <span className="text-caption font-semibold text-primary-dark bg-primary-tint px-2 py-0.5 rounded-small whitespace-nowrap">
                                 {lead.classGrade}
                               </span>
                             </div>
 
-                            <div className="flex items-center justify-between text-[11px] pt-2 border-t border-line/50">
-                              <span className="text-navy-muted">{lead.source}</span>
+                            <div className="text-small text-ink-secondary">
+                              Father · {lead.fatherPhone}
+                            </div>
+
+                            <div className="flex items-center justify-between text-caption pt-2 border-t border-line/50">
+                              <span className="text-ink-secondary">{lead.source}</span>
                               <span
                                 className={`font-semibold ${
-                                  lead.isOverdue ? "text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded" : "text-navy-muted"
+                                  lead.isOverdue
+                                    ? "text-warning-inline bg-warning-bg px-1.5 py-0.5 rounded-small"
+                                    : "text-ink-secondary"
                                 }`}
                               >
                                 {lead.followUpText}
                               </span>
                             </div>
 
-                            {/* Quick Move Controls */}
-                            <div className="flex items-center justify-between pt-1 opacity-0 group-hover:opacity-100 transition-opacity text-xs">
+                            {/* Quick Stage Controls on Hover */}
+                            <div className="flex items-center justify-between pt-1 opacity-0 group-hover:opacity-100 transition-opacity text-caption border-t border-line/30">
                               <button
-                                onClick={() => moveStage(lead.id, "prev")}
+                                onClick={(e) => moveStage(lead.id, "prev", e)}
                                 disabled={stage.key === "enquiry"}
-                                className="text-[10px] text-navy-muted hover:text-navy disabled:opacity-30 disabled:pointer-events-none"
+                                className="text-ink-secondary hover:text-ink disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center gap-0.5"
                               >
-                                ← Prev
+                                <ChevronLeft size={12} /> Prev
                               </button>
                               <button
-                                onClick={() => moveStage(lead.id, "next")}
+                                onClick={(e) => moveStage(lead.id, "next", e)}
                                 disabled={stage.key === "enrolled"}
-                                className="text-[10px] font-semibold text-teal hover:underline disabled:opacity-30 disabled:pointer-events-none flex items-center gap-0.5"
+                                className="font-semibold text-primary hover:underline disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center gap-0.5"
                               >
-                                Advance →
+                                Advance <ChevronRight size={12} />
                               </button>
                             </div>
-                          </div>
+                          </article>
                         ))
                       )}
                     </div>
-                  </div>
+                  </section>
                 );
               })}
             </div>
           </div>
 
-          {/* Seats Left Capacity Section */}
-          <div className="bg-surface border border-line rounded-panel p-5 shadow-sm space-y-4">
+          {/* Seats Left for Session (Bottom Section matching 06-Admissions.html) */}
+          <section className="bg-surface border border-line rounded-card p-5 space-y-3.5">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-sm text-navy">Seats Left for Session 2026-27 Intake</h2>
-              <span className="text-xs text-navy-muted">Real-time enrolled vs capacity</span>
+              <h2 className="m-0 text-h2 font-semibold text-ink">
+                Seats left for 2026-27
+              </h2>
+              <span className="text-small text-ink-secondary">
+                Real-time enrolled intake capacity
+              </span>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {SEATS.map(seat => {
-                const percent = Math.round((seat.filled / seat.total) * 100);
-                const remaining = seat.total - seat.filled;
-                return (
-                  <div key={seat.className} className="space-y-1.5 p-3 rounded-control bg-page border border-line/60">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-semibold text-navy">{seat.className}</span>
-                      <span className="font-mono text-navy-muted">
-                        {seat.filled} of {seat.total} ({remaining} left)
-                      </span>
-                    </div>
-                    <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full transition-all duration-500 rounded-full ${
-                          percent > 85 ? "bg-amber-600" : "bg-teal"
-                        }`}
-                        style={{ width: `${percent}%` }}
-                      />
-                    </div>
+              {SEATS_METRICS.map((seat) => (
+                <div key={seat.className} className="flex flex-col gap-1.5 p-3 rounded-control bg-surface-subtle border border-line/60">
+                  <div className="flex justify-between items-center text-small">
+                    <span className="font-semibold text-ink">{seat.className}</span>
+                    <span className="font-mono text-ink-secondary">
+                      {seat.filled} of {seat.total}
+                    </span>
                   </div>
-                );
-              })}
+                  <div className="h-2 w-full bg-line-track rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-500"
+                      style={{ width: `${seat.percent}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          </section>
         </>
       )}
 
-      {/* Add Enquiry Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-line rounded-panel w-full max-w-md shadow-xl p-6 space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-line">
-              <h3 className="font-bold text-base text-navy">Add Admission Enquiry</h3>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-navy-muted hover:text-navy text-sm font-semibold"
-              >
-                ✕
-              </button>
-            </div>
+      {/* 07-AdmissionForm Drawer Component */}
+      <ApplicationReviewDrawer
+        application={selectedApplication}
+        isOpen={isReviewDrawerOpen}
+        onClose={() => setIsReviewDrawerOpen(false)}
+        onStatusChange={handleStatusChange}
+        onMarkLost={handleMarkLost}
+      />
 
-            <form onSubmit={handleCreateEnquiry} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block font-medium text-navy mb-1">Student Full Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Aarav Sharma"
-                  value={newEnquiry.name}
-                  onChange={e => setNewEnquiry({ ...newEnquiry, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal"
-                />
+      {/* 08-AddStudent Direct Admission Modal */}
+      <AddStudentModal
+        isOpen={isAddStudentOpen}
+        onClose={() => setIsAddStudentOpen(false)}
+        onSuccess={(stu) => {
+          showToast(`Student ${stu.name} added to pipeline!`, "success");
+        }}
+      />
+
+      {/* Add Quick Enquiry Modal */}
+      {isAddEnquiryOpen && (
+        <div className="fixed inset-0 z-50 overflow-hidden font-sans">
+          <div className="fixed inset-0 bg-ink/40 backdrop-blur-xs transition-opacity" onClick={() => setIsAddEnquiryOpen(false)} />
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <div className="bg-surface rounded-card border border-line shadow-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95">
+              <div className="flex items-center justify-between pb-3 border-b border-line">
+                <h3 className="m-0 text-h2 font-semibold text-ink">Add Admission Enquiry</h3>
+                <button
+                  onClick={() => setIsAddEnquiryOpen(false)}
+                  className="w-8 h-8 rounded-control border border-line flex items-center justify-center text-ink-secondary hover:text-ink cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-navy mb-1">Applying for Class</label>
-                  <select
-                    value={newEnquiry.classGrade}
-                    onChange={e => setNewEnquiry({ ...newEnquiry, classGrade: e.target.value })}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none"
-                  >
-                    <option>Nursery</option>
-                    <option>LKG</option>
-                    <option>UKG</option>
-                    <option>Class 1</option>
-                    <option>Class 6</option>
-                    <option>Class 11</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-medium text-navy mb-1">Lead Source</label>
-                  <select
-                    value={newEnquiry.source}
-                    onChange={e => setNewEnquiry({ ...newEnquiry, source: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none"
-                  >
-                    <option value="Walk-in">Walk-in</option>
-                    <option value="Website">Website</option>
-                    <option value="Referral">Referral</option>
-                    <option value="Facebook">Facebook</option>
-                    <option value="RTE">RTE</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-navy mb-1">Guardian</label>
-                  <select
-                    value={newEnquiry.guardian}
-                    onChange={e => setNewEnquiry({ ...newEnquiry, guardian: e.target.value })}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none"
-                  >
-                    <option>Father</option>
-                    <option>Mother</option>
-                    <option>Guardian</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-medium text-navy mb-1">Contact Mobile *</label>
+              <form onSubmit={handleCreateEnquiry} className="space-y-4">
+                <label className="flex flex-col gap-1.5 text-small font-medium text-ink">
+                  Student Full Name *
                   <input
-                    type="tel"
+                    type="text"
                     required
-                    placeholder="98290 xxxxx"
-                    value={newEnquiry.phone}
-                    onChange={e => setNewEnquiry({ ...newEnquiry, phone: e.target.value })}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal"
+                    placeholder="e.g. Aarav Sharma"
+                    value={enquiryForm.name}
+                    onChange={(e) => setEnquiryForm({ ...enquiryForm, name: e.target.value })}
+                    className="min-h-[44px] px-3 border border-line-input rounded-control text-body text-ink focus:outline-none focus:border-primary"
                   />
-                </div>
-              </div>
+                </label>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 border border-line rounded-control text-navy hover:bg-page font-medium transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-teal hover:bg-teal-hover text-white rounded-control font-semibold shadow-xs transition"
-                >
-                  Save Enquiry
-                </button>
-              </div>
-            </form>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="flex flex-col gap-1.5 text-small font-medium text-ink">
+                    Class
+                    <select
+                      value={enquiryForm.classGrade}
+                      onChange={(e) => setEnquiryForm({ ...enquiryForm, classGrade: e.target.value })}
+                      className="min-h-[44px] px-3 border border-line-input rounded-control bg-surface text-body text-ink focus:outline-none focus:border-primary"
+                    >
+                      <option>Nursery</option>
+                      <option>LKG</option>
+                      <option>UKG</option>
+                      <option>Class 1</option>
+                      <option>Class 6</option>
+                      <option>Class 11</option>
+                    </select>
+                  </label>
+
+                  <label className="flex flex-col gap-1.5 text-small font-medium text-ink">
+                    Source
+                    <select
+                      value={enquiryForm.source}
+                      onChange={(e) => setEnquiryForm({ ...enquiryForm, source: e.target.value })}
+                      className="min-h-[44px] px-3 border border-line-input rounded-control bg-surface text-body text-ink focus:outline-none focus:border-primary"
+                    >
+                      <option value="Walk-in">Walk-in</option>
+                      <option value="Website">Website</option>
+                      <option value="Referral">Referral</option>
+                      <option value="Facebook">Facebook</option>
+                      <option value="RTE">RTE</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="flex flex-col gap-1.5 text-small font-medium text-ink">
+                    Guardian
+                    <select
+                      value={enquiryForm.guardian}
+                      onChange={(e) => setEnquiryForm({ ...enquiryForm, guardian: e.target.value })}
+                      className="min-h-[44px] px-3 border border-line-input rounded-control bg-surface text-body text-ink focus:outline-none focus:border-primary"
+                    >
+                      <option value="Father">Father</option>
+                      <option value="Mother">Mother</option>
+                      <option value="Guardian">Guardian</option>
+                    </select>
+                  </label>
+
+                  <label className="flex flex-col gap-1.5 text-small font-medium text-ink">
+                    Mobile *
+                    <input
+                      type="tel"
+                      required
+                      placeholder="98290 xxxxx"
+                      value={enquiryForm.phone}
+                      onChange={(e) => setEnquiryForm({ ...enquiryForm, phone: e.target.value })}
+                      className="min-h-[44px] px-3 border border-line-input rounded-control font-mono text-body text-ink focus:outline-none focus:border-primary"
+                    />
+                  </label>
+                </div>
+
+                <label className="flex flex-col gap-1.5 text-small font-medium text-ink">
+                  Assigned Counsellor
+                  <select
+                    value={enquiryForm.counsellor}
+                    onChange={(e) => setEnquiryForm({ ...enquiryForm, counsellor: e.target.value })}
+                    className="min-h-[44px] px-3 border border-line-input rounded-control bg-surface text-body text-ink focus:outline-none focus:border-primary"
+                  >
+                    <option value="Neha Saini">Neha Saini</option>
+                    <option value="Arjun Yadav">Arjun Yadav</option>
+                  </select>
+                </label>
+
+                <div className="flex justify-end gap-2 pt-3 border-t border-line">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddEnquiryOpen(false)}
+                    className="min-h-[40px] px-4 rounded-control border border-line-input bg-surface hover:bg-surface-subtle text-small font-medium text-ink transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="min-h-[40px] px-5 rounded-control bg-primary hover:bg-primary-dark text-white text-small font-semibold transition-colors cursor-pointer"
+                  >
+                    Save Enquiry
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

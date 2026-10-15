@@ -38,9 +38,11 @@ export default function AdminLogin() {
       localStorage.setItem("adminToken", data.token);
 
       const adminUser = {
-        _id: data._id,
+        _id: data.instituteId || data._id,
         instituteName: data.instituteName,
+        ownerName: data.ownerName || null,
         email: data.email,
+        logoUrl: data.logoUrl || null,
       };
       
       localStorage.setItem("admin", JSON.stringify(adminUser));
@@ -74,11 +76,11 @@ export default function AdminLogin() {
         <div className="relative z-10 w-full px-8 lg:px-12 xl:px-16 flex flex-col justify-between h-full py-12">
           
           {/* Top Brand with Official Logo */}
-          <Link to="/" className="flex items-center gap-3 self-start group">
+          <Link to="/" className="flex items-center self-start group">
             <img 
               src="/guruconnect-logo.png" 
               alt="guruConnect Logo" 
-              className="h-12 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-20 w-auto object-contain transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col">
               <span className="font-extrabold text-xl text-white tracking-tight">

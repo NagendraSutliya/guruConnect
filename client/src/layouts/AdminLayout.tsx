@@ -2,6 +2,7 @@ import { Outlet, NavLink } from "react-router-dom";
 import AdminNavbar from "../components/admin/AdminNavbar";
 import CommandPalette from "../components/common/CommandPalette";
 import { useState, useEffect } from "react";
+import api from "../api/axiosInstance";
 import {
   MdAssignment,
   MdDashboard,
@@ -93,14 +94,51 @@ const AdminLayout = () => {
     { name: "Help & support", icon: <MdHelpOutline size={18} />, path: "/admin/help-support" },
   ];
 
-  const adminData = (() => {
+  const [adminData, setAdminData] = useState<any>(() => {
     try {
       const saved = localStorage.getItem("admin");
       return saved ? JSON.parse(saved) : {};
     } catch {
       return {};
     }
-  })();
+  });
+
+  useEffect(() => {
+    // Auto-fetch fresh institute profile from database
+    api.get("/admin/profile")
+      .then((res) => {
+        if (res.data?.data) {
+          const profile = res.data.data;
+          setAdminData((prev: any) => {
+            const updated = {
+              ...prev,
+              instituteName: profile.instituteName || prev.instituteName,
+              ownerName: profile.ownerName || profile.principalName || prev.ownerName,
+              logoUrl: profile.logoUrl || prev.logoUrl,
+              email: profile.email || prev.email,
+            };
+            localStorage.setItem("admin", JSON.stringify(updated));
+            return updated;
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not fetch admin profile:", err);
+      });
+
+    const handleStorage = () => {
+      try {
+        const saved = localStorage.getItem("admin");
+        if (saved) {
+          setAdminData(JSON.parse(saved));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const instName = adminData.instituteName || "GuruConnect";
   const instInitials = instName.substring(0, 2).toUpperCase();
@@ -195,6 +233,7 @@ const AdminLayout = () => {
             <AdminNavbar 
               onOpenSearch={() => setIsCommandPaletteOpen(true)} 
               onToggleSidebar={toggleSidebar}
+              adminData={adminData}
             />
             <main className="flex-1 px-4 md:px-8 overflow-y-auto bg-page">
               <div className="animate-fadeIn w-full max-w-content mx-auto py-8">

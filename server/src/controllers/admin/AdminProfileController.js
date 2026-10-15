@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const Institute = require("../../models/Institute.js");
 const Student = require("../../models/Student.js");
 const Teacher = require("../../models/Teacher.js");
@@ -7,7 +8,7 @@ const cloudinary = require("../../config/cloudinary");
 exports.getAdminProfile = async (req, res) => {
   try {
     const admin = await Institute.findById(req.user.id).select(
-      "instituteName email logoUrl phone address principalName"
+      "instituteName email logoUrl phone address principalName ownerName"
     );
 
     const [studentCount, teacherCount] = await Promise.all([
@@ -44,11 +45,9 @@ exports.updateInstituteLogo = async (req, res) => {
     // 2. If there's an old logo, delete it from Cloudinary
     if (institute.logoUrl && institute.logoUrl.includes("cloudinary.com")) {
       try {
-        // Robust public_id extraction
         const parts = institute.logoUrl.split('/');
         const uploadIndex = parts.indexOf('upload');
         if (uploadIndex !== -1 && parts.length > uploadIndex + 2) {
-          // public_id starts after version (which starts with 'v')
           const publicIdWithExt = parts.slice(uploadIndex + 2).join('/');
           const publicId = publicIdWithExt.split('.')[0];
           
@@ -81,7 +80,7 @@ exports.updateAdminProfile = async (req, res) => {
     const updated = await Institute.findByIdAndUpdate(
       req.user.id,
       { 
-        instituteName: name, 
+        ownerName: name, 
         phone 
       },
       { new: true }
@@ -91,5 +90,30 @@ exports.updateAdminProfile = async (req, res) => {
   } catch (err) {
     console.error("Profile Update Error:", err);
     return errorResponse(res, "Failed to update profile");
+  }
+};
+
+exports.changeAdminPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return errorResponse(res, "Current and new password are required", 400);
+    }
+
+    const inst = await Institute.findById(req.user.id);
+    if (!inst) return errorResponse(res, "Institute not found", 404);
+
+    const isMatch = await bcrypt.compare(currentPassword, inst.password);
+    if (!isMatch) {
+      return errorResponse(res, "Current password is incorrect", 400);
+    }
+
+    inst.password = await bcrypt.hash(newPassword, 10);
+    await inst.save();
+
+    return successResponse(res, "Password updated successfully");
+  } catch (err) {
+    console.error("Change Password Error:", err);
+    return errorResponse(res, "Failed to update password");
   }
 };

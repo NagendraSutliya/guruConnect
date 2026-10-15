@@ -120,7 +120,9 @@ exports.loginInstitute = async (req, res) => {
       role: "admin",
       instituteId: inst._id,
       instituteName: inst.instituteName,
+      ownerName: inst.ownerName || null,
       email: inst.email,
+      logoUrl: inst.logoUrl || null,
     });
   } catch (err) {
     console.error(err);

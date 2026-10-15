@@ -23,7 +23,8 @@ export default function SuperAdminSchools() {
   const [activeTab, setActiveTab] = useState<string>("All");
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedSchool, setSelectedSchool] = useState<any | null>(null);
+  const [detailSchool, setDetailSchool] = useState<any | null>(null);
+  const [actionSchool, setActionSchool] = useState<any | null>(null);
   const [actionType, setActionType] = useState<"grace" | "plan" | "suspend" | "close" | null>(null);
 
   // Form state for creating school
@@ -352,7 +353,7 @@ export default function SuperAdminSchools() {
                   
                   {/* School & Location */}
                   <td className="py-3.5 px-4">
-                    <div className="font-bold text-ink group-hover:text-primary transition-colors cursor-pointer" onClick={() => setSelectedSchool(school)}>
+                    <div className="font-bold text-ink group-hover:text-primary transition-colors cursor-pointer" onClick={() => setDetailSchool(school)}>
                       {school.name}
                     </div>
                     <div className="text-[11px] text-ink-secondary">
@@ -392,17 +393,17 @@ export default function SuperAdminSchools() {
                   <td className="py-3.5 px-4 text-right">
                     <div className="flex items-center justify-end gap-1.5">
                       <button
-                        onClick={() => setSelectedSchool(school)}
-                        className="px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary-tint/40 rounded-lg transition-colors border border-primary-soft/40"
+                        onClick={() => setDetailSchool(school)}
+                        className="px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary-tint/40 rounded-lg transition-colors border border-primary-soft/40 cursor-pointer"
                       >
                         Details
                       </button>
                       <button
                         onClick={() => {
-                          setSelectedSchool(school);
+                          setActionSchool(school);
                           setActionType("grace");
                         }}
-                        className="p-1.5 text-ink-secondary hover:text-ink hover:bg-page rounded-lg"
+                        className="p-1.5 text-ink-secondary hover:text-ink hover:bg-page rounded-lg cursor-pointer"
                         title="Extend Grace / Action"
                       >
                         <Clock className="w-4 h-4" />
@@ -599,7 +600,7 @@ export default function SuperAdminSchools() {
       )}
 
       {/* SCHOOL DETAIL & ACTIONS DRAWER (Specification 04-07) */}
-      {selectedSchool && !showCreateModal && (
+      {detailSchool && !showCreateModal && (
         <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-lg shadow-2xl border-l border-line h-full flex flex-col justify-between animate-in slide-in-from-right duration-300">
             
@@ -607,15 +608,12 @@ export default function SuperAdminSchools() {
             <div>
               <div className="p-5 border-b border-line flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-ink m-0">{selectedSchool.name}</h2>
-                  <span className="text-xs text-ink-secondary">{selectedSchool.city}, {selectedSchool.state} · {selectedSchool.board}</span>
+                  <h2 className="text-lg font-bold text-ink m-0">{detailSchool.name}</h2>
+                  <span className="text-xs text-ink-secondary">{detailSchool.city}, {detailSchool.state} · {detailSchool.board}</span>
                 </div>
                 <button 
-                  onClick={() => {
-                    setSelectedSchool(null);
-                    setActionType(null);
-                  }}
-                  className="p-1.5 text-ink-secondary hover:text-ink hover:bg-page rounded-full"
+                  onClick={() => setDetailSchool(null)}
+                  className="p-1.5 text-ink-secondary hover:text-ink hover:bg-page rounded-full cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -628,27 +626,27 @@ export default function SuperAdminSchools() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-surface rounded-xl border border-line">
                     <span className="text-[11px] font-bold text-ink-secondary uppercase">Plan Tier</span>
-                    <div className="text-base font-extrabold text-ink mt-0.5">{selectedSchool.plan}</div>
+                    <div className="text-base font-extrabold text-ink mt-0.5">{detailSchool.plan}</div>
                   </div>
                   <div className="p-3 bg-surface rounded-xl border border-line">
                     <span className="text-[11px] font-bold text-ink-secondary uppercase">Student Roster</span>
-                    <div className="text-base font-extrabold text-ink mt-0.5 font-mono">{selectedSchool.students}</div>
+                    <div className="text-base font-extrabold text-ink mt-0.5 font-mono">{detailSchool.students}</div>
                   </div>
                   <div className="p-3 bg-surface rounded-xl border border-line">
                     <span className="text-[11px] font-bold text-ink-secondary uppercase">Current Status</span>
-                    <div className="mt-1">{getStatusBadge(selectedSchool.status)}</div>
+                    <div className="mt-1">{getStatusBadge(detailSchool.status)}</div>
                   </div>
                   <div className="p-3 bg-surface rounded-xl border border-line">
                     <span className="text-[11px] font-bold text-ink-secondary uppercase">Monthly MRR</span>
-                    <div className="text-base font-extrabold text-ink mt-0.5 font-mono">{selectedSchool.mrr}</div>
+                    <div className="text-base font-extrabold text-ink mt-0.5 font-mono">{detailSchool.mrr}</div>
                   </div>
                 </div>
 
                 {/* Owner Information */}
                 <div className="space-y-2 p-4 rounded-xl border border-line bg-surface-subtle">
                   <span className="text-xs font-bold text-primary uppercase tracking-wider">Primary School Admin</span>
-                  <div className="text-sm font-bold text-ink">{selectedSchool.owner}</div>
-                  <div className="text-xs text-ink-secondary font-mono">{selectedSchool.mobile}</div>
+                  <div className="text-sm font-bold text-ink">{detailSchool.owner}</div>
+                  <div className="text-xs text-ink-secondary font-mono">{detailSchool.mobile}</div>
                 </div>
 
                 {/* Account Actions Section (04-07 specification) */}
@@ -658,7 +656,14 @@ export default function SuperAdminSchools() {
                   <div className="space-y-2">
                     
                     {/* Extend Grace */}
-                    <div className="p-3 rounded-xl border border-line hover:border-primary flex items-center justify-between cursor-pointer transition-all" onClick={() => setActionType("grace")}>
+                    <div 
+                      className="p-3 rounded-xl border border-line hover:border-primary flex items-center justify-between cursor-pointer transition-all" 
+                      onClick={() => {
+                        setActionSchool(detailSchool);
+                        setActionType("grace");
+                        setDetailSchool(null);
+                      }}
+                    >
                       <div>
                         <div className="text-sm font-bold text-ink">Extend Trial / Grace Period</div>
                         <div className="text-xs text-ink-secondary">Grant 7 or 14 extra days before read-only state</div>
@@ -667,7 +672,14 @@ export default function SuperAdminSchools() {
                     </div>
 
                     {/* Change Plan */}
-                    <div className="p-3 rounded-xl border border-line hover:border-primary flex items-center justify-between cursor-pointer transition-all" onClick={() => setActionType("plan")}>
+                    <div 
+                      className="p-3 rounded-xl border border-line hover:border-primary flex items-center justify-between cursor-pointer transition-all" 
+                      onClick={() => {
+                        setActionSchool(detailSchool);
+                        setActionType("plan");
+                        setDetailSchool(null);
+                      }}
+                    >
                       <div>
                         <div className="text-sm font-bold text-ink">Change Subscription Plan</div>
                         <div className="text-xs text-ink-secondary">Upgrade to Standard/Premium or prorate bill</div>
@@ -676,7 +688,14 @@ export default function SuperAdminSchools() {
                     </div>
 
                     {/* Suspend Account */}
-                    <div className="p-3 rounded-xl border border-line hover:border-rose-300 flex items-center justify-between cursor-pointer transition-all" onClick={() => setActionType("suspend")}>
+                    <div 
+                      className="p-3 rounded-xl border border-line hover:border-rose-300 flex items-center justify-between cursor-pointer transition-all" 
+                      onClick={() => {
+                        setActionSchool(detailSchool);
+                        setActionType("suspend");
+                        setDetailSchool(null);
+                      }}
+                    >
                       <div>
                         <div className="text-sm font-bold text-rose-700">Suspend Access</div>
                         <div className="text-xs text-ink-secondary">Lock school portal due to payment or policy breach</div>
@@ -703,10 +722,10 @@ export default function SuperAdminSchools() {
 
             {/* Drawer Footer */}
             <div className="p-4 border-t border-line bg-surface flex justify-between items-center text-xs text-ink-secondary">
-              <span>Account ID: {selectedSchool._id}</span>
+              <span>Account ID: {detailSchool._id}</span>
               <button 
-                onClick={() => setSelectedSchool(null)}
-                className="px-4 py-1.5 font-bold text-ink hover:bg-page rounded-lg"
+                onClick={() => setDetailSchool(null)}
+                className="px-4 py-1.5 font-bold text-ink hover:bg-page rounded-lg cursor-pointer"
               >
                 Close Drawer
               </button>
@@ -717,31 +736,44 @@ export default function SuperAdminSchools() {
       )}
 
       {/* SCHOOL ACTION MODAL (Specifications 04-07: Extend Grace, Change Plan, Suspend, Close) */}
-      {selectedSchool && actionType && (
+      {actionSchool && actionType && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-line p-6 flex flex-col gap-4 text-xs sm:text-sm">
             {/* Tabs for actions */}
-            <div className="flex gap-2 flex-wrap pb-2 border-b border-line">
-              {(["grace", "plan", "suspend", "close"] as const).map((type) => {
-                const label = 
-                  type === "grace" ? "Extend grace" :
-                  type === "plan" ? "Change plan" :
-                  type === "suspend" ? "Suspend" : "Close";
-                const isSelected = actionType === type;
-                return (
-                  <button
-                    key={type}
-                    onClick={() => setActionType(type)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                      isSelected
-                        ? "bg-nav-bg text-white shadow-xs"
-                        : "bg-surface text-ink-secondary hover:text-ink hover:bg-line/40"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+            <div className="flex gap-2 flex-wrap pb-2 border-b border-line items-center justify-between">
+              <div className="flex gap-2 flex-wrap">
+                {(["grace", "plan", "suspend", "close"] as const).map((type) => {
+                  const label = 
+                    type === "grace" ? "Extend grace" :
+                    type === "plan" ? "Change plan" :
+                    type === "suspend" ? "Suspend" : "Close";
+                  const isSelected = actionType === type;
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => setActionType(type)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                        isSelected
+                          ? "bg-nav-bg text-white shadow-xs"
+                          : "bg-surface text-ink-secondary hover:text-ink hover:bg-line/40"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setActionSchool(null);
+                  setActionType(null);
+                }}
+                className="p-1.5 text-ink-secondary hover:text-ink hover:bg-page rounded-full cursor-pointer"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
             <div>
@@ -752,7 +784,7 @@ export default function SuperAdminSchools() {
                 {actionType === "close" && "Close Account & Quarantine Data"}
               </h2>
               <p className="text-xs text-ink-secondary mt-1 mb-0">
-                {selectedSchool.name} · {selectedSchool.city} · {selectedSchool.plan} Plan · {selectedSchool.students} students
+                {actionSchool.name} · {actionSchool.city} · {actionSchool.plan} Plan · {actionSchool.students} students
               </p>
             </div>
 
@@ -760,7 +792,8 @@ export default function SuperAdminSchools() {
             {actionType === "grace" && (
               <form onSubmit={(e) => {
                 e.preventDefault();
-                alert(`Grace period extended for ${selectedSchool.name}.`);
+                alert(`Grace period extended for ${actionSchool.name}.`);
+                setActionSchool(null);
                 setActionType(null);
               }} className="space-y-4">
                 <div>
@@ -781,10 +814,14 @@ export default function SuperAdminSchools() {
                   />
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
-                  <button type="button" onClick={() => setActionType(null)} className="px-4 py-2 border border-line text-ink-secondary hover:bg-surface rounded-xl text-xs font-bold">
+                  <button 
+                    type="button" 
+                    onClick={() => { setActionSchool(null); setActionType(null); }} 
+                    className="px-4 py-2 border border-line text-ink-secondary hover:bg-surface rounded-xl text-xs font-bold cursor-pointer"
+                  >
                     Cancel
                   </button>
-                  <button type="submit" className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md">
+                  <button type="submit" className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md cursor-pointer">
                     Confirm Extension
                   </button>
                 </div>
@@ -795,7 +832,8 @@ export default function SuperAdminSchools() {
             {actionType === "plan" && (
               <form onSubmit={(e) => {
                 e.preventDefault();
-                alert(`Plan change scheduled for ${selectedSchool.name}.`);
+                alert(`Plan change scheduled for ${actionSchool.name}.`);
+                setActionSchool(null);
                 setActionType(null);
               }} className="space-y-4">
                 <div>
@@ -823,10 +861,14 @@ export default function SuperAdminSchools() {
                   />
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
-                  <button type="button" onClick={() => setActionType(null)} className="px-4 py-2 border border-line text-ink-secondary hover:bg-surface rounded-xl text-xs font-bold">
+                  <button 
+                    type="button" 
+                    onClick={() => { setActionSchool(null); setActionType(null); }} 
+                    className="px-4 py-2 border border-line text-ink-secondary hover:bg-surface rounded-xl text-xs font-bold cursor-pointer"
+                  >
                     Cancel
                   </button>
-                  <button type="submit" className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md">
+                  <button type="submit" className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md cursor-pointer">
                     Schedule Plan Change
                   </button>
                 </div>
@@ -837,7 +879,8 @@ export default function SuperAdminSchools() {
             {actionType === "suspend" && (
               <form onSubmit={(e) => {
                 e.preventDefault();
-                alert(`Account suspended for ${selectedSchool.name}.`);
+                alert(`Account suspended for ${actionSchool.name}.`);
+                setActionSchool(null);
                 setActionType(null);
               }} className="space-y-4">
                 <div>
@@ -857,10 +900,14 @@ export default function SuperAdminSchools() {
                   />
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
-                  <button type="button" onClick={() => setActionType(null)} className="px-4 py-2 border border-line text-ink-secondary hover:bg-surface rounded-xl text-xs font-bold">
+                  <button 
+                    type="button" 
+                    onClick={() => { setActionSchool(null); setActionType(null); }} 
+                    className="px-4 py-2 border border-line text-ink-secondary hover:bg-surface rounded-xl text-xs font-bold cursor-pointer"
+                  >
                     Cancel
                   </button>
-                  <button type="submit" className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-md">
+                  <button type="submit" className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer">
                     Suspend Access
                   </button>
                 </div>
@@ -871,7 +918,8 @@ export default function SuperAdminSchools() {
             {actionType === "close" && (
               <form onSubmit={(e) => {
                 e.preventDefault();
-                alert(`Closure request logged for ${selectedSchool.name}. Dual Super Admin sign-off sent to Ritika Bansal.`);
+                alert(`Closure request logged for ${actionSchool.name}. Dual Super Admin sign-off sent to Ritika Bansal.`);
+                setActionSchool(null);
                 setActionType(null);
               }} className="space-y-4">
                 <div>
@@ -903,10 +951,14 @@ export default function SuperAdminSchools() {
                 </div>
 
                 <div className="flex justify-end gap-2 pt-2">
-                  <button type="button" onClick={() => setActionType(null)} className="px-4 py-2 border border-line text-ink-secondary hover:bg-surface rounded-xl text-xs font-bold">
+                  <button 
+                    type="button" 
+                    onClick={() => { setActionSchool(null); setActionType(null); }} 
+                    className="px-4 py-2 border border-line text-ink-secondary hover:bg-surface rounded-xl text-xs font-bold cursor-pointer"
+                  >
                     Cancel
                   </button>
-                  <button type="submit" className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold shadow-md">
+                  <button type="submit" className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer">
                     Request Dual-Sign Closure
                   </button>
                 </div>

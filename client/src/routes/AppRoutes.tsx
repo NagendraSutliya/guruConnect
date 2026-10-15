@@ -21,7 +21,6 @@ import SuperAdminFlags from "../pages/superadmin/Flags";
 import SuperAdminDataRequests from "../pages/superadmin/DataRequests";
 import SuperAdminUsersAudit from "../pages/superadmin/UsersAudit";
 import SuperAdminSettings from "../pages/superadmin/Settings";
-import SuperAdminInstitutes from "../pages/superadmin/Institutes";
 import SuperAdminDemos from "../pages/superadmin/Demos";
 
 import Landing from "../pages/Landing";
@@ -80,7 +79,6 @@ import StudentsTeacher from "../pages/teacher/Students";
 import RoutineTeacher from "../pages/teacher/RoutineTeacher";
 import RoutineStudent from "../pages/student/RoutineStudent";
 import FeeStructure from "../pages/admin/finance/FeeStructure";
-import CollectFees from "../pages/admin/finance/CollectFees";
 import Invoices from "../pages/admin/finance/Invoices";
 import FeeCounter from "../pages/admin/finance/FeeCounter";
 import DefaultersPage from "../pages/admin/finance/DefaultersPage";
@@ -196,10 +194,12 @@ export default function AppRoutes() {
         <Route path="subjects" element={<Subjects />} />
         <Route path="teacher-assign" element={<TeacherAssignPanel />} />
         <Route path="students" element={<Students />} />
+        <Route path="students/import" element={<StudentImport />} />
         <Route path="student-import" element={<StudentImport />} />
         <Route path="promotion" element={<PromotionPage />} />
         <Route path="certificates" element={<CertificatesPage />} />
         <Route path="admissions" element={<AdmissionsCRM />} />
+        <Route path="admissions/import" element={<StudentImport />} />
         <Route path="admissions/manage" element={<AdmissionsPanel />} />
         <Route path="admissions/print/:id" element={<PrintAdmissionForm />} />
         <Route path="attendance" element={<Attendance />} />

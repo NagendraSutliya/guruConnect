@@ -35,11 +35,11 @@ export default function SuperAdminLogin() {
     <div className="min-h-screen flex items-center justify-center bg-nav-bg font-sans text-ink p-6 select-none">
       <div className="w-full max-w-[420px] flex flex-col gap-5">
         {/* Platform Admin Header */}
-        <div className="flex items-center text-white">
+        <div className="flex items-center justify-center text-white">
           <img 
             src="/guruconnect-logo.png" 
             alt="guruConnect Logo" 
-            className="h-16 w-auto object-contain"
+            className="h-32 w-auto object-contain"
           />
           <div className="flex flex-col">
             <span className="font-extrabold text-xl text-white tracking-tight">

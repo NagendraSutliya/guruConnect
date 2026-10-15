@@ -128,11 +128,11 @@ const Register = () => {
 
         <div className="relative z-10 w-full px-8 xl:px-12 flex flex-col justify-between h-full py-12">
           {/* Logo on Image */}
-          <Link to="/" className="inline-flex items-center gap-3 group">
+          <Link to="/" className="inline-flex items-center group">
             <img 
               src="/guruconnect-logo.png" 
               alt="guruConnect Logo" 
-              className="h-10 w-auto object-contain brightness-0 invert opacity-95 group-hover:scale-105 transition-transform" 
+              className="h-20 w-auto object-contain group-hover:scale-105 transition-transform" 
             />
             <span className="font-extrabold text-white text-xl tracking-tight">
               guru<span className="text-gold">Connect</span>

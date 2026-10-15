@@ -4,7 +4,8 @@ const router = express.Router();
 const {
   getAdminProfile,
   updateInstituteLogo,
-  updateAdminProfile
+  updateAdminProfile,
+  changeAdminPassword
 } = require("../../../controllers/admin/AdminProfileController");
 
 // Apply middleware to all routes
@@ -14,5 +15,6 @@ router.use(requireAdmin);
 router.get("/", getAdminProfile);
 router.patch("/", updateAdminProfile);
 router.patch("/logo", updateInstituteLogo);
+router.patch("/password", changeAdminPassword);
 
 module.exports = router;

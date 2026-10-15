@@ -8,9 +8,10 @@ import NotificationsPanel from "./NotificationsPanel";
 interface AdminNavbarProps {
   onOpenSearch?: () => void;
   onToggleSidebar?: () => void;
+  adminData?: any;
 }
 
-const AdminNavbar = ({ onOpenSearch, onToggleSidebar }: AdminNavbarProps) => {
+const AdminNavbar = ({ onOpenSearch, onToggleSidebar, adminData: propAdminData }: AdminNavbarProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -19,17 +20,19 @@ const AdminNavbar = ({ onOpenSearch, onToggleSidebar }: AdminNavbarProps) => {
   const notificationRef = useRef<HTMLDivElement | null>(null);
   const [unreadCount, setUnreadCount] = useState(4); // Mock count for UI
 
-  const adminName = (() => {
-    if (user?.name) return user.name;
-    const saved = localStorage.getItem("admin");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return parsed.ownerName || parsed.name || parsed.username || "Admin";
+  const currentAdminData = propAdminData || (() => {
+    try {
+      const saved = localStorage.getItem("admin");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
     }
-    return "Admin";
   })();
 
-  const adminInitials = adminName.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase() || "SA";
+  const adminName = currentAdminData?.ownerName || currentAdminData?.name || user?.name || "School Admin";
+  const adminInitials = adminName.split(" ").filter(Boolean).map((n: string) => n[0]).join("").substring(0, 2).toUpperCase() || "SA";
+  const adminEmail = currentAdminData?.email || user?.email || "admin@guruconnect.com";
+  const instituteName = currentAdminData?.instituteName || "GuruConnect Institute";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -115,35 +118,52 @@ const AdminNavbar = ({ onOpenSearch, onToggleSidebar }: AdminNavbarProps) => {
           onClick={() => setShowProfileDropdown(!showProfileDropdown)}
           className="flex items-center gap-2.5 p-1 pr-2 rounded-full hover:bg-surface transition-colors cursor-pointer border border-transparent"
         >
-          <div className="w-9 h-9 rounded-full border border-line-input bg-primary-dark/10 text-primary-dark flex items-center justify-center font-medium text-[16px] shadow-sm">
+          <div className="w-9 h-9 rounded-full border border-line-input bg-primary-dark/10 text-primary-dark flex items-center justify-center font-bold text-[14px] shadow-sm">
             {adminInitials}
           </div>
           <div className="hidden sm:flex flex-col items-start text-left">
-            <span className="text-[14px] font-semibold text-ink leading-tight">{adminName}</span>
-            <span className="text-[12px] text-ink-secondary font-medium leading-tight">School Admin</span>
+            <span className="text-[13.5px] font-bold text-ink leading-tight truncate max-w-[130px]" title={adminName}>
+              {adminName}
+            </span>
+            <span className="text-[11px] text-ink-secondary font-medium leading-tight">School Admin</span>
           </div>
         </button>
 
         {showProfileDropdown && (
-          <div className="absolute right-0 mt-2 w-56 bg-white rounded-card shadow-lg border border-line overflow-hidden animate-fadeIn origin-top-right z-50">
+          <div className="absolute right-0 mt-2 w-64 bg-white rounded-card shadow-lg border border-line overflow-hidden animate-fadeIn origin-top-right z-50">
             <div className="p-4 border-b border-line bg-surface/30">
-              <p className="text-[14px] font-semibold text-ink">{adminName}</p>
-              <p className="text-[12px] text-ink-secondary font-medium">{user?.email || "admin@guruconnect.com"}</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full border border-line-input bg-primary-dark/10 text-primary-dark flex items-center justify-center font-bold text-[14px] shrink-0">
+                  {adminInitials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[14px] font-bold text-ink leading-tight truncate" title={adminName}>{adminName}</p>
+                  <p className="text-[11.5px] text-ink-secondary font-normal truncate mt-0.5" title={adminEmail}>{adminEmail}</p>
+                  <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[9.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary-tint text-primary-dark border border-primary-soft/40">
+                      School Admin
+                    </span>
+                    <span className="text-[11px] text-ink-secondary truncate max-w-[110px]" title={instituteName}>
+                      · {instituteName}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div className="p-1.5">
               <Link to="/admin/profile" className="flex items-center gap-3 px-3 py-2 text-[14px] font-medium text-ink hover:text-primary hover:bg-primary-light/10 rounded-md transition-colors" onClick={() => setShowProfileDropdown(false)}>
                 <User size={16} /> My Profile
               </Link>
-              <Link to="/admin/settings/setup" className="flex items-center gap-3 px-3 py-2 text-[14px] font-medium text-ink hover:text-primary hover:bg-primary-light/10 rounded-md transition-colors" onClick={() => setShowProfileDropdown(false)}>
-                <Settings size={16} /> School Setup
+              <Link to="/admin/settings/institute" className="flex items-center gap-3 px-3 py-2 text-[14px] font-medium text-ink hover:text-primary hover:bg-primary-light/10 rounded-md transition-colors" onClick={() => setShowProfileDropdown(false)}>
+                <Settings size={16} /> School Settings
               </Link>
             </div>
             
             <div className="p-1.5 border-t border-line">
               <button 
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2 text-[14px] font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3 py-2 text-[14px] font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors text-left cursor-pointer"
               >
                 <LogOut size={16} /> Sign out
               </button>

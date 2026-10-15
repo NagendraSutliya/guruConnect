@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useState, useRef } from "react";
+import { Outlet, NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Building2, 
@@ -20,11 +20,34 @@ import {
   ChevronDown,
   Calendar
 } from "lucide-react";
+import useClickOutside from "../hooks/useClickOutside";
 
 export default function SuperAdminLayout() {
   const nav = useNavigate();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(profileDropdownRef, () => setShowProfileDropdown(false));
+
+  const superAdminData = (() => {
+    try {
+      const saved = localStorage.getItem("superadmin");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const adminName = superAdminData?.name || "Master Admin";
+  const adminEmail = superAdminData?.email || "superadmin@guruconnect.com";
+  const adminInitials = adminName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase() || "SA";
 
   const handleLogout = () => {
     localStorage.removeItem("superadmin");
@@ -150,15 +173,98 @@ export default function SuperAdminLayout() {
 
             <div className="h-7 w-px bg-line" />
 
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-primary-tint border border-primary-soft text-primary-dark font-extrabold text-xs flex items-center justify-center shadow-xs">
-                SA
-              </div>
-              <div className="hidden sm:flex flex-col">
-                <span className="text-[13px] font-bold text-ink leading-tight">Master Admin</span>
-                <span className="text-[11px] text-ink-secondary">superadmin@guruconnect.com</span>
-              </div>
-              <ChevronDown className="w-4 h-4 text-ink-secondary hidden sm:block" />
+            {/* User Profile Pill & Interactive Dropdown */}
+            <div className="relative" ref={profileDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                className={`flex items-center gap-3 p-1.5 pr-3 rounded-2xl transition-all cursor-pointer border ${
+                  showProfileDropdown
+                    ? "bg-surface-subtle border-line ring-2 ring-primary/20 shadow-xs"
+                    : "border-transparent hover:bg-surface-subtle hover:border-line/60"
+                }`}
+                aria-expanded={showProfileDropdown}
+                aria-haspopup="true"
+              >
+                <div className="w-9 h-9 rounded-xl bg-primary-tint border border-primary-soft text-primary-dark font-extrabold text-xs flex items-center justify-center shadow-xs">
+                  {adminInitials}
+                </div>
+                <div className="hidden sm:flex flex-col text-left">
+                  <span className="text-[13px] font-bold text-ink leading-tight">{adminName}</span>
+                  <span className="text-[11px] text-ink-secondary">{adminEmail}</span>
+                </div>
+                <ChevronDown 
+                  className={`w-4 h-4 text-ink-secondary hidden sm:block transition-transform duration-200 ${
+                    showProfileDropdown ? "rotate-180 text-primary" : ""
+                  }`} 
+                />
+              </button>
+
+              {/* Dropdown Popup Menu */}
+              {showProfileDropdown && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-line overflow-hidden origin-top-right z-50 animate-fadeIn">
+                  {/* Account Header */}
+                  <div className="p-4 border-b border-line bg-surface-subtle/50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary-tint border border-primary-soft text-primary-dark font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                        {adminInitials}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13.5px] font-bold text-ink truncate leading-tight">{adminName}</p>
+                        <p className="text-[11px] text-ink-secondary truncate mt-0.5">{adminEmail}</p>
+                        <span className="inline-block mt-1.5 text-[9.5px] font-bold tracking-wider text-nav-bg bg-gold px-1.5 py-0.5 rounded uppercase">
+                          Platform Super Admin
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Action Links */}
+                  <div className="p-2 space-y-1">
+                    <Link
+                      to="/superadmin/settings"
+                      onClick={() => setShowProfileDropdown(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-ink hover:text-primary hover:bg-primary-tint/20 rounded-xl transition-colors"
+                    >
+                      <Settings className="w-4 h-4 text-ink-secondary" />
+                      <span>Platform Settings</span>
+                    </Link>
+
+                    <Link
+                      to="/superadmin/users"
+                      onClick={() => setShowProfileDropdown(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-ink hover:text-primary hover:bg-primary-tint/20 rounded-xl transition-colors"
+                    >
+                      <Users2 className="w-4 h-4 text-ink-secondary" />
+                      <span>Users & Audit Logs</span>
+                    </Link>
+
+                    <Link
+                      to="/superadmin/monitoring"
+                      onClick={() => setShowProfileDropdown(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-ink hover:text-primary hover:bg-primary-tint/20 rounded-xl transition-colors"
+                    >
+                      <Activity className="w-4 h-4 text-ink-secondary" />
+                      <span>System Health & Monitoring</span>
+                    </Link>
+                  </div>
+
+                  {/* Sign Out Action */}
+                  <div className="p-2 border-t border-line bg-surface/30">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowProfileDropdown(false);
+                        handleLogout();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 text-rose-500" />
+                      <span>Sign Out Platform</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </header>
