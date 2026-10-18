@@ -115,8 +115,8 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
   }, []);
 
   // Save admission
-  const saveAdmission = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const saveAdmission = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setActionLoading("save");
 
     try {
@@ -200,7 +200,7 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
       ageCheckText: adm.dob ? "Age criteria verified for intake session." : "Date of birth awaiting document verification.",
       interactionSchedule: {
         dateTimeRoom: "Completed / Recorded",
-        outcome: adm.status === "Confirmed" ? "Admitted" : "Under review",
+        outcome: adm.status === "Confirmed" ? "Recommended" : "Not held yet",
       },
       documents: [
         { id: "d1", title: "Birth certificate", meta: "Municipal authority", status: "Verified" },
@@ -327,7 +327,7 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
         <AddAdmissionModal
           form={form}
           setForm={setForm}
-          onSave={saveAdmission}
+          onSave={() => saveAdmission()}
           onClose={closeForm}
           loading={actionLoading === "save"}
           isEdit={!!editingAdmission}

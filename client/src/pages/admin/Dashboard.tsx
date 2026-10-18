@@ -62,7 +62,7 @@ export default function Dashboard() {
           <Link to="/admin/admissions" className="inline-flex items-center min-h-[44px] px-[18px] rounded-control border border-line-input bg-surface text-ink font-medium text-body hover:bg-surface-subtle transition-colors">
             New admission
           </Link>
-          <Link to="/admin/fees" className="inline-flex items-center min-h-[44px] px-[18px] rounded-control bg-primary text-white font-semibold text-body hover:bg-primary-dark transition-colors">
+          <Link to="/admin/collect-fees" className="inline-flex items-center min-h-[44px] px-[18px] rounded-control bg-primary text-white font-semibold text-body hover:bg-primary-dark transition-colors">
             Collect fee
           </Link>
         </div>

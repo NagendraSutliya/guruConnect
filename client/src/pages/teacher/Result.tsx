@@ -1,5 +1,5 @@
-import ResultPanel from "./panels/ResultPanel";
+import TeacherMarksEntry from "./TeacherMarksEntry";
 
 export default function Results() {
-  return <ResultPanel />;
+  return <TeacherMarksEntry />;
 }

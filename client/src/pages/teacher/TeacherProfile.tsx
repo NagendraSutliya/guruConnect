@@ -1,333 +1,333 @@
+import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { FiEdit2, FiSave, FiTrash2, FiCamera } from "react-icons/fi";
-import { useEffect, useState } from "react";
-import api from "../../api/axiosInstance";
 import { useToast } from "../../context/ToastContext";
+import { FiAlertCircle, FiCheck } from "react-icons/fi";
 
-const TeacherProfile = () => {
+const TeacherProfile: React.FC = () => {
+  const { user } = useAuth();
   const { showToast } = useToast();
-  const { user, setUser } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    name: user?.name || "",
-    phone: user?.phone || "",
-    address: user?.address || "",
-    designation: user?.designation || "",
-    qualification: user?.qualification || "",
-  });
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await api.get("/teacher/profile");
-        if (res.data.success) {
-          const profileData = res.data.data;
-          const updatedUser = { ...user, ...profileData };
-          setUser(updatedUser);
-          localStorage.setItem("teacher", JSON.stringify(updatedUser));
-          
-          setFormData({
-            name: profileData.name || "",
-            phone: profileData.phone || "",
-            address: profileData.address || "",
-            designation: profileData.designation || "",
-            qualification: profileData.qualification || "",
-          });
-        }
-      } catch (err) {
-        console.error("Failed to fetch profile", err);
-      }
-    };
-    
-    if (user?._id) {
-      fetchProfile();
-    }
-  }, [user?._id]);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [showCorrectionModal, setShowCorrectionModal] = useState(false);
+  const [correctionNote, setCorrectionNote] = useState("");
 
-  const handleUpdate = async () => {
-    try {
-      setLoading(true);
-      const res = await api.put("/teacher/profile", formData);
-      if (res.data.success) {
-        const updatedUser = { ...user, ...res.data.data };
-        setUser(updatedUser);
-        localStorage.setItem("teacher", JSON.stringify(updatedUser));
-        setIsEditing(false);
-        showToast("Profile credentials updated!", "success");
-      }
-    } catch (err) {
-      showToast("Failed to update profile", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const teacherName = user?.name || "Sunita Rathore";
+  const initials = teacherName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setLoading(true);
-      const data = new FormData();
-      data.append("file", file);
-
-      const uploadRes = await api.post("/upload/single", data, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-
-      if (uploadRes.data.success) {
-        const imageUrl = uploadRes.data.data.url;
-        const res = await api.patch("/teacher/profile/image", { image: imageUrl });
-        if (res.data.success) {
-          const updatedUser = { ...user, profileImage: imageUrl };
-          setUser(updatedUser);
-          localStorage.setItem("teacher", JSON.stringify(updatedUser));
-          showToast("Profile image synchronized!", "success");
-        }
-      }
-    } catch (err) {
-      showToast("Sync failed: Image upload error", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRemoveImage = async () => {
-    if (!window.confirm("Remove profile image? This cannot be undone.")) return;
-    try {
-      setLoading(true);
-      const res = await api.patch("/teacher/profile/image", { image: "" });
-      if (res.data.success) {
-        const updatedUser = { ...user, profileImage: "" };
-        setUser(updatedUser);
-        localStorage.setItem("teacher", JSON.stringify(updatedUser));
-        showToast("Profile image removed", "success");
-      }
-    } catch (err) {
-      showToast("Failed to remove image", "error");
-    } finally {
-      setLoading(false);
-    }
+  const handleCorrectionSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!correctionNote.trim()) return;
+    showToast("Profile correction request submitted to HR Office for verification.", "success");
+    setCorrectionNote("");
+    setShowCorrectionModal(false);
   };
 
   return (
-    <div className="space-y-4 pb-4 animate-fade-in">
-
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-sky-300/95 to-sky-100/95 backdrop-blur-md border-b border-sky-200 rounded-2xl p-4 -mx-4 shadow-sm flex items-center">
-          <h2 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-             <div className="w-2 h-6 bg-sky-600 rounded-full shadow-sm" />
-             Faculty Profile
-          </h2>
+    <div className="flex flex-col gap-5 w-full animate-fadeIn font-sans">
+      {/* Top Banner Notice */}
+      <div className="text-small text-ink-secondary">
+        My profile · read-only — changes go to HR for approval
       </div>
-       
-      <div className="flex-1 min-h-0 overflow-y-auto pr-2 grid grid-cols-1 lg:grid-cols-12 gap-6 pb-4">
-        
-        {/* Profile Identity (Left) */}
-        <div className="lg:col-span-4 flex flex-col h-full">
-          <div className="bg-white rounded-[2rem] p-10 text-center relative overflow-hidden border border-slate-100 shadow-2xl shadow-slate-200/50 group h-full flex flex-col justify-center">
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-sky-500 to-indigo-500" />
-            
-            {/* Professional Image Section */}
-            <div className="relative w-36 h-36 mx-auto mb-6">
-               <div className="w-full h-full rounded-[2.5rem] bg-slate-100 flex items-center justify-center text-4xl font-black text-slate-400 border-4 border-white shadow-2xl overflow-hidden relative group/image ring-8 ring-slate-50">
-                  {user?.profileImage ? (
-                    <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover transition-transform duration-500 group-hover/image:scale-110" />
-                  ) : (
-                    <span>{user?.name?.substring(0, 2).toUpperCase()}</span>
-                  )}
 
-                  {/* High-End Overlay */}
-                  <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center gap-4 opacity-0 group-hover/image:opacity-100 transition-all duration-300">
-                     <button 
-                        onClick={() => document.getElementById('avatar-upload')?.click()}
-                        className="w-10 h-10 rounded-full bg-white text-sky-600 flex items-center justify-center shadow-lg hover:scale-110 active:scale-90 transition-all"
-                        title="Change Photo"
-                     >
-                        <FiCamera size={18} />
-                     </button>
-                     {user?.profileImage && (
-                        <button 
-                           onClick={handleRemoveImage}
-                           className="w-10 h-10 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-90 transition-all"
-                           title="Remove Photo"
-                        >
-                           <FiTrash2 size={18} />
-                        </button>
-                     )}
-                  </div>
+      {/* Hero Section Card matching 10-My-profile.html */}
+      <section className="bg-surface border border-line rounded-card p-6 flex flex-wrap gap-6 items-center shadow-2xs">
+        <div className="w-[88px] h-[88px] shrink-0 rounded-hero bg-primary-tint text-primary-dark flex items-center justify-center text-2xl font-semibold border border-primary/20">
+          {initials}
+        </div>
 
-                  {loading && (
-                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-                       <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  )}
-               </div>
-               
-               <input 
-                  type="file" 
-                  id="avatar-upload" 
-                  className="hidden" 
-                  accept="image/*"
-                  onChange={handleImageUpload}
-               />
+        <div className="flex-1 min-w-[280px] flex flex-col gap-1.5">
+          <div className="flex flex-wrap items-baseline gap-3">
+            <h1 className="m-0 text-title font-semibold tracking-tight text-ink">
+              {teacherName}
+            </h1>
+            <span lang="hi" className="text-lg text-ink-secondary font-medium">
+              सुनीता राठौड़
+            </span>
+          </div>
+
+          <div className="text-body text-ink-secondary">
+            TGT Science · Science department · Code{" "}
+            <span className="font-mono text-ink font-semibold">EMP-0142</span> · Joined 1 Jul 2019 · Permanent
+          </div>
+
+          <div className="flex gap-2 flex-wrap pt-1">
+            <span className="inline-block text-caption font-semibold px-2.5 py-1 rounded-full bg-success-bg text-success-text">
+              Present today
+            </span>
+            <span className="inline-block text-caption font-semibold px-2.5 py-1 rounded-full bg-primary-tint text-primary-dark">
+              Class teacher 8-B
+            </span>
+            <span className="inline-block text-caption font-semibold px-2.5 py-1 rounded-full bg-tag-bg text-tag-text">
+              Reports to: Vice Principal
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setShowCorrectionModal(true)}
+          className="min-h-[44px] px-5 rounded-control bg-primary hover:bg-primary-dark text-white font-semibold text-body transition-colors shadow-2xs shrink-0"
+        >
+          Request a correction
+        </button>
+      </section>
+
+      {/* Section Tabs */}
+      <div
+        role="tablist"
+        className="flex gap-2 border-b border-line overflow-x-auto select-none"
+      >
+        {[
+          { key: "overview", label: "Overview" },
+          { key: "personal", label: "Personal & IDs" },
+          { key: "qualifications", label: "Qualifications & documents" },
+          { key: "teaching", label: "Teaching" },
+          { key: "attendance", label: "Attendance & leave" },
+          { key: "salary", label: "Salary" },
+          { key: "training", label: "Training & appraisal" },
+        ].map((t) => (
+          <button
+            key={t.key}
+            role="tab"
+            aria-selected={activeTab === t.key}
+            onClick={() => setActiveTab(t.key)}
+            className={`min-h-[44px] px-4 font-semibold text-body border-b-2 whitespace-nowrap transition-colors ${
+              activeTab === t.key
+                ? "border-primary text-primary"
+                : "border-transparent text-ink-secondary hover:text-ink font-normal"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* TAB 1: OVERVIEW */}
+      {activeTab === "overview" && (
+        <div className="flex flex-col gap-4">
+          {/* KPI Stat Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="bg-surface border border-line rounded-card p-3.5 flex flex-col gap-1 shadow-2xs">
+              <span className="text-micro font-medium text-ink-secondary">Periods per week</span>
+              <span className="font-mono text-xl font-semibold text-ink">26</span>
+              <span className="text-micro text-ink-secondary">4 sections · Science</span>
             </div>
-            
-            <h3 className="text-2xl font-black text-slate-800 tracking-tight">{user?.name}</h3>
-            <p className="text-[10px] font-black text-sky-500 uppercase tracking-[0.3em] mt-1 mb-4">
-              {user?.designation || "Senior Faculty Member"}
-            </p>
-            
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
-               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <p className="text-xl font-black text-slate-800 leading-none">
-                     {new Date(user?.createdAt || Date.now()).getFullYear()}
-                  </p>
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Joined Year</p>
-               </div>
-               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <p className="text-xl font-black text-emerald-500 leading-none capitalize">
-                     {user?.status || "Active"}
-                  </p>
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Account Status</p>
-               </div>
+
+            <div className="bg-surface border border-line rounded-card p-3.5 flex flex-col gap-1 shadow-2xs">
+              <span className="text-micro font-medium text-ink-secondary">Attendance this session</span>
+              <span className="font-mono text-xl font-semibold text-ink">98.6%</span>
+              <span className="text-micro text-ink-secondary">2 late arrivals</span>
+            </div>
+
+            <div className="bg-surface border border-line rounded-card p-3.5 flex flex-col gap-1 shadow-2xs">
+              <span className="text-micro font-medium text-ink-secondary">Leave left</span>
+              <span className="font-mono text-xl font-semibold text-ink">CL 8 · SL 9</span>
+              <span className="text-micro text-ink-secondary">EL 22 days</span>
+            </div>
+
+            <div className="bg-surface border border-line rounded-card p-3.5 flex flex-col gap-1 shadow-2xs">
+              <span className="text-micro font-medium text-ink-secondary">Experience</span>
+              <span className="font-mono text-xl font-semibold text-ink">10 yrs</span>
+              <span className="text-micro text-ink-secondary">7 years in this school</span>
+            </div>
+
+            <div className="bg-surface border border-line rounded-card p-3.5 flex flex-col gap-1 shadow-2xs">
+              <span className="text-micro font-medium text-ink-secondary">Net pay, September</span>
+              <span className="font-mono text-xl font-semibold text-ink">₹48,300</span>
+              <span className="text-micro text-ink-secondary">Paid 1 Oct</span>
             </div>
           </div>
 
+          {/* Needs Attention Warning */}
+          <section className="bg-warning-bg border border-warning-border rounded-card p-4 flex flex-col gap-1">
+            <h2 className="m-0 text-small font-semibold text-warning-strong flex items-center gap-1.5">
+              <FiAlertCircle size={16} /> Needs attention
+            </h2>
+            <span className="text-body text-warning-strong leading-relaxed">
+              Medical fitness certificate expires 15 Dec 2026 · Half-Yearly Science 8-B marks due 12 Oct · CPD hours 32 of 50 for this year
+            </span>
+          </section>
+
+          {/* Teaching Summary Card */}
+          <section className="bg-surface border border-line rounded-card p-5 flex flex-col gap-3 shadow-2xs">
+            <h2 className="m-0 text-h2 font-semibold text-ink">Active Teaching Allocations</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { name: "8-B Science", periods: "6 periods/wk", room: "Room 21", role: "Class Teacher" },
+                { name: "8-A Science", periods: "6 periods/wk", room: "Room 21", role: "Subject Teacher" },
+                { name: "7-A Science", periods: "7 periods/wk", room: "Room 17", role: "Subject Teacher" },
+                { name: "7-B Science", periods: "7 periods/wk", room: "Room 17", role: "Subject Teacher" },
+              ].map((c) => (
+                <div key={c.name} className="p-3 bg-surface-subtle border border-line rounded-control flex flex-col gap-1">
+                  <span className="text-body font-semibold text-ink">{c.name}</span>
+                  <span className="text-caption text-ink-secondary">{c.periods} · {c.room}</span>
+                  <span className="text-micro text-primary font-medium">{c.role}</span>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
+      )}
 
-        {/* Professional Specs (Right) */}
-        <div className="lg:col-span-8 flex flex-col h-full">
-           <div className="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-2xl shadow-slate-200/50 h-full flex flex-col justify-center">
-              <div className="flex justify-end items-center mb-6">
-                 <div className="flex items-center gap-3">
-                    {!isEditing ? (
-                       <button 
-                          onClick={() => setIsEditing(true)}
-                          className="px-6 py-2 bg-sky-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-2 group border border-transparent"
-                       >
-                          <FiEdit2 size={14} className="group-hover:rotate-12 transition-transform" />
-                          Modify Profile
-                       </button>
-                    ) : (
-                       <div className="flex items-center gap-3 animate-slide-in-right">
-                          <button 
-                             onClick={() => setIsEditing(false)}
-                             className="px-6 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all shadow-sm"
-                          >
-                             Discard
-                          </button>
-                          <button 
-                             onClick={handleUpdate}
-                             disabled={loading}
-                             className="px-6 py-2 bg-sky-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-sky-700 transition-all shadow-xl shadow-sky-200 flex items-center gap-2 border border-transparent"
-                          >
-                             {loading ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <FiSave size={14} />}
-                             Commit Changes
-                          </button>
-                       </div>
-                    )}
-                 </div>
+      {/* TAB 2: PERSONAL & IDS */}
+      {activeTab === "personal" && (
+        <section className="bg-surface border border-line rounded-card p-5 flex flex-col gap-4 shadow-2xs">
+          <h2 className="m-0 text-h2 font-semibold text-ink">Personal & Contact Details</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-small">
+            <div><span className="text-ink-secondary block">Date of Birth:</span><strong className="text-ink text-body">14 August 1989 (37 yrs)</strong></div>
+            <div><span className="text-ink-secondary block">Gender:</span><strong className="text-ink text-body">Female</strong></div>
+            <div><span className="text-ink-secondary block">Blood Group:</span><strong className="text-ink text-body">B Positive (B+)</strong></div>
+            <div><span className="text-ink-secondary block">Email (Official):</span><strong className="text-ink text-body">sunita.rathore@shikshapublic.edu</strong></div>
+            <div><span className="text-ink-secondary block">Mobile:</span><strong className="text-ink text-body">+91 98290 XXXXX (Protected)</strong></div>
+            <div><span className="text-ink-secondary block">Aadhaar / ID:</span><strong className="text-ink text-body">XXXX-XXXX-4819 (Verified)</strong></div>
+            <div className="sm:col-span-2"><span className="text-ink-secondary block">Residential Address:</span><strong className="text-ink text-body">Plot 42, Kalyan Nagar, Tonk Road, Jaipur, Rajasthan 302015</strong></div>
+            <div><span className="text-ink-secondary block">Emergency Contact:</span><strong className="text-ink text-body">Mahendra Rathore (Spouse)</strong></div>
+          </div>
+        </section>
+      )}
+
+      {/* TAB 3: QUALIFICATIONS */}
+      {activeTab === "qualifications" && (
+        <section className="bg-surface border border-line rounded-card p-5 flex flex-col gap-4 shadow-2xs">
+          <h2 className="m-0 text-h2 font-semibold text-ink">Degrees & Certifications</h2>
+          <div className="divide-y divide-line-row">
+            {[
+              { degree: "B.Ed. (Physical Sciences)", inst: "Regional Institute of Education (NCERT), Ajmer", year: "2013", grade: "First Division (Distinction)" },
+              { degree: "M.Sc. Chemistry", inst: "University of Rajasthan, Jaipur", year: "2011", grade: "First Division" },
+              { degree: "B.Sc. (Physics, Chemistry, Maths)", inst: "Maharani College, Jaipur", year: "2009", grade: "First Division" },
+              { degree: "CTET Level 2 (Science & Mathematics)", inst: "CBSE Central Board", year: "2014", grade: "Qualified (118/150)" },
+            ].map((q, idx) => (
+              <div key={idx} className="py-3 flex justify-between items-center gap-3">
+                <div className="flex flex-col">
+                  <span className="text-body font-semibold text-ink">{q.degree}</span>
+                  <span className="text-small text-ink-secondary">{q.inst} · {q.year}</span>
+                </div>
+                <span className="text-small font-semibold text-primary">{q.grade}</span>
               </div>
-              <div className="flex items-center justify-between mb-6">
-                 <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.5)]" /> 
-                    Credential Matrix
-                 </h3>
-                 <div className="text-[10px] font-bold text-sky-700 bg-sky-100 px-3 py-1 rounded-full uppercase tracking-widest border border-sky-100">
-                    ID: {user?._id?.substring(0, 8).toUpperCase() || "TEMP_NODE"}
-                 </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* TAB 4: TEACHING */}
+      {activeTab === "teaching" && (
+        <section className="bg-surface border border-line rounded-card p-5 flex flex-col gap-4 shadow-2xs">
+          <h2 className="m-0 text-h2 font-semibold text-ink">Curriculum & Allocation</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-small">
+            <div className="p-3.5 bg-surface-subtle border border-line rounded-control flex flex-col gap-1">
+              <span className="font-semibold text-ink text-body">Department:</span>
+              <span className="text-ink-secondary">Science & Environmental Studies (Middle & Secondary)</span>
+            </div>
+            <div className="p-3.5 bg-surface-subtle border border-line rounded-control flex flex-col gap-1">
+              <span className="font-semibold text-ink text-body">Weekly Load:</span>
+              <span className="text-ink-secondary">26 Teaching periods + 2 Substitution standby</span>
+            </div>
+            <div className="p-3.5 bg-surface-subtle border border-line rounded-control flex flex-col gap-1">
+              <span className="font-semibold text-ink text-body">Designated Lab:</span>
+              <span className="text-ink-secondary">Junior Chemistry & Biology Lab (Room 17B)</span>
+            </div>
+            <div className="p-3.5 bg-surface-subtle border border-line rounded-control flex flex-col gap-1">
+              <span className="font-semibold text-ink text-body">Co-curricular Duties:</span>
+              <span className="text-ink-secondary">Eco-Club Mentor & Annual Science Exhibition In-Charge</span>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* TAB 5: ATTENDANCE & LEAVE */}
+      {activeTab === "attendance" && (
+        <section className="bg-surface border border-line rounded-card p-5 flex flex-col gap-4 shadow-2xs">
+          <h2 className="m-0 text-h2 font-semibold text-ink">Biometric Attendance & Leave Ledger</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3 bg-surface-subtle border border-line rounded-control"><span className="text-caption text-ink-secondary block">Casual Leave</span><strong className="text-xl font-mono text-ink">8 / 12</strong></div>
+            <div className="p-3 bg-surface-subtle border border-line rounded-control"><span className="text-caption text-ink-secondary block">Sick Leave</span><strong className="text-xl font-mono text-ink">9 / 10</strong></div>
+            <div className="p-3 bg-surface-subtle border border-line rounded-control"><span className="text-caption text-ink-secondary block">Earned Leave</span><strong className="text-xl font-mono text-ink">22 days</strong></div>
+            <div className="p-3 bg-surface-subtle border border-line rounded-control"><span className="text-caption text-ink-secondary block">Late Arrival Count</span><strong className="text-xl font-mono text-ink">2 (Allowed 3)</strong></div>
+          </div>
+        </section>
+      )}
+
+      {/* TAB 6: SALARY */}
+      {activeTab === "salary" && (
+        <section className="bg-surface border border-line rounded-card p-5 flex flex-col gap-4 shadow-2xs">
+          <h2 className="m-0 text-h2 font-semibold text-ink">Salary Structure & Statutory Details</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-small">
+            <div><span className="text-ink-secondary block">Pay Scale:</span><strong className="text-ink text-body">TGT Level 7 (7th CPC)</strong></div>
+            <div><span className="text-ink-secondary block">Monthly Gross:</span><strong className="text-ink text-body font-mono">₹52,500</strong></div>
+            <div><span className="text-ink-secondary block">Net Monthly Remittance:</span><strong className="text-primary text-body font-mono font-bold">₹48,300</strong></div>
+            <div><span className="text-ink-secondary block">Provident Fund (UAN):</span><strong className="text-ink text-body font-mono">100928371928</strong></div>
+            <div><span className="text-ink-secondary block">Bank Account:</span><strong className="text-ink text-body font-mono">SBI · A/C Ending 8291</strong></div>
+            <div><span className="text-ink-secondary block">Income Tax PAN:</span><strong className="text-ink text-body font-mono">ABCDE1234F</strong></div>
+          </div>
+        </section>
+      )}
+
+      {/* TAB 7: TRAINING */}
+      {activeTab === "training" && (
+        <section className="bg-surface border border-line rounded-card p-5 flex flex-col gap-4 shadow-2xs">
+          <h2 className="m-0 text-h2 font-semibold text-ink">CPD Training & Appraisal Records</h2>
+          <div className="p-3.5 bg-surface-subtle border border-line rounded-control flex flex-col gap-1">
+            <span className="text-body font-semibold text-ink">Continuing Professional Development (CPD)</span>
+            <span className="text-small text-ink-secondary">32 of 50 mandatory hours completed for 2026-27. Next module: "Experiential Learning in Middle School Science".</span>
+          </div>
+        </section>
+      )}
+
+      {/* Request a Correction Modal */}
+      {showCorrectionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs animate-fadeIn">
+          <form
+            onSubmit={handleCorrectionSubmit}
+            className="bg-surface border border-line rounded-card p-6 max-w-lg w-full shadow-xl flex flex-col gap-4"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-h2 font-semibold text-ink m-0">
+                  Request Profile Correction
+                </h3>
+                <span className="text-small text-ink-secondary">
+                  Specify details you want to update (e.g. address, phone, degree). Changes require HR sign-off.
+                </span>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5">
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                       Name
-                       {isEditing && <div className="w-1 h-1 rounded-full bg-sky-500" />}
-                    </label>
-                    {isEditing ? (
-                      <input 
-                        type="text" 
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full h-12 bg-slate-50/50 border-2 border-slate-100 rounded-2xl px-5 text-sm font-bold text-slate-700 outline-none focus:border-sky-500/30 focus:bg-white transition-all shadow-inner"
-                      />
-                    ) : (
-                      <div className="w-full h-12 flex items-center px-5 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-black text-slate-700 group-hover:bg-white group-hover:shadow-lg transition-all">{user?.name}</div>
-                    )}
-                 </div>
+              <button
+                type="button"
+                onClick={() => setShowCorrectionModal(false)}
+                className="text-ink-secondary hover:text-ink text-body font-semibold p-1"
+              >
+                ✕
+              </button>
+            </div>
 
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">E-Mail</label>
-                    <div className="w-full h-12 flex items-center px-5 bg-slate-100/50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-400 cursor-not-allowed">
-                       {user?.email}
-                    </div>
-                 </div>
+            <textarea
+              rows={4}
+              required
+              value={correctionNote}
+              onChange={(e) => setCorrectionNote(e.target.value)}
+              placeholder="Describe the correction required and attach documentary proof if applicable..."
+              className="w-full p-3 rounded-control border border-line-input bg-surface text-body text-ink placeholder:text-ink-secondary focus:border-primary focus:outline-none leading-relaxed"
+            />
 
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Designation</label>
-                    {isEditing ? (
-                      <input 
-                        type="text" 
-                        placeholder="e.g. Senior Mathematics Faculty"
-                        value={formData.designation}
-                        onChange={(e) => setFormData({...formData, designation: e.target.value})}
-                        className="w-full h-12 bg-slate-50/50 border-2 border-slate-100 rounded-2xl px-5 text-sm font-bold text-slate-700 outline-none focus:border-sky-500/30 focus:bg-white transition-all shadow-inner"
-                      />
-                    ) : (
-                      <div className="w-full h-12 flex items-center px-5 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-black text-slate-700 group-hover:bg-white group-hover:shadow-lg transition-all">{user?.designation || "Not Specified"}</div>
-                    )}
-                 </div>
-
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Qualifications</label>
-                    {isEditing ? (
-                      <input 
-                        type="text" 
-                        placeholder="e.g. M.Sc, PhD"
-                        value={formData.qualification}
-                        onChange={(e) => setFormData({...formData, qualification: e.target.value})}
-                        className="w-full h-12 bg-slate-50/50 border-2 border-slate-100 rounded-2xl px-5 text-sm font-bold text-slate-700 outline-none focus:border-sky-500/30 focus:bg-white transition-all shadow-inner"
-                      />
-                    ) : (
-                      <div className="w-full h-12 flex items-center px-5 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-black text-slate-700 group-hover:bg-white group-hover:shadow-lg transition-all">{user?.qualification || "Pending Verification"}</div>
-                    )}
-                 </div>
-
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contact Vector</label>
-                    {isEditing ? (
-                      <input 
-                        type="text" 
-                        value={formData.phone}
-                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                        className="w-full h-12 bg-slate-50/50 border-2 border-slate-100 rounded-2xl px-5 text-sm font-bold text-slate-700 outline-none focus:border-sky-500/30 focus:bg-white transition-all shadow-inner"
-                      />
-                    ) : (
-                      <div className="w-full h-12 flex items-center px-5 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-black text-slate-700 group-hover:bg-white group-hover:shadow-lg transition-all">{user?.phone || "+91 XXXXX XXXXX"}</div>
-                    )}
-                 </div>
-
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Primary HQ / Address</label>
-                    {isEditing ? (
-                      <input 
-                        type="text" 
-                        value={formData.address}
-                        onChange={(e) => setFormData({...formData, address: e.target.value})}
-                        className="w-full h-12 bg-slate-50/50 border-2 border-slate-100 rounded-2xl px-5 text-sm font-bold text-slate-700 outline-none focus:border-sky-500/30 focus:bg-white transition-all shadow-inner"
-                      />
-                    ) : (
-                      <div className="w-full h-12 flex items-center px-5 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-black text-slate-700 group-hover:bg-white group-hover:shadow-lg transition-all">{user?.address || "Gyansthali Main Campus"}</div>
-                    )}
-                 </div>
-              </div>
-           </div>
-
+            <div className="flex justify-end gap-2.5 pt-2 border-t border-line-row">
+              <button
+                type="button"
+                onClick={() => setShowCorrectionModal(false)}
+                className="px-4 py-2 rounded-control border border-line-input bg-surface text-small font-medium text-ink hover:bg-surface-subtle transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-control bg-primary text-white text-small font-semibold hover:bg-primary-dark transition-colors inline-flex items-center gap-1.5"
+              >
+                <FiCheck size={14} /> Submit Request
+              </button>
+            </div>
+          </form>
         </div>
-
-      </div>
+      )}
     </div>
   );
 };

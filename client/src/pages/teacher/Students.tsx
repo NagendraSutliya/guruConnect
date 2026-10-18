@@ -1,5 +1,5 @@
-import TeacherStudentPanel from "./panels/TeacherStudentPanel";
+import TeacherMyClass from "./TeacherMyClass";
 
 export default function StudentsTeacher() {
-  return <TeacherStudentPanel />;
+  return <TeacherMyClass />;
 }

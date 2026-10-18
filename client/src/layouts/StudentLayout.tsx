@@ -1,103 +1,126 @@
+import React, { useState } from "react";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
-import { 
-  FiHome, 
-  FiCalendar, 
-  FiBarChart2, 
-  FiSettings, 
-  FiLogOut,
-  FiMenu,
-  FiChevronLeft,
-  FiFileText,
-  FiActivity,
-  FiClock
-} from "react-icons/fi";
-import { useState } from "react";
 import StudentNavbar from "../components/student/layout/StudentNavbar";
 import { useAuth } from "../context/AuthContext";
+import { FiMenu, FiChevronLeft, FiLogOut } from "react-icons/fi";
 
-const StudentLayout = () => {
-  const { logout } = useAuth();
+const StudentLayout: React.FC = () => {
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
   const navItems = [
-    { icon: FiHome, label: "Overview", path: "/student/dashboard" },
-    { icon: FiCalendar, label: "Attendance", path: "/student/attendance" },
-    { icon: FiBarChart2, label: "Report Cards", path: "/student/results" },
-    { icon: FiActivity, label: "Examinations", path: "/student/tests" },
-    { icon: FiFileText, label: "Study Material", path: "/student/material" },
-    { icon: FiClock, label: "Class Routine", path: "/student/routine" },
-    { icon: FiSettings, label: "Settings", path: "/student/settings" },
+    { label: "Today", path: "/student/dashboard" },
+    { label: "Timetable & Exams", path: "/student/timetable" },
+    { label: "Homework", path: "/student/homework", badge: "2" },
+    { label: "Results", path: "/student/results" },
+    { label: "Attendance", path: "/student/attendance" },
+    { label: "Notices", path: "/student/notices", badge: "1" },
+    { label: "Library", path: "/student/library", badge: "1" },
+    { label: "Study material", path: "/student/material" },
+    { label: "Notifications", path: "/student/notifications", badge: "2" },
+    { label: "My profile", path: "/student/profile" },
   ];
 
+  const instName = user?.instituteName || "Shiksha Public School";
+  const instInitials = instName
+    .split(" ")
+    .map((w: string) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
-    <div className="flex h-screen bg-[var(--bg-app)] overflow-hidden">
-      
-      {/* Professional Student Sidebar */}
-      <aside 
-        className={`${collapsed ? "w-20" : "w-64"} bg-[#0f172a] transition-all duration-300 flex flex-col z-[60]`}
+    <div className="flex h-screen bg-page text-ink overflow-hidden font-sans">
+      {/* Student Web Sidebar matching Patshala design */}
+      <aside
+        className={`${
+          collapsed ? "w-20" : "w-[232px]"
+        } bg-nav-bg text-nav-text transition-all duration-200 flex flex-col shrink-0 z-50 border-r border-nav-divider select-none`}
       >
-        {/* Sidebar Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">
-          {!collapsed && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black">G</div>
-              <span className="text-white font-bold tracking-tight text-lg">Guru<span className="text-indigo-400">Connect</span></span>
+        {/* Institute Header */}
+        <div className="p-4 border-b border-nav-divider flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-10 h-10 shrink-0 rounded-panel bg-gold text-nav-bg font-semibold text-[15px] flex items-center justify-center">
+              {instInitials || "SP"}
             </div>
-          )}
-          <button 
+            {!collapsed && (
+              <div className="flex flex-col min-w-0">
+                <div className="font-semibold text-body text-white truncate leading-tight">
+                  {instName}
+                </div>
+                <div className="text-caption text-nav-muted">Student panel</div>
+              </div>
+            )}
+          </div>
+          <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="p-1 rounded-control text-nav-muted hover:text-white hover:bg-nav-active transition-colors cursor-pointer"
           >
-            {collapsed ? <FiMenu size={20} /> : <FiChevronLeft size={20} />}
+            {collapsed ? <FiMenu size={18} /> : <FiChevronLeft size={18} />}
           </button>
         </div>
 
-        {/* Navigation Feed */}
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto custom-scrollbar">
-          <p className={`${collapsed ? "text-center" : "px-3"} text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-6`}>
-            {collapsed ? "•••" : "Student Command"}
-          </p>
+        {/* Navigation Items */}
+        <nav aria-label="Main" className="flex-1 p-3.5 space-y-1 overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isMatch =
+              (item.path === "/student/dashboard" && (location.pathname === "/student" || location.pathname === "/student/dashboard")) ||
+              (item.path !== "/student/dashboard" && location.pathname.startsWith(item.path));
+
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
-                  isActive 
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" 
-                    : "text-slate-400 hover:bg-white/5 hover:text-white"
+                className={`group flex items-center justify-between gap-2.5 min-h-[40px] px-3 rounded-control text-body transition-colors ${
+                  isMatch
+                    ? "bg-nav-active text-white font-semibold"
+                    : "text-nav-text font-normal hover:bg-nav-active/50 hover:text-white"
                 }`}
+                title={collapsed ? item.label : undefined}
               >
-                <item.icon size={20} className={isActive ? "text-white" : "text-slate-500 group-hover:text-white transition-colors"} />
-                {!collapsed && <span className="text-sm font-bold tracking-tight">{item.label}</span>}
+                <span className="flex items-center gap-2.5 min-w-0">
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                      isMatch ? "bg-gold" : "bg-nav-dot group-hover:bg-nav-muted"
+                    }`}
+                  />
+                  {!collapsed && <span className="truncate">{item.label}</span>}
+                </span>
+
+                {!collapsed && item.badge && (
+                  <span className="font-mono text-micro text-gold font-medium">
+                    {item.badge}
+                  </span>
+                )}
               </NavLink>
             );
           })}
         </nav>
 
         {/* Tactical Footer */}
-        <div className="p-4 border-t border-white/5">
-          <button 
+        <div className="p-3 border-t border-nav-divider">
+          <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-rose-500/10 hover:text-rose-500 transition-all group"
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-control text-nav-text hover:bg-rose-900/30 hover:text-rose-300 transition-colors cursor-pointer"
+            title="Sign out"
           >
-            <FiLogOut size={20} className="group-hover:text-rose-500" />
-            {!collapsed && <span className="text-sm font-bold tracking-tight">Eject Session</span>}
+            <FiLogOut size={16} />
+            {!collapsed && <span className="text-small font-medium">Sign out</span>}
           </button>
         </div>
       </aside>
 
-      {/* Primary Operations Hub */}
-      <main className="flex-1 flex flex-col min-w-0 bg-slate-50/50">
+      {/* Main Operations Web Canvas */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <StudentNavbar />
-        <div className="flex-1 overflow-y-auto px-4 md:px-8 scroll-smooth custom-scrollbar">
-           <div className="max-w-7xl mx-auto animate-fade-in">
-              <Outlet />
-           </div>
-        </div>
-      </main>
+        <main className="flex-1 overflow-y-auto px-6 py-6 lg:px-10 lg:py-8 bg-page custom-scrollbar">
+          <div className="max-w-7xl mx-auto animate-fadeIn">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 };

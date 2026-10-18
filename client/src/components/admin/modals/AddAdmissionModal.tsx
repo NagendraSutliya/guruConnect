@@ -5,7 +5,7 @@ import type { AdmissionFormData } from "../../../types/admin/student";
 interface AddAdmissionModalProps {
   form: AdmissionFormData;
   setForm: (form: AdmissionFormData) => void;
-  onSave: () => void;
+  onSave: () => void | Promise<void>;
   onClose: () => void;
   loading?: boolean;
   isEdit?: boolean;

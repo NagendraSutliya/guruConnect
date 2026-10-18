@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import PublicLayout from "../layouts/PublicLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import TeacherLayout from "../layouts/TeacherLayout";
@@ -45,10 +45,8 @@ import Classes from "../pages/admin/academic/Classes";
 import Sections from "../pages/admin/academic/Sections";
 import Subjects from "../pages/admin/academic/Subjects";
 import TeacherAssignPanel from "../pages/admin/panels/TeacherAssignPanel";
-import MyAssignments from "../pages/teacher/MyAssignments";
 import AttendanceTeacher from "../pages/teacher/Attendance";
 import Result from "../pages/teacher/Result";
-import StudyMaterial from "../pages/teacher/StudyMaterial";
 import Attendance from "../pages/admin/student/Attendance";
 import Routine from "../pages/admin/academic/Routine";
 import Exams from "../pages/admin/exams/Exams";
@@ -61,6 +59,11 @@ import ParentLogin from "../pages/parent/Login";
 import StudentRoute from "../guards/StudentRoute";
 import StudentLayout from "../layouts/StudentLayout";
 import StudentDashboard from "../pages/student/Dashboard";
+import StudentTimetable from "../pages/student/StudentTimetable";
+import StudentHomework from "../pages/student/StudentHomework";
+import StudentNotices from "../pages/student/StudentNotices";
+import StudentLibrary from "../pages/student/StudentLibrary";
+import StudentNotifications from "../pages/student/StudentNotifications";
 import ChangePassword from "../pages/student/ChangePassword";
 import StudentResults from "../pages/student/StudentResults";
 import StudentMaterial from "../pages/student/StudentMaterial";
@@ -75,8 +78,11 @@ import TeacherProfile from "../pages/teacher/TeacherProfile";
 import TeacherSettings from "../pages/teacher/TeacherSettings";
 import TeacherHelp from "../pages/teacher/TeacherHelp";
 
-import StudentsTeacher from "../pages/teacher/Students";
 import RoutineTeacher from "../pages/teacher/RoutineTeacher";
+import TeacherMyClass from "../pages/teacher/TeacherMyClass";
+import TeacherHomework from "../pages/teacher/TeacherHomework";
+import TeacherMessages from "../pages/teacher/TeacherMessages";
+import TeacherLeavePayslip from "../pages/teacher/TeacherLeavePayslip";
 import RoutineStudent from "../pages/student/RoutineStudent";
 import FeeStructure from "../pages/admin/finance/FeeStructure";
 import Invoices from "../pages/admin/finance/Invoices";
@@ -206,6 +212,7 @@ export default function AppRoutes() {
         <Route path="routine" element={<Routine />} />
 
         {/* FINANCE & ACCOUNTS */}
+        <Route path="fees" element={<Navigate to="/admin/collect-fees" replace />} />
         <Route path="collect-fees" element={<FeeCounter />} />
         <Route path="fee-structure" element={<FeeStructure />} />
         <Route path="defaulters" element={<DefaultersPage />} />
@@ -288,18 +295,28 @@ export default function AppRoutes() {
         }
       >
         <Route path="dashboard" element={<TeacherDashboard />} />
-        <Route path="feedback" element={<TeacherFeedback />} />
-        <Route path="assignments" element={<MyAssignments />} />
-        <Route path="attendance" element={<AttendanceTeacher />} />
-        <Route path="results" element={<Result />} />
-        <Route path="material" element={<StudyMaterial />} />
-        <Route path="exams" element={<ExamsTeacher />} />
-        <Route path="students" element={<StudentsTeacher />} />
+        <Route path="timetable" element={<RoutineTeacher />} />
         <Route path="routine" element={<RoutineTeacher />} />
-        <Route path="results/upload-marks" element={<UploadMarksPage />} />
+        <Route path="my-class" element={<TeacherMyClass />} />
+        <Route path="students" element={<TeacherMyClass />} />
+        <Route path="attendance" element={<AttendanceTeacher />} />
+        <Route path="homework" element={<TeacherHomework />} />
+        <Route path="syllabus" element={<TeacherHomework />} />
+        <Route path="assignments" element={<TeacherHomework />} />
+        <Route path="material" element={<TeacherHomework />} />
+        <Route path="marks" element={<Result />} />
+        <Route path="remarks" element={<Result />} />
+        <Route path="results" element={<Result />} />
+        <Route path="messages" element={<TeacherMessages />} />
+        <Route path="leave-payslip" element={<TeacherLeavePayslip />} />
+        <Route path="leave" element={<TeacherLeavePayslip />} />
+        <Route path="leaves" element={<TeacherLeavePayslip />} />
         <Route path="profile" element={<TeacherProfile />} />
         <Route path="settings" element={<TeacherSettings />} />
         <Route path="help" element={<TeacherHelp />} />
+        <Route path="feedback" element={<TeacherFeedback />} />
+        <Route path="exams" element={<ExamsTeacher />} />
+        <Route path="results/upload-marks" element={<UploadMarksPage />} />
       </Route>
 
       <Route
@@ -310,14 +327,24 @@ export default function AppRoutes() {
           </StudentRoute>
         }
       >
+        <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<StudentDashboard />} />
-        <Route path="attendance" element={<StudentAttendance />} />
+        <Route path="timetable" element={<StudentTimetable />} />
+        <Route path="routine" element={<StudentTimetable />} />
+        <Route path="exams" element={<StudentTimetable />} />
+        <Route path="homework" element={<StudentHomework />} />
+        <Route path="submit-homework" element={<StudentHomework />} />
         <Route path="results" element={<StudentResults />} />
+        <Route path="report-card" element={<StudentResults />} />
+        <Route path="attendance" element={<StudentAttendance />} />
+        <Route path="notices" element={<StudentNotices />} />
+        <Route path="library" element={<StudentLibrary />} />
         <Route path="material" element={<StudentMaterial />} />
-        <Route path="tests" element={<StudentTests />} />
-        <Route path="routine" element={<RoutineStudent />} />
+        <Route path="study-material" element={<StudentMaterial />} />
+        <Route path="notifications" element={<StudentNotifications />} />
         <Route path="profile" element={<StudentProfile />} />
         <Route path="settings" element={<ChangePassword />} />
+        <Route path="tests" element={<StudentTests />} />
         <Route path="help" element={<StudentHelp />} />
       </Route>
 
