@@ -15,6 +15,7 @@ router.use(requireAdmin);
 
 router.get("/", getStudents);
 router.get("/search", require("../../../controllers/admin/StudentController").searchStudents);
+router.get("/:id", require("../../../controllers/admin/StudentController").getStudentById);
 router.post("/", createStudent);
 
 router.patch("/:id/deactivate", deactivateStudent);

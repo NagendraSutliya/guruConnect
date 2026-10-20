@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+import api from "../../../api/axiosInstance";
 import {
   Search,
   Copy,
@@ -17,466 +18,108 @@ import {
   Calendar,
   Sparkles,
   ArrowRight,
-  X
+  X,
+  Loader2
 } from "lucide-react";
 import { useToast } from "../../../context/ToastContext";
-import AdmissionsPanel from "../student/AdmissionsPanel";
 import ApplicationReviewDrawer, { type ApplicationDetail } from "../../../components/admin/admissions/ApplicationReviewDrawer";
 import AddStudentModal from "../../../components/admin/admissions/AddStudentModal";
+import AdmissionsModuleNav from "../../../components/admin/admissions/AdmissionsModuleNav";
 
 interface PipelineLead extends ApplicationDetail {
   followUpText: string;
   isOverdue?: boolean;
 }
 
-const INITIAL_PIPELINE_LEADS: PipelineLead[] = [
-  {
-    id: "ENQ-101",
-    applicationNo: "APP/2728/0101",
-    name: "Ishaan Agarwal",
-    classGrade: "Nursery",
-    appliedDate: "14 Oct",
-    counsellor: "Neha Saini",
-    source: "Website",
-    stage: "enquiry",
-    followUpText: "Call today",
-    isOverdue: false,
-    dob: "15 Sep 2022",
-    gender: "Male",
-    category: "General",
-    fatherName: "Sanjay Agarwal",
-    fatherPhone: "98290 12345",
-    motherName: "Pooja Agarwal",
-    motherPhone: "98290 54321",
-    address: "B-12, Vaishali Nagar, Jaipur",
-    previousSchool: "None (First admission)",
-    siblingInSchool: "No",
-    transportNeeded: "Yes · Route 4",
-    ageCheckText: "Age check passed: 4 years 6 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Mon, 19 Oct · 11:00 am · Room 2",
-      outcome: "Not held yet",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 350 KB", status: "Verified" },
-      { id: "d2", title: "Child photo", meta: "JPG · 120 KB", status: "Verified" },
-      { id: "d3", title: "Address proof", meta: "Aadhaar · PDF", status: "Verified" },
-      { id: "d4", title: "Category certificate", meta: "Not applicable", status: "Verified" },
-    ],
-    seatsSnapshot: { available: "41 of 60", rteAvailable: "12 of 15" },
-    followUps: [
-      { id: "fu1", dateType: "14 Oct · Web form", text: "Enquiry submitted via school admission landing page." }
-    ]
-  },
-  {
-    id: "ENQ-102",
-    applicationNo: "APP/2728/0102",
-    name: "Myra Khandelwal",
-    classGrade: "Class 1",
-    appliedDate: "14 Oct",
-    counsellor: "Arjun Yadav",
-    source: "Walk-in",
-    stage: "enquiry",
-    followUpText: "Tomorrow",
-    isOverdue: false,
-    dob: "12 May 2020",
-    gender: "Female",
-    category: "General",
-    fatherName: "Deepak Khandelwal",
-    fatherPhone: "94140 88921",
-    motherName: "Ritu Khandelwal",
-    motherPhone: "94140 88922",
-    address: "Flat 402, Royal Palms, Mansarovar, Jaipur",
-    previousSchool: "Kidzee Play School",
-    siblingInSchool: "No",
-    transportNeeded: "No",
-    ageCheckText: "Age check passed: 6 years 10 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Tue, 20 Oct · 10:00 am · Room 1",
-      outcome: "Not held yet",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 410 KB", status: "Verified" },
-      { id: "d2", title: "Child photo", meta: "JPG · 150 KB", status: "Verified" },
-      { id: "d3", title: "UKG report card", meta: "PDF · 890 KB", status: "Verified" },
-      { id: "d4", title: "Address proof", meta: "Electricity bill", status: "Verified" },
-    ],
-    seatsSnapshot: { available: "23 of 120", rteAvailable: "9 of 30" },
-    followUps: [
-      { id: "fu1", dateType: "14 Oct · Walk-in", text: "Parents visited front office. Requested prospectus." }
-    ]
-  },
-  {
-    id: "ENQ-103",
-    applicationNo: "APP/2728/0103",
-    name: "Kabir Saxena",
-    classGrade: "Class 6",
-    appliedDate: "13 Oct",
-    counsellor: "Neha Saini",
-    source: "Referral",
-    stage: "enquiry",
-    followUpText: "16 Oct",
-    isOverdue: false,
-    dob: "24 Nov 2015",
-    gender: "Male",
-    category: "General",
-    fatherName: "Alok Saxena",
-    fatherPhone: "99280 44512",
-    motherName: "Kavita Saxena",
-    motherPhone: "99280 44513",
-    address: "18, Malviya Nagar, Jaipur",
-    previousSchool: "St. Xavier's Senior School",
-    siblingInSchool: "Yes · Tanvi Saxena (9-B)",
-    transportNeeded: "Yes · Route 7",
-    ageCheckText: "Age check passed: 11 years 4 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Thu, 22 Oct · 12:30 pm · Room 3",
-      outcome: "Not held yet",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 500 KB", status: "Verified" },
-      { id: "d2", title: "Class 5 Marksheet", meta: "PDF · 1.2 MB", status: "Verified" },
-      { id: "d3", title: "Transfer certificate", meta: "Pending previous school clearance", status: "Pending" }
-    ],
-    seatsSnapshot: { available: "8 of 120", rteAvailable: "0 of 30" },
-    followUps: [
-      { id: "fu1", dateType: "13 Oct · Call", text: "Referral from Tanvi's parents. Sibling admission discount discussed." }
-    ]
-  },
-  {
-    id: "ENQ-104",
-    applicationNo: "APP/2728/0104",
-    name: "Anaya Mathur",
-    classGrade: "LKG",
-    appliedDate: "10 Oct",
-    counsellor: "Arjun Yadav",
-    source: "Facebook",
-    stage: "followup",
-    followUpText: "2 days late",
-    isOverdue: true,
-    dob: "19 Dec 2021",
-    gender: "Female",
-    category: "General",
-    fatherName: "Vikram Mathur",
-    fatherPhone: "97720 90123",
-    motherName: "Divya Mathur",
-    motherPhone: "97720 90124",
-    address: "C-44, Shyam Nagar, Jaipur",
-    previousSchool: "Little Angels",
-    siblingInSchool: "No",
-    transportNeeded: "Yes · Route 2",
-    ageCheckText: "Age check passed: 5 years 3 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Wed, 21 Oct · 11:30 am · Room 2",
-      outcome: "Not held yet",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 300 KB", status: "Verified" },
-      { id: "d2", title: "Child photo", meta: "Pending", status: "Pending" },
-    ],
-    seatsSnapshot: { available: "18 of 60", rteAvailable: "5 of 15" },
-    followUps: [
-      { id: "fu1", dateType: "10 Oct · Facebook lead", text: "Inquired via Facebook ad campaign." },
-      { id: "fu2", dateType: "12 Oct · Call", text: "Phone busy, need to follow up again." }
-    ]
-  },
-  {
-    id: "ENQ-105",
-    applicationNo: "APP/2728/0105",
-    name: "Vihaan Soni",
-    classGrade: "Class 1",
-    appliedDate: "14 Oct",
-    counsellor: "Neha Saini",
-    source: "Walk-in",
-    stage: "followup",
-    followUpText: "Today 4 pm",
-    isOverdue: false,
-    dob: "08 Aug 2020",
-    gender: "Male",
-    category: "OBC",
-    fatherName: "Gopal Soni",
-    fatherPhone: "98870 55142",
-    motherName: "Suman Soni",
-    motherPhone: "98870 55143",
-    address: "Plot 89, Tonk Road, Jaipur",
-    previousSchool: "EuroKids",
-    siblingInSchool: "No",
-    transportNeeded: "Yes · Route 7",
-    ageCheckText: "Age check passed: 6 years 7 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Sat, 24 Oct · 10:00 am · Room 1",
-      outcome: "Not held yet",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 412 KB", status: "Verified" },
-      { id: "d2", title: "OBC certificate", meta: "Pending verification", status: "Pending" }
-    ],
-    seatsSnapshot: { available: "23 of 120", rteAvailable: "9 of 30" },
-    followUps: [
-      { id: "fu1", dateType: "14 Oct · Walk-in", text: "Walked in for fee quote and brochure." }
-    ]
-  },
-  {
-    id: "APP-201",
-    applicationNo: "APP/2728/0201",
-    name: "Sara Bansal",
-    classGrade: "Nursery",
-    appliedDate: "12 Oct",
-    counsellor: "Neha Saini",
-    source: "Website",
-    stage: "application",
-    followUpText: "Docs pending",
-    isOverdue: true,
-    dob: "14 Feb 2022",
-    gender: "Female",
-    category: "General",
-    fatherName: "Rohit Bansal",
-    fatherPhone: "96490 33211",
-    motherName: "Priyanka Bansal",
-    motherPhone: "96490 33212",
-    address: "65, Vidyadhar Nagar, Jaipur",
-    previousSchool: "None",
-    siblingInSchool: "No",
-    transportNeeded: "No",
-    ageCheckText: "Age check passed: 5 years 1 month on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Fri, 23 Oct · 9:30 am · Room 4",
-      outcome: "Not held yet",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 520 KB", status: "Verified" },
-      { id: "d2", title: "Immunization record", meta: "Image blurred", status: "Pending" }
-    ],
-    seatsSnapshot: { available: "41 of 60", rteAvailable: "12 of 15" },
-    followUps: [
-      { id: "fu1", dateType: "12 Oct · Online portal", text: "Online application fee paid. Verification awaited." }
-    ]
-  },
-  {
-    id: "APP-202",
-    applicationNo: "APP/2728/0202",
-    name: "Aditya Rawat",
-    classGrade: "Class 11",
-    appliedDate: "13 Oct",
-    counsellor: "Arjun Yadav",
-    source: "Referral",
-    stage: "application",
-    followUpText: "Form complete",
-    isOverdue: false,
-    dob: "05 Apr 2010",
-    gender: "Male",
-    category: "General",
-    fatherName: "Rajendra Rawat",
-    fatherPhone: "94600 77123",
-    motherName: "Meenakshi Rawat",
-    motherPhone: "94600 77124",
-    address: "A-15, Civil Lines, Jaipur",
-    previousSchool: "DPS Jaipur",
-    siblingInSchool: "No",
-    transportNeeded: "No",
-    ageCheckText: "Age check passed: 16 years 11 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Sat, 24 Oct · 2:00 pm · Room 5",
-      outcome: "Not held yet",
-    },
-    documents: [
-      { id: "d1", title: "Class 10 CBSE Marksheet", meta: "PDF · 1.5 MB · 92.4%", status: "Verified" },
-      { id: "d2", title: "Migration certificate", meta: "PDF · 600 KB", status: "Verified" }
-    ],
-    seatsSnapshot: { available: "37 of 120", rteAvailable: "0 of 0" },
-    followUps: [
-      { id: "fu1", dateType: "13 Oct · Visit", text: "Opted for PCM with Computer Science stream." }
-    ]
-  },
-  {
-    id: "APP-203",
-    applicationNo: "APP/2728/0142",
-    name: "Navya Jangid",
-    classGrade: "Class 1",
-    appliedDate: "28 Sep",
-    counsellor: "Neha Saini",
-    source: "Walk-in",
-    stage: "verification",
-    followUpText: "Interaction 13 Oct",
-    isOverdue: false,
-    dob: "18 Jan 2021",
-    gender: "Female",
-    category: "OBC",
-    fatherName: "Mahendra Jangid",
-    fatherPhone: "98281 99042",
-    motherName: "Sushila Jangid",
-    motherPhone: "94142 55190",
-    address: "Sector 7, Mansarovar, Jaipur",
-    previousSchool: "Little Steps Play School (UKG)",
-    siblingInSchool: "No",
-    transportNeeded: "Yes · Mansarovar sector 7",
-    ageCheckText: "Age check passed: 6 years 2 months on 31 Mar 2027 (minimum 6 years for Class 1).",
-    interactionSchedule: {
-      dateTimeRoom: "Sat, 13 Oct · 10:30 am · Room 4",
-      outcome: "Recommended",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 412 KB · verified by Neha S.", status: "Verified", verifiedBy: "Neha S." },
-      { id: "d2", title: "Child photo", meta: "JPG · 180 KB", status: "Verified" },
-      { id: "d3", title: "Address proof", meta: "Electricity bill · PDF", status: "Verified" },
-      { id: "d4", title: "UKG report card", meta: "PDF · 1.1 MB", status: "Verified" },
-      { id: "d5", title: "Category certificate", meta: "Image is blurred, name not readable", status: "Pending" },
-    ],
-    seatsSnapshot: {
-      available: "23 of 120",
-      rteAvailable: "9 of 30",
-    },
-    followUps: [
-      { id: "f1", dateType: "04 Oct · Call", text: "Asked to re-upload category certificate." },
-      { id: "f2", dateType: "30 Sep · Visit", text: "Parents toured campus, interested in transport." },
-      { id: "f3", dateType: "26 Sep · Walk-in", text: "Enquiry created at front office." },
-    ]
-  },
-  {
-    id: "APP-204",
-    applicationNo: "APP/2728/0204",
-    name: "Reyansh Tak",
-    classGrade: "Class 6",
-    appliedDate: "13 Oct",
-    counsellor: "Arjun Yadav",
-    source: "Website",
-    stage: "test",
-    followUpText: "Result pending",
-    isOverdue: false,
-    dob: "11 Aug 2015",
-    gender: "Male",
-    category: "General",
-    fatherName: "Kailash Tak",
-    fatherPhone: "99830 11984",
-    motherName: "Pooja Tak",
-    motherPhone: "99830 11985",
-    address: "56, Raja Park, Jaipur",
-    previousSchool: "Tagore Public School",
-    siblingInSchool: "No",
-    transportNeeded: "No",
-    ageCheckText: "Age check passed: 11 years 7 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Fri, 16 Oct · 11:00 am · Lab 2",
-      outcome: "Not held yet",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 400 KB", status: "Verified" },
-      { id: "d2", title: "Class 5 Marks card", meta: "PDF · 800 KB", status: "Verified" }
-    ],
-    seatsSnapshot: { available: "8 of 120", rteAvailable: "0 of 30" },
-    followUps: [
-      { id: "fu1", dateType: "13 Oct · Test scheduled", text: "Written assessment scheduled for English & Math." }
-    ]
-  },
-  {
-    id: "APP-205",
-    applicationNo: "APP/2728/0205",
-    name: "Kiara Purohit",
-    classGrade: "Nursery",
-    appliedDate: "12 Oct",
-    counsellor: "Neha Saini",
-    source: "RTE",
-    stage: "test",
-    followUpText: "RTE · lottery list",
-    isOverdue: false,
-    dob: "03 Mar 2022",
-    gender: "Female",
-    category: "EWS",
-    fatherName: "Mukesh Purohit",
-    fatherPhone: "95870 33412",
-    motherName: "Kanta Purohit",
-    motherPhone: "95870 33413",
-    address: "Ward 12, Sanganer, Jaipur",
-    previousSchool: "None",
-    siblingInSchool: "No",
-    transportNeeded: "No",
-    ageCheckText: "Age check passed: 5 years on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Mon, 19 Oct · 10:00 am · Front Office",
-      outcome: "Recommended",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "PDF · 300 KB", status: "Verified" },
-      { id: "d2", title: "Income certificate (EWS)", meta: "Tehsildar verified", status: "Verified" }
-    ],
-    seatsSnapshot: { available: "41 of 60", rteAvailable: "12 of 15" },
-    followUps: [
-      { id: "fu1", dateType: "12 Oct · RTE Portal", text: "Allotted via Rajasthan RTE first round lottery." }
-    ]
-  },
-  {
-    id: "APP-206",
-    applicationNo: "APP/2728/0206",
-    name: "Dhruv Mehta",
-    classGrade: "Class 1",
-    appliedDate: "10 Oct",
-    counsellor: "Arjun Yadav",
-    source: "Referral",
-    stage: "approved",
-    followUpText: "Fee due 15 Oct",
-    isOverdue: false,
-    dob: "21 Sep 2020",
-    gender: "Male",
-    category: "General",
-    fatherName: "Nitin Mehta",
-    fatherPhone: "98290 88214",
-    motherName: "Shilpa Mehta",
-    motherPhone: "98290 88215",
-    address: "B-22, Gandhi Nagar, Jaipur",
-    previousSchool: "Bachpan Play School",
-    siblingInSchool: "No",
-    transportNeeded: "Yes · Route 3",
-    ageCheckText: "Age check passed: 6 years 6 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Interaction completed",
-      outcome: "Recommended",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "Verified", status: "Verified" },
-      { id: "d2", title: "Address proof", meta: "Verified", status: "Verified" }
-    ],
-    seatsSnapshot: { available: "23 of 120", rteAvailable: "9 of 30" },
-    followUps: [
-      { id: "fu1", dateType: "10 Oct · Principal Approval", text: "Principal signed off on admission. Fee invoice generated." }
-    ]
-  },
-  {
-    id: "APP-207",
-    applicationNo: "APP/2728/0018",
-    name: "Aarohi Sethi",
-    classGrade: "Nursery",
-    appliedDate: "08 Oct",
-    counsellor: "Neha Saini",
-    source: "Website",
-    stage: "enrolled",
-    followUpText: "Adm. no. 2027/0018",
-    isOverdue: false,
-    dob: "14 Jan 2022",
-    gender: "Female",
-    category: "General",
-    fatherName: "Manish Sethi",
-    fatherPhone: "94130 55190",
-    motherName: "Ritu Sethi",
-    motherPhone: "94130 55191",
-    address: "C-11, C-Scheme, Jaipur",
-    previousSchool: "None",
-    siblingInSchool: "No",
-    transportNeeded: "No",
-    ageCheckText: "Age check passed: 5 years 2 months on 31 Mar 2027.",
-    interactionSchedule: {
-      dateTimeRoom: "Completed",
-      outcome: "Recommended",
-    },
-    documents: [
-      { id: "d1", title: "Birth certificate", meta: "Verified", status: "Verified" },
-      { id: "d2", title: "Fee Receipt", meta: "Paid ₹35,000", status: "Verified" }
-    ],
-    seatsSnapshot: { available: "41 of 60", rteAvailable: "12 of 15" },
-    followUps: [
-      { id: "fu1", dateType: "08 Oct · Admission Office", text: "Admission confirmed. Admission No: 2027/0018 allotted." }
-    ]
+const convertAdmissionToLead = (adm: any): PipelineLead => {
+  const rawClass = adm.classId?.name || "Class 1";
+  const formattedClass =
+    rawClass.toLowerCase().startsWith("class") || rawClass.toLowerCase().startsWith("grade")
+      ? rawClass
+      : `Class ${rawClass}`;
+
+  const validStages: PipelineLead["stage"][] = [
+    "enquiry",
+    "followup",
+    "application",
+    "verification",
+    "test",
+    "approved",
+    "fee_paid",
+    "enrolled"
+  ];
+
+  let assignedStage: PipelineLead["stage"] = "enquiry";
+  if (adm.stage && validStages.includes(adm.stage)) {
+    assignedStage = adm.stage;
+  } else if (adm.status === "Confirmed") {
+    assignedStage = "enrolled";
   }
-];
+
+  return {
+    id: adm._id,
+    applicationNo:
+      adm.admissionNo ||
+      `APP/${new Date(adm.createdAt || Date.now()).getFullYear()}/${adm._id?.slice(-4).toUpperCase()}`,
+    name: adm.name || "Student",
+    classGrade: formattedClass,
+    appliedDate: adm.createdAt
+      ? new Date(adm.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })
+      : "Today",
+    counsellor: adm.counsellor || "Neha Saini",
+    source: adm.source || "Website",
+    stage: assignedStage,
+    followUpText: adm.followUpText || "Follow up",
+    isOverdue: !!adm.isOverdue,
+    dob: adm.dob ? new Date(adm.dob).toISOString().split("T")[0] : "2020-01-01",
+    gender: adm.gender || "Male",
+    category: adm.category || "General",
+    fatherName: adm.parentName || "Guardian",
+    fatherPhone: adm.parentPhone || adm.phone || "Not specified",
+    motherName: "",
+    motherPhone: "",
+    address: adm.address || "Jaipur",
+    previousSchool: adm.previousSchool || "None",
+    siblingInSchool: "No",
+    transportNeeded: "No",
+    ageCheckText: "Age criteria verified for intake session.",
+    interactionSchedule:
+      adm.interactionSchedule && adm.interactionSchedule.dateTimeRoom
+        ? adm.interactionSchedule
+        : {
+            dateTimeRoom: "Room 102 · Academic Block",
+            outcome: adm.status === "Confirmed" || adm.stage === "approved" || adm.stage === "fee_paid" || adm.stage === "enrolled" ? "Recommended" : "Not held yet"
+          },
+    documents:
+      adm.documents && adm.documents.length > 0
+        ? adm.documents
+        : [
+            { id: "d1", title: "Birth certificate", meta: "Municipal authority", status: "Verified" },
+            { id: "d2", title: "Transfer certificate (TC)", meta: adm.previousSchool ? "Previous institution" : "Not applicable", status: adm.previousSchool ? "Verified" : "Pending" },
+            { id: "d3", title: "Previous marksheet", meta: "Academic record", status: "Verified" },
+            { id: "d4", title: "Aadhaar cards", meta: "Student & Parent identity", status: "Pending" },
+            { id: "d5", title: "Passport size photographs", meta: "4 copies received", status: "Verified" }
+          ],
+    seatsSnapshot: { available: "Intake Active", rteAvailable: "RTE Quota Open" },
+    followUps:
+      adm.followUps && adm.followUps.length > 0
+        ? adm.followUps
+        : [
+            {
+              id: "fu1",
+              dateType: "Intake Record",
+              text: `Application filed for ${adm.name}.`
+            }
+          ],
+    feePayment: adm.feePayment || {
+      amount: 15000,
+      receiptNo: adm.admissionNo ? `REC-${adm.admissionNo}` : "REC-2026-001",
+      mode: "UPI",
+      isPaid: adm.status === "Confirmed" || adm.stage === "fee_paid" || adm.stage === "enrolled",
+      paidAt: adm.status === "Confirmed" || adm.stage === "fee_paid" || adm.stage === "enrolled" ? (adm.updatedAt || new Date().toISOString()) : undefined
+    }
+  };
+};
 
 const STAGE_COLUMNS: { key: PipelineLead["stage"]; label: string; count: number }[] = [
   { key: "enquiry", label: "Enquiry", count: 48 },
@@ -485,6 +128,7 @@ const STAGE_COLUMNS: { key: PipelineLead["stage"]; label: string; count: number 
   { key: "verification", label: "Documents verified", count: 14 },
   { key: "test", label: "Test / interaction", count: 9 },
   { key: "approved", label: "Approved", count: 6 },
+  { key: "fee_paid", label: "Fee paid", count: 12 },
   { key: "enrolled", label: "Enrolled", count: 18 }
 ];
 
@@ -497,8 +141,9 @@ const SEATS_METRICS = [
 
 export default function AdmissionsCRM() {
   const { showToast } = useToast();
-  const [viewMode, setViewMode] = useState<"kanban" | "table">("kanban");
-  const [leads, setLeads] = useState<PipelineLead[]>(INITIAL_PIPELINE_LEADS);
+  const [leads, setLeads] = useState<PipelineLead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [classesList, setClassesList] = useState<any[]>([]);
   const [classFilter, setClassFilter] = useState("All");
   const [sourceFilter, setSourceFilter] = useState("All");
   const [counsellorFilter, setCounsellorFilter] = useState("All");
@@ -515,12 +160,41 @@ export default function AdmissionsCRM() {
   // Quick Enquiry Form state
   const [enquiryForm, setEnquiryForm] = useState({
     name: "",
-    classGrade: "Nursery",
+    classGrade: "Class 1",
     guardian: "Father",
     phone: "",
     source: "Walk-in",
     counsellor: "Neha Saini",
   });
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [admRes, clsRes] = await Promise.all([
+        api.get("/admin/admissions"),
+        api.get("/admin/classes")
+      ]);
+      const list = admRes.data.data || [];
+      setLeads(list.map(convertAdmissionToLead));
+      const classesData = clsRes.data.data || [];
+      setClassesList(classesData);
+      if (classesData.length > 0) {
+        setEnquiryForm((prev) => ({
+          ...prev,
+          classGrade: classesData[0].name
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to load admissions from API:", err);
+      showToast("Failed to load admissions from database", "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleCopyLink = () => {
     const link = `${window.location.origin}/admissions/apply`;
@@ -535,74 +209,78 @@ export default function AdmissionsCRM() {
     setIsReviewDrawerOpen(true);
   };
 
-  const handleStatusChange = (appId: string, newStage: ApplicationDetail["stage"]) => {
-    setLeads((prev) =>
-      prev.map((l) => (l.id === appId ? { ...l, stage: newStage } : l))
-    );
+  const handleStatusChange = async (appId: string, newStage: ApplicationDetail["stage"]) => {
+    try {
+      await api.patch(`/admin/admissions/${appId}/stage`, { stage: newStage });
+      setLeads((prev) =>
+        prev.map((l) => (l.id === appId ? { ...l, stage: newStage } : l))
+      );
+      showToast(`Stage updated to ${newStage.toUpperCase()}`, "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to update stage in database", "error");
+    }
   };
 
-  const handleMarkLost = (appId: string) => {
-    setLeads((prev) => prev.filter((l) => l.id !== appId));
-    setIsReviewDrawerOpen(false);
+  const handleMarkLost = async (appId: string) => {
+    try {
+      await api.patch(`/admin/admissions/${appId}/stage`, { stage: "rejected" });
+      setLeads((prev) => prev.filter((l) => l.id !== appId));
+      setIsReviewDrawerOpen(false);
+      showToast("Admission marked as closed / lost", "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to mark as lost", "error");
+    }
   };
 
-  const handleCreateEnquiry = (e: React.FormEvent) => {
+  const handleCreateEnquiry = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!enquiryForm.name || !enquiryForm.phone) {
       showToast("Please provide applicant name and phone number.", "error");
       return;
     }
 
-    const newLead: PipelineLead = {
-      id: `ENQ-${Math.floor(100 + Math.random() * 900)}`,
-      applicationNo: `APP/2728/${Math.floor(1000 + Math.random() * 9000)}`,
-      name: enquiryForm.name,
-      classGrade: enquiryForm.classGrade,
-      appliedDate: "Today",
-      counsellor: enquiryForm.counsellor,
-      source: enquiryForm.source,
-      stage: "enquiry",
-      followUpText: "Call today",
-      isOverdue: false,
-      dob: "2021-05-10",
-      gender: "Male",
-      category: "General",
-      fatherName: enquiryForm.guardian === "Father" ? "Guardian" : "",
-      fatherPhone: enquiryForm.phone,
-      motherName: "",
-      motherPhone: "",
-      address: "Jaipur",
-      previousSchool: "None",
-      siblingInSchool: "No",
-      transportNeeded: "No",
-      ageCheckText: "Age check passed for intake session.",
-      interactionSchedule: {
-        dateTimeRoom: "To be scheduled",
-        outcome: "Not held yet",
-      },
-      documents: [
-        { id: "d1", title: "Birth certificate", meta: "Awaited", status: "Pending" }
-      ],
-      seatsSnapshot: { available: "Seats open", rteAvailable: "RTE open" },
-      followUps: [
-        { id: "fu1", dateType: "Today · Enquiry", text: "Direct enquiry logged via Admin Portal." }
-      ]
-    };
+    try {
+      let targetClass = classesList.find((c) =>
+        c.name.toLowerCase().includes(enquiryForm.classGrade.toLowerCase())
+      );
+      if (!targetClass && classesList.length > 0) targetClass = classesList[0];
 
-    setLeads([newLead, ...leads]);
-    setIsAddEnquiryOpen(false);
-    setEnquiryForm({
-      name: "",
-      classGrade: "Nursery",
-      guardian: "Father",
-      phone: "",
-      source: "Walk-in",
-      counsellor: "Neha Saini",
-    });
-    showToast(`Enquiry for ${newLead.name} added!`, "success");
+      const res = await api.post("/admin/admissions", {
+        name: enquiryForm.name,
+        classId: targetClass?._id,
+        phone: enquiryForm.phone,
+        parentName: enquiryForm.guardian === "Father" ? "Father" : "Mother",
+        parentPhone: enquiryForm.phone,
+        source: enquiryForm.source,
+        counsellor: enquiryForm.counsellor,
+        stage: "enquiry",
+        status: "Pending",
+        followUpText: "Call today"
+      });
+
+      const newAdmission = res.data.data;
+      const formattedLead = convertAdmissionToLead(newAdmission);
+      setLeads((prev) => [formattedLead, ...prev]);
+
+      setIsAddEnquiryOpen(false);
+      setEnquiryForm({
+        name: "",
+        classGrade: classesList[0]?.name || "Class 1",
+        guardian: "Father",
+        phone: "",
+        source: "Walk-in",
+        counsellor: "Neha Saini",
+      });
+      showToast(`Enquiry for ${enquiryForm.name} saved to database!`, "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to save enquiry to database", "error");
+    }
   };
 
-  const moveStage = (leadId: string, direction: "next" | "prev", e: React.MouseEvent) => {
+  const moveStage = async (leadId: string, direction: "next" | "prev", e: React.MouseEvent) => {
     e.stopPropagation();
     const stageOrder: PipelineLead["stage"][] = [
       "enquiry",
@@ -611,20 +289,32 @@ export default function AdmissionsCRM() {
       "verification",
       "test",
       "approved",
+      "fee_paid",
       "enrolled"
     ];
-    setLeads((prev) =>
-      prev.map((item) => {
-        if (item.id === leadId) {
-          const currentIndex = stageOrder.indexOf(item.stage);
-          const nextIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
-          if (nextIndex >= 0 && nextIndex < stageOrder.length) {
-            return { ...item, stage: stageOrder[nextIndex] };
-          }
-        }
-        return item;
-      })
-    );
+
+    const currentLead = leads.find((l) => l.id === leadId);
+    if (!currentLead) return;
+
+    const currentIndex = stageOrder.indexOf(currentLead.stage);
+    const nextIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
+
+    if (nextIndex >= 0 && nextIndex < stageOrder.length) {
+      const newStage = stageOrder[nextIndex];
+      // Optimistic update
+      setLeads((prev) =>
+        prev.map((item) => (item.id === leadId ? { ...item, stage: newStage } : item))
+      );
+
+      try {
+        await api.patch(`/admin/admissions/${leadId}/stage`, { stage: newStage });
+        showToast(`Moved to ${newStage.toUpperCase()}`, "success");
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to update stage in database", "error");
+        loadData();
+      }
+    }
   };
 
   const filteredLeads = leads.filter((l) => {
@@ -632,7 +322,10 @@ export default function AdmissionsCRM() {
       l.name.toLowerCase().includes(search.toLowerCase()) ||
       l.fatherPhone.includes(search) ||
       l.applicationNo.toLowerCase().includes(search.toLowerCase());
-    const matchesClass = classFilter === "All" || l.classGrade === classFilter;
+    const matchesClass =
+      classFilter === "All" ||
+      l.classGrade.toLowerCase() === classFilter.toLowerCase() ||
+      l.classGrade.toLowerCase().includes(classFilter.toLowerCase());
     const matchesSource = sourceFilter === "All" || l.source === sourceFilter;
     const matchesCounsellor = counsellorFilter === "All" || l.counsellor === counsellorFilter;
     const matchesOverdue = !overdueOnly || l.isOverdue;
@@ -645,38 +338,20 @@ export default function AdmissionsCRM() {
       {/* Breadcrumb & Header Section (06-Admissions.html) */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <div className="text-small text-ink-secondary">
-            Admissions › Pipeline · Session 2026-27 intake
-          </div>
+          <AdmissionsModuleNav extraContext="Session 2026-27 intake" />
           <h1 className="m-0 text-title font-semibold tracking-tight text-ink">
             Admission pipeline
           </h1>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
-          {/* View Mode Toggle */}
-          <div className="flex items-center bg-surface border border-line rounded-control p-1">
-            <button
-              onClick={() => setViewMode("kanban")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control text-small font-semibold transition-colors cursor-pointer ${
-                viewMode === "kanban"
-                  ? "bg-nav-bg text-gold shadow-xs"
-                  : "text-ink-secondary hover:text-ink"
-              }`}
-            >
-              <Columns size={14} /> Pipeline
-            </button>
-            <button
-              onClick={() => setViewMode("table")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control text-small font-semibold transition-colors cursor-pointer ${
-                viewMode === "table"
-                  ? "bg-nav-bg text-gold shadow-xs"
-                  : "text-ink-secondary hover:text-ink"
-              }`}
-            >
-              <List size={14} /> Table View
-            </button>
-          </div>
+          {/* <Link
+            to="/admin/admissions/records"
+            className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-control border border-line-input bg-surface hover:bg-surface-subtle text-body font-medium text-ink transition-colors"
+          >
+            <List size={16} />
+            <span>Registry & Records</span>
+          </Link> */}
 
           <Link
             to="/admin/students/import"
@@ -703,18 +378,7 @@ export default function AdmissionsCRM() {
         </div>
       </div>
 
-      {viewMode === "table" ? (
-        <AdmissionsPanel
-          isEmbedded={true}
-          onOpenReviewDrawer={(appDetail) => {
-            setSelectedApplication(appDetail);
-            setIsReviewDrawerOpen(true);
-          }}
-          onOpenAddStudent={() => setIsAddStudentOpen(true)}
-        />
-      ) : (
-        <>
-          {/* Filters Bar (06-Admissions.html) */}
+      {/* Filters Bar (06-Admissions.html) */}
           <div className="flex flex-wrap items-center gap-3 bg-surface border border-line rounded-card p-3.5">
             <div className="relative flex-1 min-w-[240px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-secondary" size={16} />
@@ -735,12 +399,11 @@ export default function AdmissionsCRM() {
                 className="min-h-[40px] px-3 border border-line-input rounded-control bg-surface text-body text-ink focus:outline-none focus:border-primary"
               >
                 <option value="All">All classes</option>
-                <option value="Nursery">Nursery</option>
-                <option value="LKG">LKG</option>
-                <option value="Class 1">Class 1</option>
-                <option value="Class 6">Class 6</option>
-                <option value="Class 11">Class 11</option>
-              </select>
+                {classesList.map((c) => (
+                  <option key={c._id} value={c.name}>
+                    {c.name.toLowerCase().startsWith("class") || c.name.toLowerCase().startsWith("grade") ? c.name : `Class ${c.name}`}
+                  </option>
+                ))}</select>
             </label>
 
             <label className="flex items-center gap-2 text-small text-ink-secondary font-medium">
@@ -787,7 +450,15 @@ export default function AdmissionsCRM() {
 
           {/* Kanban Board (7 Columns matching 06-Admissions.html) */}
           <div className="overflow-x-auto pb-4 custom-scrollbar">
-            <div className="flex gap-3.5 min-w-max items-start">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center p-16 gap-3 bg-surface border border-line rounded-card">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <span className="text-small font-medium text-ink-secondary">
+                  Loading real admission pipeline from database...
+                </span>
+              </div>
+            ) : (
+              <div className="flex gap-3.5 min-w-max items-start">
               {STAGE_COLUMNS.map((stage) => {
                 const stageLeads = filteredLeads.filter((l) => l.stage === stage.key);
                 return (
@@ -869,6 +540,7 @@ export default function AdmissionsCRM() {
                 );
               })}
             </div>
+            )}
           </div>
 
           {/* Seats Left for Session (Bottom Section matching 06-Admissions.html) */}
@@ -901,9 +573,6 @@ export default function AdmissionsCRM() {
               ))}
             </div>
           </section>
-        </>
-      )}
-
       {/* 07-AdmissionForm Drawer Component */}
       <ApplicationReviewDrawer
         application={selectedApplication}
@@ -911,6 +580,7 @@ export default function AdmissionsCRM() {
         onClose={() => setIsReviewDrawerOpen(false)}
         onStatusChange={handleStatusChange}
         onMarkLost={handleMarkLost}
+        onEnrollSuccess={() => loadData()}
       />
 
       {/* 08-AddStudent Direct Admission Modal */}

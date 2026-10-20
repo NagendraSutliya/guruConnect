@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiX, FiUser, FiMail, FiLayers, FiGrid, FiHash, FiPhone, FiCalendar, FiMapPin } from "react-icons/fi";
+import { FiX, FiUser, FiMail, FiLayers, FiGrid, FiHash, FiPhone, FiCalendar, FiMapPin, FiCheck } from "react-icons/fi";
 import type { AdmissionFormData } from "../../../types/admin/student";
 
 interface AddAdmissionModalProps {
@@ -37,46 +37,65 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
           {/* Header */}
           <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/95 backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between shrink-0 rounded-t-2xl">
             <div>
-              <div className="flex items-center gap-10">
+              <div className="flex items-center gap-3">
                 <h3 className="text-xl font-black text-slate-800 tracking-tight">
-                  {isEdit ? "Update Admission Application" : "Draft Admission Application"}
+                  {isEdit ? "Edit Admission Details" : "Draft Admission Application"}
                 </h3>
+                {isEdit && form.name && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                    {form.name}
+                  </span>
+                )}
               </div>
               <p className="text-xs font-medium text-slate-500 mt-1">
-                {isEdit ? "Modify the details for this student." : "Enter the details to create a new student account."}
+                {isEdit 
+                  ? "All pre-filled student details are shown below. Make changes and click 'Update Admission' to save." 
+                  : "Enter the details to create a new student admission application."}
               </p>
             </div>
             <button 
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all absolute top-4 right-4 sm:relative sm:top-0 sm:right-0"
+              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all absolute top-4 right-4 sm:relative sm:top-0 sm:right-0 cursor-pointer"
             >
               <FiX size={20} />
             </button>
           </div>
 
-          {/* Wizard Indicators */}
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
-              <div className={`flex items-center gap-2 transition-all duration-500 ${currentStep >= 1 ? 'text-indigo-600' : 'text-slate-400'}`}>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 shadow-sm ${currentStep >= 1 ? 'bg-indigo-600 text-white shadow-indigo-200' : 'bg-slate-100'}`}>1</div>
-                <span className="text-[11px] font-black uppercase tracking-widest hidden sm:block">Academic</span>
+          {/* Wizard / Tab Indicators */}
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+              <div 
+                onClick={() => setCurrentStep(1)}
+                className={`flex items-center gap-2 transition-all cursor-pointer hover:opacity-80 ${currentStep === 1 ? 'text-indigo-600 font-bold' : 'text-slate-500'}`}
+                title="Jump to Academic details"
+              >
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all shadow-sm ${currentStep === 1 ? 'bg-indigo-600 text-white shadow-indigo-200' : 'bg-slate-100 text-slate-600'}`}>1</div>
+                <span className="text-[12px] uppercase tracking-wider hidden sm:block">1. Academic & Enrollment</span>
               </div>
               
               <div className="flex-1 h-1.5 mx-3 sm:mx-4 rounded-full overflow-hidden bg-slate-100">
-                 <div className={`h-full transition-all duration-700 ease-in-out ${currentStep >= 2 ? 'w-full bg-indigo-500' : 'w-0 bg-indigo-500'}`}></div>
+                 <div className={`h-full transition-all duration-300 ${currentStep >= 2 ? 'w-full bg-indigo-500' : 'w-0'}`}></div>
               </div>
               
-              <div className={`flex items-center gap-2 transition-all duration-500 ${currentStep >= 2 ? 'text-purple-600' : 'text-slate-400'}`}>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 shadow-sm ${currentStep >= 2 ? 'bg-purple-600 text-white shadow-purple-200' : 'bg-slate-100'}`}>2</div>
-                <span className="text-[11px] font-black uppercase tracking-widest hidden sm:block">Personal</span>
+              <div 
+                onClick={() => setCurrentStep(2)}
+                className={`flex items-center gap-2 transition-all cursor-pointer hover:opacity-80 ${currentStep === 2 ? 'text-purple-600 font-bold' : 'text-slate-500'}`}
+                title="Jump to Personal details"
+              >
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all shadow-sm ${currentStep === 2 ? 'bg-purple-600 text-white shadow-purple-200' : 'bg-slate-100 text-slate-600'}`}>2</div>
+                <span className="text-[12px] uppercase tracking-wider hidden sm:block">2. Personal Details</span>
               </div>
               
               <div className="flex-1 h-1.5 mx-3 sm:mx-4 rounded-full overflow-hidden bg-slate-100">
-                 <div className={`h-full transition-all duration-700 ease-in-out ${currentStep >= 3 ? 'w-full bg-purple-500' : 'w-0 bg-purple-500'}`}></div>
+                 <div className={`h-full transition-all duration-300 ${currentStep >= 3 ? 'w-full bg-purple-500' : 'w-0'}`}></div>
               </div>
               
-              <div className={`flex items-center gap-2 transition-all duration-500 ${currentStep >= 3 ? 'text-emerald-600' : 'text-slate-400'}`}>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 shadow-sm ${currentStep >= 3 ? 'bg-emerald-600 text-white shadow-emerald-200' : 'bg-slate-100'}`}>3</div>
-                <span className="text-[11px] font-black uppercase tracking-widest hidden sm:block">Contact</span>
+              <div 
+                onClick={() => setCurrentStep(3)}
+                className={`flex items-center gap-2 transition-all cursor-pointer hover:opacity-80 ${currentStep === 3 ? 'text-emerald-600 font-bold' : 'text-slate-500'}`}
+                title="Jump to Contact & Guardian details"
+              >
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all shadow-sm ${currentStep === 3 ? 'bg-emerald-600 text-white shadow-emerald-200' : 'bg-slate-100 text-slate-600'}`}>3</div>
+                <span className="text-[12px] uppercase tracking-wider hidden sm:block">3. Contact & Guardian</span>
               </div>
             </div>
         </div>
@@ -447,44 +466,75 @@ const AddAdmissionModal: React.FC<AddAdmissionModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-between gap-3 shrink-0 rounded-b-2xl">
-          <button
-            onClick={() => {
-              if (currentStep === 1) onClose();
-              else prevStep();
-            }}
-            disabled={loading}
-            className="px-5 py-2 rounded-lg text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-800 transition-all shadow-sm disabled:opacity-50"
-          >
-            {currentStep === 1 ? "Cancel" : "Back"}
-          </button>
-
-          <div className="flex gap-3">
-            {currentStep < 3 ? (
+        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3 shrink-0 rounded-b-2xl">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="px-4 py-2 rounded-lg text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-800 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+            >
+              Cancel
+            </button>
+            {currentStep > 1 && (
               <button
-                onClick={nextStep}
-                className="flex items-center justify-center min-w-[120px] px-5 py-2 rounded-lg text-sm font-bold text-white bg-slate-800 hover:bg-slate-900 transition-all shadow-sm active:scale-95"
+                type="button"
+                onClick={prevStep}
+                disabled={loading}
+                className="px-4 py-2 rounded-lg text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
               >
-                Next Step
+                ← Back
               </button>
-            ) : (
+            )}
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            {currentStep < 3 && (
               <button
+                type="button"
+                onClick={nextStep}
+                className="flex items-center justify-center px-4 py-2 rounded-lg text-sm font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all shadow-sm cursor-pointer"
+              >
+                Next Step →
+              </button>
+            )}
+
+            {isEdit ? (
+              <button
+                type="button"
                 onClick={onSave}
                 disabled={loading}
-                className="flex items-center justify-center min-w-[120px] px-5 py-2 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-sm shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                className="flex items-center justify-center gap-2 min-w-[150px] px-6 py-2.5 rounded-lg text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 shadow-sm shadow-emerald-600/30 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
               >
                 {loading ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Updating...</span>
+                  </div>
+                ) : (
+                  <>
+                    <FiCheck size={16} />
+                    <span>Update Admission</span>
+                  </>
+                )}
+              </button>
+            ) : currentStep === 3 ? (
+              <button
+                type="button"
+                onClick={onSave}
+                disabled={loading}
+                className="flex items-center justify-center min-w-[140px] px-6 py-2.5 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-sm shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>Saving...</span>
                   </div>
-                ) : isEdit ? (
-                  "Update Draft"
                 ) : (
                   "Save Application"
                 )}
               </button>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

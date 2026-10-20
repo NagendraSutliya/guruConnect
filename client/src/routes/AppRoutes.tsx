@@ -93,6 +93,7 @@ import AccountsPage from "../pages/admin/finance/AccountsPage";
 
 import Approvals from "../pages/admin/home/Approvals";
 import StudentImport from "../pages/admin/student/StudentImport";
+import AdminStudentProfile from "../pages/admin/student/StudentProfile";
 import AdmissionsCRM from "../pages/admin/admissions/AdmissionsCRM";
 import PromotionPage from "../pages/admin/student/PromotionPage";
 import CertificatesPage from "../pages/admin/student/CertificatesPage";
@@ -200,13 +201,16 @@ export default function AppRoutes() {
         <Route path="subjects" element={<Subjects />} />
         <Route path="teacher-assign" element={<TeacherAssignPanel />} />
         <Route path="students" element={<Students />} />
+        <Route path="students/:id" element={<AdminStudentProfile />} />
         <Route path="students/import" element={<StudentImport />} />
         <Route path="student-import" element={<StudentImport />} />
         <Route path="promotion" element={<PromotionPage />} />
         <Route path="certificates" element={<CertificatesPage />} />
-        <Route path="admissions" element={<AdmissionsCRM />} />
+        <Route path="admissions" element={<Navigate to="/admin/admissions/pipeline" replace />} />
+        <Route path="admissions/pipeline" element={<AdmissionsCRM />} />
+        <Route path="admissions/records" element={<AdmissionsPanel />} />
+        <Route path="admissions/manage" element={<Navigate to="/admin/admissions/records" replace />} />
         <Route path="admissions/import" element={<StudentImport />} />
-        <Route path="admissions/manage" element={<AdmissionsPanel />} />
         <Route path="admissions/print/:id" element={<PrintAdmissionForm />} />
         <Route path="attendance" element={<Attendance />} />
         <Route path="routine" element={<Routine />} />

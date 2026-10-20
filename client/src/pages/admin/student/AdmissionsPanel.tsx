@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import api from "../../../api/axiosInstance";
 import { useToast } from "../../../context/ToastContext";
 import type { Admission, AdmissionFormData } from "../../../types/admin/student";
@@ -17,11 +18,14 @@ import {
   UserPlus,
   Copy,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Columns,
+  ExternalLink
 } from "lucide-react";
 import AddAdmissionModal from "../../../components/admin/modals/AddAdmissionModal";
 import ApplicationReviewDrawer, { type ApplicationDetail } from "../../../components/admin/admissions/ApplicationReviewDrawer";
 import Pagination from "../../../components/common/Pagination";
+import AdmissionsModuleNav from "../../../components/admin/admissions/AdmissionsModuleNav";
 
 interface AdmissionsPanelProps {
   isEmbedded?: boolean;
@@ -75,6 +79,14 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("action") === "new") {
+      setShowForm(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const [newAdmissionCreds, setNewAdmissionCreds] = useState<{
     email: string;
@@ -124,7 +136,7 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
         await api.put(`/admin/admissions/${editingAdmission._id}`, form);
         showToast("Admission updated successfully", "success");
       } else {
-        await api.post("/admin/admissions", form);
+        await api.post("/admin/admissions", { ...form, stage: "application" });
         showToast("New admission created successfully", "success");
       }
       closeForm();
@@ -183,9 +195,11 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
       appliedDate: adm.createdAt
         ? new Date(adm.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
         : "Recent",
-      counsellor: "School Admin",
-      source: "Portal / Walk-in",
-      stage: adm.status === "Confirmed" ? "enrolled" : "application",
+      counsellor: adm.counsellor || "Neha Saini",
+      source: adm.source || "Website",
+      stage: adm.status === "Confirmed" ? "enrolled" : (adm.stage || "enquiry"),
+      status: adm.status,
+      studentId: adm.studentId?._id || adm.studentId,
       dob: adm.dob ? new Date(adm.dob).toISOString().split("T")[0] : "",
       gender: adm.gender || "Not specified",
       category: adm.category || "General",
@@ -198,28 +212,41 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
       siblingInSchool: "No",
       transportNeeded: "No",
       ageCheckText: adm.dob ? "Age criteria verified for intake session." : "Date of birth awaiting document verification.",
-      interactionSchedule: {
-        dateTimeRoom: "Completed / Recorded",
-        outcome: adm.status === "Confirmed" ? "Recommended" : "Not held yet",
-      },
-      documents: [
-        { id: "d1", title: "Birth certificate", meta: "Municipal authority", status: "Verified" },
-        { id: "d2", title: "Transfer certificate (TC)", meta: adm.previousSchool ? "Previous institution" : "Not applicable", status: adm.previousSchool ? "Verified" : "Pending" },
-        { id: "d3", title: "Previous marksheet", meta: adm.previousClass ? `Class ${adm.previousClass}` : "Previous grade", status: "Verified" },
-        { id: "d4", title: "Aadhaar cards", meta: adm.aadharNo ? `No: ${adm.aadharNo}` : "Student & Parents", status: adm.aadharNo ? "Verified" : "Pending" },
-        { id: "d5", title: "Passport size photographs", meta: "4 copies received", status: "Verified" }
-      ],
+      interactionSchedule: adm.interactionSchedule && adm.interactionSchedule.outcome
+        ? adm.interactionSchedule
+        : {
+            dateTimeRoom: "Room 102 · Academic Block",
+            outcome: adm.status === "Confirmed" || adm.stage === "approved" || adm.stage === "fee_paid" || adm.stage === "enrolled" ? "Recommended" : "Not held yet",
+          },
+      documents: adm.documents && adm.documents.length > 0
+        ? adm.documents
+        : [
+            { id: "d1", title: "Birth certificate", meta: "Municipal authority", status: "Verified" },
+            { id: "d2", title: "Transfer certificate (TC)", meta: adm.previousSchool ? "Previous institution" : "Not applicable", status: adm.previousSchool ? "Verified" : "Pending" },
+            { id: "d3", title: "Previous marksheet", meta: adm.previousClass ? `Class ${adm.previousClass}` : "Previous grade", status: "Verified" },
+            { id: "d4", title: "Aadhaar cards", meta: adm.aadharNo ? `No: ${adm.aadharNo}` : "Student & Parents", status: adm.aadharNo ? "Verified" : "Pending" },
+            { id: "d5", title: "Passport size photographs", meta: "4 copies received", status: "Verified" }
+          ],
       seatsSnapshot: {
         available: "Intake Active",
         rteAvailable: "RTE Quota Open"
       },
-      followUps: [
-        {
-          id: "fu1",
-          dateType: `${new Date(adm.createdAt || Date.now()).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · Intake Record`,
-          text: `Application filed for ${adm.name}. Current registry status: ${adm.status || "Pending"}.`
-        }
-      ]
+      followUps: adm.followUps && adm.followUps.length > 0
+        ? adm.followUps
+        : [
+            {
+              id: "fu1",
+              dateType: `${new Date(adm.createdAt || Date.now()).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · Intake Record`,
+              text: `Application filed for ${adm.name}. Current registry status: ${adm.status || "Pending"}.`
+            }
+          ],
+      feePayment: adm.feePayment || {
+        amount: 15000,
+        receiptNo: adm.admissionNo ? `REC-${adm.admissionNo}` : "REC-2026-001",
+        mode: "UPI",
+        isPaid: adm.status === "Confirmed" || adm.stage === "fee_paid" || adm.stage === "enrolled",
+        paidAt: adm.status === "Confirmed" || adm.stage === "fee_paid" || adm.stage === "enrolled" ? (adm.updatedAt || new Date().toISOString()) : undefined
+      }
     };
   };
 
@@ -293,8 +320,19 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
     setShowForm(false);
   };
 
-  // Filter admissions
-  const filteredAdmissions = admissions.filter((s) => {
+  // Option 1: Clean Separation
+  // Registry & Records only displays formal applications (application, verification, test, approved, fee_paid, enrolled)
+  // Raw 'enquiry' and 'followup' leads stay in Pipeline (CRM) until advanced to application
+  const formalAdmissions = admissions.filter((s) => {
+    if (s.status === "Confirmed") return true;
+    if (!s.stage) return true; // Legacy records or direct entries
+    return s.stage !== "enquiry" && s.stage !== "followup";
+  });
+
+  const rawEnquiriesCount = admissions.length - formalAdmissions.length;
+
+  // Filter admissions by status tab and search term
+  const filteredAdmissions = formalAdmissions.filter((s) => {
     const matchesStatus =
       statusFilter === "all" || s.status?.toLowerCase() === statusFilter;
     const matchesSearch =
@@ -305,9 +343,9 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
   });
 
   const counts = {
-    all: admissions.length,
-    pending: admissions.filter((s) => s.status === "Pending").length,
-    confirmed: admissions.filter((s) => s.status === "Confirmed").length,
+    all: formalAdmissions.length,
+    pending: formalAdmissions.filter((s) => s.status === "Pending").length,
+    confirmed: formalAdmissions.filter((s) => s.status === "Confirmed").length,
   };
 
   const totalPages = Math.ceil(filteredAdmissions.length / itemsPerPage);
@@ -387,34 +425,54 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
             </div>
           )}
 
-          {/* Standalone Header Section (Only shown when not embedded in AdmissionsCRM) */}
-          {!isEmbedded && (
-            <div className="flex flex-wrap items-end justify-between gap-4 pb-2 border-b border-line">
-              <div className="flex flex-col gap-1">
-                <div className="text-small text-ink-secondary">
-                  Admissions › Processing & Registry
-                </div>
-                <h1 className="m-0 text-title font-semibold tracking-tight text-ink">
-                  Admission Processing
-                </h1>
-                <p className="m-0 text-small text-ink-secondary">
-                  Manage admission records, classes, and portal access.
-                </p>
+          {/* Standalone Header Section */}
+          <div className="flex flex-wrap items-end justify-between gap-4 pb-2 border-b border-line">
+            <div className="flex flex-col gap-1">
+              <AdmissionsModuleNav />
+              <h1 className="m-0 text-title font-semibold tracking-tight text-ink">
+                Admission Registry & Records
+              </h1>
+              <p className="m-0 text-small text-ink-secondary">
+                Manage student applications, verify credentials, print admission forms, and finalize enrollments.
+              </p>
+            </div>
+            <div className="flex items-center gap-2.5">
+              {/* <Link
+                to="/admin/admissions/pipeline"
+                className="inline-flex items-center gap-2 min-h-[42px] px-4 rounded-control border border-line-input bg-surface hover:bg-surface-subtle text-small font-medium text-ink transition-colors cursor-pointer"
+              >
+                <Columns size={15} /> Pipeline View
+              </Link> */}
+              <button
+                onClick={() => {
+                  if (onOpenAddStudent) {
+                    onOpenAddStudent();
+                  } else {
+                    setShowForm(true);
+                  }
+                }}
+                className="inline-flex items-center gap-2 min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white font-semibold text-small cursor-pointer transition-colors"
+              >
+                <UserPlus size={15} /> Add admission
+              </button>
+            </div>
+          </div>
+
+          {rawEnquiriesCount > 0 && (
+            <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-control bg-surface border border-line text-small text-ink-secondary">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                <span>
+                  Displaying <strong>{formalAdmissions.length}</strong> formal intake applications.{" "}
+                  <span className="text-ink">({rawEnquiriesCount} raw enquiries currently in initial CRM Pipeline)</span>
+                </span>
               </div>
-              <div className="flex items-center gap-2.5">
-                <button
-                  onClick={() => {
-                    if (onOpenAddStudent) {
-                      onOpenAddStudent();
-                    } else {
-                      setShowForm(true);
-                    }
-                  }}
-                  className="inline-flex items-center gap-2 min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white font-semibold text-small cursor-pointer transition-colors"
-                >
-                  <UserPlus size={15} /> Add admission
-                </button>
-              </div>
+              <Link
+                to="/admin/admissions/pipeline"
+                className="font-semibold text-primary hover:underline inline-flex items-center gap-1 text-small"
+              >
+                Open CRM Pipeline →
+              </Link>
             </div>
           )}
 
@@ -426,7 +484,7 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
               </div>
               <div>
                 <p className="text-micro font-semibold uppercase tracking-wider text-ink-secondary m-0">
-                  Total Enrolled
+                  Total Applications
                 </p>
                 <h3 className="text-title font-bold text-ink font-mono m-0 mt-0.5">{counts.all}</h3>
               </div>
@@ -597,18 +655,25 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
 
                           {/* Status */}
                           <td className="px-5 py-3.5 text-center">
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-micro font-semibold uppercase tracking-wider ${
-                                s.status === "Confirmed"
-                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                                  : "bg-amber-50 text-amber-800 border border-amber-200"
-                              }`}
-                            >
-                              {s.status || "Pending"}
-                            </span>
+                            <div className="flex flex-col items-center gap-1">
+                              {s.stage && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-tint text-primary-dark border border-primary/20">
+                                  {s.stage}
+                                </span>
+                              )}
+                              <span
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-micro font-semibold uppercase tracking-wider ${
+                                  s.status === "Confirmed"
+                                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                    : "bg-amber-50 text-amber-800 border border-amber-200"
+                                }`}
+                              >
+                                {s.status || "Pending"}
+                              </span>
+                            </div>
                           </td>
 
-                          {/* Actions */}
+                              {/* Actions */}
                           <td className="px-5 py-3.5 text-right" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end gap-1">
                               <button
@@ -619,46 +684,41 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
                                 <Printer size={15} />
                               </button>
 
-                              {s.status !== "Confirmed" && (
-                                <button
-                                  onClick={() => confirmAdmission(s)}
-                                  disabled={isLoading}
-                                  className="p-1.5 text-ink-secondary hover:text-emerald-700 hover:bg-emerald-50 rounded-control transition-colors cursor-pointer"
-                                  title="Confirm Admission & Create Student"
-                                >
-                                  {isLoading ? (
-                                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                                  ) : (
-                                    <Check size={15} />
-                                  )}
-                                </button>
-                              )}
-
                               <button
                                 onClick={() => viewAdmission(s)}
                                 className="p-1.5 text-ink-secondary hover:text-primary hover:bg-primary-tint rounded-control transition-colors cursor-pointer"
-                                title="Review Application Drawer"
+                                title={s.status === "Confirmed" ? "View Application Details" : "Review Application & Verification"}
                               >
                                 <Eye size={15} />
                               </button>
 
-                              {s.status !== "Confirmed" && (
-                                <button
-                                  onClick={() => editAdmission(s)}
-                                  className="p-1.5 text-ink-secondary hover:text-amber-700 hover:bg-amber-50 rounded-control transition-colors cursor-pointer"
-                                  title="Edit Record"
+                              {s.status === "Confirmed" ? (
+                                <Link
+                                  to="/admin/students"
+                                  className="p-1.5 text-ink-secondary hover:text-emerald-700 hover:bg-emerald-50 rounded-control transition-colors cursor-pointer"
+                                  title="View Permanent Student Profile in Directory"
                                 >
-                                  <Edit size={15} />
-                                </button>
-                              )}
+                                  <ExternalLink size={15} />
+                                </Link>
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => editAdmission(s)}
+                                    className="p-1.5 text-ink-secondary hover:text-amber-700 hover:bg-amber-50 rounded-control transition-colors cursor-pointer"
+                                    title="Edit Record"
+                                  >
+                                    <Edit size={15} />
+                                  </button>
 
-                              <button
-                                onClick={() => deleteAdmission(s)}
-                                className="p-1.5 text-ink-secondary hover:text-red-700 hover:bg-red-50 rounded-control transition-colors cursor-pointer"
-                                title="Delete Admission"
-                              >
-                                <Trash2 size={15} />
-                              </button>
+                                  <button
+                                    onClick={() => deleteAdmission(s)}
+                                    className="p-1.5 text-ink-secondary hover:text-red-700 hover:bg-red-50 rounded-control transition-colors cursor-pointer"
+                                    title="Delete Admission"
+                                  >
+                                    <Trash2 size={15} />
+                                  </button>
+                                </>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -689,16 +749,27 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
           application={selectedApplication}
           isOpen={isReviewDrawerOpen}
           onClose={() => setIsReviewDrawerOpen(false)}
-          onStatusChange={(id, newStage) => {
-            if (newStage === "enrolled") {
-              const adm = admissions.find((a) => a._id === id);
-              if (adm) confirmAdmission(adm);
+          onStatusChange={async (id, newStage) => {
+            try {
+              await api.patch(`/admin/admissions/${id}/stage`, { stage: newStage });
+              loadAdmissions();
+            } catch (err) {
+              console.error(err);
             }
+          }}
+          onEnrollSuccess={(creds) => {
+            setNewAdmissionCreds(creds);
+            loadAdmissions();
           }}
           onMarkLost={(id) => {
             const adm = admissions.find((a) => a._id === id);
             if (adm) deleteAdmission(adm);
             setIsReviewDrawerOpen(false);
+          }}
+          onEdit={(app) => {
+            setIsReviewDrawerOpen(false);
+            const adm = admissions.find((a) => a._id === app.id);
+            if (adm) editAdmission(adm);
           }}
         />
       )}

@@ -290,11 +290,23 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm appearance-none cursor-pointer"
                 >
                   <option value="">Select class</option>
-                  {classes.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.name}
-                    </option>
-                  ))}
+                  {classes
+                    .slice()
+                    .sort((a, b) => {
+                      const numA = parseInt((a.name || "").replace(/\D/g, ""), 10) || 0;
+                      const numB = parseInt((b.name || "").replace(/\D/g, ""), 10) || 0;
+                      return numA !== numB ? numA - numB : (a.name || "").localeCompare(b.name || "");
+                    })
+                    .map((c) => {
+                      const displayName = (c.name || "").toLowerCase().startsWith("class") || (c.name || "").toLowerCase().startsWith("grade")
+                        ? c.name
+                        : `Class ${c.name}`;
+                      return (
+                        <option key={c._id} value={c._id}>
+                          {displayName}
+                        </option>
+                      );
+                    })}
                 </select>
               </div>
             </div>
@@ -312,12 +324,18 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
                   onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-sm appearance-none cursor-pointer disabled:opacity-50"
                 >
-                  <option value="">Select section</option>
-                  {sections.map((s) => (
-                    <option key={s._id} value={s._id}>
-                      {s.name}
-                    </option>
-                  ))}
+                  <option value="">
+                    {!form.classId
+                      ? "First select a class"
+                      : "Select section"}
+                  </option>
+                  {sections
+                    .filter((s) => (s.classId?._id || s.classId) === form.classId)
+                    .map((s) => (
+                      <option key={s._id} value={s._id}>
+                        {s.name}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>

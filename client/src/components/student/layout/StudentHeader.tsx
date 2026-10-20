@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 
 interface Props {
   openProfile: () => void;
@@ -10,6 +11,7 @@ const StudentHeader = ({ openProfile }: Props) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { logout: authLogout, role } = useAuth();
 
   const closeDropdown = () => setOpen(false);
 
@@ -25,9 +27,21 @@ const StudentHeader = ({ openProfile }: Props) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("role");
-    localStorage.removeItem("studentToken");
-    navigate("/", { replace: true });
+    if (authLogout) {
+      authLogout();
+    } else {
+      const currentRole = role || localStorage.getItem("role");
+      localStorage.removeItem("role");
+      localStorage.removeItem("studentToken");
+      localStorage.removeItem("parentToken");
+      localStorage.removeItem("student");
+      localStorage.removeItem("parent");
+      if (currentRole === "parent") {
+        navigate("/parent/login", { replace: true });
+      } else {
+        navigate("/student/login", { replace: true });
+      }
+    }
   };
 
   useEffect(() => {

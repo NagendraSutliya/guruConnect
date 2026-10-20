@@ -1,4 +1,4 @@
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/admin/AdminNavbar";
 import CommandPalette from "../components/common/CommandPalette";
 import { useState, useEffect } from "react";
@@ -27,6 +27,7 @@ import {
   MdHelpOutline
 } from "react-icons/md";
 import { FaChalkboardTeacher, FaUserGraduate } from "react-icons/fa";
+import { FiChevronDown } from "react-icons/fi";
 
 type MenuChild = {
   name: string;
@@ -44,11 +45,46 @@ type MenuItem = {
 };
 
 const AdminLayout = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(() => {
     const saved = localStorage.getItem("sidebar_minimized");
     return saved === "true";
   });
+
+  const [openMenus, setOpenMenus] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin/admissions")) {
+      initial.add("Admissions");
+    }
+    return initial;
+  });
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin/admissions")) {
+      setOpenMenus(prev => {
+        if (!prev.has("Admissions")) {
+          const next = new Set(prev);
+          next.add("Admissions");
+          return next;
+        }
+        return prev;
+      });
+    }
+  }, [location.pathname]);
+
+  const toggleMenu = (name: string) => {
+    setOpenMenus(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
 
   const toggleSidebar = () => {
     setIsMinimized(prev => {
@@ -72,7 +108,15 @@ const AdminLayout = () => {
   const menuItems: MenuItem[] = [
     { name: "Dashboard", icon: <MdDashboard size={18} />, path: "/admin/dashboard" },
     { name: "Approvals", icon: <MdFactCheck size={18} />, path: "/admin/approvals", badge: 3 },
-    { name: "Admissions", icon: <MdBadge size={18} />, path: "/admin/admissions" },
+    {
+      name: "Admissions",
+      icon: <MdBadge size={18} />,
+      path: "/admin/admissions/pipeline",
+      children: [
+        { name: "Pipeline", path: "/admin/admissions/pipeline" },
+        { name: "Register & Records", path: "/admin/admissions/records" },
+      ],
+    },
     { name: "Students", icon: <FaUserGraduate size={16} />, path: "/admin/students" },
     { name: "Attendance", icon: <MdAssignment size={18} />, path: "/admin/attendance" },
     { name: "Academics & Timetable", icon: <MdSchool size={18} />, path: "/admin/routine" },
@@ -172,42 +216,117 @@ const AdminLayout = () => {
             {/* Navigation Menu */}
             <div className={`flex-1 overflow-y-auto custom-scrollbar scroll-smooth ${isMinimized ? "px-2 pt-4" : "px-3.5"} pb-20 space-y-1 w-full`}>
               <nav className="space-y-1">
-                {menuItems.map((item) => (
-                  <NavLink
-                    key={item.name}
-                    to={item.path!}
-                    className={({ isActive }) =>
-                      `group flex items-center ${isMinimized ? "justify-center" : "gap-3"} px-3 py-[9px] rounded-control transition-all duration-300 ease-out
-                      ${
-                        isActive
-                          ? "bg-nav-active text-white font-medium"
-                          : "text-nav-text font-normal hover:bg-nav-active/50"
-                      }`
-                    }
-                    title={isMinimized ? item.name : ""}
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <div className={`flex items-center justify-center shrink-0 ${isActive ? "text-gold" : "text-nav-muted group-hover:text-nav-text"}`}>
-                          {item.icon}
-                        </div>
-                        {!isMinimized && (
-                          <>
+                {menuItems.map((item) => {
+                  const hasChildren = Boolean(item.children && item.children.length > 0);
+                  const isItemActive = hasChildren
+                    ? location.pathname.startsWith("/admin/admissions") || item.children?.some(c => location.pathname === c.path)
+                    : location.pathname === item.path;
+                  const isOpen = openMenus.has(item.name);
+
+                  if (hasChildren && !isMinimized) {
+                    return (
+                      <div key={item.name} className="flex flex-col">
+                        <div
+                          onClick={() => {
+                            toggleMenu(item.name);
+                            if (!item.children?.some(c => location.pathname === c.path)) {
+                              navigate(item.children![0].path);
+                            }
+                          }}
+                          className={`group flex items-center justify-between px-3 py-[9px] rounded-control transition-all duration-300 ease-out cursor-pointer select-none
+                            ${
+                              isItemActive
+                                ? "bg-nav-active text-white font-medium"
+                                : "text-nav-text font-normal hover:bg-nav-active/50"
+                            }`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className={`flex items-center justify-center shrink-0 ${isItemActive ? "text-gold" : "text-nav-muted group-hover:text-nav-text"}`}>
+                              {item.icon}
+                            </div>
                             <span className="whitespace-nowrap overflow-hidden text-[14px] flex-1">{item.name}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
                             {item.badge && (
-                              <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-gold/20 text-gold border border-gold/30">
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-gold/20 text-gold border border-gold/30">
                                 {item.badge}
                               </span>
                             )}
-                          </>
+                            <FiChevronDown
+                              size={14}
+                              className={`text-nav-muted group-hover:text-nav-text transition-transform duration-200 ${isOpen ? "rotate-180 text-gold" : ""}`}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Submenu Children */}
+                        {isOpen && (
+                          <div className="ml-5 pl-2.5 my-1 border-l border-nav-divider flex flex-col gap-1 animate-fadeIn">
+                            {item.children!.map((child) => {
+                              const isChildActive =
+                                location.pathname === child.path ||
+                                (child.path === "/admin/admissions/pipeline" && location.pathname === "/admin/admissions");
+
+                              return (
+                                <NavLink
+                                  key={child.path}
+                                  to={child.path}
+                                  className={`flex items-center gap-2.5 px-3 py-1.5 rounded-control text-[13px] transition-all duration-200
+                                    ${
+                                      isChildActive
+                                        ? "bg-nav-active/80 text-gold font-medium"
+                                        : "text-nav-text hover:text-white hover:bg-nav-active/40"
+                                    }
+                                  `}
+                                >
+                                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isChildActive ? "bg-gold" : "bg-nav-muted"}`} />
+                                  <span className="truncate">{child.name}</span>
+                                </NavLink>
+                              );
+                            })}
+                          </div>
                         )}
-                        {isMinimized && item.badge && (
-                          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-gold" />
-                        )}
-                      </>
-                    )}
-                  </NavLink>
-                ))}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <NavLink
+                      key={item.name}
+                      to={item.path!}
+                      className={({ isActive }) =>
+                        `group flex items-center ${isMinimized ? "justify-center" : "gap-3"} px-3 py-[9px] rounded-control transition-all duration-300 ease-out
+                        ${
+                          (isActive || (hasChildren && isItemActive))
+                            ? "bg-nav-active text-white font-medium"
+                            : "text-nav-text font-normal hover:bg-nav-active/50"
+                        }`
+                      }
+                      title={isMinimized ? `${item.name}${hasChildren ? " (Pipeline, Register & Records)" : ""}` : ""}
+                    >
+                      {({ isActive }) => (
+                        <>
+                          <div className={`flex items-center justify-center shrink-0 ${(isActive || (hasChildren && isItemActive)) ? "text-gold" : "text-nav-muted group-hover:text-nav-text"}`}>
+                            {item.icon}
+                          </div>
+                          {!isMinimized && (
+                            <>
+                              <span className="whitespace-nowrap overflow-hidden text-[14px] flex-1">{item.name}</span>
+                              {item.badge && (
+                                <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-gold/20 text-gold border border-gold/30">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </>
+                          )}
+                          {isMinimized && item.badge && (
+                            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-gold" />
+                          )}
+                        </>
+                      )}
+                    </NavLink>
+                  );
+                })}
               </nav>
             </div>
 

@@ -43,11 +43,68 @@ const admissionSchema = new mongoose.Schema(
     address: { type: String },
     bloodGroup: { type: String },
     
-    // --- Admission Specific ---
+    // --- Admission & CRM Specific ---
     status: {
       type: String,
       enum: ["Pending", "Confirmed"],
       default: "Pending"
+    },
+    stage: {
+      type: String,
+      enum: [
+        "enquiry",
+        "followup",
+        "application",
+        "verification",
+        "test",
+        "approved",
+        "fee_paid",
+        "enrolled",
+        "rejected"
+      ],
+      default: "enquiry"
+    },
+    source: {
+      type: String,
+      default: "Website"
+    },
+    counsellor: {
+      type: String,
+      default: "Neha Saini"
+    },
+    followUpText: {
+      type: String,
+      default: "Follow up"
+    },
+    isOverdue: {
+      type: Boolean,
+      default: false
+    },
+    interactionSchedule: {
+      dateTimeRoom: { type: String, default: "" },
+      outcome: { type: String, default: "Not held yet" }
+    },
+    documents: [
+      {
+        id: String,
+        title: String,
+        meta: String,
+        status: { type: String, default: "Pending" }
+      }
+    ],
+    followUps: [
+      {
+        id: String,
+        dateType: String,
+        text: String
+      }
+    ],
+    feePayment: {
+      amount: { type: Number, default: 0 },
+      receiptNo: { type: String, default: "" },
+      paidAt: { type: Date },
+      mode: { type: String, default: "Cash" },
+      isPaid: { type: Boolean, default: false }
     },
     studentId: {
       type: mongoose.Schema.Types.ObjectId,

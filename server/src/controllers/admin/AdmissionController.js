@@ -13,7 +13,8 @@ exports.createAdmission = async (req, res) => {
       name, email, classId, sectionId, 
       admissionNo, enrollmentNo, admissionDate,
       parentName, parentPhone, phone, dob, gender, address, bloodGroup,
-      aadharNo, category, religion, nationality, previousSchool, previousClass
+      aadharNo, category, religion, nationality, previousSchool, previousClass,
+      stage, source, counsellor, followUpText, isOverdue, interactionSchedule, documents, followUps
     } = req.body;
 
     if (!name || !classId) {
@@ -25,9 +26,17 @@ exports.createAdmission = async (req, res) => {
       email,
       instituteId: req.user.instituteId || req.user.id,
       classId,
-      status: "Pending"
+      status: stage === "enrolled" ? "Confirmed" : "Pending",
+      stage: stage || "application"
     };
 
+    if (source) payload.source = source;
+    if (counsellor) payload.counsellor = counsellor;
+    if (followUpText) payload.followUpText = followUpText;
+    if (isOverdue !== undefined) payload.isOverdue = isOverdue;
+    if (interactionSchedule) payload.interactionSchedule = interactionSchedule;
+    if (documents) payload.documents = documents;
+    if (followUps) payload.followUps = followUps;
     if (sectionId) payload.sectionId = sectionId;
     if (admissionNo) payload.admissionNo = admissionNo;
     if (enrollmentNo) payload.enrollmentNo = enrollmentNo;
@@ -125,6 +134,7 @@ exports.confirmAdmission = async (req, res) => {
     const student = await Student.create(studentPayload);
 
     admission.status = "Confirmed";
+    admission.stage = "enrolled";
     admission.studentId = student._id;
     await admission.save();
 
@@ -155,3 +165,134 @@ exports.deleteAdmission = async (req, res) => {
     return errorResponse(res, "Failed to delete admission");
   }
 };
+
+/* ================= UPDATE ADMISSION STAGE ================= */
+exports.updateAdmissionStage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { stage } = req.body;
+
+    const validStages = [
+      "enquiry",
+      "followup",
+      "application",
+      "verification",
+      "test",
+      "approved",
+      "fee_paid",
+      "enrolled",
+      "rejected"
+    ];
+
+    if (!stage || !validStages.includes(stage)) {
+      return errorResponse(
+        res,
+        `Invalid stage: ${stage}. Must be one of: ${validStages.join(", ")}`,
+        400
+      );
+    }
+
+    const admission = await Admission.findById(id);
+    if (!admission) return errorResponse(res, "Admission not found", 404);
+
+    admission.stage = stage;
+    if (stage === "enrolled") {
+      admission.status = "Confirmed";
+    } else {
+      admission.status = "Pending";
+    }
+    await admission.save();
+
+    return successResponse(res, "Admission stage updated", admission);
+  } catch (err) {
+    console.error("UPDATE STAGE ERROR:", err);
+    return errorResponse(res, err.message || "Failed to update admission stage", 500);
+  }
+};
+
+/* ================= UPDATE ADMISSION DETAILS ================= */
+exports.updateAdmissionDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      email,
+      classId,
+      sectionId,
+      admissionNo,
+      enrollmentNo,
+      admissionDate,
+      parentName,
+      parentPhone,
+      parentEmail,
+      phone,
+      dob,
+      gender,
+      address,
+      bloodGroup,
+      aadharNo,
+      category,
+      religion,
+      nationality,
+      previousSchool,
+      previousClass,
+      stage,
+      status,
+      interactionSchedule,
+      documents,
+      followUps,
+      feePayment,
+      counsellor,
+      followUpText
+    } = req.body;
+
+    const admission = await Admission.findById(id);
+    if (!admission) return errorResponse(res, "Admission not found", 404);
+
+    // Profile & Form fields
+    if (name !== undefined) admission.name = name;
+    if (email !== undefined) admission.email = email;
+    if (classId !== undefined) admission.classId = classId;
+    if (sectionId !== undefined) admission.sectionId = sectionId ? sectionId : null;
+    if (admissionNo !== undefined) admission.admissionNo = admissionNo;
+    if (enrollmentNo !== undefined) admission.enrollmentNo = enrollmentNo;
+    if (admissionDate !== undefined) admission.admissionDate = admissionDate;
+    if (parentName !== undefined) admission.parentName = parentName;
+    if (parentPhone !== undefined) admission.parentPhone = parentPhone;
+    if (parentEmail !== undefined) admission.parentEmail = parentEmail;
+    if (phone !== undefined) admission.phone = phone;
+    if (dob !== undefined) admission.dob = dob;
+    if (gender !== undefined) admission.gender = gender;
+    if (address !== undefined) admission.address = address;
+    if (bloodGroup !== undefined) admission.bloodGroup = bloodGroup;
+    if (aadharNo !== undefined) admission.aadharNo = aadharNo;
+    if (category !== undefined) admission.category = category;
+    if (religion !== undefined) admission.religion = religion;
+    if (nationality !== undefined) admission.nationality = nationality;
+    if (previousSchool !== undefined) admission.previousSchool = previousSchool;
+    if (previousClass !== undefined) admission.previousClass = previousClass;
+
+    // Stage & Lifecycle fields
+    if (stage) {
+      admission.stage = stage;
+      if (stage === "enrolled") {
+        admission.status = "Confirmed";
+      }
+    }
+    if (status) admission.status = status;
+    if (interactionSchedule) admission.interactionSchedule = interactionSchedule;
+    if (documents) admission.documents = documents;
+    if (followUps) admission.followUps = followUps;
+    if (feePayment) admission.feePayment = feePayment;
+    if (counsellor) admission.counsellor = counsellor;
+    if (followUpText) admission.followUpText = followUpText;
+
+    await admission.save();
+
+    return successResponse(res, "Admission updated successfully", admission);
+  } catch (err) {
+    console.error("UPDATE ADMISSION DETAILS ERROR:", err);
+    return errorResponse(res, err.message || "Failed to update admission details", 500);
+  }
+};
+

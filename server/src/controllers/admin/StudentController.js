@@ -83,6 +83,23 @@ exports.getStudents = async (req, res) => {
   }
 };
 
+/* ================= GET STUDENT BY ID ================= */
+exports.getStudentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id)
+      .populate("classId")
+      .populate("sectionId");
+
+    if (!student) return errorResponse(res, "Student not found", 404);
+
+    return successResponse(res, "Student profile loaded", student);
+  } catch (err) {
+    console.error("GET STUDENT BY ID ERROR:", err);
+    return errorResponse(res, "Failed to load student profile");
+  }
+};
+
 /* ================= DEACTIVATE STUDENT ================= */
 exports.deactivateStudent = async (req, res) => {
   try {

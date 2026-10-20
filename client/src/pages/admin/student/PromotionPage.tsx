@@ -10,6 +10,7 @@ import {
   FiSave
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
+import StudentModuleNav from "../../../components/admin/student/StudentModuleNav";
 
 interface StudentPromotionRecord {
   id: string;
@@ -86,28 +87,26 @@ export default function PromotionPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto text-navy">
+    <div className="flex flex-col gap-5 animate-fadeIn font-sans text-ink w-full pb-12">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold text-navy-muted tracking-wide uppercase">
-            Students › Academic Transition · 2026-27 → 2027-28
-          </div>
-          <h1 className="text-2xl font-bold text-navy mt-1">
+      <div className="flex flex-wrap items-end justify-between gap-4 pt-1">
+        <div className="flex flex-col gap-1">
+          <StudentModuleNav extraContext="2026-27 → 2027-28" />
+          <h1 className="m-0 text-title font-semibold text-ink tracking-tight">
             Promote Class {currentClass} to {targetClass}
           </h1>
-          <p className="text-xs text-navy-muted mt-0.5">
+          <p className="text-small text-ink-secondary mt-0.5 m-0">
             Suggested decisions come from published annual examination results. Override any decision with reason.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 text-xs font-medium text-navy">
-            <span>New Section Rule:</span>
+          <label className="flex items-center gap-2 text-small font-medium text-ink">
+            <span className="text-ink-secondary">New Section Rule:</span>
             <select
               value={sectionRule}
               onChange={e => setSectionRule(e.target.value)}
-              className="bg-surface border border-line rounded-control px-2.5 py-1.5 text-xs text-navy font-medium focus:outline-none"
+              className="bg-surface border border-line-input rounded-control px-3 py-1.5 text-small text-ink font-medium focus:outline-none focus:border-primary shadow-2xs"
             >
               <option value="same">Keep same section (6-A)</option>
               <option value="balance">Balance by gender</option>
@@ -119,36 +118,36 @@ export default function PromotionPage() {
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-navy-muted font-medium">Students in {currentClass}</div>
-          <div className="font-mono text-2xl font-bold text-navy">{students.length}</div>
+        <div className="bg-surface border border-line rounded-card p-4 shadow-2xs space-y-1">
+          <div className="text-caption text-ink-secondary font-medium">Students in {currentClass}</div>
+          <div className="font-mono text-2xl font-bold text-ink">{students.length}</div>
         </div>
 
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-emerald-700 font-medium">Promote to {targetClass}</div>
+        <div className="bg-surface border border-line rounded-card p-4 shadow-2xs space-y-1">
+          <div className="text-caption text-emerald-700 font-medium">Promote to {targetClass}</div>
           <div className="font-mono text-2xl font-bold text-emerald-700">{promoteCount}</div>
         </div>
 
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-amber-800 font-medium">Detain in Class 5</div>
-          <div className="font-mono text-2xl font-bold text-amber-800">{detainCount}</div>
+        <div className="bg-surface border border-line rounded-card p-4 shadow-2xs space-y-1">
+          <div className="text-caption text-warning-inline font-medium">Detain in Class 5</div>
+          <div className="font-mono text-2xl font-bold text-warning-inline">{detainCount}</div>
         </div>
 
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-navy-muted font-medium">Leaving (TC requested)</div>
-          <div className="font-mono text-2xl font-bold text-navy-muted">{leaveCount}</div>
+        <div className="bg-surface border border-line rounded-card p-4 shadow-2xs space-y-1">
+          <div className="text-caption text-ink-secondary font-medium">Leaving (TC requested)</div>
+          <div className="font-mono text-2xl font-bold text-ink-secondary">{leaveCount}</div>
         </div>
       </div>
 
       {/* Roster Table */}
-      <div className="bg-surface border border-line rounded-panel shadow-sm overflow-hidden">
-        <div className="px-5 py-3 border-b border-line flex items-center justify-between bg-page/40">
-          <div className="flex items-center gap-3 text-xs font-medium">
-            <span>Select Class:</span>
+      <div className="bg-surface border border-line rounded-card shadow-2xs overflow-hidden">
+        <div className="px-5 py-3 border-b border-line flex items-center justify-between bg-surface-subtle">
+          <div className="flex items-center gap-3 text-small font-medium text-ink">
+            <span className="text-ink-secondary">Select Class:</span>
             <select
               value={currentClass}
               onChange={e => setCurrentClass(e.target.value)}
-              className="bg-surface border border-line rounded-control px-2 py-1 text-xs"
+              className="bg-surface border border-line-input rounded-control px-2.5 py-1 text-small text-ink focus:outline-none focus:border-primary"
             >
               <option value="5-A">Class 5-A</option>
               <option value="5-B">Class 5-B</option>
@@ -159,79 +158,79 @@ export default function PromotionPage() {
           </div>
           <button
             onClick={handlePromoteAll}
-            className="text-xs text-teal font-semibold hover:underline"
+            className="text-small text-primary font-semibold hover:underline cursor-pointer"
           >
             Reset to Recommended Results
           </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full border-collapse font-sans text-small min-w-[700px]">
             <thead>
-              <tr className="bg-page/70 border-b border-line text-navy-muted font-semibold">
-                <th className="py-3 px-4 w-16">Roll</th>
-                <th className="py-3 px-4">Student</th>
-                <th className="py-3 px-4">Annual Result</th>
-                <th className="py-3 px-4 text-right">Attendance</th>
-                <th className="py-3 px-4 text-center">Decision</th>
+              <tr className="bg-surface-head border-b border-line text-ink font-semibold">
+                <th className="py-3 px-4 w-16 text-center align-middle">Roll</th>
+                <th className="py-3 px-4 text-left align-middle">Student</th>
+                <th className="py-3 px-4 text-left align-middle">Annual Result</th>
+                <th className="py-3 px-4 text-center align-middle whitespace-nowrap">Attendance</th>
+                <th className="py-3 px-4 text-center align-middle whitespace-nowrap">Decision</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-line">
+            <tbody className="divide-y divide-line/60">
               {students.map(student => (
                 <tr
                   key={student.id}
-                  className={`hover:bg-page/40 transition ${
+                  className={`hover:bg-surface-subtle/50 transition-colors ${
                     student.decision === "detain"
-                      ? "bg-amber-50/40"
+                      ? "bg-warning-bg/40"
                       : student.decision === "leave"
-                      ? "bg-slate-50/70"
+                      ? "bg-surface-subtle"
                       : ""
                   }`}
                 >
-                  <td className="py-3 px-4 font-mono text-navy-muted">{student.roll}</td>
-                  <td className="py-3 px-4 font-semibold text-navy">{student.name}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 font-mono text-ink-secondary text-center align-middle">{student.roll}</td>
+                  <td className="py-3 px-4 font-semibold text-ink text-left align-middle">{student.name}</td>
+                  <td className="py-3 px-4 text-left align-middle">
                     <span
                       className={`font-medium ${
                         student.isFailed
-                          ? "text-amber-800 font-semibold"
+                          ? "text-warning-inline font-semibold"
                           : student.tcRequested
-                          ? "text-navy-muted italic"
-                          : "text-navy"
+                          ? "text-ink-secondary italic"
+                          : "text-ink"
                       }`}
                     >
                       {student.result}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-right font-mono">{student.attendance}</td>
-                  <td className="py-2.5 px-4">
+                  <td className="py-3 px-4 text-center font-mono text-ink align-middle">{student.attendance}</td>
+                  <td className="py-3 px-4 text-center align-middle">
                     <div className="flex items-center justify-center gap-1.5">
                       <button
                         onClick={() => handleDecision(student.id, "promote")}
-                        className={`px-3 py-1 rounded-control text-xs font-semibold transition ${
+                        className={`px-3 py-1 rounded-control text-caption font-semibold transition cursor-pointer ${
                           student.decision === "promote"
-                            ? "bg-teal text-white shadow-xs"
-                            : "border border-line bg-surface text-navy-muted hover:text-navy"
+                            ? "bg-primary text-white shadow-xs"
+                            : "border border-line-input bg-surface text-ink-secondary hover:text-ink hover:bg-surface-subtle"
                         }`}
                       >
                         Promote
                       </button>
                       <button
                         onClick={() => handleDecision(student.id, "detain")}
-                        className={`px-3 py-1 rounded-control text-xs font-semibold transition ${
+                        className={`px-3 py-1 rounded-control text-caption font-semibold transition cursor-pointer ${
                           student.decision === "detain"
-                            ? "bg-amber-700 text-white shadow-xs"
-                            : "border border-line bg-surface text-navy-muted hover:text-navy"
+                            ? "bg-warning-accent text-white shadow-xs"
+                            : "border border-line-input bg-surface text-ink-secondary hover:text-ink hover:bg-surface-subtle"
                         }`}
                       >
                         Detain
                       </button>
                       <button
                         onClick={() => handleDecision(student.id, "leave")}
-                        className={`px-3 py-1 rounded-control text-xs font-semibold transition ${
+                        className={`px-3 py-1 rounded-control text-caption font-semibold transition cursor-pointer ${
                           student.decision === "leave"
-                            ? "bg-slate-700 text-white shadow-xs"
-                            : "border border-line bg-surface text-navy-muted hover:text-navy"
+                            ? "bg-nav-bg text-white shadow-xs"
+                            : "border border-line-input bg-surface text-ink-secondary hover:text-ink hover:bg-surface-subtle"
                         }`}
                       >
                         Leave
@@ -245,13 +244,13 @@ export default function PromotionPage() {
         </div>
 
         {/* Footer Warning & Confirm */}
-        <div className="p-4 border-t border-line flex flex-wrap items-center justify-between gap-4 bg-page/30">
-          <p className="text-xs text-navy-muted max-w-2xl leading-relaxed">
+        <div className="p-4 border-t border-line flex flex-wrap items-center justify-between gap-4 bg-surface-subtle">
+          <p className="text-caption text-ink-secondary max-w-2xl leading-relaxed m-0">
             Confirming automatically generates 2027-28 enrollments, new roll numbers, and annual fee plans. Unpaid dues carry forward into the next ledger. Can be reverted prior to first attendance of new session.
           </p>
           <button
             onClick={handleConfirm}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-control bg-teal hover:bg-teal-hover text-white text-xs font-bold shadow-sm transition"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-control bg-primary hover:bg-primary-dark text-white text-small font-semibold shadow-xs transition cursor-pointer"
           >
             <FiCheckCircle size={15} /> Confirm Decisions for {students.length} Students
           </button>

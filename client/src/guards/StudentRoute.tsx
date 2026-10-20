@@ -3,9 +3,9 @@ import { Navigate } from "react-router-dom";
 
 const StudentRoute = ({ children }: { children: ReactNode }) => {
   const role = localStorage.getItem("role");
-  const token = localStorage.getItem("studentToken");
+  const token = localStorage.getItem("studentToken") || localStorage.getItem("parentToken");
 
-  if (!token || role !== "student")
+  if (!token || (role !== "student" && role !== "parent"))
     return <Navigate to="/student/login" replace />;
 
   return children;

@@ -51,5 +51,20 @@ export interface StudentFormData {
   address?: string;
 }
 
-export interface Admission extends Student { status: string; appliedDate?: string; }
+export interface Admission extends Student {
+  status: string;
+  appliedDate?: string;
+  stage?: string;
+  source?: string;
+  counsellor?: string;
+  followUpText?: string;
+  isOverdue?: boolean;
+  interactionSchedule?: any;
+  documents?: any[];
+  followUps?: any[];
+  feePayment?: any;
+  studentId?: any;
+  createdAt?: string;
+  updatedAt?: string;
+}
 export interface AdmissionFormData extends StudentFormData { }

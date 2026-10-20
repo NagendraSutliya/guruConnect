@@ -6,14 +6,16 @@ const {
   getClassSummary,
   getStudentSummary,
   getAttendanceHistory,
+  getCampusTracker,
 } = require("../../../controllers/admin/AttendanceController");
-const { requireAdmin, requireTeacher } = require("../../../middleware/auth");
+const { requireAdmin, allowRoles } = require("../../../middleware/auth");
 
-router.post("/", requireTeacher, saveAttendance);
-router.get("/", requireTeacher, getAttendance);
+router.post("/", allowRoles("admin", "teacher"), saveAttendance);
+router.get("/", allowRoles("admin", "teacher"), getAttendance);
 
 router.get("/history", requireAdmin, getAttendanceHistory);
 router.get("/summary/today", requireAdmin, getTodaySummary);
+router.get("/summary/tracker", requireAdmin, getCampusTracker);
 router.get("/summary/class", requireAdmin, getClassSummary);
 router.get("/summary/student", requireAdmin, getStudentSummary);
 

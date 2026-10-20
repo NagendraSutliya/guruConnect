@@ -11,15 +11,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
 const TeacherNavbar = () => {
-  const { user } = useAuth();
+  const { user, logout: authLogout } = useAuth();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const logout = () => {
-    localStorage.removeItem("role");
-    localStorage.removeItem("teacherToken");
-    navigate("/");
+    if (authLogout) {
+      authLogout();
+    } else {
+      localStorage.removeItem("role");
+      localStorage.removeItem("teacherToken");
+      localStorage.removeItem("teacher");
+      navigate("/teacher/login");
+    }
   };
 
   // Close dropdown on outside click
