@@ -1093,7 +1093,7 @@ export default function StudentPanel() {
                       </td>
 
                       {/* Actions */}
-                      <td className="py-3 px-2 text-center align-middle whitespace-nowrap">
+                      <td className="py-3 px-1 text-center align-middle whitespace-nowrap">
                         <div className="flex items-center justify-center gap-1">
                           <Link
                             to={`/admin/students/${s._id}`}

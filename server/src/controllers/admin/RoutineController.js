@@ -39,13 +39,15 @@ const checkConflict = async (r, excludeId = null) => {
 // ================= GET ROUTINE =================
 exports.getRoutine = async (req, res) => {
   try {
-    const { classId, sectionId } = req.query;
+    const { classId, sectionId, teacherId } = req.query;
+    const filter = {};
+    if (classId) filter.classId = classId;
+    if (sectionId) filter.sectionId = sectionId;
+    if (teacherId) filter.teacherId = teacherId;
 
-    if (!classId || !sectionId) {
-      return errorResponse(res, "Class & Section required");
-    }
-
-    const data = await Routine.find({ classId, sectionId })
+    const data = await Routine.find(filter)
+      .populate("classId", "name")
+      .populate("sectionId", "name")
       .populate("subjectId", "name")
       .populate("teacherId", "name")
       .sort({ day: 1, startTime: 1 });

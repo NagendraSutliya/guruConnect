@@ -24,8 +24,8 @@ import {
 } from "lucide-react";
 import AddAdmissionModal from "../../../components/admin/modals/AddAdmissionModal";
 import ApplicationReviewDrawer, { type ApplicationDetail } from "../../../components/admin/admissions/ApplicationReviewDrawer";
-import Pagination from "../../../components/common/Pagination";
 import AdmissionsModuleNav from "../../../components/admin/admissions/AdmissionsModuleNav";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 interface AdmissionsPanelProps {
   isEmbedded?: boolean;
@@ -729,15 +729,52 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
               </table>
             </div>
 
-            {/* Pagination */}
+            {/* Screen 10 Pagination Bar */}
             {!loading && filteredAdmissions.length > 0 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                itemsPerPage={itemsPerPage}
-                setItemsPerPage={setItemsPerPage}
-                setCurrentPage={setCurrentPage}
-              />
+              <div className="flex justify-between items-center flex-wrap gap-3 py-3 px-4 border-t border-line text-small text-ink-secondary bg-surface">
+                <div className="flex items-center gap-3">
+                  <span>
+                    Showing {filteredAdmissions.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}–
+                    {Math.min(currentPage * itemsPerPage, filteredAdmissions.length)} of{" "}
+                    {filteredAdmissions.length.toLocaleString("en-IN")}
+                  </span>
+                  <div className="flex items-center gap-1.5 text-caption">
+                    <span>Show</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                      className="px-2 py-0.5 rounded border border-line-input bg-surface text-ink text-caption"
+                    >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage <= 1}
+                    className="min-h-[36px] px-3 rounded-control border border-line-input bg-surface hover:bg-surface-subtle text-ink text-small transition disabled:opacity-40 disabled:pointer-events-none cursor-pointer flex items-center gap-1"
+                  >
+                    <FiChevronLeft size={14} /> Previous
+                  </button>
+
+                  <span className="px-2 font-mono text-small text-ink">
+                    {currentPage} / {totalPages}
+                  </span>
+
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage >= totalPages}
+                    className="min-h-[36px] px-3 rounded-control border border-line-input bg-surface hover:bg-surface-subtle text-ink text-small transition disabled:opacity-40 disabled:pointer-events-none cursor-pointer flex items-center gap-1"
+                  >
+                    Next <FiChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </>

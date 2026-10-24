@@ -55,6 +55,8 @@ const RoutineModal = ({
 
     setForm((prev) => ({
       ...prev,
+      classId: assign.classId?._id || prev.classId,
+      sectionId: assign.sectionId?._id || prev.sectionId,
       subjectId: assign.subjectId._id,
       teacherId: assign.teacherId._id,
     }));
@@ -104,7 +106,7 @@ const RoutineModal = ({
                   <option value="">Select Subject</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>
-                      {s.subjectId.name} ({s.teacherId.name})
+                      {s.subjectId.name} ({s.classId?.name ? `Class ${s.classId.name}${s.sectionId?.name ? `-${s.sectionId.name}` : ""}` : s.teacherId.name})
                     </option>
                   ))}
                 </select>
