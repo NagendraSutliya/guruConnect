@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiX,
   FiPrinter,
@@ -15,6 +15,7 @@ import {
   FiDollarSign
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
+import api from "../../../api/axiosInstance";
 
 export interface TeacherProfileData {
   id: string;
@@ -78,6 +79,49 @@ export default function TeacherProfileModal({
   const [messageText, setMessageText] = useState("");
 
   const [editFormData, setEditFormData] = useState<Partial<TeacherProfileData>>({});
+
+  const [adminData, setAdminData] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem("admin");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    if (!adminData?.instituteName) {
+      api
+        .get("/admin/profile")
+        .then((res) => {
+          if (res.data?.data) {
+            const profile = res.data.data;
+            setAdminData((prev: any) => {
+              const updated = {
+                ...prev,
+                instituteName: profile.instituteName || prev?.instituteName,
+                campusName: profile.campusName || prev?.campusName,
+                address: profile.address || prev?.address,
+                city: profile.city || prev?.city,
+                board: profile.board || prev?.board,
+                affiliationNo: profile.affiliationNo || prev?.affiliationNo,
+                phone: profile.phone || prev?.phone,
+                logoUrl: profile.logoUrl || prev?.logoUrl,
+              };
+              localStorage.setItem("admin", JSON.stringify(updated));
+              return updated;
+            });
+          }
+        })
+        .catch(() => {});
+    }
+  }, []);
+
+  const instituteName = adminData?.instituteName || "GuruConnect Institute";
+  const instituteSubtitle = [
+    adminData?.campusName ? `${adminData.campusName}` : (adminData?.city ? `${adminData.city} Campus` : null),
+    adminData?.board ? `Affiliation ${adminData.board}` : null,
+  ].filter(Boolean).join(" · ") || (adminData?.city ? `${adminData.city} Campus · CBSE` : "Mansarovar Campus · Affiliation CBSE");
 
   if (!isOpen || !staff) return null;
 
@@ -636,8 +680,15 @@ export default function TeacherProfileModal({
             {/* Physical ID Card Preview */}
             <div className="border-2 border-primary/40 rounded-card p-5 bg-gradient-to-b from-[#E3EFEF]/40 to-white shadow-md text-ink text-xs space-y-3">
               <div className="text-center space-y-0.5">
-                <div className="font-bold text-sm tracking-wide text-primary">SHIKSHA PUBLIC SCHOOL</div>
-                <div className="text-[10px] text-ink-secondary">Mansarovar Campus · Affiliation CBSE</div>
+                {adminData?.logoUrl && (
+                  <img
+                    src={adminData.logoUrl}
+                    alt={instituteName}
+                    className="w-8 h-8 object-contain mx-auto mb-0.5 rounded-sm"
+                  />
+                )}
+                <div className="font-bold text-sm tracking-wide text-primary uppercase">{instituteName}</div>
+                <div className="text-[10px] text-ink-secondary">{instituteSubtitle}</div>
               </div>
 
               <div className="w-20 h-20 mx-auto rounded-card bg-[#0E5A63] text-white flex items-center justify-center text-2xl font-bold border-2 border-white shadow-xs">

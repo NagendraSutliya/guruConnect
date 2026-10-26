@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiCheck,
   FiDownload,
@@ -12,6 +12,7 @@ import {
   FiFileText
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
+import api from "../../../api/axiosInstance";
 
 interface SalaryLineItem {
   id: string;
@@ -140,6 +141,50 @@ export default function PayrollRun() {
   } | null>(null);
 
   const [selectedPayslip, setSelectedPayslip] = useState<SalaryLineItem | null>(null);
+
+  const [adminData, setAdminData] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem("admin");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    if (!adminData?.instituteName) {
+      api
+        .get("/admin/profile")
+        .then((res) => {
+          if (res.data?.data) {
+            const profile = res.data.data;
+            setAdminData((prev: any) => {
+              const updated = {
+                ...prev,
+                instituteName: profile.instituteName || prev?.instituteName,
+                campusName: profile.campusName || prev?.campusName,
+                address: profile.address || prev?.address,
+                city: profile.city || prev?.city,
+                board: profile.board || prev?.board,
+                affiliationNo: profile.affiliationNo || prev?.affiliationNo,
+                phone: profile.phone || prev?.phone,
+                logoUrl: profile.logoUrl || prev?.logoUrl,
+              };
+              localStorage.setItem("admin", JSON.stringify(updated));
+              return updated;
+            });
+          }
+        })
+        .catch(() => {});
+    }
+  }, []);
+
+  const instituteName = adminData?.instituteName || "GuruConnect Institute";
+  const instituteSubtitle = [
+    adminData?.campusName ? `${adminData.campusName}` : (adminData?.city ? `${adminData.city} Campus` : null),
+    adminData?.address || null,
+    adminData?.board ? `Affiliated to ${adminData.board}` : null,
+  ].filter(Boolean).join(" · ") || (adminData?.city ? `${adminData.city} · Affiliated to State/CBSE Board` : "Mansarovar Campus, Jaipur · Affiliated to CBSE");
 
   const filtered = salaries.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -531,9 +576,16 @@ export default function PayrollRun() {
 
             {/* Official Payslip Printable Box */}
             <div className="border border-line rounded-card p-5 space-y-4 bg-white text-ink">
-              <div className="text-center border-b border-line pb-3 space-y-0.5">
-                <div className="font-bold text-base text-primary">SHIKSHA PUBLIC SCHOOL</div>
-                <div className="text-[11px] text-ink-secondary">Mansarovar Campus, Jaipur · Affiliated to CBSE</div>
+              <div className="text-center border-b border-line pb-3 space-y-1">
+                {adminData?.logoUrl && (
+                  <img
+                    src={adminData.logoUrl}
+                    alt={instituteName}
+                    className="w-10 h-10 object-contain mx-auto mb-1 rounded-md"
+                  />
+                )}
+                <div className="font-bold text-base text-primary tracking-wide uppercase">{instituteName}</div>
+                <div className="text-[11px] text-ink-secondary">{instituteSubtitle}</div>
                 <div className="font-semibold text-xs text-ink pt-1">SALARY SLIP FOR SEPTEMBER 2026</div>
               </div>
 
