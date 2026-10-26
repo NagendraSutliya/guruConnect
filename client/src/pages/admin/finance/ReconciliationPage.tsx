@@ -259,7 +259,7 @@ export default function ReconciliationPage() {
                 <button
                   type="button"
                   onClick={() => confirmResolution()}
-                  className="px-4.5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Confirm &amp; Apply
                 </button>
@@ -315,7 +315,7 @@ export default function ReconciliationPage() {
                     setIsUploadModalOpen(false);
                     showToast("Settlement file processed! 142 lines matched with 0 new errors.", "success");
                   }}
-                  className="px-4.5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Process File
                 </button>

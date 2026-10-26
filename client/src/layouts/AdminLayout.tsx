@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/admin/AdminNavbar";
 import CommandPalette from "../components/common/CommandPalette";
 import { useState, useEffect } from "react";
@@ -46,11 +46,14 @@ type MenuItem = {
 
 const AdminLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(() => {
     const saved = localStorage.getItem("sidebar_minimized");
     return saved === "true";
   });
+
+  const isAdmissionsRoute = (path: string) => path.startsWith("/admin/admissions");
 
   const isFeesRoute = (path: string) =>
     path.startsWith("/admin/collect-fees") ||
@@ -61,14 +64,21 @@ const AdminLayout = () => {
     path.startsWith("/admin/cash-closing") ||
     path.startsWith("/admin/accounts");
 
+  const isStaffRoute = (path: string) =>
+    path.startsWith("/admin/staff") ||
+    path.startsWith("/admin/leaves");
+
   const [openMenus, setOpenMenus] = useState<Set<string>>(() => {
     const initial = new Set<string>();
     const path = typeof window !== "undefined" ? window.location.pathname : "";
-    if (path.startsWith("/admin/admissions")) {
+    if (isAdmissionsRoute(path)) {
       initial.add("Admissions");
     }
     if (isFeesRoute(path)) {
       initial.add("Fees");
+    }
+    if (isStaffRoute(path)) {
+      initial.add("Staff & Leave");
     }
     return initial;
   });
@@ -76,12 +86,15 @@ const AdminLayout = () => {
   useEffect(() => {
     const path = location.pathname;
     setOpenMenus(prev => {
-      const next = new Set(prev);
-      if (path.startsWith("/admin/admissions")) {
+      const next = new Set<string>();
+      if (isAdmissionsRoute(path)) {
         next.add("Admissions");
       }
       if (isFeesRoute(path)) {
         next.add("Fees");
+      }
+      if (isStaffRoute(path)) {
+        next.add("Staff & Leave");
       }
       return next;
     });
@@ -147,7 +160,16 @@ const AdminLayout = () => {
         { name: "Accounts", path: "/admin/accounts" },
       ],
     },
-    { name: "Staff & Leave", icon: <FaChalkboardTeacher size={16} />, path: "/admin/staff" },
+    {
+      name: "Staff & Leave",
+      icon: <FaChalkboardTeacher size={16} />,
+      path: "/admin/staff",
+      children: [
+        { name: "Directory", path: "/admin/staff" },
+        { name: "Staff Attendance", path: "/admin/staff/attendance" },
+        { name: "Leave Requests", path: "/admin/staff/leave" },
+      ],
+    },
     { name: "Payroll", icon: <MdPayments size={18} />, path: "/admin/payroll" },
     { name: "Transport", icon: <MdDirectionsBus size={18} />, path: "/admin/transport" },
     { name: "Hostel", icon: <MdHotel size={18} />, path: "/admin/hostel" },
@@ -241,14 +263,15 @@ const AdminLayout = () => {
             <div className={`flex-1 overflow-y-auto custom-scrollbar scroll-smooth ${isMinimized ? "px-2 pt-4" : "px-3.5"} pb-20 space-y-1 w-full`}>
               <nav className="space-y-1">
                 {menuItems.map((item) => {
+                  const matchChild = (c: MenuChild) =>
+                    location.pathname === c.path ||
+                    (c.path === "/admin/admissions/pipeline" && location.pathname === "/admin/admissions") ||
+                    (c.path === "/admin/reconciliation" && location.pathname === "/admin/online-payments") ||
+                    (c.path === "/admin/staff/leave" && location.pathname === "/admin/leaves");
+
                   const hasChildren = Boolean(item.children && item.children.length > 0);
                   const isItemActive = hasChildren
-                    ? item.children?.some(
-                        c =>
-                          location.pathname === c.path ||
-                          (c.path === "/admin/admissions/pipeline" && location.pathname === "/admin/admissions") ||
-                          (c.path === "/admin/reconciliation" && location.pathname === "/admin/online-payments")
-                      )
+                    ? item.children?.some(matchChild)
                     : location.pathname === item.path;
                   const isOpen = openMenus.has(item.name);
 
@@ -258,6 +281,10 @@ const AdminLayout = () => {
                         <div
                           onClick={() => {
                             toggleMenu(item.name);
+                            const hasActiveChild = item.children?.some(matchChild);
+                            if (!hasActiveChild && item.children?.[0]?.path) {
+                              navigate(item.children[0].path);
+                            }
                           }}
                           className={`group flex items-center justify-between px-3 py-[9px] rounded-control transition-all duration-300 ease-out cursor-pointer select-none
                             ${
@@ -289,10 +316,7 @@ const AdminLayout = () => {
                         {isOpen && (
                           <div className="ml-5 pl-2.5 my-1 border-l border-nav-divider flex flex-col gap-1 animate-fadeIn">
                             {item.children!.map((child) => {
-                              const isChildActive =
-                                location.pathname === child.path ||
-                                (child.path === "/admin/admissions/pipeline" && location.pathname === "/admin/admissions") ||
-                                (child.path === "/admin/reconciliation" && location.pathname === "/admin/online-payments");
+                              const isChildActive = matchChild(child);
 
                               return (
                                 <NavLink
@@ -322,14 +346,7 @@ const AdminLayout = () => {
                       key={item.name}
                       to={item.path!}
                       onClick={() => {
-                        setOpenMenus(prev => {
-                          if (prev.size > 0) {
-                            const next = new Set(prev);
-                            next.delete("Admissions");
-                            return next;
-                          }
-                          return prev;
-                        });
+                        setOpenMenus(new Set());
                       }}
                       className={({ isActive }) =>
                         `group flex items-center ${isMinimized ? "justify-center" : "gap-3"} px-3 py-[9px] rounded-control transition-all duration-300 ease-out
@@ -339,7 +356,7 @@ const AdminLayout = () => {
                             : "text-nav-text font-normal hover:bg-nav-active/50"
                         }`
                       }
-                      title={isMinimized ? `${item.name}${hasChildren ? " (Pipeline, Register & Records)" : ""}` : ""}
+                      title={isMinimized ? `${item.name}${hasChildren ? ` (${item.children?.map(c => c.name).join(", ")})` : ""}` : ""}
                     >
                       {({ isActive }) => (
                         <>

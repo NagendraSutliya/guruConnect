@@ -185,7 +185,7 @@ export default function FeeStructure() {
           <button
             type="button"
             onClick={() => setIsApprovalModalOpen(true)}
-            className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
             <FiCheckCircle size={15} />
             <span>Send for approval</span>
@@ -450,7 +450,7 @@ export default function FeeStructure() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4.5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Add Head
                 </button>
@@ -510,7 +510,7 @@ export default function FeeStructure() {
                 <button
                   type="button"
                   onClick={handleSendApproval}
-                  className="px-4.5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Confirm &amp; Send
                 </button>
