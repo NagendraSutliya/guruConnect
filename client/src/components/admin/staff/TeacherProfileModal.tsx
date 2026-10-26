@@ -680,16 +680,14 @@ export default function TeacherProfileModal({
             {/* Physical ID Card Preview */}
             <div className="border-2 border-primary/40 rounded-card p-5 bg-gradient-to-b from-[#E3EFEF]/40 to-white shadow-md text-ink text-xs space-y-3">
               <div className="text-center space-y-0.5">
-                <div className="flex items-center justify-center gap-1.5">
-                  {adminData?.logoUrl && (
-                    <img
-                      src={adminData.logoUrl}
-                      alt={instituteName}
-                      className="w-5 h-5 object-contain rounded-xs shrink-0"
-                    />
-                  )}
-                  <div className="font-bold text-sm tracking-wide text-primary uppercase">{instituteName}</div>
-                </div>
+                {adminData?.logoUrl && (
+                  <img
+                    src={adminData.logoUrl}
+                    alt={instituteName}
+                    className="w-8 h-8 object-contain mx-auto mb-0.5 rounded-sm"
+                  />
+                )}
+                <div className="font-bold text-sm tracking-wide text-primary uppercase">{instituteName}</div>
                 <div className="text-[10px] text-ink-secondary">{instituteSubtitle}</div>
               </div>
 

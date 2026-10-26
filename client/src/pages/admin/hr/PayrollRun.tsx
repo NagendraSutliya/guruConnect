@@ -577,18 +577,14 @@ export default function PayrollRun() {
             {/* Official Payslip Printable Box */}
             <div className="border border-line rounded-card p-5 space-y-4 bg-white text-ink">
               <div className="text-center border-b border-line pb-3 space-y-1">
-                <div className="flex items-center justify-center gap-2.5">
-                  {adminData?.logoUrl && (
-                    <img
-                      src={adminData.logoUrl}
-                      alt={instituteName}
-                      className="w-8 h-8 object-contain rounded shrink-0"
-                    />
-                  )}
-                  <div className="font-bold text-base text-primary tracking-wide uppercase">
-                    {instituteName}
-                  </div>
-                </div>
+                {adminData?.logoUrl && (
+                  <img
+                    src={adminData.logoUrl}
+                    alt={instituteName}
+                    className="w-10 h-10 object-contain mx-auto mb-1 rounded-md"
+                  />
+                )}
+                <div className="font-bold text-base text-primary tracking-wide uppercase">{instituteName}</div>
                 <div className="text-[11px] text-ink-secondary">{instituteSubtitle}</div>
                 <div className="font-semibold text-xs text-ink pt-1">SALARY SLIP FOR SEPTEMBER 2026</div>
               </div>

@@ -1,334 +1,534 @@
 import React, { useState } from "react";
 import {
   FiSend,
-  FiCalendar,
   FiSmartphone,
-  FiMessageSquare,
+  FiCalendar,
   FiCheckCircle,
   FiClock,
   FiUsers,
-  FiCheckSquare,
-  FiLayers
+  FiPlus,
+  FiX
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
 
-interface PTMSlot {
-  id: string;
-  teacher: string;
-  grade: string;
-  date: string;
-  timeSlot: string;
-  bookedSlots: number;
-  totalSlots: number;
+interface TeacherPTMRow {
+  classGrade: string;
+  teacherName: string;
+  slots: ("Booked" | "Met" | "No-show" | "Free")[];
 }
 
-const DEFAULT_PTM: PTMSlot[] = [
-  { id: "1", teacher: "Sunita Rathore", grade: "Class 8-B", date: "Saturday, 24 Oct", timeSlot: "09:00 AM – 12:30 PM", bookedSlots: 28, totalSlots: 32 },
-  { id: "2", teacher: "Vikram Singh", grade: "Class 9-A", date: "Saturday, 24 Oct", timeSlot: "09:00 AM – 12:30 PM", bookedSlots: 30, totalSlots: 32 },
-  { id: "3", teacher: "Rachna Bose", grade: "Class 10-A", date: "Saturday, 24 Oct", timeSlot: "09:00 AM – 12:30 PM", bookedSlots: 31, totalSlots: 32 },
-  { id: "4", teacher: "Pooja Meena", grade: "Class 5-A", date: "Saturday, 24 Oct", timeSlot: "09:00 AM – 12:30 PM", bookedSlots: 24, totalSlots: 30 }
+const TIME_SLOTS = [
+  "12:30", "12:40", "12:50", "1:00", "1:10", "1:20",
+  "1:30", "1:40", "1:50", "2:00", "2:10", "2:20"
+];
+
+const INITIAL_PTM_MATRIX: TeacherPTMRow[] = [
+  {
+    classGrade: "6-A",
+    teacherName: "Ankit Sharma",
+    slots: ["Met", "Met", "Booked", "Booked", "Booked", "Free", "Booked", "Booked", "Booked", "Booked", "Booked", "Booked"]
+  },
+  {
+    classGrade: "6-B",
+    teacherName: "Hemant Vyas",
+    slots: ["Met", "No-show", "Booked", "Booked", "Booked", "Booked", "Free", "Booked", "Booked", "Booked", "Booked", "Booked"]
+  },
+  {
+    classGrade: "6-C",
+    teacherName: "Sunita Rathore",
+    slots: ["Met", "Met", "Booked", "Booked", "Free", "Booked", "Booked", "Booked", "Booked", "Booked", "Free", "Booked"]
+  }
 ];
 
 export default function CommunicationPage() {
   const { showToast } = useToast();
-  const [activeTab, setActiveTab] = useState<"notice" | "ptm">("notice");
+  const [activeTab, setActiveTab] = useState<"notices" | "ptm">("notices");
 
-  // Notice state
-  const [title, setTitle] = useState("School closed on 20 October for Diwali break");
-  const [message, setMessage] = useState(
-    "Dear parents, the school will remain closed from 20 to 24 October for the Diwali festival break. Classes will resume normally on Monday, 26 October."
+  // Notice Composer State (Screen 37)
+  const [noticeTitle, setNoticeTitle] = useState("School closed on 20 October for Diwali break");
+  const [noticeMessage, setNoticeMessage] = useState(
+    "Dear parents, the school will remain closed from 20 to 24 October for the Diwali break. Classes resume on Monday, 26 October."
   );
-  const [hindiMessage, setHindiMessage] = useState(
-    "प्रिय अभिभावक, दीपावली अवकाश के कारण विद्यालय 20 से 24 अक्टूबर तक बंद रहेगा। कक्षाएं सोमवार, 26 अक्टूबर से यथावत संचालित होंगी।"
+  const [noticeHindi, setNoticeHindi] = useState(
+    "प्रिय अभिभावक, दीपावली अवकाश के कारण विद्यालय 20 से 24 अक्टूबर तक बंद रहेगा।"
   );
-  const [targetAudience, setTargetAudience] = useState("Whole school");
+  const [selectedAudience, setSelectedAudience] = useState("Whole school");
   const [channels, setChannels] = useState({
     app: true,
     whatsapp: true,
     sms: false
   });
-  const [requireAck, setRequireAck] = useState(true);
+  const [askAck, setAskAck] = useState(false);
 
-  const handleBroadcast = () => {
-    showToast(
-      `Notice "${title}" dispatched to ${targetAudience} via ${
-        channels.whatsapp ? "App Notification & WhatsApp" : "App Notification"
-      }!`,
-      "success"
-    );
+  // PTM Matrix State (Screen 38)
+  const [ptmMatrix, setPtmMatrix] = useState<TeacherPTMRow[]>(INITIAL_PTM_MATRIX);
+  const [isNewPTMModalOpen, setIsNewPTMModalOpen] = useState(false);
+  const [newPTMForm, setNewPTMForm] = useState({
+    title: "Class 7 & 8 Mid-Term PTM",
+    date: "2026-10-31",
+    startTime: "12:30",
+    endTime: "14:30",
+    slotDuration: 10
+  });
+
+  const handleSendNotice = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!noticeTitle.trim()) return;
+    showToast(`Notice "${noticeTitle}" submitted for Principal approval and parent broadcast!`, "success");
+  };
+
+  const handleRemindUnbooked = () => {
+    showToast("Automated SMS & WhatsApp reminder pushed to 5 unbooked parents!", "success");
+  };
+
+  const handleCreatePTM = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsNewPTMModalOpen(false);
+    showToast(`PTM session "${newPTMForm.title}" scheduled for ${newPTMForm.date}!`, "success");
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto text-navy">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold text-navy-muted tracking-wide uppercase">
-            Communication › Broadcast System
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
+      {/* Header Row (Matching 37-Notices.html & 38-PTM.html) */}
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary flex items-center gap-1.5">
+            <span>Communication ›</span>
+            <button
+              type="button"
+              onClick={() => setActiveTab("notices")}
+              className={`hover:underline cursor-pointer ${
+                activeTab === "notices" ? "font-semibold text-ink" : "text-primary"
+              }`}
+            >
+              New notice
+            </button>
+            <span>·</span>
+            <button
+              type="button"
+              onClick={() => setActiveTab("ptm")}
+              className={`hover:underline cursor-pointer ${
+                activeTab === "ptm" ? "font-semibold text-ink" : "text-primary"
+              }`}
+            >
+              PTM
+            </button>
           </div>
-          <h1 className="text-2xl font-bold text-navy mt-1">Notices, WhatsApp & PTM Scheduler</h1>
-          <p className="text-xs text-navy-muted mt-0.5">
-            Deliver bilingual notices across official Mobile App, WhatsApp templates, and schedule PTM slots.
-          </p>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            {activeTab === "notices" ? "Send a notice" : "Class 6 PTM · today, 12:30–2:30 pm"}
+          </h1>
+          {activeTab === "ptm" && (
+            <div className="text-[13px] text-ink-secondary">
+              10-minute slots · parents booked from the app · Half-yearly marks summary shared with each teacher
+            </div>
+          )}
         </div>
+
+        {activeTab === "ptm" && (
+          <div className="flex gap-2.5 flex-wrap">
+            <button
+              type="button"
+              onClick={handleRemindUnbooked}
+              className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-[13px] font-semibold transition-colors cursor-pointer shadow-xs"
+            >
+              Remind unbooked parents
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsNewPTMModalOpen(true)}
+              className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            >
+              <FiPlus size={15} />
+              <span>New PTM</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-line gap-2">
-        <button
-          onClick={() => setActiveTab("notice")}
-          className={`px-4 py-2.5 text-xs font-bold border-b-2 transition ${
-            activeTab === "notice"
-              ? "border-teal text-teal"
-              : "border-transparent text-navy-muted hover:text-navy"
-          }`}
-        >
-          Send Notice Broadcast (Screen 37)
-        </button>
-        <button
-          onClick={() => setActiveTab("ptm")}
-          className={`px-4 py-2.5 text-xs font-bold border-b-2 transition ${
-            activeTab === "ptm"
-              ? "border-teal text-teal"
-              : "border-transparent text-navy-muted hover:text-navy"
-          }`}
-        >
-          PTM Slot Scheduling (Screen 38)
-        </button>
-      </div>
-
-      {activeTab === "notice" ? (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left: Compose Form matching Screen 37 */}
-          <div className="lg:col-span-7 bg-surface border border-line rounded-panel p-5 shadow-sm space-y-4 text-xs">
-            <div>
-              <label className="block font-medium text-navy mb-1">Notice Title *</label>
+      {/* SECTION 1: SEND A NOTICE (Matching 37-Notices.html) */}
+      {activeTab === "notices" && (
+        <div className="flex flex-wrap gap-5 items-start">
+          {/* Left Form: Notice Composer */}
+          <section className="flex-1 basis-[480px] min-w-0 bg-white border border-line rounded-card p-5.5 flex flex-col gap-4 shadow-xs">
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+              Title
               <input
                 type="text"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal font-medium"
+                required
+                value={noticeTitle}
+                onChange={e => setNoticeTitle(e.target.value)}
+                className="min-h-[44px] px-3.5 border border-line-input rounded-control text-sm text-ink focus:border-primary focus:outline-none"
               />
-            </div>
+            </label>
 
-            <div>
-              <label className="block font-medium text-navy mb-1">Message in English *</label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+              Message
               <textarea
-                rows={3}
-                value={message}
-                onChange={e => setMessage(e.target.value)}
-                className="w-full p-2.5 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal"
+                rows={4}
+                required
+                value={noticeMessage}
+                onChange={e => setNoticeMessage(e.target.value)}
+                className="p-3 border border-line-input rounded-control text-sm text-ink leading-relaxed focus:border-primary focus:outline-none resize-y"
               />
-            </div>
+            </label>
 
-            <div>
-              <label className="block font-medium text-navy mb-1">
-                Hindi Version / हिंदी संस्करण <span className="text-navy-muted font-normal">(Optional)</span>
-              </label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+              <span>
+                Hindi version <span className="font-normal text-ink-secondary">(optional)</span>
+              </span>
               <textarea
                 rows={2}
-                value={hindiMessage}
-                onChange={e => setHindiMessage(e.target.value)}
-                className="w-full p-2.5 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal font-sans"
+                value={noticeHindi}
+                onChange={e => setNoticeHindi(e.target.value)}
+                className="p-3 border border-line-input rounded-control text-sm text-ink leading-relaxed focus:border-primary focus:outline-none resize-y"
               />
-            </div>
+            </label>
 
-            {/* Audience Targeting */}
-            <div className="space-y-2 pt-2 border-t border-line">
-              <label className="block font-bold text-navy">Target Audience</label>
+            {/* Target Audience Filter Pills */}
+            <fieldset className="border-0 p-0 m-0 flex flex-col gap-2">
+              <legend className="text-sm font-medium text-ink pb-1">Who receives it</legend>
               <div className="flex flex-wrap gap-2">
                 {[
                   "Whole school",
                   "Pre-primary",
                   "Primary",
-                  "Secondary",
-                  "Bus route 4",
+                  "Class / section…",
+                  "Bus route…",
                   "Staff only"
-                ].map(aud => (
-                  <button
-                    key={aud}
-                    type="button"
-                    onClick={() => setTargetAudience(aud)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${
-                      targetAudience === aud
-                        ? "bg-teal text-white shadow-xs"
-                        : "border border-line bg-page text-navy-muted hover:text-navy"
-                    }`}
-                  >
-                    {aud}
-                  </button>
-                ))}
+                ].map(aud => {
+                  const isSelected = selectedAudience === aud;
+                  return (
+                    <button
+                      key={aud}
+                      type="button"
+                      onClick={() => setSelectedAudience(aud)}
+                      className={`min-h-[36px] px-3.5 rounded-full text-xs font-medium transition-colors cursor-pointer border ${
+                        isSelected
+                          ? "bg-[#12302D] text-white border-[#12302D]"
+                          : "bg-white text-ink border-line-input hover:bg-slate-50"
+                      }`}
+                    >
+                      {aud}
+                    </button>
+                  );
+                })}
               </div>
-              <div className="text-[11px] text-navy-muted">
-                Targeting: 1,248 students · 2,031 verified guardians · 96 staff members
-              </div>
-            </div>
+              <span className="text-xs text-ink-secondary">
+                1,248 students · 2,031 guardians · 96 staff
+              </span>
+            </fieldset>
 
-            {/* Delivery Channels from Screen 37 */}
-            <div className="space-y-2 pt-2 border-t border-line">
-              <label className="block font-bold text-navy">Delivery Channels</label>
-              <div className="space-y-2">
-                <label className="flex items-center justify-between p-2.5 rounded-control bg-page border border-line/60 cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={channels.app}
-                      onChange={e => setChannels({ ...channels, app: e.target.checked })}
-                      className="rounded text-teal"
-                    />
-                    <span className="font-semibold text-navy">Parent Mobile App Notification</span>
-                  </div>
-                  <span className="font-bold text-emerald-700 text-[11px]">Free Unlimited</span>
-                </label>
+            {/* Channels */}
+            <fieldset className="border-0 p-0 m-0 flex flex-col gap-2.5 pt-2 border-t border-line/60">
+              <legend className="text-sm font-medium text-ink pb-1">Channels</legend>
 
-                <label className="flex items-center justify-between p-2.5 rounded-control bg-page border border-line/60 cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={channels.whatsapp}
-                      onChange={e => setChannels({ ...channels, whatsapp: e.target.checked })}
-                      className="rounded text-teal"
-                    />
-                    <span className="font-semibold text-navy">WhatsApp (Verified Meta Business Template)</span>
-                  </div>
-                  <span className="font-mono text-navy-muted text-[11px]">≈ 2,031 credits</span>
-                </label>
+              <label className="flex items-center gap-2.5 text-sm text-ink cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={channels.app}
+                  onChange={e => setChannels(prev => ({ ...prev, app: e.target.checked }))}
+                  className="w-4.5 h-4.5 text-primary rounded"
+                />
+                <span className="flex-1">App notification</span>
+                <span className="text-xs text-ink-secondary">Free</span>
+              </label>
 
-                <label className="flex items-center justify-between p-2.5 rounded-control bg-page border border-line/60 cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={channels.sms}
-                      onChange={e => setChannels({ ...channels, sms: e.target.checked })}
-                      className="rounded text-teal"
-                    />
-                    <span className="font-semibold text-navy">SMS Fallback (If app unopened in 10 mins)</span>
-                  </div>
-                  <span className="font-mono text-navy-muted text-[11px]">Up to 2,031 credits</span>
-                </label>
-              </div>
-            </div>
+              <label className="flex items-center gap-2.5 text-sm text-ink cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={channels.whatsapp}
+                  onChange={e => setChannels(prev => ({ ...prev, whatsapp: e.target.checked }))}
+                  className="w-4.5 h-4.5 text-primary rounded"
+                />
+                <span className="flex-1">WhatsApp (approved template)</span>
+                <span className="text-xs text-ink-secondary">≈ 2,031 credits</span>
+              </label>
 
-            <label className="flex items-center gap-2 cursor-pointer pt-1 font-medium text-navy">
+              <label className="flex items-center gap-2.5 text-sm text-ink cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={channels.sms}
+                  onChange={e => setChannels(prev => ({ ...prev, sms: e.target.checked }))}
+                  className="w-4.5 h-4.5 text-primary rounded"
+                />
+                <span className="flex-1">SMS (only if app not opened in 10 min)</span>
+                <span className="text-xs text-ink-secondary">Up to 2,031 credits</span>
+              </label>
+            </fieldset>
+
+            <label className="flex items-center gap-2.5 text-sm text-ink cursor-pointer">
               <input
                 type="checkbox"
-                checked={requireAck}
-                onChange={e => setRequireAck(e.target.checked)}
-                className="rounded text-teal"
+                checked={askAck}
+                onChange={e => setAskAck(e.target.checked)}
+                className="w-4.5 h-4.5 text-primary rounded"
               />
-              <span>Require parent acknowledgment button (Yes / Confirmed)</span>
+              <span>Ask parents to acknowledge (Yes / No)</span>
             </label>
 
-            <div className="pt-2 flex items-center justify-end gap-2 border-t border-line">
+            <div className="flex justify-end gap-2.5 pt-2.5 border-t border-[#EEF1EF]">
               <button
                 type="button"
-                onClick={() => showToast("Notice scheduled for 06:00 PM today.", "info")}
-                className="px-4 py-2 border border-line rounded-control bg-surface hover:bg-page font-medium text-navy"
+                onClick={() => showToast("Notice draft saved for scheduled broadcast.", "info")}
+                className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-sm font-medium transition cursor-pointer shadow-xs"
               >
-                Schedule Delivery
+                Schedule
               </button>
               <button
                 type="button"
-                onClick={handleBroadcast}
-                className="flex items-center gap-1.5 px-5 py-2 bg-teal hover:bg-teal-hover text-white rounded-control font-bold shadow-xs transition"
+                onClick={handleSendNotice}
+                className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white font-semibold text-sm transition-all cursor-pointer shadow-xs active:scale-[0.98]"
               >
-                <FiSend size={14} /> Send For Approval & Broadcast
+                Send for principal approval
               </button>
             </div>
-          </div>
+          </section>
 
-          {/* Right: Live Parent Mobile App Preview from Screen 37 */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="bg-surface border-2 border-line rounded-panel p-5 shadow-sm space-y-3">
-              <div className="flex items-center justify-between text-xs font-bold text-navy uppercase tracking-wider pb-2 border-b border-line">
-                <span>Parent App Live Preview</span>
-                <FiSmartphone size={15} className="text-teal" />
+          {/* Right Aside: Preview & Recent Notices (Matching 37-Notices.html) */}
+          <aside className="flex-1 basis-[300px] max-w-full lg:max-w-[340px] flex flex-col gap-4">
+            {/* Live Parent App Card Preview */}
+            <section className="bg-white border border-line rounded-card p-4.5 flex flex-col gap-3 shadow-xs">
+              <h2 className="m-0 text-sm font-semibold text-ink">Preview in parent app</h2>
+
+              <div className="border border-line rounded-card p-3.5 bg-[#F9FAF8] flex flex-col gap-1.5">
+                <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+                  Notice · GuruConnect Institute
+                </span>
+                <span className="text-sm font-semibold text-ink leading-snug">
+                  {noticeTitle}
+                </span>
+                <span className="text-xs text-ink-secondary leading-relaxed line-clamp-3">
+                  {noticeMessage}
+                </span>
               </div>
+            </section>
 
-              {/* Mobile Card Phone Frame */}
-              <div className="bg-page border border-line rounded-panel p-4 space-y-2.5 shadow-inner">
-                <div className="flex items-center justify-between text-[10px] text-teal font-bold uppercase tracking-wide">
-                  <span>Official Notice · Shiksha Public School</span>
-                  <span className="text-navy-muted font-normal">Today</span>
+            {/* Recent Notices */}
+            <section className="bg-white border border-line rounded-card p-4.5 flex flex-col gap-1 shadow-xs">
+              <h2 className="m-0 mb-2 text-sm font-semibold text-ink">Recent notices</h2>
+
+              <div className="py-2.5 border-t border-[#EEF1EF] flex flex-col gap-1">
+                <div className="flex justify-between items-baseline gap-2 text-xs">
+                  <span className="font-semibold text-ink">PTM for Class 6 on 9 Oct</span>
+                  <span className="text-ink-secondary shrink-0">02 Oct</span>
                 </div>
-
-                <div className="font-bold text-sm text-navy">{title}</div>
-
-                <p className="text-xs text-navy-muted leading-relaxed">{message}</p>
-
-                {hindiMessage && (
-                  <p className="text-xs text-navy font-medium leading-relaxed pt-2 border-t border-line/60">
-                    {hindiMessage}
-                  </p>
-                )}
-
-                {requireAck && (
-                  <div className="pt-2 flex items-center gap-2">
-                    <button className="flex-1 py-1.5 bg-teal text-white rounded font-bold text-[11px] shadow-xs">
-                      Acknowledge & Confirm
-                    </button>
-                  </div>
-                )}
+                <span className="text-xs text-ink-secondary">98% delivered · 412 acknowledges</span>
               </div>
+
+              <div className="py-2.5 border-t border-[#EEF1EF] flex flex-col gap-1">
+                <div className="flex justify-between items-baseline gap-2 text-xs">
+                  <span className="font-semibold text-ink">Fee installment 3 due date reminder</span>
+                  <span className="text-ink-secondary shrink-0">28 Sep</span>
+                </div>
+                <span className="text-xs text-ink-secondary">100% delivered · 88 online payments</span>
+              </div>
+            </section>
+          </aside>
+        </div>
+      )}
+
+      {/* SECTION 2: PTM SCHEDULER & MATRIX (Matching 38-PTM.html) */}
+      {activeTab === "ptm" && (
+        <div className="space-y-4">
+          {/* 4 KPI Cards (Matching 38-PTM.html) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
+              <span className="text-xs text-ink-secondary font-medium">Slots</span>
+              <span className="font-mono text-2xl font-semibold text-ink">36</span>
+            </div>
+
+            <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
+              <span className="text-xs text-ink-secondary font-medium">Booked</span>
+              <span className="font-mono text-2xl font-semibold text-ink">31</span>
+            </div>
+
+            <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
+              <span className="text-xs text-ink-secondary font-medium">Met so far</span>
+              <span className="font-mono text-2xl font-semibold text-ink">4</span>
+            </div>
+
+            <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
+              <span className="text-xs text-ink-secondary font-medium">No-shows</span>
+              <span className="font-mono text-2xl font-semibold text-ink">1</span>
             </div>
           </div>
-        </div>
-      ) : (
-        /* PTM Scheduler Tab matching Screen 38 */
-        <div className="space-y-4">
-          <div className="bg-surface border border-line rounded-panel shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-line flex flex-wrap items-center justify-between gap-3 bg-page/30">
-              <div>
-                <h2 className="font-bold text-sm text-navy">Parent-Teacher Meeting (PTM) Sessions</h2>
-                <p className="text-[11px] text-navy-muted">
-                  10-minute automated booking slots allotted to parents to prevent corridor congestion.
-                </p>
+
+          {/* Interactive PTM Matrix by Teacher (Matching 38-PTM.html) */}
+          <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
+            <div className="p-3.5 px-5 border-b border-[#EEF1EF] flex justify-between items-center gap-3 flex-wrap">
+              <h2 className="m-0 text-base font-semibold text-ink">
+                Slots by class teacher
+              </h2>
+
+              <div className="flex items-center gap-3.5 text-xs text-ink-secondary flex-wrap">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-[3px] bg-primary block" />
+                  Booked
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-[3px] bg-[#9CC3C4] block" />
+                  Met
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-[3px] bg-[#D9822B] block" />
+                  No-show
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded-[3px] border border-dashed border-[#4F5B57] bg-white block" />
+                  Free
+                </span>
               </div>
-              <button
-                onClick={() => showToast("New PTM batch slots created.", "success")}
-                className="px-3.5 py-1.5 bg-teal hover:bg-teal-hover text-white rounded-control text-xs font-bold shadow-xs transition"
-              >
-                + Schedule PTM Session
-              </button>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-page/70 border-b border-line text-navy-muted font-semibold">
-                    <th className="py-3 px-4">Faculty Member</th>
-                    <th className="py-3 px-4">Class</th>
-                    <th className="py-3 px-4">Session Date</th>
-                    <th className="py-3 px-4">Time Window</th>
-                    <th className="py-3 px-4 text-center">Booked Slots</th>
-                    <th className="py-3 px-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line">
-                  {DEFAULT_PTM.map(slot => (
-                    <tr key={slot.id} className="hover:bg-page/40 transition">
-                      <td className="py-3 px-4 font-bold text-navy">{slot.teacher}</td>
-                      <td className="py-3 px-4 font-semibold text-teal">{slot.grade}</td>
-                      <td className="py-3 px-4 text-navy-muted font-medium">{slot.date}</td>
-                      <td className="py-3 px-4 font-mono text-navy-muted">{slot.timeSlot}</td>
-                      <td className="py-3 px-4 text-center">
-                        <span className="font-mono font-bold text-navy">
-                          {slot.bookedSlots} / {slot.totalSlots}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <button
-                          onClick={() => showToast(`Opening roster for ${slot.teacher}...`, "info")}
-                          className="px-3 py-1 border border-line rounded-control bg-surface hover:bg-page font-semibold text-navy text-xs"
-                        >
-                          View Schedule
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="grid grid-cols-[160px_repeat(12,minmax(44px,1fr))] min-w-[760px] text-xs">
+                {/* Header Row */}
+                <div className="p-2.5 px-4 bg-[#F2F4F2] font-semibold text-ink">Teacher</div>
+                {TIME_SLOTS.map(t => (
+                  <div
+                    key={t}
+                    className="p-2.5 bg-[#F2F4F2] font-mono text-[11.5px] text-center text-ink-secondary"
+                  >
+                    {t}
+                  </div>
+                ))}
+
+                {/* Rows */}
+                {ptmMatrix.map(row => (
+                  <React.Fragment key={row.classGrade}>
+                    <div className="p-2.5 px-4 border-t border-[#EEF1EF] flex flex-col justify-center">
+                      <span className="font-semibold text-ink">{row.classGrade}</span>
+                      <span className="text-[11px] text-ink-secondary">{row.teacherName}</span>
+                    </div>
+
+                    {row.slots.map((status, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2 border-t border-[#EEF1EF] flex items-center justify-center"
+                      >
+                        {status === "Met" && (
+                          <span
+                            title="Met"
+                            className="w-full h-8 rounded-[5px] bg-[#9CC3C4] border border-[#9CC3C4] block cursor-pointer"
+                          />
+                        )}
+                        {status === "Booked" && (
+                          <span
+                            title="Booked"
+                            className="w-full h-8 rounded-[5px] bg-primary border border-primary block cursor-pointer"
+                          />
+                        )}
+                        {status === "No-show" && (
+                          <span
+                            title="No-show"
+                            className="w-full h-8 rounded-[5px] bg-[#D9822B] border border-[#D9822B] block cursor-pointer"
+                          />
+                        )}
+                        {status === "Free" && (
+                          <span
+                            title="Free"
+                            className="w-full h-8 rounded-[5px] bg-white border border-dashed border-[#4F5B57] block cursor-pointer"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
+          </section>
+        </div>
+      )}
+
+      {/* New PTM Modal */}
+      {isNewPTMModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-card w-full max-w-md shadow-xl p-6 space-y-4 font-sans animate-in fade-in zoom-in-95 text-xs">
+            <div className="flex justify-between items-center pb-2.5 border-b border-line">
+              <h3 className="font-semibold text-base text-ink">Schedule New PTM Session</h3>
+              <button
+                type="button"
+                onClick={() => setIsNewPTMModalOpen(false)}
+                className="text-ink-secondary hover:text-ink text-sm font-semibold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreatePTM} className="space-y-3.5">
+              <div>
+                <label className="block text-ink font-medium mb-1">PTM Session Title</label>
+                <input
+                  type="text"
+                  required
+                  value={newPTMForm.title}
+                  onChange={e => setNewPTMForm(prev => ({ ...prev, title: e.target.value }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-ink font-medium mb-1">Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={newPTMForm.date}
+                    onChange={e => setNewPTMForm(prev => ({ ...prev, date: e.target.value }))}
+                    className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-ink font-medium mb-1">Slot Duration (Minutes)</label>
+                  <input
+                    type="number"
+                    required
+                    value={newPTMForm.slotDuration}
+                    onChange={e => setNewPTMForm(prev => ({ ...prev, slotDuration: Number(e.target.value) }))}
+                    className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-ink font-medium mb-1">Start Time</label>
+                  <input
+                    type="time"
+                    required
+                    value={newPTMForm.startTime}
+                    onChange={e => setNewPTMForm(prev => ({ ...prev, startTime: e.target.value }))}
+                    className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-ink font-medium mb-1">End Time</label>
+                  <input
+                    type="time"
+                    required
+                    value={newPTMForm.endTime}
+                    onChange={e => setNewPTMForm(prev => ({ ...prev, endTime: e.target.value }))}
+                    className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => setIsNewPTMModalOpen(false)}
+                  className="px-4 py-2 border border-line-input rounded-control text-ink hover:bg-slate-50 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                >
+                  Generate Slot Grid
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

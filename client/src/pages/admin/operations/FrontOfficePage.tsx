@@ -4,82 +4,166 @@ import {
   FiUserCheck,
   FiCamera,
   FiClock,
-  FiAlertCircle,
-  FiCheckCircle,
   FiPrinter,
   FiSearch,
   FiPlus,
   FiMessageSquare,
-  FiShield
+  FiShield,
+  FiCheckCircle,
+  FiAlertTriangle,
+  FiX
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
 
-interface Visitor {
+interface InsideVisitor {
   id: string;
   name: string;
   phone: string;
+  relationOrType: string;
   purpose: string;
-  meetingWith: string;
-  checkInTime: string;
+  inTime: string;
   duration: string;
+  gatePassNo: string;
 }
 
-interface ComplaintTicket {
+interface ComplaintRow {
+  id: string;
   ticketNo: string;
   subject: string;
-  category: string;
+  category: "Transport" | "App / communication" | "Facilities" | "Academics" | "Fees" | "Library";
   raisedBy: string;
   assignedTo: string;
   responseDue: string;
-  status: "Open" | "In progress" | "Escalated" | "Resolved";
   isOverdue?: boolean;
+  status: "Open" | "In progress" | "Escalated" | "Resolved";
+  resolutionNote?: string;
 }
 
-const DEFAULT_VISITORS: Visitor[] = [
-  { id: "1", name: "Rohit Gupta", phone: "98290 14210", purpose: "Parent of Aarav (5-A)", meetingWith: "Class Teacher (Sunita Rathore)", checkInTime: "10:05 AM", duration: "25 min" },
-  { id: "2", name: "Anil Traders", phone: "94140 88219", purpose: "Vendor Delivery · Stationery", meetingWith: "Store Keeper", checkInTime: "09:40 AM", duration: "50 min" },
-  { id: "3", name: "Priya Nair", phone: "98870 33412", purpose: "Admission Enquiry · Class 1", meetingWith: "Admission Counsellor", checkInTime: "10:12 AM", duration: "18 min" },
-  { id: "4", name: "Rajesh (Electrician)", phone: "99280 11942", purpose: "Contractor Maintenance", meetingWith: "Facilities Head", checkInTime: "09:15 AM", duration: "1h 15m" }
+const INITIAL_VISITORS: InsideVisitor[] = [
+  {
+    id: "v-1",
+    name: "Rohit Gupta",
+    phone: "98290 14210",
+    relationOrType: "Parent of Aarav (5-A)",
+    purpose: "Meet class teacher",
+    inTime: "10:05",
+    duration: "25 min",
+    gatePassNo: "GP-2627/0841"
+  },
+  {
+    id: "v-2",
+    name: "Anil Traders",
+    phone: "94140 88219",
+    relationOrType: "Vendor",
+    purpose: "Stationery delivery · store",
+    inTime: "09:40",
+    duration: "50 min",
+    gatePassNo: "GP-2627/0840"
+  },
+  {
+    id: "v-3",
+    name: "Priya Nair",
+    phone: "98870 33412",
+    relationOrType: "Admission enquiry",
+    purpose: "Class 1 · counsellor",
+    inTime: "10:12",
+    duration: "18 min",
+    gatePassNo: "GP-2627/0842"
+  },
+  {
+    id: "v-4",
+    name: "Rajesh (electrician)",
+    phone: "99280 11942",
+    relationOrType: "Contractor",
+    purpose: "Utility block electricals",
+    inTime: "08:15",
+    duration: "2 h 15 min",
+    gatePassNo: "GP-2627/0838"
+  },
+  {
+    id: "v-5",
+    name: "Seema Kanwar",
+    phone: "97840 22104",
+    relationOrType: "Parent",
+    purpose: "Fee counter receipt clarification",
+    inTime: "10:20",
+    duration: "10 min",
+    gatePassNo: "GP-2627/0843"
+  },
+  {
+    id: "v-6",
+    name: "Dinesh Verma",
+    phone: "96490 11928",
+    relationOrType: "Courier service",
+    purpose: "Principal office delivery",
+    inTime: "10:25",
+    duration: "5 min",
+    gatePassNo: "GP-2627/0844"
+  }
 ];
 
-const DEFAULT_COMPLAINTS: ComplaintTicket[] = [
+const INITIAL_COMPLAINTS: ComplaintRow[] = [
   {
+    id: "c-1",
     ticketNo: "CMP/2627/0088",
     subject: "Bus 3 reached stop 20 minutes late, three days in a row",
     category: "Transport",
     raisedBy: "Parent of Ishita Rao (5-A)",
-    assignedTo: "Transport Manager",
+    assignedTo: "Transport manager",
     responseDue: "Overdue by 6 h",
-    status: "Escalated",
-    isOverdue: true
+    isOverdue: true,
+    status: "Escalated"
   },
   {
+    id: "c-2",
     ticketNo: "CMP/2627/0091",
-    subject: "Homework diary not synced on mobile app since Monday",
-    category: "App / Communication",
+    subject: "Homework diary not received on app since Monday",
+    category: "App / communication",
     raisedBy: "Parent of Kabir Saxena (6-B)",
-    assignedTo: "IT Support Admin",
+    assignedTo: "IT admin",
     responseDue: "Today 3:00 pm",
     status: "In progress"
   },
   {
+    id: "c-3",
     ticketNo: "CMP/2627/0092",
-    subject: "Water cooler on ground floor near junior block not cooling",
+    subject: "Water cooler on ground floor not cooling",
     category: "Facilities",
-    raisedBy: "Class Teacher 4-B",
-    assignedTo: "Store Keeper",
+    raisedBy: "Class teacher 4-B",
+    assignedTo: "Store keeper",
     responseDue: "Overdue by 1 day",
-    status: "Escalated",
-    isOverdue: true
+    isOverdue: true,
+    status: "Escalated"
   },
   {
+    id: "c-4",
+    ticketNo: "CMP/2627/0094",
+    subject: "Request to change section for sibling together",
+    category: "Academics",
+    raisedBy: "Parent of Navya Jangid",
+    assignedTo: "Vice principal",
+    responseDue: "Sat 10 Oct",
+    status: "Open"
+  },
+  {
+    id: "c-5",
     ticketNo: "CMP/2627/0095",
-    subject: "Receipt shows wrong installment name for cash payment",
+    subject: "Receipt shows wrong installment name",
     category: "Fees",
     raisedBy: "Parent of Om Prakash (5-A)",
-    assignedTo: "Accountant (Rekha Jain)",
-    responseDue: "Tomorrow 12:00 pm",
+    assignedTo: "Accountant",
+    responseDue: "Sat 10 Oct",
     status: "In progress"
+  },
+  {
+    id: "c-6",
+    ticketNo: "CMP/2627/0083",
+    subject: "Library fine charged after book was returned",
+    category: "Library",
+    raisedBy: "Parent of Diya Choudhary (7-B)",
+    assignedTo: "Librarian",
+    responseDue: "Closed 7 Oct",
+    status: "Resolved"
   }
 ];
 
@@ -87,322 +171,387 @@ export default function FrontOfficePage() {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<"visitors" | "complaints">("visitors");
   const [visitorMode, setVisitorMode] = useState<"visitor" | "earlyPickup">("visitor");
-  const [visitors, setVisitors] = useState<Visitor[]>(DEFAULT_VISITORS);
-  const [complaints, setComplaints] = useState<ComplaintTicket[]>(DEFAULT_COMPLAINTS);
+  const [visitors, setVisitors] = useState<InsideVisitor[]>(INITIAL_VISITORS);
+  const [complaints, setComplaints] = useState<ComplaintRow[]>(INITIAL_COMPLAINTS);
+  const [complaintFilter, setComplaintFilter] = useState("Open · 7");
 
-  // New Visitor Form State
-  const [visitorName, setVisitorName] = useState("");
-  const [visitorPhone, setVisitorPhone] = useState("");
-  const [purpose, setPurpose] = useState("Meet teacher");
-  const [toMeet, setToMeet] = useState("Class Teacher");
+  // New Check-in Form State (Screen 35)
+  const [checkinForm, setCheckinForm] = useState({
+    mobile: "98290 41209",
+    name: "Suresh Kumawat",
+    purpose: "Vendor delivery",
+    toMeet: "Store keeper"
+  });
 
-  // New Complaint Form State
+  const [printedPass, setPrintedPass] = useState<InsideVisitor | null>(null);
+
+  // New Complaint Form State (Screen 36)
   const [isLogComplaintOpen, setIsLogComplaintOpen] = useState(false);
   const [newComplaint, setNewComplaint] = useState({
     subject: "",
-    category: "Academics",
+    category: "Transport" as ComplaintRow["category"],
     raisedBy: "",
-    assignedTo: "Principal Office"
+    assignedTo: "Transport manager"
   });
 
-  const handleCheckIn = (e: React.FormEvent) => {
+  // Action / Resolution modal
+  const [selectedTicket, setSelectedTicket] = useState<ComplaintRow | null>(null);
+
+  const handleCheckinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!visitorName || !visitorPhone) {
-      showToast("Please provide visitor name and mobile number.", "error");
-      return;
-    }
-    const created: Visitor = {
-      id: String(Date.now()),
-      name: visitorName,
-      phone: visitorPhone,
-      purpose: purpose,
-      meetingWith: toMeet,
-      checkInTime: "Just now",
-      duration: "0 min"
+    if (!checkinForm.name.trim() || !checkinForm.mobile.trim()) return;
+
+    const created: InsideVisitor = {
+      id: `v-${Date.now()}`,
+      name: checkinForm.name,
+      phone: checkinForm.mobile,
+      relationOrType: checkinForm.purpose === "Meet teacher" ? "Parent" : "Visitor",
+      purpose: `${checkinForm.purpose} · ${checkinForm.toMeet}`,
+      inTime: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      duration: "Just now",
+      gatePassNo: `GP-2627/0${visitors.length + 845}`
     };
-    setVisitors([created, ...visitors]);
-    setVisitorName("");
-    setVisitorPhone("");
-    showToast(`Gate pass printed for ${created.name}. Visitor checked in.`, "success");
+
+    setVisitors(prev => [created, ...prev]);
+    setPrintedPass(created);
+    showToast(`Visitor ${created.name} checked in! Gate Pass #${created.gatePassNo} generated.`, "success");
   };
 
-  const handleCheckOut = (id: string) => {
-    const v = visitors.find(item => item.id === id);
-    setVisitors(prev => prev.filter(item => item.id !== id));
-    showToast(`Checked out ${v?.name}. Gate pass marked exit.`, "info");
+  const handleCheckout = (visitor: InsideVisitor) => {
+    setVisitors(prev => prev.filter(v => v.id !== visitor.id));
+    showToast(`Visitor ${visitor.name} successfully checked out at main gate.`, "success");
   };
 
   const handleLogComplaint = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComplaint.subject || !newComplaint.raisedBy) {
-      showToast("Please fill in subject and applicant details.", "error");
-      return;
-    }
-    const ticket: ComplaintTicket = {
-      ticketNo: `CMP/2627/00${Math.floor(96 + Math.random() * 80)}`,
+    if (!newComplaint.subject.trim() || !newComplaint.raisedBy.trim()) return;
+
+    const ticket: ComplaintRow = {
+      id: `cmp-${Date.now()}`,
+      ticketNo: `CMP/2627/00${complaints.length + 96}`,
       subject: newComplaint.subject,
       category: newComplaint.category,
       raisedBy: newComplaint.raisedBy,
       assignedTo: newComplaint.assignedTo,
-      responseDue: "In 72 hours",
+      responseDue: "72 h from now",
       status: "Open"
     };
-    setComplaints([ticket, ...complaints]);
+
+    setComplaints(prev => [ticket, ...prev]);
     setIsLogComplaintOpen(false);
-    setNewComplaint({ subject: "", category: "Academics", raisedBy: "", assignedTo: "Principal Office" });
-    showToast(`Complaint Ticket ${ticket.ticketNo} logged with 72-hour SLA tracking!`, "success");
+    setNewComplaint({
+      subject: "",
+      category: "Transport",
+      raisedBy: "",
+      assignedTo: "Transport manager"
+    });
+    showToast(`Ticket #${ticket.ticketNo} registered with 72-hour SLA response target!`, "success");
   };
 
-  return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto text-navy">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold text-navy-muted tracking-wide uppercase">
-            Operations › Front Office & Security
-          </div>
-          <h1 className="text-2xl font-bold text-navy mt-1">Campus Gate Pass & Grievance Desk</h1>
-          <p className="text-xs text-navy-muted mt-0.5">
-            Real-time campus occupant control, biometric early student pickup, and 72-hour SLA complaint management.
-          </p>
-        </div>
+  const handleResolveTicket = (ticketId: string) => {
+    setComplaints(prev =>
+      prev.map(c =>
+        c.id === ticketId ? { ...c, status: "Resolved", responseDue: "Resolved today" } : c
+      )
+    );
+    setSelectedTicket(null);
+    showToast("Complaint marked as resolved and parent updated on app!", "success");
+  };
 
-        <div className="flex items-center gap-3">
-          {activeTab === "complaints" && (
+  const filteredComplaints = complaints.filter(c => {
+    if (complaintFilter.startsWith("Open")) return c.status !== "Resolved";
+    if (complaintFilter.startsWith("Overdue")) return c.isOverdue;
+    if (complaintFilter.startsWith("Resolved")) return c.status === "Resolved";
+    return true;
+  });
+
+  return (
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
+      {/* Header Row (Matching 35-Visitors.html & 36-Complaints.html) */}
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary flex items-center gap-1.5">
+            <span>Front Office ›</span>
             <button
-              onClick={() => setIsLogComplaintOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-teal hover:bg-teal-hover text-white rounded-control text-xs font-bold shadow-xs transition"
+              type="button"
+              onClick={() => setActiveTab("visitors")}
+              className={`hover:underline cursor-pointer ${
+                activeTab === "visitors" ? "font-semibold text-ink" : "text-primary"
+              }`}
             >
-              <FiPlus size={15} /> Log New Complaint
+              Visitors · Early pickup
             </button>
+            <span>·</span>
+            <button
+              type="button"
+              onClick={() => setActiveTab("complaints")}
+              className={`hover:underline cursor-pointer ${
+                activeTab === "complaints" ? "font-semibold text-ink" : "text-primary"
+              }`}
+            >
+              Complaints
+            </button>
+          </div>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            {activeTab === "visitors" ? "Gate and visitors · today" : "Parent complaints"}
+          </h1>
+          {activeTab === "complaints" && (
+            <div className="text-[13px] text-ink-secondary">
+              Every complaint gets a ticket number and a 72-hour response target. Overdue tickets go to the principal.
+            </div>
           )}
         </div>
+
+        {activeTab === "complaints" && (
+          <button
+            type="button"
+            onClick={() => setIsLogComplaintOpen(true)}
+            className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+          >
+            <FiPlus size={15} />
+            <span>Log complaint</span>
+          </button>
+        )}
       </div>
 
-      {/* Main Tabs */}
-      <div className="flex border-b border-line gap-2">
-        <button
-          onClick={() => setActiveTab("visitors")}
-          className={`px-4 py-2.5 text-xs font-bold border-b-2 transition ${
-            activeTab === "visitors"
-              ? "border-teal text-teal"
-              : "border-transparent text-navy-muted hover:text-navy"
-          }`}
-        >
-          Gate Visitors & Early Pickup ({visitors.length} Inside)
-        </button>
-        <button
-          onClick={() => setActiveTab("complaints")}
-          className={`px-4 py-2.5 text-xs font-bold border-b-2 transition ${
-            activeTab === "complaints"
-              ? "border-teal text-teal"
-              : "border-transparent text-navy-muted hover:text-navy"
-          }`}
-        >
-          Parent Complaints & Grievances ({complaints.length})
-        </button>
-      </div>
-
-      {activeTab === "visitors" ? (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left: Gate Pass Check-in Form matching Screen 35 */}
-          <div className="lg:col-span-5 bg-surface border border-line rounded-panel p-5 shadow-sm space-y-4">
-            <div className="inline-flex w-full bg-page p-1 border border-line rounded-control text-xs">
+      {/* SECTION 1: VISITORS & GATE PASS DESK (Screen 35) */}
+      {activeTab === "visitors" && (
+        <div className="flex flex-wrap gap-5 items-start">
+          {/* Left Form: Check-in Desk */}
+          <section className="flex-1 basis-[340px] bg-white border border-line rounded-card p-5 flex flex-col gap-3.5 shadow-xs">
+            {/* Entry Mode Switcher */}
+            <div className="grid grid-cols-2 bg-[#E7EBE8] rounded-control p-1">
               <button
+                type="button"
                 onClick={() => setVisitorMode("visitor")}
-                className={`flex-1 py-1.5 rounded font-bold transition ${
-                  visitorMode === "visitor" ? "bg-teal text-white shadow-xs" : "text-navy-muted hover:text-navy"
+                className={`min-h-[38px] rounded-control font-semibold text-xs transition-all cursor-pointer ${
+                  visitorMode === "visitor" ? "bg-white text-ink shadow-xs" : "text-ink-secondary"
                 }`}
               >
-                Visitor Entry
+                Visitor entry
               </button>
               <button
+                type="button"
                 onClick={() => setVisitorMode("earlyPickup")}
-                className={`flex-1 py-1.5 rounded font-bold transition ${
-                  visitorMode === "earlyPickup" ? "bg-teal text-white shadow-xs" : "text-navy-muted hover:text-navy"
+                className={`min-h-[38px] rounded-control font-medium text-xs transition-all cursor-pointer ${
+                  visitorMode === "earlyPickup" ? "bg-white text-ink shadow-xs font-semibold" : "text-ink-secondary"
                 }`}
               >
-                Early Student Pickup
+                Early pickup
               </button>
             </div>
 
-            <form onSubmit={handleCheckIn} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block font-medium text-navy mb-1">Mobile Number *</label>
+            <form onSubmit={handleCheckinSubmit} className="flex flex-col gap-3.5">
+              <label className="flex flex-col gap-1 text-xs font-medium text-ink">
+                Mobile number
                 <div className="flex gap-2">
                   <input
                     type="tel"
                     required
-                    placeholder="98290 xxxxx"
-                    value={visitorPhone}
-                    onChange={e => setVisitorPhone(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal font-mono"
+                    value={checkinForm.mobile}
+                    onChange={e => setCheckinForm(prev => ({ ...prev, mobile: e.target.value }))}
+                    className="flex-1 min-h-[42px] px-3 border border-line-input rounded-control font-mono text-sm text-ink focus:border-primary focus:outline-none"
                   />
                   <button
                     type="button"
-                    onClick={() => showToast("Verification OTP sent to visitor phone.", "info")}
-                    className="px-3 py-2 border border-line rounded-control bg-page hover:bg-surface font-semibold text-navy text-xs"
+                    onClick={() => showToast(`OTP 4819 sent to ${checkinForm.mobile}`, "info")}
+                    className="min-h-[42px] px-3.5 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-xs font-medium transition cursor-pointer"
                   >
                     Send OTP
                   </button>
                 </div>
-              </div>
+              </label>
 
-              <div>
-                <label className="block font-medium text-navy mb-1">
-                  {visitorMode === "visitor" ? "Visitor Full Name *" : "Guardian Name *"}
-                </label>
+              <label className="flex flex-col gap-1 text-xs font-medium text-ink">
+                Name
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Suresh Kumawat"
-                  value={visitorName}
-                  onChange={e => setVisitorName(e.target.value)}
-                  className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal"
+                  value={checkinForm.name}
+                  onChange={e => setCheckinForm(prev => ({ ...prev, name: e.target.value }))}
+                  className="min-h-[42px] px-3 border border-line-input rounded-control text-sm text-ink focus:border-primary focus:outline-none"
                 />
-              </div>
+              </label>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-navy mb-1">Purpose of Visit</label>
+              <div className="grid grid-cols-2 gap-2.5">
+                <label className="flex flex-col gap-1 text-xs font-medium text-ink">
+                  Purpose
                   <select
-                    value={purpose}
-                    onChange={e => setPurpose(e.target.value)}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none"
+                    value={checkinForm.purpose}
+                    onChange={e => setCheckinForm(prev => ({ ...prev, purpose: e.target.value }))}
+                    className="min-h-[42px] px-2.5 border border-line-input rounded-control bg-white text-xs text-ink focus:border-primary focus:outline-none"
                   >
-                    <option>Meet teacher</option>
                     <option>Vendor delivery</option>
+                    <option>Meet teacher</option>
                     <option>Admission enquiry</option>
-                    <option>Fee payment desk</option>
-                    <option>Principal appointment</option>
+                    <option>Fee payment</option>
                   </select>
-                </div>
-                <div>
-                  <label className="block font-medium text-navy mb-1">Person to Meet</label>
-                  <input
-                    type="text"
-                    value={toMeet}
-                    onChange={e => setToMeet(e.target.value)}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal"
-                  />
-                </div>
+                </label>
+
+                <label className="flex flex-col gap-1 text-xs font-medium text-ink">
+                  To meet
+                  <select
+                    value={checkinForm.toMeet}
+                    onChange={e => setCheckinForm(prev => ({ ...prev, toMeet: e.target.value }))}
+                    className="min-h-[42px] px-2.5 border border-line-input rounded-control bg-white text-xs text-ink focus:border-primary focus:outline-none"
+                  >
+                    <option>Store keeper</option>
+                    <option>Class teacher</option>
+                    <option>Principal</option>
+                    <option>Accountant</option>
+                  </select>
+                </label>
               </div>
 
-              <div className="flex items-center gap-3 p-3 bg-page rounded-control border border-line/70">
-                <div className="w-14 h-14 rounded-control border border-dashed border-navy-muted flex flex-col items-center justify-center text-[9px] text-navy-muted font-bold">
-                  <FiCamera size={14} /> Photo
+              <div className="flex gap-3 items-center pt-1">
+                <div className="w-16 h-16 rounded-control border border-dashed border-[#9AA8A3] bg-[#F9FAF8] flex items-center justify-center text-[10px] text-ink-secondary text-center">
+                  [Photo]
                 </div>
-                <div>
-                  <div className="font-semibold text-navy text-xs">Security Gate Webcam</div>
-                  <div className="text-navy-muted text-[11px]">Capture badge picture for printout</div>
-                </div>
-              </div>
-
-              <div className="pt-2">
                 <button
-                  type="submit"
-                  className="w-full py-3 bg-teal hover:bg-teal-hover text-white rounded-control font-bold text-xs shadow-xs transition"
+                  type="button"
+                  onClick={() => showToast("Webcam photo captured for gate pass badge!", "info")}
+                  className="min-h-[38px] px-3 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
                 >
-                  Check In & Print Gate Pass
+                  <FiCamera size={13} />
+                  <span>Take photo</span>
                 </button>
               </div>
-            </form>
-          </div>
 
-          {/* Right: Inside Campus Now Roster from Screen 35 */}
-          <div className="lg:col-span-7 bg-surface border border-line rounded-panel shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-line flex items-center justify-between gap-3 bg-page/30">
-              <div>
-                <h2 className="font-bold text-sm text-navy">
-                  Inside Campus Now · {visitors.length}
-                </h2>
-                <p className="text-[11px] text-navy-muted">Real-time visitor logs on school premises</p>
-              </div>
-              <span className="font-mono text-xs font-semibold text-teal">
-                31 Total Visitors Today
-              </span>
+              <button
+                type="submit"
+                className="min-h-[44px] rounded-control bg-primary hover:bg-[#08393F] text-white font-semibold text-xs transition-all cursor-pointer shadow-xs active:scale-[0.98] mt-1"
+              >
+                Check in and print gate pass
+              </button>
+            </form>
+          </section>
+
+          {/* Right: Inside Campus Register (Matching 35-Visitors.html) */}
+          <section className="flex-1 basis-[460px] min-w-0 bg-white border border-line rounded-card overflow-hidden shadow-xs">
+            <div className="p-3.5 px-5 border-b border-[#EEF1EF] flex justify-between items-center gap-3 flex-wrap">
+              <h2 className="m-0 text-base font-semibold text-ink">
+                Inside campus now · {visitors.length}
+              </h2>
+              <span className="text-xs text-ink-secondary">31 visitors today</span>
             </div>
 
-            <div className="divide-y divide-line text-xs">
-              {visitors.map(v => (
-                <div key={v.id} className="p-4 flex items-center justify-between gap-4 hover:bg-page/40 transition">
-                  <div>
-                    <div className="font-bold text-navy text-sm">{v.name}</div>
-                    <div className="text-navy-muted text-[11px]">{v.purpose} · Meeting {v.meetingWith}</div>
-                    <div className="font-mono text-navy-muted text-[10px] mt-0.5">{v.phone}</div>
+            <div className="divide-y divide-[#EEF1EF]">
+              {visitors.map(visitor => (
+                <div
+                  key={visitor.id}
+                  className="p-3 px-5 flex justify-between items-center gap-3 flex-wrap hover:bg-slate-50/50 transition-colors"
+                >
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="font-semibold text-sm text-ink">{visitor.name}</span>
+                    <span className="text-xs text-ink-secondary truncate">
+                      {visitor.relationOrType} · {visitor.purpose}
+                    </span>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono font-medium text-navy-muted text-[11px] whitespace-nowrap">
-                      In {v.checkInTime} ({v.duration})
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="font-mono text-xs text-ink-secondary">
+                      In {visitor.inTime} · {visitor.duration}
                     </span>
                     <button
-                      onClick={() => handleCheckOut(v.id)}
-                      className="px-3 py-1.5 border border-line rounded-control bg-surface hover:bg-page font-semibold text-navy text-xs transition"
+                      type="button"
+                      onClick={() => handleCheckout(visitor)}
+                      className="min-h-[36px] px-3 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-xs font-medium transition cursor-pointer shadow-xs"
                     >
-                      Check Out
+                      Check out
                     </button>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         </div>
-      ) : (
-        /* Complaints Tab matching Screen 36 */
-        <div className="space-y-4">
-          <div className="bg-surface border border-line rounded-panel shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-line flex flex-wrap items-center justify-between gap-3 bg-page/30">
-              <div>
-                <h2 className="font-bold text-sm text-navy">Parent & Student Complaints</h2>
-                <p className="text-[11px] text-navy-muted">
-                  Every ticket receives a mandatory 72-hour resolution target. Overdue tickets automatically escalate to the Principal.
-                </p>
-              </div>
-            </div>
+      )}
 
+      {/* SECTION 2: PARENT COMPLAINTS & GRIEVANCES (Screen 36) */}
+      {activeTab === "complaints" && (
+        <div className="space-y-4">
+          {/* Filter Pills (Matching 36-Complaints.html) */}
+          <div className="flex flex-wrap gap-2">
+            {[
+              "Open · 7",
+              "Overdue · 2",
+              "Resolved this month · 19",
+              "All categories"
+            ].map(pill => {
+              const isActive = complaintFilter === pill;
+              return (
+                <button
+                  key={pill}
+                  type="button"
+                  onClick={() => setComplaintFilter(pill)}
+                  className={`min-h-[36px] px-3.5 rounded-full text-xs font-medium transition-colors cursor-pointer border ${
+                    isActive
+                      ? "bg-[#12302D] text-white border-[#12302D]"
+                      : "bg-white text-ink border-line-input hover:bg-slate-50"
+                  }`}
+                >
+                  {pill}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Complaints Table (Matching 36-Complaints.html) */}
+          <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+              <table className="w-full border-collapse text-sm min-w-[800px]">
                 <thead>
-                  <tr className="bg-page/70 border-b border-line text-navy-muted font-semibold">
-                    <th className="py-3 px-4 w-32">Ticket No.</th>
-                    <th className="py-3 px-4">Subject & Category</th>
-                    <th className="py-3 px-4">Raised By</th>
-                    <th className="py-3 px-4">Assigned To</th>
-                    <th className="py-3 px-4">Response Due</th>
-                    <th className="py-3 px-4 text-center">Status</th>
+                  <tr className="bg-[#F2F4F2] text-left text-xs text-ink font-semibold">
+                    <th className="py-3 px-4 font-semibold">Ticket</th>
+                    <th className="py-3 px-4 font-semibold">Subject</th>
+                    <th className="py-3 px-4 font-semibold">Raised by</th>
+                    <th className="py-3 px-4 font-semibold">Assigned to</th>
+                    <th className="py-3 px-4 font-semibold">Response due</th>
+                    <th className="py-3 px-4 font-semibold">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-line">
-                  {complaints.map(t => (
-                    <tr key={t.ticketNo} className="hover:bg-page/40 transition">
-                      <td className="py-3 px-4 font-mono font-bold text-navy">{t.ticketNo}</td>
-                      <td className="py-3 px-4">
-                        <div className="font-bold text-navy">{t.subject}</div>
-                        <div className="text-navy-muted text-[11px]">{t.category}</div>
+                <tbody>
+                  {filteredComplaints.map(item => (
+                    <tr
+                      key={item.id}
+                      onClick={() => setSelectedTicket(item)}
+                      className="border-t border-[#EEF1EF] hover:bg-slate-50/70 cursor-pointer transition-colors"
+                    >
+                      <td className="py-2.5 px-4 font-mono text-xs text-ink">
+                        {item.ticketNo}
                       </td>
-                      <td className="py-3 px-4 text-navy-muted font-medium">{t.raisedBy}</td>
-                      <td className="py-3 px-4 font-medium text-navy">{t.assignedTo}</td>
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4 text-xs">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-ink">{item.subject}</span>
+                          <span className="text-[11px] text-ink-secondary">{item.category}</span>
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-4 text-xs text-ink-secondary">
+                        {item.raisedBy}
+                      </td>
+                      <td className="py-2.5 px-4 text-xs text-ink">
+                        {item.assignedTo}
+                      </td>
+                      <td
+                        className={`py-2.5 px-4 text-xs font-semibold ${
+                          item.isOverdue ? "text-[#8F4A09]" : "text-ink-secondary font-normal"
+                        }`}
+                      >
+                        {item.responseDue}
+                      </td>
+                      <td className="py-2.5 px-4 text-xs">
                         <span
-                          className={`font-semibold ${
-                            t.isOverdue ? "text-red-700" : "text-navy-muted"
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                            item.status === "Escalated"
+                              ? "bg-[#FFF6EC] text-[#7A4106]"
+                              : item.status === "In progress"
+                              ? "bg-[#E3EFEF] text-primary"
+                              : item.status === "Resolved"
+                              ? "bg-[#E4F1E8] text-[#1E5A33]"
+                              : "bg-[#F1F2EF] text-ink-secondary"
                           }`}
                         >
-                          {t.responseDue}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
-                            t.status === "Escalated"
-                              ? "bg-amber-100 text-amber-900 border border-amber-300"
-                              : t.status === "In progress"
-                              ? "bg-teal/10 text-teal border border-teal/20"
-                              : "bg-slate-100 text-slate-700"
-                          }`}
-                        >
-                          {t.status}
+                          {item.status}
                         </span>
                       </td>
                     </tr>
@@ -410,96 +559,190 @@ export default function FrontOfficePage() {
                 </tbody>
               </table>
             </div>
+          </section>
+        </div>
+      )}
+
+      {/* Printable Gate Pass Modal */}
+      {printedPass && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-card w-full max-w-sm shadow-xl p-5 space-y-4 font-sans animate-in fade-in zoom-in-95 text-xs text-ink">
+            <div className="flex justify-between items-center pb-2 border-b border-line">
+              <span className="font-bold text-xs uppercase tracking-wider text-primary">
+                Official Visitor Gate Pass
+              </span>
+              <button
+                type="button"
+                onClick={() => setPrintedPass(null)}
+                className="text-ink-secondary hover:text-ink text-sm font-semibold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="border border-line rounded p-4 text-center space-y-2 bg-slate-50">
+              <div className="font-bold text-sm text-ink">{printedPass.name}</div>
+              <div className="font-mono text-xs font-bold text-primary">{printedPass.gatePassNo}</div>
+              <div className="text-[11px] text-ink-secondary">
+                {printedPass.relationOrType} · {printedPass.purpose}
+              </div>
+              <div className="text-xs font-mono pt-1 border-t border-line/60">
+                In: {printedPass.inTime} · Date: 26 Oct 2026
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  window.print();
+                  setPrintedPass(null);
+                }}
+                className="px-4 py-2 bg-primary text-white rounded font-semibold text-xs flex items-center gap-1.5"
+              >
+                <FiPrinter size={13} />
+                <span>Print Badge</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Log Complaint Modal */}
       {isLogComplaintOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-line rounded-panel w-full max-w-md shadow-xl p-6 space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-line">
-              <h3 className="font-bold text-base text-navy">Log Grievance Ticket</h3>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-card w-full max-w-md shadow-xl p-6 space-y-4 font-sans animate-in fade-in zoom-in-95 text-xs">
+            <div className="flex justify-between items-center pb-2.5 border-b border-line">
+              <h3 className="font-semibold text-base text-ink">Log Parent Complaint</h3>
               <button
+                type="button"
                 onClick={() => setIsLogComplaintOpen(false)}
-                className="text-navy-muted hover:text-navy text-sm font-semibold"
+                className="text-ink-secondary hover:text-ink text-sm font-semibold"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleLogComplaint} className="space-y-3.5 text-xs">
+            <form onSubmit={handleLogComplaint} className="space-y-3.5">
               <div>
-                <label className="block font-medium text-navy mb-1">Subject / Issue Summary *</label>
-                <input
-                  type="text"
+                <label className="block text-ink font-medium mb-1">Subject / Complaint Summary</label>
+                <textarea
                   required
-                  placeholder="e.g. Broken water cooler on 1st floor"
+                  rows={3}
+                  placeholder="Describe grievance or issue reported by parent..."
                   value={newComplaint.subject}
-                  onChange={e => setNewComplaint({ ...newComplaint, subject: e.target.value })}
-                  className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal"
+                  onChange={e => setNewComplaint(prev => ({ ...prev, subject: e.target.value }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-navy mb-1">Category</label>
+                  <label className="block text-ink font-medium mb-1">Category</label>
                   <select
                     value={newComplaint.category}
-                    onChange={e => setNewComplaint({ ...newComplaint, category: e.target.value })}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none"
+                    onChange={e => setNewComplaint(prev => ({ ...prev, category: e.target.value as any }))}
+                    className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
                   >
-                    <option value="Academics">Academics</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Facilities">Facilities</option>
-                    <option value="Fees">Fees & Billing</option>
-                    <option value="App / Communication">App / Communication</option>
+                    <option>Transport</option>
+                    <option>App / communication</option>
+                    <option>Facilities</option>
+                    <option>Academics</option>
+                    <option>Fees</option>
+                    <option>Library</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-navy mb-1">Assigned Department</label>
+                  <label className="block text-ink font-medium mb-1">Assigned Department</label>
                   <select
                     value={newComplaint.assignedTo}
-                    onChange={e => setNewComplaint({ ...newComplaint, assignedTo: e.target.value })}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none"
+                    onChange={e => setNewComplaint(prev => ({ ...prev, assignedTo: e.target.value }))}
+                    className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
                   >
-                    <option value="Principal Office">Principal Office</option>
-                    <option value="Transport Manager">Transport Manager</option>
-                    <option value="Accountant">Accountant</option>
-                    <option value="IT Support Admin">IT Support Admin</option>
-                    <option value="Store Keeper">Store Keeper</option>
+                    <option>Transport manager</option>
+                    <option>IT admin</option>
+                    <option>Vice principal</option>
+                    <option>Store keeper</option>
+                    <option>Accountant</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block font-medium text-navy mb-1">Raised By (Parent or Staff Name) *</label>
+                <label className="block text-ink font-medium mb-1">Raised by (Parent Name & Student)</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Parent of Ishita Rao (5-A)"
                   value={newComplaint.raisedBy}
-                  onChange={e => setNewComplaint({ ...newComplaint, raisedBy: e.target.value })}
-                  className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal"
+                  onChange={e => setNewComplaint(prev => ({ ...prev, raisedBy: e.target.value }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-line">
                 <button
                   type="button"
                   onClick={() => setIsLogComplaintOpen(false)}
-                  className="px-4 py-2 border border-line rounded-control text-navy hover:bg-page font-medium transition"
+                  className="px-4 py-2 border border-line-input rounded-control text-ink hover:bg-slate-50 font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-teal hover:bg-teal-hover text-white rounded-control font-semibold shadow-xs transition"
+                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
                 >
-                  Log Ticket (72h SLA)
+                  Generate Ticket (72h SLA)
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Ticket Resolution Modal */}
+      {selectedTicket && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-card w-full max-w-md shadow-xl p-6 space-y-4 font-sans animate-in fade-in zoom-in-95 text-xs">
+            <div className="flex justify-between items-center pb-2.5 border-b border-line">
+              <div>
+                <span className="font-mono text-xs font-bold text-primary">{selectedTicket.ticketNo}</span>
+                <h3 className="font-semibold text-sm text-ink">{selectedTicket.subject}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedTicket(null)}
+                className="text-ink-secondary hover:text-ink text-sm font-semibold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-3 bg-slate-50 border border-line rounded-control space-y-1.5 text-ink-secondary">
+              <div><b>Raised by:</b> {selectedTicket.raisedBy}</div>
+              <div><b>Assigned to:</b> {selectedTicket.assignedTo}</div>
+              <div><b>SLA Response target:</b> {selectedTicket.responseDue}</div>
+              <div><b>Current status:</b> {selectedTicket.status}</div>
+            </div>
+
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-line">
+              <button
+                type="button"
+                onClick={() => setSelectedTicket(null)}
+                className="px-4 py-2 border border-line-input rounded-control text-ink hover:bg-slate-50 font-medium"
+              >
+                Close
+              </button>
+              {selectedTicket.status !== "Resolved" && (
+                <button
+                  type="button"
+                  onClick={() => handleResolveTicket(selectedTicket.id)}
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-control font-semibold shadow-xs"
+                >
+                  Mark as Resolved & Notify Parent
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

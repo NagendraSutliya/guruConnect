@@ -1,200 +1,501 @@
 import React, { useState } from "react";
 import {
-  FiPackage,
-  FiAlertTriangle,
   FiPlus,
-  FiSearch,
-  FiFilter,
   FiShoppingBag,
-  FiDollarSign,
-  FiTruck
+  FiAlertTriangle,
+  FiDownload,
+  FiCheckCircle,
+  FiX,
+  FiSearch,
+  FiTool
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
 
-interface InventoryItem {
+interface StoreItem {
   id: string;
-  sku: string;
   name: string;
-  category: "Stationery" | "Lab Equipment" | "Sports" | "IT Assets" | "Furniture";
+  category: "Stationery" | "Uniform" | "Lab consumables" | "Housekeeping" | "Sports" | "IT";
   inStock: number;
-  reorderLevel: number;
-  unitPrice: number;
-  location: string;
-  isLowStock?: boolean;
+  reorderAt: number;
+  value: number;
+  lastMovement: string;
 }
 
-const DEFAULT_ITEMS: InventoryItem[] = [
-  { id: "1", sku: "STN-0012", name: "A4 Printing Paper (75 GSM Rim)", category: "Stationery", inStock: 14, reorderLevel: 25, unitPrice: 280, location: "Main Store Rack A1", isLowStock: true },
-  { id: "2", sku: "STN-0045", name: "Whiteboard Dry Erase Markers (Blue/Black)", category: "Stationery", inStock: 48, reorderLevel: 30, unitPrice: 35, location: "Main Store Rack A3" },
-  { id: "3", sku: "LAB-0104", name: "Borosilicate Glass Beakers (250 ml)", category: "Lab Equipment", inStock: 60, reorderLevel: 20, unitPrice: 140, location: "Chemistry Lab Store" },
-  { id: "4", sku: "SPT-0021", name: "Nivia Cosco Football (Size 5 Tournament)", category: "Sports", inStock: 6, reorderLevel: 10, unitPrice: 850, location: "Sports Complex Room 2", isLowStock: true },
-  { id: "5", sku: "IT-0089", name: "Dell Optical USB Mice", category: "IT Assets", inStock: 22, reorderLevel: 15, unitPrice: 350, location: "Computer Lab 1 Cupboard" }
+interface MaintenanceAsset {
+  id: string;
+  assetCode: string;
+  title: string;
+  location: string;
+  scheduleText: string;
+  isOverdue?: boolean;
+}
+
+const INITIAL_STOCK: StoreItem[] = [
+  {
+    id: "1",
+    name: "A4 paper (ream)",
+    category: "Stationery",
+    inStock: 18,
+    reorderAt: 40,
+    value: 4860,
+    lastMovement: "Issued 12 to exam cell · 7 Oct"
+  },
+  {
+    id: "2",
+    name: "Whiteboard markers (box)",
+    category: "Stationery",
+    inStock: 9,
+    reorderAt: 20,
+    value: 2250,
+    lastMovement: "Issued 6 to Class 6–8 · 5 Oct"
+  },
+  {
+    id: "3",
+    name: "Shirt, size 30 (uniform)",
+    category: "Uniform",
+    inStock: 64,
+    reorderAt: 40,
+    value: 22400,
+    lastMovement: "Sold 3 at counter · 8 Oct"
+  },
+  {
+    id: "4",
+    name: "Tie, junior (uniform)",
+    category: "Uniform",
+    inStock: 22,
+    reorderAt: 30,
+    value: 2640,
+    lastMovement: "Sold 8 at counter · 8 Oct"
+  },
+  {
+    id: "5",
+    name: "Chemistry lab — test tubes",
+    category: "Lab consumables",
+    inStock: 140,
+    reorderAt: 100,
+    value: 2800,
+    lastMovement: "Received PO-0231 · 1 Oct"
+  },
+  {
+    id: "6",
+    name: "Floor cleaner (5 L)",
+    category: "Housekeeping",
+    inStock: 4,
+    reorderAt: 10,
+    value: 1760,
+    lastMovement: "Issued 2 to housekeeping · 6 Oct"
+  },
+  {
+    id: "7",
+    name: "Football (size 5)",
+    category: "Sports",
+    inStock: 14,
+    reorderAt: 8,
+    value: 9100,
+    lastMovement: "Issued 2 to PET · 2 Oct"
+  },
+  {
+    id: "8",
+    name: "Toner cartridge",
+    category: "IT",
+    inStock: 3,
+    reorderAt: 2,
+    value: 8700,
+    lastMovement: "Issued 1 to office · 29 Sep"
+  }
+];
+
+const INITIAL_ASSETS: MaintenanceAsset[] = [
+  {
+    id: "ast-1",
+    assetCode: "AST-0412",
+    title: "Water cooler, 150 L",
+    location: "Ground floor corridor",
+    scheduleText: "Filter change overdue 6 days",
+    isOverdue: true
+  },
+  {
+    id: "ast-2",
+    assetCode: "AST-0098",
+    title: "Smart board, Room 8-B",
+    location: "Custodian: Sunita Rathore",
+    scheduleText: "AMC visit 20 Oct"
+  },
+  {
+    id: "ast-3",
+    assetCode: "AST-0207",
+    title: "Fire extinguishers (12)",
+    location: "All floors",
+    scheduleText: "Refill due 31 Oct"
+  },
+  {
+    id: "ast-4",
+    assetCode: "AST-0330",
+    title: "Generator, 62.5 kVA",
+    location: "Utility block",
+    scheduleText: "Service due 15 Nov"
+  }
 ];
 
 export default function InventoryPage() {
   const { showToast } = useToast();
-  const [items, setItems] = useState<InventoryItem[]>(DEFAULT_ITEMS);
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [stock, setStock] = useState<StoreItem[]>(INITIAL_STOCK);
+  const [assets, setAssets] = useState<MaintenanceAsset[]>(INITIAL_ASSETS);
+  const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
 
-  const lowStockCount = items.filter(i => i.isLowStock).length;
-  const totalStockValue = items.reduce((sum, i) => sum + i.inStock * i.unitPrice, 0);
-
-  const handleCreatePO = () => {
-    showToast("Automated Purchase Order generated for all items below reorder threshold.", "success");
-  };
-
-  const filtered = items.filter(i => {
-    const matchesSearch =
-      i.name.toLowerCase().includes(search.toLowerCase()) ||
-      i.sku.toLowerCase().includes(search.toLowerCase()) ||
-      i.location.toLowerCase().includes(search.toLowerCase());
-    const matchesCat = categoryFilter === "All" || i.category === categoryFilter;
-    return matchesSearch && matchesCat;
+  // Issue Form State
+  const [issueForm, setIssueForm] = useState({
+    itemId: "1",
+    quantity: 2,
+    issuedTo: "Vice Principal / Exam Cell",
+    remarks: "Internal test paper printouts"
   });
 
+  // Purchase Request Form State
+  const [purchaseForm, setPurchaseForm] = useState({
+    itemTitle: "A4 paper (ream) + Markers replenishment",
+    estimatedCost: 11000,
+    vendorName: "Jaipur Paper & Stationery Mart",
+    priority: "High" as "High" | "Normal"
+  });
+
+  const lowStockItems = stock.filter(item => item.inStock < item.reorderAt);
+
+  const handleIssueItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    const targetItem = stock.find(i => i.id === issueForm.itemId);
+    if (!targetItem) return;
+
+    if (targetItem.inStock < issueForm.quantity) {
+      showToast(`Cannot issue ${issueForm.quantity}. Only ${targetItem.inStock} currently in stock.`, "error");
+      return;
+    }
+
+    setStock(prev =>
+      prev.map(i =>
+        i.id === targetItem.id
+          ? {
+              ...i,
+              inStock: i.inStock - issueForm.quantity,
+              lastMovement: `Issued ${issueForm.quantity} to ${issueForm.issuedTo} · Today`
+            }
+          : i
+      )
+    );
+
+    setIsIssueModalOpen(false);
+    showToast(`Successfully issued ${issueForm.quantity} x ${targetItem.name} to ${issueForm.issuedTo}!`, "success");
+  };
+
+  const handleCreatePurchase = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsPurchaseModalOpen(false);
+    showToast(`Purchase requisition for ₹${purchaseForm.estimatedCost.toLocaleString("en-IN")} submitted for Principal approval!`, "success");
+  };
+
+  const handleReorderAllLowStock = () => {
+    showToast(`Draft Purchase Order created for ${lowStockItems.length} low stock items totaling ₹${lowStockItems.reduce((acc, i) => acc + (i.reorderAt - i.inStock) * 150, 0).toLocaleString("en-IN")}!`, "success");
+  };
+
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto text-navy">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold text-navy-muted tracking-wide uppercase">
-            Operations › Stores & Assets
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
+      {/* Header Row (Matching 34-Inventory.html) */}
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">
+            Inventory › Stock · Purchase orders · Uniform counter · Assets
           </div>
-          <h1 className="text-2xl font-bold text-navy mt-1">Inventory & Asset Management</h1>
-          <p className="text-xs text-navy-muted mt-0.5">
-            Real-time consumables stock, depreciation tracking, and automated purchase reorder triggers.
-          </p>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            Main store stock
+          </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex gap-2.5 flex-wrap">
           <button
-            onClick={handleCreatePO}
-            className="flex items-center gap-1.5 px-3.5 py-2 border border-line rounded-control bg-surface hover:bg-page text-xs font-semibold text-navy transition"
+            type="button"
+            onClick={() => setIsIssueModalOpen(true)}
+            className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-[13px] font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
           >
-            <FiShoppingBag size={14} /> Reorder Low Stock ({lowStockCount})
+            <span>Issue items</span>
           </button>
           <button
-            onClick={() => showToast("Add stock item modal opened.", "info")}
-            className="flex items-center gap-1.5 px-4 py-2 bg-teal hover:bg-teal-hover text-white rounded-control text-xs font-bold shadow-xs transition"
+            type="button"
+            onClick={() => setIsPurchaseModalOpen(true)}
+            className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
-            <FiPlus size={15} /> Add Item SKU
+            <FiPlus size={15} />
+            <span>New purchase request</span>
           </button>
         </div>
       </div>
 
-      {/* Low stock alert banner */}
-      {lowStockCount > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-control p-3.5 flex items-center justify-between gap-3 text-xs text-amber-900">
-          <div className="flex items-center gap-2.5">
-            <FiAlertTriangle className="text-amber-700 shrink-0" size={16} />
-            <span>
-              <b>{lowStockCount} items</b> have fallen below their minimum replenishment threshold. Replenishment purchase orders recommended.
-            </span>
-          </div>
+      {/* Low Stock Warning Banner (Matching 34-Inventory.html) */}
+      {lowStockItems.length > 0 && (
+        <div className="bg-[#FFF6EC] border border-[#EBC99C] rounded-card p-3 px-4 text-sm text-[#5E3305] flex items-center justify-between gap-3 flex-wrap">
+          <span>
+            <b>{lowStockItems.length} items</b> are below reorder level. Create one purchase request for all of them?
+          </span>
           <button
-            onClick={handleCreatePO}
-            className="text-amber-800 font-bold hover:underline shrink-0"
+            type="button"
+            onClick={handleReorderAllLowStock}
+            className="font-semibold text-xs text-[#8F4A09] hover:underline cursor-pointer"
           >
-            Draft Purchase Orders →
+            Create Consolidated PO →
           </button>
         </div>
       )}
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-navy-muted font-medium">Total Tracked SKUs</div>
-          <div className="font-mono text-2xl font-bold text-navy">{items.length}</div>
-        </div>
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-amber-800 font-medium">Items Below Threshold</div>
-          <div className="font-mono text-2xl font-bold text-amber-800">{lowStockCount}</div>
-        </div>
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-teal font-medium">Total Store Inventory Value</div>
-          <div className="font-mono text-2xl font-bold text-teal">
-            ₹{totalStockValue.toLocaleString("en-IN")}
-          </div>
-        </div>
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-navy-muted font-medium">Suppliers in Network</div>
-          <div className="font-mono text-2xl font-bold text-navy">18</div>
-        </div>
-      </div>
-
-      {/* Filter and Table */}
-      <div className="bg-surface border border-line rounded-panel shadow-sm overflow-hidden">
-        <div className="p-3.5 border-b border-line flex flex-wrap items-center justify-between gap-3 bg-page/30">
-          <div className="relative flex-1 min-w-[220px] max-w-sm">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-muted" size={14} />
-            <input
-              type="text"
-              placeholder="Search by SKU, item name or shelf..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-surface border border-line rounded-control text-xs text-navy focus:outline-none focus:border-teal"
-            />
-          </div>
-
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-navy-muted font-medium">Category:</span>
-            <select
-              value={categoryFilter}
-              onChange={e => setCategoryFilter(e.target.value)}
-              className="bg-surface border border-line rounded-control px-2.5 py-1 text-xs text-navy font-semibold focus:outline-none"
-            >
-              <option value="All">All Categories</option>
-              <option value="Stationery">Stationery</option>
-              <option value="Lab Equipment">Lab Equipment</option>
-              <option value="Sports">Sports</option>
-              <option value="IT Assets">IT Assets</option>
-            </select>
-          </div>
-        </div>
-
+      {/* Main Stock Inventory Table (Matching 34-Inventory.html) */}
+      <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full border-collapse text-sm min-w-[760px]">
             <thead>
-              <tr className="bg-page/70 border-b border-line text-navy-muted font-semibold">
-                <th className="py-3 px-4 w-28">SKU Code</th>
-                <th className="py-3 px-4">Item Name</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Storage Location</th>
-                <th className="py-3 px-4 text-center">In Stock</th>
-                <th className="py-3 px-4 text-center">Reorder Lvl</th>
-                <th className="py-3 px-4 text-right">Unit Price</th>
+              <tr className="bg-[#F2F4F2] text-left text-xs text-ink font-semibold">
+                <th className="py-3 px-4 font-semibold">Item</th>
+                <th className="py-3 px-4 font-semibold">Category</th>
+                <th className="py-3 px-4 font-semibold text-right">In stock</th>
+                <th className="py-3 px-4 font-semibold text-right">Reorder at</th>
+                <th className="py-3 px-4 font-semibold text-right">Value</th>
+                <th className="py-3 px-4 font-semibold">Last movement</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-line">
-              {filtered.map(item => (
-                <tr key={item.id} className="hover:bg-page/40 transition">
-                  <td className="py-3 px-4 font-mono font-bold text-navy">{item.sku}</td>
-                  <td className="py-3 px-4">
-                    <div className="font-bold text-navy">{item.name}</div>
-                    {item.isLowStock && (
-                      <span className="text-[10px] text-amber-800 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                        Critical Low
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4 text-navy-muted font-medium">{item.category}</td>
-                  <td className="py-3 px-4 text-navy-muted">{item.location}</td>
-                  <td className="py-3 px-4 text-center font-mono font-bold text-navy">
-                    {item.inStock}
-                  </td>
-                  <td className="py-3 px-4 text-center font-mono text-navy-muted">
-                    {item.reorderLevel}
-                  </td>
-                  <td className="py-3 px-4 text-right font-mono font-semibold text-navy">
-                    ₹{item.unitPrice}
-                  </td>
-                </tr>
-              ))}
+            <tbody>
+              {stock.map(item => {
+                const isLow = item.inStock < item.reorderAt;
+                return (
+                  <tr
+                    key={item.id}
+                    className={`border-t border-[#EEF1EF] transition-colors ${
+                      isLow ? "bg-[#FFFBF6]" : "bg-white hover:bg-slate-50/50"
+                    }`}
+                  >
+                    <td className="py-2.5 px-4 font-medium text-ink text-xs sm:text-sm">
+                      {item.name}
+                    </td>
+                    <td className="py-2.5 px-4 text-xs text-ink-secondary">
+                      {item.category}
+                    </td>
+                    <td
+                      className={`py-2.5 px-4 text-xs text-right font-mono font-medium ${
+                        isLow ? "text-[#8F4A09]" : "text-ink"
+                      }`}
+                    >
+                      {item.inStock}
+                    </td>
+                    <td className="py-2.5 px-4 text-xs text-right font-mono text-ink-secondary">
+                      {item.reorderAt}
+                    </td>
+                    <td className="py-2.5 px-4 text-xs text-right font-mono text-ink">
+                      ₹{item.value.toLocaleString("en-IN")}
+                    </td>
+                    <td className="py-2.5 px-4 text-xs text-ink-secondary">
+                      {item.lastMovement}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
+
+      {/* Assets Due for Maintenance (Matching 34-Inventory.html) */}
+      <section className="bg-white border border-line rounded-card p-5 flex flex-col gap-3 shadow-xs">
+        <h2 className="m-0 text-base font-semibold text-ink">
+          Assets due for maintenance
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {assets.map(asset => (
+            <div
+              key={asset.id}
+              className="border border-line rounded-control p-3.5 flex flex-col gap-1 bg-white"
+            >
+              <span className="font-mono text-xs text-ink-secondary">
+                {asset.assetCode}
+              </span>
+              <span className="font-semibold text-sm text-ink">{asset.title}</span>
+              <span className="text-xs text-ink-secondary">{asset.location}</span>
+              <span
+                className={`text-xs font-semibold pt-0.5 ${
+                  asset.isOverdue ? "text-[#8F4A09]" : "text-ink-secondary"
+                }`}
+              >
+                {asset.scheduleText}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Issue Items Modal */}
+      {isIssueModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-card w-full max-w-md shadow-xl p-6 space-y-4 font-sans animate-in fade-in zoom-in-95 text-xs">
+            <div className="flex justify-between items-center pb-2.5 border-b border-line">
+              <h3 className="font-semibold text-base text-ink">Issue Store Items</h3>
+              <button
+                type="button"
+                onClick={() => setIsIssueModalOpen(false)}
+                className="text-ink-secondary hover:text-ink text-sm font-semibold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleIssueItem} className="space-y-3.5">
+              <div>
+                <label className="block text-ink font-medium mb-1">Select Store Item</label>
+                <select
+                  value={issueForm.itemId}
+                  onChange={e => setIssueForm(prev => ({ ...prev, itemId: e.target.value }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                >
+                  {stock.map(item => (
+                    <option key={item.id} value={item.id}>
+                      {item.name} ({item.inStock} in stock)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-ink font-medium mb-1">Quantity to Issue</label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={issueForm.quantity}
+                  onChange={e => setIssueForm(prev => ({ ...prev, quantity: Number(e.target.value) }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-ink font-medium mb-1">Issued To (Department / Person)</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Science Lab / Vikram Singh"
+                  value={issueForm.issuedTo}
+                  onChange={e => setIssueForm(prev => ({ ...prev, issuedTo: e.target.value }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-ink font-medium mb-1">Purpose / Department Voucher</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Class 10 Board prep tests"
+                  value={issueForm.remarks}
+                  onChange={e => setIssueForm(prev => ({ ...prev, remarks: e.target.value }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => setIsIssueModalOpen(false)}
+                  className="px-4 py-2 border border-line-input rounded-control text-ink hover:bg-slate-50 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                >
+                  Confirm Issue
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* New Purchase Request Modal */}
+      {isPurchaseModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-card w-full max-w-md shadow-xl p-6 space-y-4 font-sans animate-in fade-in zoom-in-95 text-xs">
+            <div className="flex justify-between items-center pb-2.5 border-b border-line">
+              <h3 className="font-semibold text-base text-ink">New Purchase Requisition</h3>
+              <button
+                type="button"
+                onClick={() => setIsPurchaseModalOpen(false)}
+                className="text-ink-secondary hover:text-ink text-sm font-semibold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreatePurchase} className="space-y-3.5">
+              <div>
+                <label className="block text-ink font-medium mb-1">Requisition Items Description</label>
+                <input
+                  type="text"
+                  required
+                  value={purchaseForm.itemTitle}
+                  onChange={e => setPurchaseForm(prev => ({ ...prev, itemTitle: e.target.value }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-ink font-medium mb-1">Preferred Vendor</label>
+                <input
+                  type="text"
+                  required
+                  value={purchaseForm.vendorName}
+                  onChange={e => setPurchaseForm(prev => ({ ...prev, vendorName: e.target.value }))}
+                  className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-ink font-medium mb-1">Estimated Amount (₹)</label>
+                  <input
+                    type="number"
+                    required
+                    value={purchaseForm.estimatedCost}
+                    onChange={e => setPurchaseForm(prev => ({ ...prev, estimatedCost: Number(e.target.value) }))}
+                    className="w-full p-2.5 bg-white border border-line rounded-control text-ink font-mono text-xs focus:border-primary focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-ink font-medium mb-1">Priority</label>
+                  <select
+                    value={purchaseForm.priority}
+                    onChange={e => setPurchaseForm(prev => ({ ...prev, priority: e.target.value as "High" | "Normal" }))}
+                    className="w-full p-2.5 bg-white border border-line rounded-control text-ink text-xs focus:border-primary focus:outline-none"
+                  >
+                    <option value="High">Urgent / Exam stock</option>
+                    <option value="Normal">Routine refill</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => setIsPurchaseModalOpen(false)}
+                  className="px-4 py-2 border border-line-input rounded-control text-ink hover:bg-slate-50 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                >
+                  Submit for Approval
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
