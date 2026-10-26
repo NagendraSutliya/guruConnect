@@ -4,364 +4,396 @@ import {
   FiDownload,
   FiPlus,
   FiFileText,
-  FiCalendar,
-  FiFilter,
   FiCheckCircle,
-  FiBookOpen
+  FiDollarSign,
+  FiX,
+  FiUpload,
+  FiFilter
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
+import FeesModuleNav from "../../../components/admin/fees/FeesModuleNav";
 
-interface Voucher {
+interface VoucherRow {
   id: string;
   voucherNo: string;
   type: "Receipt" | "Payment" | "Journal" | "Contra";
-  ledger: string;
+  ledgerTitle: string;
   narration: string;
   source: string;
   debit?: number;
   credit?: number;
 }
 
-const DEFAULT_VOUCHERS: Voucher[] = [
+const INITIAL_VOUCHERS: VoucherRow[] = [
   {
-    id: "1",
+    id: "v1",
     voucherNo: "RV/2627/1184",
     type: "Receipt",
-    ledger: "Cash Account",
-    narration: "Counter 1 · 37 fee receipts collected",
+    ledgerTitle: "Cash a/c",
+    narration: "Counter 1 · 37 receipts",
     source: "Fee counter",
     debit: 284600
   },
   {
-    id: "2",
+    id: "v2",
     voucherNo: "RV/2627/1184",
     type: "Receipt",
-    ledger: "Tuition Fee Income",
+    ledgerTitle: "Tuition fee income",
     narration: "Installment 3 collections",
     source: "Fee counter",
     credit: 284600
   },
   {
-    id: "3",
+    id: "v3",
     voucherNo: "RV/2627/1185",
     type: "Receipt",
-    ledger: "HDFC Payment Gateway Clearing",
-    narration: "142 online parent portal receipts",
+    ledgerTitle: "Payment gateway clearing",
+    narration: "142 online receipts",
     source: "Online fees",
     debit: 496300
   },
   {
-    id: "4",
+    id: "v4",
     voucherNo: "RV/2627/1185",
     type: "Receipt",
-    ledger: "Tuition & Term Fee Income",
-    narration: "Direct settlement from gateway",
+    ledgerTitle: "Tuition and transport income",
+    narration: "Online collections",
     source: "Online fees",
     credit: 496300
   },
   {
-    id: "5",
+    id: "v5",
     voucherNo: "PV/2627/0412",
     type: "Payment",
-    ledger: "Diesel & Fuel Expenses",
-    narration: "Bus 1, 2, 3 fuel top-up · Indian Oil slip #8142",
-    source: "Transport",
-    debit: 18400
+    ledgerTitle: "Electricity expense",
+    narration: "JVVNL bill Sep · bill attached",
+    source: "Manual",
+    debit: 38600
   },
   {
-    id: "6",
+    id: "v6",
     voucherNo: "PV/2627/0412",
     type: "Payment",
-    ledger: "HDFC Current Account",
-    narration: "Paid via corporate debit card",
-    source: "Transport",
-    credit: 18400
-  },
-  {
-    id: "7",
-    voucherNo: "PV/2627/0413",
-    type: "Payment",
-    ledger: "Printing & Stationery Expenses",
-    narration: "Exam question paper bundles · Anil Printers",
-    source: "Examination",
-    debit: 20200
-  },
-  {
-    id: "8",
-    voucherNo: "PV/2627/0413",
-    type: "Payment",
-    ledger: "Cash Account",
-    narration: "Paid from counter petty cash drawer",
-    source: "Examination",
-    credit: 20200
+    ledgerTitle: "HDFC current a/c",
+    narration: "NEFT ref #8928192401",
+    source: "Manual",
+    credit: 38600
   }
 ];
 
 export default function AccountsPage() {
   const { showToast } = useToast();
-  const [activeTab, setActiveTab] = useState<"daybook" | "cashbook" | "bankbook" | "trial">("daybook");
-  const [vouchers, setVouchers] = useState<Voucher[]>(DEFAULT_VOUCHERS);
-  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [vouchers, setVouchers] = useState<VoucherRow[]>(INITIAL_VOUCHERS);
+  const [activeSubTab, setActiveSubTab] = useState<"Day book" | "Cash book" | "Bank book" | "Ledgers" | "Trial balance">("Day book");
+  const [isNewVoucherOpen, setIsNewVoucherOpen] = useState(false);
 
-  const [expenseForm, setExpenseForm] = useState({
-    ledger: "Electricity & Utility Expenses",
-    narration: "",
-    amount: "",
-    paymentMode: "Cash Account"
-  });
-
-  const handleExportTally = () => {
-    showToast("Generating Tally-compliant XML voucher export...", "success");
-  };
+  // Form State for New Expense
+  const [expLedger, setExpLedger] = useState("Electricity expense");
+  const [expAccount, setExpAccount] = useState("HDFC current a/c");
+  const [expAmount, setExpAmount] = useState<number | "">("");
+  const [expNarration, setExpNarration] = useState("");
 
   const handleCreateExpense = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!expenseForm.narration || !expenseForm.amount) {
-      showToast("Please provide expense details and amount.", "error");
+    if (!expAmount || Number(expAmount) <= 0) {
+      showToast("Please enter a valid expense amount", "error");
       return;
     }
-    const amt = parseFloat(expenseForm.amount);
-    const vNo = `PV/2627/04${Math.floor(14 + Math.random() * 80)}`;
-    const newDebit: Voucher = {
-      id: String(Date.now()),
-      voucherNo: vNo,
+
+    const nextVoucherNo = `PV/2627/0${413 + Math.floor(Math.random() * 50)}`;
+    const debitRow: VoucherRow = {
+      id: `v-${Date.now()}-1`,
+      voucherNo: nextVoucherNo,
       type: "Payment",
-      ledger: expenseForm.ledger,
-      narration: expenseForm.narration,
-      source: "Manual Voucher",
-      debit: amt
+      ledgerTitle: expLedger,
+      narration: expNarration || "Office expense",
+      source: "Manual",
+      debit: Number(expAmount)
     };
-    const newCredit: Voucher = {
-      id: String(Date.now() + 1),
-      voucherNo: vNo,
+    const creditRow: VoucherRow = {
+      id: `v-${Date.now()}-2`,
+      voucherNo: nextVoucherNo,
       type: "Payment",
-      ledger: expenseForm.paymentMode,
-      narration: `Payment for ${expenseForm.ledger}`,
-      source: "Manual Voucher",
-      credit: amt
+      ledgerTitle: expAccount,
+      narration: expNarration ? `Paid from ${expAccount} · ${expNarration}` : `Paid from ${expAccount}`,
+      source: "Manual",
+      credit: Number(expAmount)
     };
 
-    setVouchers([newDebit, newCredit, ...vouchers]);
-    setIsExpenseModalOpen(false);
-    setExpenseForm({ ledger: "Electricity & Utility Expenses", narration: "", amount: "", paymentMode: "Cash Account" });
-    showToast("Expense voucher posted to double-entry ledger!", "success");
+    setVouchers(prev => [...prev, debitRow, creditRow]);
+    setIsNewVoucherOpen(false);
+    setExpAmount("");
+    setExpNarration("");
+    showToast(`Expense voucher ${nextVoucherNo} for ₹${Number(expAmount).toLocaleString("en-IN")} recorded!`, "success");
   };
 
-  const totalDebit = vouchers.reduce((sum, v) => sum + (v.debit || 0), 0);
-  const totalCredit = vouchers.reduce((sum, v) => sum + (v.credit || 0), 0);
+  const handleExportTallyXML = () => {
+    const tallyXml = `<?xml version="1.0" encoding="utf-8"?>
+<ENVELOPE>
+  <HEADER>
+    <TALLYREQUEST>Import Data</TALLYREQUEST>
+  </HEADER>
+  <BODY>
+    <IMPORTDATA>
+      <REQUESTDESC>
+        <REPORTNAME>Vouchers</REPORTNAME>
+      </REQUESTDESC>
+      <REQUESTDATA>
+        ${vouchers.map(v => `
+        <TALLYMESSAGE xmlns:UDF="TallyUDF">
+          <VOUCHER VCHTYPE="${v.type}" ACTION="Create">
+            <DATE>20261008</DATE>
+            <VOUCHERNUMBER>${v.voucherNo}</VOUCHERNUMBER>
+            <NARRATION>${v.narration}</NARRATION>
+            <ALLLEDGERENTRIES.LIST>
+              <LEDGERNAME>${v.ledgerTitle}</LEDGERNAME>
+              <ISDEEMEDPOSITIVE>${v.debit ? "Yes" : "No"}</ISDEEMEDPOSITIVE>
+              <AMOUNT>${v.debit ? -v.debit : v.credit}</AMOUNT>
+            </ALLLEDGERENTRIES.LIST>
+          </VOUCHER>
+        </TALLYMESSAGE>`).join("")}
+      </REQUESTDATA>
+    </IMPORTDATA>
+  </BODY>
+</ENVELOPE>`;
+
+    const blob = new Blob([tallyXml], { type: "application/xml;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `tally_vouchers_export_${new Date().toISOString().slice(0, 10)}.xml`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("Vouchers exported in standard Tally XML format!", "success");
+  };
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto text-navy">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold text-navy-muted tracking-wide uppercase">
-            Accounts & Finance › General Ledger
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12">
+      {/* Module Navigation */}
+      <FeesModuleNav activeTab="accounts" />
+
+      {/* Header Row (Matching 25-Accounts.html) */}
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary flex items-center gap-1.5 flex-wrap">
+            <span>Accounts ›</span>
+            {(["Day book", "Cash book", "Bank book", "Ledgers", "Trial balance"] as const).map((tab, idx) => (
+              <React.Fragment key={tab}>
+                {idx > 0 && <span>·</span>}
+                <button
+                  type="button"
+                  onClick={() => setActiveSubTab(tab)}
+                  className={`text-[13px] transition-colors cursor-pointer ${
+                    activeSubTab === tab ? "font-semibold text-ink" : "text-primary hover:underline"
+                  }`}
+                >
+                  {tab}
+                </button>
+              </React.Fragment>
+            ))}
           </div>
-          <h1 className="text-2xl font-bold text-navy mt-1">Day Book & Double-Entry Ledger</h1>
-          <p className="text-xs text-navy-muted mt-0.5">
-            Fee counter receipts and payroll vouchers auto-post directly into the audit-compliant books.
-          </p>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            {activeSubTab} · 8 Oct 2026
+          </h1>
+          <div className="text-[13px] text-ink-secondary">
+            Fee receipts and payroll post vouchers automatically; expenses are entered here.
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex gap-2.5 flex-wrap">
           <button
-            onClick={handleExportTally}
-            className="flex items-center gap-1.5 px-3.5 py-2 border border-line rounded-control bg-surface hover:bg-page text-xs font-medium text-navy transition"
+            type="button"
+            onClick={handleExportTallyXML}
+            className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-[13px] font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
           >
-            <FiDownload size={14} /> Export to Tally (XML)
+            <FiDownload size={14} className="text-ink-secondary" />
+            <span>Export to Tally (XML)</span>
           </button>
+
           <button
-            onClick={() => setIsExpenseModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-teal hover:bg-teal-hover text-white rounded-control text-xs font-bold shadow-xs transition"
+            type="button"
+            onClick={() => setIsNewVoucherOpen(true)}
+            className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
-            <FiPlus size={15} /> New Expense Voucher
+            <FiPlus size={15} />
+            <span>New expense voucher</span>
           </button>
         </div>
       </div>
 
-      {/* Financial Health KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-navy-muted font-medium">Cash in Hand</div>
-          <div className="font-mono text-xl font-bold text-navy">₹1,18,450</div>
+      {/* 4 Balance KPI Cards (Matching 25-Accounts.html) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Card 1: Cash in hand */}
+        <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
+          <span className="text-[12.5px] text-ink-secondary font-medium">Cash in hand</span>
+          <span className="font-mono text-xl sm:text-[22px] font-semibold text-ink">₹1,18,450</span>
         </div>
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-navy-muted font-medium">HDFC Current A/c</div>
-          <div className="font-mono text-xl font-bold text-navy">₹42,36,900</div>
+
+        {/* Card 2: HDFC current a/c */}
+        <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
+          <span className="text-[12.5px] text-ink-secondary font-medium">HDFC current a/c</span>
+          <span className="font-mono text-xl sm:text-[22px] font-semibold text-ink">₹42,36,900</span>
         </div>
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-emerald-700 font-medium">Fee Income Today</div>
-          <div className="font-mono text-xl font-bold text-emerald-700">₹7,80,900</div>
+
+        {/* Card 3: Fee income today */}
+        <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
+          <span className="text-[12.5px] text-ink-secondary font-medium">Fee income today</span>
+          <span className="font-mono text-xl sm:text-[22px] font-semibold text-ink">₹7,80,900</span>
         </div>
-        <div className="bg-surface border border-line rounded-panel p-4 shadow-sm space-y-1">
-          <div className="text-xs text-amber-800 font-medium">Expenses Today</div>
-          <div className="font-mono text-xl font-bold text-amber-800">₹38,600</div>
+
+        {/* Card 4: Expenses today */}
+        <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
+          <span className="text-[12.5px] text-ink-secondary font-medium">Expenses today</span>
+          <span className="font-mono text-xl sm:text-[22px] font-semibold text-ink">₹38,600</span>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-line gap-2 overflow-x-auto">
-        {[
-          { key: "daybook", label: "Day Book (All Vouchers)" },
-          { key: "cashbook", label: "Cash Book" },
-          { key: "bankbook", label: "Bank Book" },
-          { key: "trial", label: "Trial Balance" }
-        ].map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key as any)}
-            className={`px-4 py-2 text-xs font-semibold whitespace-nowrap border-b-2 transition ${
-              activeTab === tab.key
-                ? "border-teal text-teal"
-                : "border-transparent text-navy-muted hover:text-navy"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Ledger Table */}
-      <div className="bg-surface border border-line rounded-panel shadow-sm overflow-hidden">
+      {/* Day Book Table (Matching 25-Accounts.html) */}
+      <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full border-collapse text-xs sm:text-small min-w-[900px]">
             <thead>
-              <tr className="bg-page/70 border-b border-line text-navy-muted font-semibold">
-                <th className="py-3 px-4 w-32">Voucher No.</th>
-                <th className="py-3 px-4 w-24">Type</th>
-                <th className="py-3 px-4">Ledger Account & Narration</th>
-                <th className="py-3 px-4 w-32">Source Module</th>
-                <th className="py-3 px-4 text-right w-28">Debit (₹)</th>
-                <th className="py-3 px-4 text-right w-28">Credit (₹)</th>
+              <tr className="bg-[#F2F4F2] text-left text-ink border-b border-line">
+                <th className="px-4 py-3 font-semibold w-36">Voucher</th>
+                <th className="px-4 py-3 font-semibold w-28">Type</th>
+                <th className="px-4 py-3 font-semibold">Ledger / narration</th>
+                <th className="px-4 py-3 font-semibold w-32">Source</th>
+                <th className="px-4 py-3 font-semibold text-right w-36">Debit</th>
+                <th className="px-4 py-3 font-semibold text-right w-36">Credit</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-line">
-              {vouchers.map(v => (
-                <tr key={v.id} className="hover:bg-page/40 transition">
-                  <td className="py-3 px-4 font-mono text-navy font-semibold">{v.voucherNo}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        v.type === "Receipt"
-                          ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                          : "bg-amber-50 text-amber-800 border border-amber-200"
-                      }`}
-                    >
-                      {v.type}
+            <tbody className="divide-y divide-[#EEF1EF]">
+              {vouchers.map((row) => (
+                <tr key={row.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="px-4 py-2.5 font-mono text-[12.5px] text-ink font-medium">
+                    {row.voucherNo}
+                  </td>
+
+                  <td className="px-4 py-2.5">
+                    {row.type === "Receipt" ? (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-[#E4F1E8] text-[#1E5A33]">
+                        Receipt
+                      </span>
+                    ) : row.type === "Payment" ? (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-[#FFF6EC] text-[#7A4106]">
+                        Payment
+                      </span>
+                    ) : (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-slate-100 text-slate-700">
+                        {row.type}
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-4 py-2.5">
+                    <span className="flex flex-col">
+                      <span className="font-medium text-ink">{row.ledgerTitle}</span>
+                      <span className="text-[12px] text-ink-secondary">{row.narration}</span>
                     </span>
                   </td>
-                  <td className="py-3 px-4">
-                    <div className="font-bold text-navy">{v.ledger}</div>
-                    <div className="text-navy-muted text-[11px]">{v.narration}</div>
+
+                  <td className="px-4 py-2.5 text-ink-secondary">
+                    {row.source}
                   </td>
-                  <td className="py-3 px-4 text-navy-muted font-medium">{v.source}</td>
-                  <td className="py-3 px-4 text-right font-mono font-semibold text-navy">
-                    {v.debit ? `₹${v.debit.toLocaleString("en-IN")}` : ""}
+
+                  <td className="px-4 py-2.5 text-right font-mono font-medium text-ink">
+                    {row.debit ? `₹${row.debit.toLocaleString("en-IN")}` : ""}
                   </td>
-                  <td className="py-3 px-4 text-right font-mono font-semibold text-navy">
-                    {v.credit ? `₹${v.credit.toLocaleString("en-IN")}` : ""}
+
+                  <td className="px-4 py-2.5 text-right font-mono font-medium text-ink">
+                    {row.credit ? `₹${row.credit.toLocaleString("en-IN")}` : ""}
                   </td>
                 </tr>
               ))}
             </tbody>
-            <tfoot>
-              <tr className="bg-page border-t-2 border-line font-bold text-navy">
-                <td colSpan={4} className="py-3 px-4 text-right">
-                  Total Voucher Balance:
-                </td>
-                <td className="py-3 px-4 text-right font-mono text-teal">
-                  ₹{totalDebit.toLocaleString("en-IN")}
-                </td>
-                <td className="py-3 px-4 text-right font-mono text-teal">
-                  ₹{totalCredit.toLocaleString("en-IN")}
-                </td>
-              </tr>
-            </tfoot>
           </table>
         </div>
-      </div>
+      </section>
 
-      {/* New Expense Modal */}
-      {isExpenseModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-line rounded-panel w-full max-w-md shadow-xl p-6 space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-line">
-              <h3 className="font-bold text-base text-navy">Post Expense Voucher</h3>
+      {/* ============================================================== */}
+      {/* MODAL: NEW EXPENSE VOUCHER                                     */}
+      {/* ============================================================== */}
+      {isNewVoucherOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white border border-line rounded-card shadow-2xl w-full max-w-md overflow-hidden animate-scaleUp">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-line bg-surface">
+              <h3 className="font-semibold text-base text-ink">Record New Expense Voucher</h3>
               <button
-                onClick={() => setIsExpenseModalOpen(false)}
-                className="text-navy-muted hover:text-navy text-sm font-semibold"
+                type="button"
+                onClick={() => setIsNewVoucherOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-ink-secondary hover:bg-slate-200 transition-colors"
               >
-                ✕
+                <FiX size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateExpense} className="space-y-3.5 text-xs">
+            <form onSubmit={handleCreateExpense} className="p-5 space-y-4">
               <div>
-                <label className="block font-medium text-navy mb-1">Expense Account / Head *</label>
+                <label className="block text-xs font-semibold text-ink mb-1">Expense Account (Debit)</label>
                 <select
-                  value={expenseForm.ledger}
-                  onChange={e => setExpenseForm({ ...expenseForm, ledger: e.target.value })}
-                  className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none"
+                  value={expLedger}
+                  onChange={(e) => setExpLedger(e.target.value)}
+                  className="w-full h-9 px-3 border border-line-input rounded-control text-xs text-ink focus:outline-none focus:border-primary bg-white cursor-pointer"
                 >
-                  <option>Electricity & Utility Expenses</option>
-                  <option>Diesel & Fuel Expenses</option>
-                  <option>Printing & Stationery Expenses</option>
-                  <option>Repair & Maintenance Expenses</option>
-                  <option>Staff Tea & Refreshment</option>
-                  <option>Sports & Equipment Purchase</option>
+                  <option value="Electricity expense">Electricity expense</option>
+                  <option value="Diesel & Fuel Expenses">Diesel & Fuel Expenses</option>
+                  <option value="Repairs & Building Maintenance">Repairs & Building Maintenance</option>
+                  <option value="Laboratory Consumables">Laboratory Consumables</option>
+                  <option value="Sports & Annual Event Supplies">Sports & Annual Event Supplies</option>
+                  <option value="Printing & Stationery">Printing & Stationery</option>
+                  <option value="Telephone & Internet Charges">Telephone & Internet Charges</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-medium text-navy mb-1">Narration / Vendor Bill Slip *</label>
-                <textarea
-                  rows={2}
+                <label className="block text-xs font-semibold text-ink mb-1">Paid From (Credit Account)</label>
+                <select
+                  value={expAccount}
+                  onChange={(e) => setExpAccount(e.target.value)}
+                  className="w-full h-9 px-3 border border-line-input rounded-control text-xs text-ink focus:outline-none focus:border-primary bg-white cursor-pointer"
+                >
+                  <option value="HDFC current a/c">HDFC current a/c</option>
+                  <option value="Cash a/c">Cash a/c (Drawer)</option>
+                  <option value="SBI School Account">SBI School Account</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-ink mb-1">Amount (₹)</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 15000"
+                  value={expAmount}
+                  onChange={(e) => setExpAmount(e.target.value === "" ? "" : Number(e.target.value))}
+                  className="w-full h-9 px-3 border border-line-input rounded-control font-mono text-xs text-ink focus:outline-none focus:border-primary"
                   required
-                  placeholder="e.g. Paid electricity bill for Sep 2026, bill #84912"
-                  value={expenseForm.narration}
-                  onChange={e => setExpenseForm({ ...expenseForm, narration: e.target.value })}
-                  className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal"
+                  min={1}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-navy mb-1">Amount (₹) *</label>
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    placeholder="e.g. 4500"
-                    value={expenseForm.amount}
-                    onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium text-navy mb-1">Paid From</label>
-                  <select
-                    value={expenseForm.paymentMode}
-                    onChange={e => setExpenseForm({ ...expenseForm, paymentMode: e.target.value })}
-                    className="w-full px-3 py-2 bg-page border border-line rounded-control text-navy focus:outline-none"
-                  >
-                    <option value="Cash Account">Cash Drawer</option>
-                    <option value="HDFC Current Account">HDFC Current A/c</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-xs font-semibold text-ink mb-1">Narration / Bill Details</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Invoice #2910 · Vendor paid via NEFT"
+                  value={expNarration}
+                  onChange={(e) => setExpNarration(e.target.value)}
+                  className="w-full h-9 px-3 border border-line-input rounded-control text-xs text-ink focus:outline-none focus:border-primary"
+                />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
+              <div className="pt-2 flex justify-end gap-2.5">
                 <button
                   type="button"
-                  onClick={() => setIsExpenseModalOpen(false)}
-                  className="px-4 py-2 border border-line rounded-control text-navy hover:bg-page font-medium transition"
+                  onClick={() => setIsNewVoucherOpen(false)}
+                  className="px-4 py-2 border border-line-input rounded-control text-xs font-semibold text-ink hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-teal hover:bg-teal-hover text-white rounded-control font-semibold shadow-xs transition"
+                  className="px-4.5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Post Voucher
                 </button>

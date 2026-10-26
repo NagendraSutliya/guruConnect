@@ -1,5 +1,10 @@
-import ExamPanel from "../panels/ExamPanel";
+import ExaminationsPage from "./ExaminationsPage";
+import type { ExamTab } from "../../../components/admin/exams/ExamModuleNav";
 
-export default function Exams() {
-  return <ExamPanel />;
+interface ExamsProps {
+  initialTab?: ExamTab;
+}
+
+export default function Exams({ initialTab = "setup" }: ExamsProps) {
+  return <ExaminationsPage initialTab={initialTab} />;
 }

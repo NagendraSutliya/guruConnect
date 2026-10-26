@@ -692,7 +692,7 @@ export default function RoutinePanel() {
       {activeTab === "timetable" && (
         <>
           {/* Filter Bar */}
-          <div className="flex flex-wrap items-center gap-3 bg-surface border border-line rounded-card p-3.5">
+          <div className="flex flex-wrap items-center gap-3 bg-surface border border-line rounded-card p-2">
             {viewMode === "class" && (
               <>
                 <label className="flex items-center gap-2 text-small text-ink-secondary font-medium">

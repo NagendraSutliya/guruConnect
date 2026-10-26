@@ -1,207 +1,278 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  FiCheckCircle,
   FiPrinter,
-  FiDollarSign,
-  FiAlertTriangle,
   FiLock,
-  FiSave
+  FiCheckCircle,
+  FiAlertTriangle,
+  FiSave,
+  FiArrowLeft
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
+import FeesModuleNav from "../../../components/admin/fees/FeesModuleNav";
 
 interface Denomination {
   note: number;
   count: number;
 }
 
+const INITIAL_DENOMINATIONS: Denomination[] = [
+  { note: 500, count: 520 },
+  { note: 200, count: 90 },
+  { note: 100, count: 51 },
+  { note: 50, count: 20 },
+  { note: 20, count: 15 },
+  { note: 10, count: 10 },
+  { note: 5, count: 0 }
+];
+
 export default function CashClosingPage() {
   const { showToast } = useToast();
-  const [denominations, setDenominations] = useState<Denomination[]>([
-    { note: 500, count: 214 },
-    { note: 200, count: 42 },
-    { note: 100, count: 28 },
-    { note: 50, count: 15 },
-    { note: 20, count: 12 },
-    { note: 10, count: 9 }
-  ]);
-  const [cashierNotes, setCashierNotes] = useState("Handover verified with safe locker key keeper.");
-  const [isClosed, setIsClosed] = useState(false);
+  const [denominations, setDenominations] = useState<Denomination[]>(INITIAL_DENOMINATIONS);
+  const [openingFloat, setOpeningFloat] = useState(0);
+  const [supervisorNote, setSupervisorNote] = useState("₹100 difference was due to rounding change on counter receipt RCP/2627/004205.");
+  const [supervisorPass, setSupervisorPass] = useState("");
+  const [isLocked, setIsLocked] = useState(false);
 
-  // Expected from system vouchers
-  const openingFloat = 2000;
-  const systemCollected = 116450;
-  const expectedTotal = openingFloat + systemCollected; // 1,18,450
+  // System receipts (37 receipts = ₹2,84,600)
+  const systemCashReceipts = 284600;
+  const nonCashCollected = 112300; // UPI / card / cheque
 
-  const handleCountChange = (note: number, count: number) => {
+  const handleIncrement = (note: number) => {
     setDenominations(prev =>
-      prev.map(d => (d.note === note ? { ...d, count: Math.max(0, count || 0) } : d))
+      prev.map(d => (d.note === note ? { ...d, count: d.count + 1 } : d))
     );
   };
 
-  const physicalCash = denominations.reduce((sum, d) => sum + d.note * d.count, 0);
-  const variance = physicalCash - expectedTotal;
+  const handleDecrement = (note: number) => {
+    setDenominations(prev =>
+      prev.map(d => (d.note === note ? { ...d, count: Math.max(0, d.count - 1) } : d))
+    );
+  };
 
-  const handleCloseCounter = () => {
-    setIsClosed(true);
-    showToast("Day-end cash closing locked successfully. Handover report saved.", "success");
+  const handleCountChange = (note: number, val: string) => {
+    const num = Math.max(0, parseInt(val) || 0);
+    setDenominations(prev =>
+      prev.map(d => (d.note === note ? { ...d, count: num } : d))
+    );
+  };
+
+  const cashCounted = denominations.reduce((sum, d) => sum + d.note * d.count, 0);
+  const expectedTotal = systemCashReceipts + openingFloat;
+  const variance = cashCounted - expectedTotal; // negative means Short
+
+  const handleLockCounter = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLocked(true);
+    showToast("Counter 1 day-end cash closing verified and locked successfully!", "success");
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto text-navy">
-      {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold text-navy-muted tracking-wide uppercase">
-            Fees & Accounts › Day-End Operations
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12">
+      {/* Module Navigation */}
+      <FeesModuleNav activeTab="closing" />
+
+      {/* Header Row (Matching 24-CashClosing.html) */}
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">
+            <Link to="/admin/collect-fees" className="text-primary hover:underline">
+              Fee counter
+            </Link>{" "}
+            › Day-end closing
           </div>
-          <h1 className="text-2xl font-bold text-navy mt-1">Counter Cash Closing & Handover</h1>
-          <p className="text-xs text-navy-muted mt-0.5">
-            Reconcile physical drawer cash against system receipts before locking daily ledger.
-          </p>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            Counter 1 · cash closing for 9 Oct 2026
+          </h1>
+          <div className="text-[13px] text-ink-secondary">
+            Count the cash in the drawer. A supervisor signs off before the counter can open tomorrow.
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link
-            to="/admin/collect-fees"
-            className="px-3.5 py-2 border border-line rounded-control bg-surface hover:bg-page text-xs font-semibold text-navy transition"
-          >
-            ← Back to Fee Counter
-          </Link>
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3.5 py-2 border border-line rounded-control bg-surface hover:bg-page text-xs font-medium text-navy transition"
-          >
-            <FiPrinter size={14} /> Print Summary
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-[13px] font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
+        >
+          <FiPrinter size={14} className="text-ink-secondary" />
+          <span>Print Summary</span>
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left: Physical Currency Denomination Breakdown */}
-        <div className="lg:col-span-7 bg-surface border border-line rounded-panel p-5 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-line pb-3">
-            <h2 className="font-semibold text-sm text-navy">Physical Currency Denominations</h2>
-            <span className="text-xs font-mono font-medium text-navy-muted">Count in Drawer</span>
-          </div>
-
-          <div className="divide-y divide-line/60 text-xs">
-            {denominations.map(d => (
-              <div key={d.note} className="py-2.5 flex items-center justify-between gap-4">
-                <div className="w-24 font-bold text-navy flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-teal/20"></span>
-                  ₹{d.note} Notes
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-navy-muted">×</span>
-                  <input
-                    type="number"
-                    min="0"
-                    disabled={isClosed}
-                    value={d.count}
-                    onChange={e => handleCountChange(d.note, parseInt(e.target.value) || 0)}
-                    className="w-20 px-2 py-1 text-center font-mono font-bold bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal disabled:opacity-60"
-                  />
-                </div>
-                <div className="w-28 text-right font-mono font-semibold text-navy">
-                  = ₹{(d.note * d.count).toLocaleString("en-IN")}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-3 border-t border-line flex items-center justify-between font-bold text-sm text-navy">
-            <span>Total Physical Cash Counted</span>
-            <span className="font-mono text-base text-teal">
-              ₹{physicalCash.toLocaleString("en-IN")}
+      {/* Locked Status Banner if already closed */}
+      {isLocked && (
+        <div className="bg-[#E4F1E8] border border-emerald-300 rounded-[10px] p-4 text-xs text-[#1E5A33] flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FiCheckCircle size={18} />
+            <span className="font-semibold text-sm">
+              Counter 1 is LOCKED for 9 Oct 2026. Handover verified by Head Accountant.
             </span>
           </div>
+          <span className="font-mono font-medium">Ref: CLS-2627-0194</span>
         </div>
+      )}
 
-        {/* Right: Reconciliation & Sign-off */}
-        <div className="lg:col-span-5 space-y-5">
-          <div className="bg-surface border border-line rounded-panel p-5 shadow-sm space-y-4 text-xs">
-            <h2 className="font-semibold text-sm text-navy border-b border-line pb-3">
-              System vs Physical Reconciliation
-            </h2>
-
-            <div className="space-y-2.5 divide-y divide-line/60">
-              <div className="flex justify-between py-1 text-navy-muted">
-                <span>Opening Cash Float</span>
-                <span className="font-mono font-semibold text-navy">
-                  ₹{openingFloat.toLocaleString("en-IN")}
-                </span>
-              </div>
-              <div className="flex justify-between py-1 text-navy-muted">
-                <span>Cash Receipts Collected Today (37 txns)</span>
-                <span className="font-mono font-semibold text-navy">
-                  ₹{systemCollected.toLocaleString("en-IN")}
-                </span>
-              </div>
-              <div className="flex justify-between py-1 font-semibold text-navy">
-                <span>Expected System Balance</span>
-                <span className="font-mono font-bold">
-                  ₹{expectedTotal.toLocaleString("en-IN")}
-                </span>
-              </div>
-              <div className="flex justify-between py-1 font-semibold text-navy">
-                <span>Physical Cash Counted</span>
-                <span className="font-mono font-bold text-teal">
-                  ₹{physicalCash.toLocaleString("en-IN")}
-                </span>
-              </div>
-
-              {/* Variance Alert */}
-              <div className="pt-2 flex justify-between items-center text-sm font-bold">
-                <span className="flex items-center gap-1.5">
-                  {variance === 0 ? (
-                    <FiCheckCircle className="text-emerald-600" />
-                  ) : (
-                    <FiAlertTriangle className="text-amber-600" />
-                  )}
-                  Discrepancy / Variance
-                </span>
-                <span
-                  className={`font-mono ${
-                    variance === 0
-                      ? "text-emerald-700"
-                      : variance > 0
-                      ? "text-blue-700"
-                      : "text-red-700"
-                  }`}
-                >
-                  {variance === 0
-                    ? "₹0 (Balanced)"
-                    : variance > 0
-                    ? `+₹${variance.toLocaleString("en-IN")} (Surplus)`
-                    : `-₹${Math.abs(variance).toLocaleString("en-IN")} (Shortage)`}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <label className="block font-medium text-navy mb-1">Cashier Handover Notes</label>
-              <textarea
-                rows={3}
-                disabled={isClosed}
-                value={cashierNotes}
-                onChange={e => setCashierNotes(e.target.value)}
-                className="w-full p-2.5 bg-page border border-line rounded-control text-navy focus:outline-none focus:border-teal disabled:opacity-60"
-              />
-            </div>
-
-            <div className="pt-2">
-              <button
-                onClick={handleCloseCounter}
-                disabled={isClosed}
-                className="w-full py-3 bg-teal hover:bg-teal-hover disabled:bg-slate-400 text-white rounded-control font-bold text-xs shadow-sm transition flex items-center justify-center gap-2"
-              >
-                <FiLock size={14} />
-                {isClosed ? "Counter Locked & Submitted" : "Lock Counter & Submit Handover"}
-              </button>
-            </div>
+      {/* Main Two-Column Layout (Matching 24-CashClosing.html) */}
+      <div className="flex flex-wrap gap-5 items-start">
+        {/* Left Section: Notes and Coins Counted */}
+        <section className="flex-[999_1_480px] min-w-0 bg-white border border-line rounded-card overflow-hidden shadow-xs">
+          <div className="px-5 py-3.5 border-b border-line bg-surface">
+            <h2 className="text-base font-semibold text-ink">Notes and coins counted</h2>
           </div>
-        </div>
+
+          <div className="divide-y divide-[#EEF1EF]">
+            {denominations.map((denom) => {
+              const subtotal = denom.note * denom.count;
+              return (
+                <div
+                  key={denom.note}
+                  className="grid grid-cols-[90px_1fr_140px] gap-4 items-center px-5 py-2.5 hover:bg-slate-50/50 transition-colors"
+                >
+                  {/* Note Label */}
+                  <span className="font-mono text-[15px] font-medium text-ink">
+                    ₹{denom.note}
+                  </span>
+
+                  {/* Counter Buttons + Input */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={isLocked}
+                      onClick={() => handleDecrement(denom.note)}
+                      aria-label={`One less ₹${denom.note}`}
+                      className="w-10 h-10 rounded-control border border-line-input bg-white hover:bg-slate-100 text-ink text-lg font-bold flex items-center justify-center transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      −
+                    </button>
+                    
+                    <input
+                      type="text"
+                      disabled={isLocked}
+                      value={denom.count}
+                      onChange={(e) => handleCountChange(denom.note, e.target.value)}
+                      className="w-16 h-10 text-center rounded-control border border-line-input bg-white font-mono text-[15px] text-ink focus:outline-none focus:border-primary disabled:bg-slate-50"
+                    />
+
+                    <button
+                      type="button"
+                      disabled={isLocked}
+                      onClick={() => handleIncrement(denom.note)}
+                      aria-label={`One more ₹${denom.note}`}
+                      className="w-10 h-10 rounded-control border border-line-input bg-white hover:bg-slate-100 text-ink text-lg font-bold flex items-center justify-center transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {/* Subtotal */}
+                  <span className="text-right font-mono text-[15px] font-medium text-ink">
+                    ₹{subtotal.toLocaleString("en-IN")}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Right Aside: Summary & Supervisor Sign-off */}
+        <aside className="flex-[1_1_320px] flex flex-col gap-4">
+          
+          {/* Summary Box (Matching 24-CashClosing.html) */}
+          <section className="bg-white border border-line rounded-card p-5 flex flex-col gap-2.5 text-small shadow-xs">
+            <h2 className="text-base font-semibold text-ink mb-1">Summary</h2>
+
+            <div className="flex justify-between items-center">
+              <span className="text-ink-secondary">Cash receipts in system (37)</span>
+              <span className="font-mono text-ink">₹{systemCashReceipts.toLocaleString("en-IN")}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-ink-secondary">Opening float</span>
+              <span className="font-mono text-ink">₹{openingFloat.toLocaleString("en-IN")}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-ink-secondary">Cash counted</span>
+              <span className="font-mono text-ink font-semibold">
+                ₹{cashCounted.toLocaleString("en-IN")}
+              </span>
+            </div>
+
+            {/* Short / Excess Box */}
+            {variance !== 0 ? (
+              <div
+                className={`flex justify-between items-center px-3 py-2.5 mt-1 rounded-control font-semibold ${
+                  variance < 0
+                    ? "bg-[#FFF6EC] text-[#7A4106]"
+                    : "bg-[#E4F1E8] text-[#1E5A33]"
+                }`}
+              >
+                <span>{variance < 0 ? "Short" : "Surplus"}</span>
+                <span className="font-mono">
+                  {variance < 0 ? `−₹${Math.abs(variance).toLocaleString("en-IN")}` : `+₹${variance.toLocaleString("en-IN")}`}
+                </span>
+              </div>
+            ) : (
+              <div className="flex justify-between items-center px-3 py-2.5 mt-1 rounded-control bg-[#E4F1E8] text-[#1E5A33] font-semibold">
+                <span>Exact Match</span>
+                <span className="font-mono">₹0</span>
+              </div>
+            )}
+
+            <div className="flex justify-between items-center pt-2 border-t border-line text-ink">
+              <span className="text-ink-secondary">UPI / card / cheque today</span>
+              <span className="font-mono text-ink">₹{nonCashCollected.toLocaleString("en-IN")}</span>
+            </div>
+          </section>
+
+          {/* Supervisor Sign-Off Form (Matching 24-CashClosing.html) */}
+          <section className="bg-white border border-line rounded-card p-5 flex flex-col gap-3.5 shadow-xs">
+            <form onSubmit={handleLockCounter} className="space-y-3">
+              <div>
+                <label className="block text-[13.5px] font-medium text-ink mb-1">
+                  Note for the supervisor
+                </label>
+                <textarea
+                  rows={3}
+                  disabled={isLocked}
+                  value={supervisorNote}
+                  onChange={(e) => setSupervisorNote(e.target.value)}
+                  className="w-full p-2.5 border border-line-input rounded-control text-xs text-ink focus:outline-none focus:border-primary disabled:bg-slate-50"
+                  placeholder="Explain any short/excess or drawer variance..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13.5px] font-medium text-ink mb-1">
+                  Supervisor PIN / Password
+                </label>
+                <input
+                  type="password"
+                  disabled={isLocked}
+                  placeholder="Enter supervisor PIN"
+                  value={supervisorPass}
+                  onChange={(e) => setSupervisorPass(e.target.value)}
+                  className="w-full h-9 px-3 border border-line-input rounded-control text-xs text-ink focus:outline-none focus:border-primary disabled:bg-slate-50"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLocked}
+                className={`w-full min-h-[48px] rounded-control border-0 text-white font-semibold text-sm transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2 ${
+                  isLocked
+                    ? "bg-[#9DB5B5] cursor-not-allowed"
+                    : "bg-primary hover:bg-[#08393F] active:scale-[0.99]"
+                }`}
+              >
+                <FiLock size={15} />
+                <span>{isLocked ? "Counter 1 Locked" : "Sign off and lock Counter 1"}</span>
+              </button>
+            </form>
+          </section>
+
+        </aside>
       </div>
     </div>
   );

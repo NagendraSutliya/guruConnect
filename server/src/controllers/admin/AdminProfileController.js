@@ -8,7 +8,7 @@ const cloudinary = require("../../config/cloudinary");
 exports.getAdminProfile = async (req, res) => {
   try {
     const admin = await Institute.findById(req.user.id).select(
-      "instituteName email logoUrl phone address principalName ownerName"
+      "instituteName email logoUrl phone address principalName ownerName city board instituteCode"
     );
 
     const [studentCount, teacherCount] = await Promise.all([

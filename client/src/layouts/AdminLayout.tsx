@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, useLocation } from "react-router-dom";
 import AdminNavbar from "../components/admin/AdminNavbar";
 import CommandPalette from "../components/common/CommandPalette";
 import { useState, useEffect } from "react";
@@ -46,7 +46,6 @@ type MenuItem = {
 
 const AdminLayout = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(() => {
     const saved = localStorage.getItem("sidebar_minimized");
@@ -67,6 +66,15 @@ const AdminLayout = () => {
         if (!prev.has("Admissions")) {
           const next = new Set(prev);
           next.add("Admissions");
+          return next;
+        }
+        return prev;
+      });
+    } else {
+      setOpenMenus(prev => {
+        if (prev.has("Admissions")) {
+          const next = new Set(prev);
+          next.delete("Admissions");
           return next;
         }
         return prev;
@@ -121,7 +129,18 @@ const AdminLayout = () => {
     { name: "Attendance", icon: <MdAssignment size={18} />, path: "/admin/attendance" },
     { name: "Academics & Timetable", icon: <MdSchool size={18} />, path: "/admin/routine" },
     { name: "Examinations", icon: <MdAssignment size={18} />, path: "/admin/exam" },
-    { name: "Fees", icon: <MdAttachMoney size={18} />, path: "/admin/collect-fees" },
+    {
+      name: "Fees",
+      icon: <MdAttachMoney size={18} />,
+      path: "/admin/collect-fees",
+      children: [
+        { name: "Counter", path: "/admin/collect-fees" },
+        { name: "Fee Structure", path: "/admin/fee-structure" },
+        { name: "Defaulters", path: "/admin/defaulters" },
+        { name: "Online Payments", path: "/admin/reconciliation" },
+        { name: "Cash Closing", path: "/admin/cash-closing" },
+      ],
+    },
     { name: "Accounts", icon: <MdAccountBalance size={18} />, path: "/admin/accounts" },
     { name: "Staff & Leave", icon: <FaChalkboardTeacher size={16} />, path: "/admin/staff" },
     { name: "Payroll", icon: <MdPayments size={18} />, path: "/admin/payroll" },
@@ -229,9 +248,6 @@ const AdminLayout = () => {
                         <div
                           onClick={() => {
                             toggleMenu(item.name);
-                            if (!item.children?.some(c => location.pathname === c.path)) {
-                              navigate(item.children![0].path);
-                            }
                           }}
                           className={`group flex items-center justify-between px-3 py-[9px] rounded-control transition-all duration-300 ease-out cursor-pointer select-none
                             ${
@@ -294,6 +310,16 @@ const AdminLayout = () => {
                     <NavLink
                       key={item.name}
                       to={item.path!}
+                      onClick={() => {
+                        setOpenMenus(prev => {
+                          if (prev.size > 0) {
+                            const next = new Set(prev);
+                            next.delete("Admissions");
+                            return next;
+                          }
+                          return prev;
+                        });
+                      }}
                       className={({ isActive }) =>
                         `group flex items-center ${isMinimized ? "justify-center" : "gap-3"} px-3 py-[9px] rounded-control transition-all duration-300 ease-out
                         ${

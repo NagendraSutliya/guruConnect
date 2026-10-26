@@ -1,5 +1,5 @@
-import AdminResultPanel from "../panels/ResultPanel";
+import ExaminationsPage from "./ExaminationsPage";
 
 export default function Results() {
-  return <AdminResultPanel />;
+  return <ExaminationsPage initialTab="results" />;
 }

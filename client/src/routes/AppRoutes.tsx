@@ -83,13 +83,13 @@ import TeacherMyClass from "../pages/teacher/TeacherMyClass";
 import TeacherHomework from "../pages/teacher/TeacherHomework";
 import TeacherMessages from "../pages/teacher/TeacherMessages";
 import TeacherLeavePayslip from "../pages/teacher/TeacherLeavePayslip";
-import RoutineStudent from "../pages/student/RoutineStudent";
 import FeeStructure from "../pages/admin/finance/FeeStructure";
 import Invoices from "../pages/admin/finance/Invoices";
 import FeeCounter from "../pages/admin/finance/FeeCounter";
 import DefaultersPage from "../pages/admin/finance/DefaultersPage";
 import CashClosingPage from "../pages/admin/finance/CashClosingPage";
 import AccountsPage from "../pages/admin/finance/AccountsPage";
+import ReconciliationPage from "../pages/admin/finance/ReconciliationPage";
 
 import Approvals from "../pages/admin/home/Approvals";
 import StudentImport from "../pages/admin/student/StudentImport";
@@ -222,6 +222,8 @@ export default function AppRoutes() {
         <Route path="defaulters" element={<DefaultersPage />} />
         <Route path="cash-closing" element={<CashClosingPage />} />
         <Route path="accounts" element={<AccountsPage />} />
+        <Route path="reconciliation" element={<ReconciliationPage />} />
+        <Route path="online-payments" element={<ReconciliationPage />} />
         <Route path="invoices" element={<Invoices />} />
 
         {/* HR & PAYROLL */}
@@ -284,6 +286,8 @@ export default function AppRoutes() {
         <Route path="cms/contact" element={<ContactCMS />} />
 
         <Route path="exam" element={<Exams />} />
+        <Route path="exam/marks" element={<Exams initialTab="marks" />} />
+        <Route path="exam/results" element={<Exams initialTab="results" />} />
         <Route path="exam-subjects/:examId" element={<ExamSubjectPanel />} />
         <Route path="result" element={<Results />} />
       </Route>

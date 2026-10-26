@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FiSearch,
@@ -11,9 +11,14 @@ import {
   FiFileText,
   FiClock,
   FiAlertCircle,
-  FiArrowRight
+  FiArrowRight,
+  FiX,
+  FiDownload,
+  FiCheck,
+  FiChevronRight
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
+import FeesModuleNav from "../../../components/admin/fees/FeesModuleNav";
 
 interface Installment {
   id: string;
@@ -26,11 +31,65 @@ interface Installment {
   checked: boolean;
 }
 
-const DEFAULT_INSTALLMENTS: Installment[] = [
+interface StudentRecord {
+  id: string;
+  name: string;
+  classGrade: string;
+  admNo: string;
+  guardian: string;
+  phone: string;
+  category: string;
+  initials: string;
+}
+
+const SAMPLE_STUDENTS: StudentRecord[] = [
+  {
+    id: "s1",
+    name: "Harsh Vardhan",
+    classGrade: "8-A",
+    admNo: "2017/0064",
+    guardian: "Anita Vardhan",
+    phone: "98870 5xxxx",
+    category: "Staff ward concession",
+    initials: "HV"
+  },
+  {
+    id: "s2",
+    name: "Kunal Mehra",
+    classGrade: "7-C",
+    admNo: "2018/0092",
+    guardian: "Ajay Mehra",
+    phone: "98290 2xxxx",
+    category: "Regular category",
+    initials: "KM"
+  },
+  {
+    id: "s3",
+    name: "Tanya Saini",
+    classGrade: "6-C",
+    admNo: "2019/0142",
+    guardian: "Mukesh Saini",
+    phone: "94140 7xxxx",
+    category: "Sibling concession (2nd child)",
+    initials: "TS"
+  },
+  {
+    id: "s4",
+    name: "Aditi Sharma",
+    classGrade: "6-A",
+    admNo: "2024/0821",
+    guardian: "Rakesh Sharma",
+    phone: "98281 4xxxx",
+    category: "Regular category",
+    initials: "AS"
+  }
+];
+
+const INITIAL_INSTALLMENTS: Installment[] = [
   {
     id: "inst-2",
     name: "Installment 2 · Jul–Sep",
-    breakdown: "Tuition ₹13,300 · Transport ₹3,600 · Science Lab ₹1,000",
+    breakdown: "Tuition ₹13,300 · Transport ₹3,600 · Lab ₹1,000",
     amount: 17900,
     dueDate: "Overdue since 15 Jul",
     isOverdue: true,
@@ -56,9 +115,9 @@ const DEFAULT_INSTALLMENTS: Installment[] = [
   },
   {
     id: "inst-trip",
-    name: "Annual Science Excursion (Optional)",
-    breakdown: "Jaipur Heritage & Science City Field Tour",
-    amount: 2400,
+    name: "Annual trip (optional)",
+    breakdown: "Jaipur heritage walk",
+    amount: 1200,
     dueDate: "Due 30 Oct",
     isOptional: true,
     checked: false
@@ -67,21 +126,30 @@ const DEFAULT_INSTALLMENTS: Installment[] = [
 
 export default function FeeCounter() {
   const { showToast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("2017/0064");
-  const [installments, setInstallments] = useState<Installment[]>(DEFAULT_INSTALLMENTS);
-  const [paymentMode, setPaymentMode] = useState<"cash" | "upi" | "card" | "cheque">("upi");
+  const [selectedStudent, setSelectedStudent] = useState<StudentRecord>(SAMPLE_STUDENTS[0]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isChangeStudentOpen, setIsChangeStudentOpen] = useState(false);
+  const [installments, setInstallments] = useState<Installment[]>(INITIAL_INSTALLMENTS);
+  const [paymentMode, setPaymentMode] = useState<"Cash" | "UPI QR" | "Cheque" | "Card" | "Bank">("Cash");
   const [waiveLateFee, setWaiveLateFee] = useState(false);
+  const [chequeNo, setChequeNo] = useState("");
+  const [bankName, setBankName] = useState("");
   const [txnRef, setTxnRef] = useState("");
-  const [isReceiptGenerated, setIsReceiptGenerated] = useState(false);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const receiptPrintRef = useRef<HTMLDivElement>(null);
 
-  const student = {
-    name: "Harsh Vardhan",
-    classGrade: "8-A",
-    admNo: "2017/0064",
-    guardian: "Anita Vardhan",
-    phone: "98870 5xxxx",
-    category: "Staff Ward Concession (10% on Tuition)"
-  };
+  // Dynamic Institute Name
+  const [adminData] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem("admin");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const instituteName = adminData?.instituteName || "GuruConnect Institute";
+  const instituteAddress = adminData?.address || (adminData?.city ? `${adminData.city} · Affiliated to CBSE` : "Affiliated Educational Institution");
 
   const toggleInstallment = (id: string) => {
     setInstallments(prev =>
@@ -89,280 +157,507 @@ export default function FeeCounter() {
     );
   };
 
-  const selectedTotal = installments
+  const selectedDuesTotal = installments
     .filter(i => i.checked)
     .reduce((sum, i) => sum + i.amount, 0);
 
-  const lateFee = waiveLateFee ? 0 : 500;
-  const grandTotal = selectedTotal + lateFee;
+  const lateFee = waiveLateFee || selectedDuesTotal === 0 ? 0 : 500;
+  const grandTotal = selectedDuesTotal + lateFee;
 
-  const handleCollect = () => {
-    if (selectedTotal === 0) {
+  const handleCollectPayment = () => {
+    if (selectedDuesTotal === 0) {
       showToast("Please select at least one installment to collect.", "error");
       return;
     }
-    setIsReceiptGenerated(true);
-    showToast(`Receipt RCP/2627/004201 for ₹${grandTotal.toLocaleString("en-IN")} generated successfully!`, "success");
+    setIsReceiptModalOpen(true);
+    showToast(`Receipt RCP/2627/004218 generated for ₹${grandTotal.toLocaleString("en-IN")}`, "success");
   };
 
-  const handlePrint = () => {
+  const handlePrintReceipt = () => {
     window.print();
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto text-navy">
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12">
+      {/* Module Navigation */}
+      <FeesModuleNav activeTab="counter" />
+
       {/* Top Breadcrumb & Counter stats */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold text-navy-muted tracking-wide uppercase">
-            Fees & Accounts › Counter 1
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">
+            Fees &amp; Finance › Counter 1 ·{" "}
+            <Link to="/admin/fee-structure" className="text-primary hover:underline">
+              Fee structure
+            </Link>{" "}
+            ·{" "}
+            <Link to="/admin/defaulters" className="text-primary hover:underline">
+              Defaulters
+            </Link>{" "}
+            ·{" "}
+            <Link to="/admin/reconciliation" className="text-primary hover:underline">
+              Online payments
+            </Link>
           </div>
-          <h1 className="text-2xl font-bold text-navy mt-1">Fee Collection Desk</h1>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            Collect fee
+          </h1>
         </div>
 
-        <div className="flex items-center gap-4 text-xs">
-          <div className="bg-surface border border-line rounded-control px-3.5 py-2 text-navy font-medium shadow-xs">
-            Today at Counter 1: <b className="font-mono text-teal">₹2,84,600</b> · 37 receipts
-          </div>
+        <div className="flex items-center gap-4 text-[13px] text-ink-secondary flex-wrap">
+          <span>
+            Today at this counter:{" "}
+            <b className="font-mono text-ink font-semibold">₹2,84,600</b> · 37 receipts
+          </span>
           <Link
             to="/admin/cash-closing"
-            className="text-teal hover:underline font-semibold"
+            className="text-primary font-medium hover:underline flex items-center gap-1"
           >
-            Day-End Cash Closing →
+            Day-end cash closing →
           </Link>
         </div>
       </div>
 
-      {/* Sub Navigation */}
-      <div className="flex items-center gap-2 border-b border-line pb-2 text-xs font-semibold">
-        <span className="text-teal border-b-2 border-teal pb-2 px-1">Collect Fee</span>
-        <Link to="/admin/fee-structure" className="text-navy-muted hover:text-navy px-2 pb-2">
-          Fee Structure
-        </Link>
-        <Link to="/admin/defaulters" className="text-navy-muted hover:text-navy px-2 pb-2">
-          Defaulters Register
-        </Link>
-        <Link to="/admin/accounts" className="text-navy-muted hover:text-navy px-2 pb-2">
-          Day Book & Vouchers
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Student & Installments */}
-        <div className="lg:col-span-7 space-y-5">
-          {/* Student Search & Profile Card */}
-          <div className="bg-surface border border-line rounded-panel p-5 shadow-sm space-y-4">
-            <div className="relative">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-muted" size={16} />
-              <input
-                type="text"
-                placeholder="Search admission no, student name or parent phone..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-24 py-2 bg-page border border-line rounded-control text-xs text-navy focus:outline-none focus:border-teal"
-              />
-              <button className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-teal hover:bg-teal-hover text-white text-xs font-semibold rounded-control transition">
-                Find
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between p-3.5 bg-page rounded-control border border-line/70">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-control bg-teal/15 text-teal flex items-center justify-center font-bold text-sm">
-                  HV
+      {/* Main Two-Column Layout */}
+      <div className="flex flex-wrap gap-5 items-start">
+        {/* Left Column: Student Card & Installments */}
+        <div className="flex-[999_1_520px] min-w-0 flex flex-col gap-4">
+          
+          {/* Student Profile Card (Matching 20-FeeCounter.html) */}
+          <section className="bg-white border border-line rounded-card p-4 sm:p-5 flex flex-wrap gap-4 items-center justify-between shadow-xs">
+            <div className="flex gap-3.5 items-center min-w-0">
+              <div className="w-12 h-12 rounded-card bg-[#E3EFEF] text-[#08393F] flex items-center justify-center font-bold text-base shrink-0">
+                {selectedStudent.initials}
+              </div>
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <div className="font-semibold text-base text-ink truncate">
+                  {selectedStudent.name} · {selectedStudent.classGrade}
                 </div>
-                <div>
-                  <div className="font-bold text-sm text-navy">{student.name} · {student.classGrade}</div>
-                  <div className="text-xs text-navy-muted">
-                    Adm: {student.admNo} · Guardian: {student.guardian} ({student.phone})
-                  </div>
-                  <div className="text-[11px] font-semibold text-teal mt-0.5">{student.category}</div>
+                <div className="text-[13px] text-ink-secondary truncate">
+                  Adm. {selectedStudent.admNo} · Guardian {selectedStudent.guardian} · {selectedStudent.phone} ·{" "}
+                  <span className="text-primary font-medium">{selectedStudent.category}</span>
                 </div>
               </div>
-              <button className="px-2.5 py-1 text-xs border border-line rounded-control bg-surface hover:bg-page text-navy-muted font-medium">
-                Change
-              </button>
             </div>
-          </div>
+            
+            <button
+              type="button"
+              onClick={() => setIsChangeStudentOpen(true)}
+              className="min-h-[40px] px-3.5 rounded-control border border-line-input bg-white hover:bg-slate-50 text-[13px] font-medium text-ink transition-colors cursor-pointer shrink-0 shadow-xs"
+            >
+              Change student
+            </button>
+          </section>
 
-          {/* Installments Checklist */}
-          <div className="bg-surface border border-line rounded-panel shadow-sm overflow-hidden">
-            <div className="px-5 py-3 border-b border-line flex items-center justify-between bg-page/40">
-              <h2 className="font-semibold text-xs text-navy uppercase tracking-wider">
-                Installment Dues (Oldest First)
-              </h2>
-              <span className="text-[11px] text-navy-muted">Select dues to settle</span>
+          {/* Dues by Installment (Matching 20-FeeCounter.html) */}
+          <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
+            <div className="px-5 py-3.5 border-b border-line flex justify-between items-baseline gap-3 bg-surface">
+              <h2 className="text-base font-semibold text-ink">Dues by installment</h2>
+              <span className="text-[13px] text-ink-secondary">Oldest dues are selected first</span>
             </div>
 
-            <div className="divide-y divide-line/70">
-              {installments.map(item => (
-                <label
-                  key={item.id}
-                  className={`flex items-start gap-3.5 p-4 cursor-pointer transition ${
-                    item.checked ? "bg-teal/5" : "hover:bg-page/50"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={item.checked}
-                    onChange={() => toggleInstallment(item.id)}
-                    className="mt-1 w-4 h-4 text-teal rounded focus:ring-teal"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-sm text-navy">{item.name}</span>
-                      <span className="font-mono font-bold text-sm text-navy">
-                        ₹{item.amount.toLocaleString("en-IN")}
+            <div className="divide-y divide-[#EEF1EF]">
+              {installments.map((inst) => {
+                return (
+                  <label
+                    key={inst.id}
+                    className={`flex items-center gap-3.5 px-5 py-3.5 cursor-pointer transition-colors select-none ${
+                      inst.checked ? "bg-[#F4F9F9]" : "bg-white hover:bg-slate-50/60"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={inst.checked}
+                      onChange={() => toggleInstallment(inst.id)}
+                      className="w-5 h-5 rounded border-[#C9D1CD] text-primary focus:ring-primary cursor-pointer shrink-0"
+                    />
+
+                    <span className="flex-1 flex flex-col gap-0.5 min-w-0">
+                      <span className="font-semibold text-sm text-ink">{inst.name}</span>
+                      <span className="text-[12.5px] text-ink-secondary">{inst.breakdown}</span>
+                    </span>
+
+                    <span className="flex flex-col items-end gap-0.5 shrink-0">
+                      <span className="font-mono text-[15px] font-medium text-ink">
+                        ₹{inst.amount.toLocaleString("en-IN")}
                       </span>
-                    </div>
-                    <p className="text-xs text-navy-muted mt-0.5">{item.breakdown}</p>
-                    <div className="mt-1">
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          item.isOverdue
-                            ? "bg-amber-100 text-amber-800"
-                            : item.isOptional
-                            ? "bg-slate-100 text-slate-700"
-                            : "bg-emerald-50 text-emerald-800"
-                        }`}
-                      >
-                        {item.dueDate}
-                      </span>
-                    </div>
-                  </div>
-                </label>
-              ))}
+                      {inst.isOverdue ? (
+                        <span className="text-xs font-semibold text-[#8F4A09]">
+                          {inst.dueDate}
+                        </span>
+                      ) : (
+                        <span className="text-xs font-medium text-ink-secondary">
+                          {inst.dueDate}
+                        </span>
+                      )}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
-          </div>
+          </section>
+
         </div>
 
-        {/* Right Column: Payment Settlement Desk */}
-        <div className="lg:col-span-5 space-y-5">
-          <div className="bg-surface border border-line rounded-panel p-5 shadow-sm space-y-5">
-            <h2 className="font-semibold text-sm text-navy flex items-center justify-between border-b border-line pb-3">
-              <span>Payment Breakdown</span>
-              <span className="font-mono text-xs text-navy-muted">Currency: INR (₹)</span>
-            </h2>
+        {/* Right Aside: Payment Box (Matching 20-FeeCounter.html) */}
+        <aside className="flex-[1_1_320px] bg-white border border-line rounded-card p-5 flex flex-col gap-4 shadow-xs">
+          <h2 className="text-base font-semibold text-ink">Payment</h2>
 
-            {/* Summary Lines */}
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between text-navy-muted">
-                <span>Tuition & Core Fees</span>
-                <span className="font-mono font-semibold text-navy">
-                  ₹{selectedTotal.toLocaleString("en-IN")}
-                </span>
+          {/* Payment Modes Grid (Cash, UPI QR, Cheque, Card, Bank) */}
+          <div className="grid grid-cols-3 gap-2">
+            {(["Cash", "UPI QR", "Cheque", "Card", "Bank"] as const).map((mode) => {
+              const isSelected = paymentMode === mode;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setPaymentMode(mode)}
+                  aria-pressed={isSelected}
+                  className={`min-h-[44px] rounded-control border text-[13px] font-semibold transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-[#12302D] bg-[#12302D] text-white shadow-xs"
+                      : "border-line-input bg-white text-ink hover:bg-slate-50"
+                  }`}
+                >
+                  {mode}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Dynamic mode inputs if non-cash */}
+          {paymentMode === "UPI QR" && (
+            <div className="p-3.5 bg-slate-50 border border-line rounded-control text-center space-y-2 animate-fadeIn">
+              <span className="text-xs font-medium text-ink-secondary block">
+                Scan UPI QR to collect directly into School Account
+              </span>
+              <div className="w-32 h-32 mx-auto bg-white border border-slate-300 rounded p-1.5 flex items-center justify-center">
+                <img
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=upi://pay?pa=fees.school@hdfcbank"
+                  alt="UPI QR Code"
+                  className="w-full h-full object-contain"
+                />
               </div>
+              <div className="font-mono text-xs font-semibold text-primary">
+                fees.school@hdfcbank
+              </div>
+            </div>
+          )}
 
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-1.5 cursor-pointer text-navy">
+          {paymentMode === "Cheque" && (
+            <div className="space-y-2 p-3 bg-slate-50 border border-line rounded-control text-xs animate-fadeIn">
+              <div>
+                <label className="block text-ink-secondary mb-1">Cheque Number</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 048291"
+                  value={chequeNo}
+                  onChange={(e) => setChequeNo(e.target.value)}
+                  className="w-full h-8 px-2.5 bg-white border border-line-input rounded font-mono text-xs text-ink focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-ink-secondary mb-1">Drawee Bank Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. State Bank of India"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="w-full h-8 px-2.5 bg-white border border-line-input rounded text-xs text-ink focus:outline-none focus:border-primary"
+                />
+              </div>
+            </div>
+          )}
+
+          {(paymentMode === "Card" || paymentMode === "Bank") && (
+            <div className="p-3 bg-slate-50 border border-line rounded-control text-xs animate-fadeIn">
+              <label className="block text-ink-secondary mb-1">
+                {paymentMode === "Card" ? "POS Machine Slip / Auth Ref" : "NEFT / RTGS UTR Number"}
+              </label>
+              <input
+                type="text"
+                placeholder="Reference / Transaction ID"
+                value={txnRef}
+                onChange={(e) => setTxnRef(e.target.value)}
+                className="w-full h-8 px-2.5 bg-white border border-line-input rounded font-mono text-xs text-ink focus:outline-none focus:border-primary"
+              />
+            </div>
+          )}
+
+          {/* Dues & Totals Breakdown */}
+          <div className="flex flex-col gap-2.5 text-sm pt-1">
+            <div className="flex justify-between items-center text-ink">
+              <span className="text-ink-secondary">Selected dues</span>
+              <span className="font-mono">₹{selectedDuesTotal.toLocaleString("en-IN")}</span>
+            </div>
+
+            <div className="flex justify-between items-center text-ink">
+              <span className="text-ink-secondary flex items-center gap-1.5">
+                <span>Late fee (₹20/day, cap ₹500)</span>
+                <label className="text-[11px] text-primary cursor-pointer hover:underline inline-flex items-center gap-1 ml-1">
                   <input
                     type="checkbox"
                     checked={waiveLateFee}
-                    onChange={e => setWaiveLateFee(e.target.checked)}
-                    className="rounded text-teal"
+                    onChange={(e) => setWaiveLateFee(e.target.checked)}
+                    className="w-3 h-3 text-primary rounded"
                   />
-                  <span>Waive late fee penalty</span>
+                  <span>Waive</span>
                 </label>
-                <span className="font-mono font-semibold text-navy">
-                  {waiveLateFee ? <s className="text-navy-muted">₹500</s> : "₹500"}
-                </span>
-              </div>
-
-              <div className="pt-2 border-t border-line flex justify-between text-sm font-bold text-navy">
-                <span>Net Payable Amount</span>
-                <span className="font-mono text-base text-teal">
-                  ₹{grandTotal.toLocaleString("en-IN")}
-                </span>
-              </div>
+              </span>
+              <span className="font-mono">
+                {waiveLateFee ? "₹0" : `₹${lateFee.toLocaleString("en-IN")}`}
+              </span>
             </div>
 
-            {/* Payment Method Selector */}
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-navy">Select Payment Mode</label>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                {[
-                  { key: "upi", label: "Dynamic UPI QR", icon: <FiSmartphone /> },
-                  { key: "cash", label: "Cash at Desk", icon: <FiDollarSign /> },
-                  { key: "card", label: "POS / Card", icon: <FiCreditCard /> },
-                  { key: "cheque", label: "Cheque / DD", icon: <FiFileText /> }
-                ].map(m => (
+            <div className="flex justify-between items-center pt-2.5 border-t border-line font-semibold text-lg text-ink">
+              <span>Total</span>
+              <span className="font-mono text-primary font-bold">
+                ₹{grandTotal.toLocaleString("en-IN")}
+              </span>
+            </div>
+          </div>
+
+          {/* Action Collect Button (Matching 20-FeeCounter.html) */}
+          <button
+            type="button"
+            onClick={handleCollectPayment}
+            disabled={selectedDuesTotal === 0}
+            className={`min-h-[50px] rounded-control border-0 text-white font-semibold text-[15px] transition-all cursor-pointer shadow-xs active:scale-[0.99] flex items-center justify-center gap-2 ${
+              selectedDuesTotal === 0
+                ? "bg-[#9DB5B5] cursor-not-allowed"
+                : "bg-primary hover:bg-[#08393F]"
+            }`}
+          >
+            <span>
+              Collect ₹{grandTotal.toLocaleString("en-IN")} and print receipt
+            </span>
+          </button>
+
+          <div className="text-[12.5px] text-ink-secondary leading-relaxed">
+            Receipt RCP/2627/004218 will be generated. Cancelling a receipt later needs accountant approval.
+          </div>
+        </aside>
+      </div>
+
+      {/* ============================================================== */}
+      {/* CHANGE STUDENT MODAL                                            */}
+      {/* ============================================================== */}
+      {isChangeStudentOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white border border-line rounded-card shadow-2xl w-full max-w-md overflow-hidden animate-scaleUp">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-line bg-surface">
+              <h3 className="font-semibold text-base text-ink">Select Student</h3>
+              <button
+                type="button"
+                onClick={() => setIsChangeStudentOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-ink-secondary hover:bg-slate-200 transition-colors"
+              >
+                <FiX size={16} />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              <div className="relative">
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-secondary" size={14} />
+                <input
+                  type="text"
+                  placeholder="Search student by name, roll or admission no..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 border border-line-input rounded-control text-xs text-ink focus:outline-none focus:border-primary"
+                />
+              </div>
+
+              <div className="divide-y divide-line max-h-60 overflow-y-auto">
+                {SAMPLE_STUDENTS.filter(s =>
+                  s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  s.admNo.includes(searchTerm)
+                ).map((s) => (
                   <button
-                    key={m.key}
+                    key={s.id}
                     type="button"
-                    onClick={() => setPaymentMode(m.key as any)}
-                    className={`flex items-center gap-2 p-2.5 rounded-control border font-semibold transition ${
-                      paymentMode === m.key
-                        ? "border-teal bg-teal/10 text-teal shadow-xs"
-                        : "border-line bg-page text-navy-muted hover:text-navy"
+                    onClick={() => {
+                      setSelectedStudent(s);
+                      setIsChangeStudentOpen(false);
+                      showToast(`Switched to student ${s.name} (${s.classGrade})`, "info");
+                    }}
+                    className={`w-full text-left p-3 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer ${
+                      selectedStudent.id === s.id ? "bg-teal-50/50" : ""
                     }`}
                   >
-                    {m.icon} <span>{m.label}</span>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded bg-[#E3EFEF] text-[#08393F] font-bold text-xs flex items-center justify-center">
+                        {s.initials}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-xs text-ink">{s.name} · {s.classGrade}</div>
+                        <div className="text-[11px] text-ink-secondary">Adm: {s.admNo} · {s.guardian}</div>
+                      </div>
+                    </div>
+                    {selectedStudent.id === s.id && (
+                      <FiCheck size={16} className="text-primary" />
+                    )}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* UPI QR Display Mock if selected */}
-            {paymentMode === "upi" && (
-              <div className="p-3.5 bg-page border border-dashed border-teal/50 rounded-control flex items-center gap-4">
-                <div className="w-16 h-16 bg-white border border-line rounded-control flex items-center justify-center font-mono text-[9px] text-center text-navy-muted font-bold">
-                  [UPI QR]
-                </div>
-                <div className="text-xs">
-                  <div className="font-bold text-navy">Scan with PhonePe, GPay, Paytm</div>
-                  <div className="text-navy-muted text-[11px]">Instant automated receipt matching</div>
-                </div>
-              </div>
-            )}
-
-            {/* Reference Number */}
-            <div>
-              <label className="block text-xs font-medium text-navy mb-1">
-                Transaction / Cheque / Reference No. (Optional)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. UTR-982184918 or Cheque 004812"
-                value={txnRef}
-                onChange={e => setTxnRef(e.target.value)}
-                className="w-full px-3 py-2 bg-page border border-line rounded-control text-xs text-navy focus:outline-none focus:border-teal font-mono"
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="pt-2 space-y-2">
+            <div className="px-5 py-3 border-t border-line bg-surface flex justify-end">
               <button
-                onClick={handleCollect}
-                className="w-full py-3 bg-teal hover:bg-teal-hover text-white rounded-control font-bold text-xs shadow-sm transition flex items-center justify-center gap-2"
+                type="button"
+                onClick={() => setIsChangeStudentOpen(false)}
+                className="px-4 py-1.5 border border-line-input rounded-control text-xs font-semibold text-ink hover:bg-slate-100"
               >
-                <FiCheckCircle size={15} /> Collect ₹{grandTotal.toLocaleString("en-IN")} & Print Receipt
+                Close
               </button>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Generated Receipt Modal / View */}
-          {isReceiptGenerated && (
-            <div className="bg-surface border-2 border-teal/40 rounded-panel p-5 shadow-sm space-y-3">
-              <div className="flex items-center justify-between text-xs font-bold text-teal">
-                <span className="flex items-center gap-1.5">
-                  <FiCheckCircle /> Receipt Generated: RCP/2627/004201
-                </span>
-                <button
-                  onClick={handlePrint}
-                  className="px-3 py-1 bg-teal text-white rounded-control hover:bg-teal-hover transition flex items-center gap-1 font-semibold"
-                >
-                  <FiPrinter size={13} /> Print
-                </button>
+      {/* ============================================================== */}
+      {/* OFFICIAL PRINTABLE FEE RECEIPT MODAL                           */}
+      {/* ============================================================== */}
+      {isReceiptModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white border border-line rounded-card shadow-2xl w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden animate-scaleUp">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-line bg-surface">
+              <div className="flex items-center gap-2">
+                <FiCheckCircle className="text-emerald-600" size={18} />
+                <h3 className="font-semibold text-base text-ink">Fee Receipt Generated</h3>
               </div>
-              <div className="p-3 bg-page rounded-control text-[11px] font-mono text-navy space-y-1">
-                <div>Student: {student.name} ({student.admNo})</div>
-                <div>Amount: ₹{grandTotal.toLocaleString("en-IN")} ({paymentMode.toUpperCase()})</div>
-                <div>Counter: 01 · Cashier: Meera Kumawat</div>
+              <button
+                type="button"
+                onClick={() => setIsReceiptModalOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-ink-secondary hover:bg-slate-200 transition-colors"
+              >
+                <FiX size={16} />
+              </button>
+            </div>
+
+            {/* Printable Receipt Paper */}
+            <div className="flex-1 overflow-y-auto p-6 bg-slate-100 flex justify-center">
+              <div
+                ref={receiptPrintRef}
+                className="w-full max-w-lg bg-white border border-slate-300 p-6 rounded shadow-sm text-ink space-y-4 font-sans text-xs"
+              >
+                {/* School Header */}
+                <div className="text-center border-b border-slate-300 pb-3">
+                  <h2 className="text-xl font-extrabold uppercase text-ink tracking-tight">
+                    {instituteName}
+                  </h2>
+                  <p className="text-[11px] text-ink-secondary">{instituteAddress}</p>
+                  <div className="mt-1.5 inline-block px-3 py-0.5 bg-slate-900 text-white rounded text-[10px] font-bold uppercase tracking-wider">
+                    Official Fee Receipt · 2026-27
+                  </div>
+                </div>
+
+                {/* Receipt Metadata */}
+                <div className="grid grid-cols-2 gap-2 bg-slate-50 border border-slate-200 p-2.5 rounded text-[11px]">
+                  <div>
+                    <span className="text-ink-secondary block">Receipt No:</span>
+                    <span className="font-mono font-bold text-primary">RCP/2627/004218</span>
+                  </div>
+                  <div>
+                    <span className="text-ink-secondary block">Payment Date:</span>
+                    <span className="font-medium text-ink">09 Oct 2026, 02:45 PM</span>
+                  </div>
+                  <div>
+                    <span className="text-ink-secondary block">Student Name:</span>
+                    <span className="font-bold text-ink">{selectedStudent.name}</span>
+                  </div>
+                  <div>
+                    <span className="text-ink-secondary block">Class & Section:</span>
+                    <span className="font-medium text-ink">Class {selectedStudent.classGrade} (Adm: {selectedStudent.admNo})</span>
+                  </div>
+                  <div>
+                    <span className="text-ink-secondary block">Payment Mode:</span>
+                    <span className="font-semibold text-ink">{paymentMode}</span>
+                  </div>
+                  <div>
+                    <span className="text-ink-secondary block">Counter:</span>
+                    <span className="font-medium text-ink">Counter 1 · Admin Cashier</span>
+                  </div>
+                </div>
+
+                {/* Items Settled Table */}
+                <table className="w-full border-collapse border border-slate-300 text-xs">
+                  <thead>
+                    <tr className="bg-slate-100 text-ink">
+                      <th className="border border-slate-300 px-3 py-1.5 text-left font-semibold">Fee Particulars</th>
+                      <th className="border border-slate-300 px-3 py-1.5 text-right font-semibold">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {installments.filter(i => i.checked).map((item) => (
+                      <tr key={item.id}>
+                        <td className="border border-slate-300 px-3 py-1.5">
+                          <span className="font-medium block">{item.name}</span>
+                          <span className="text-[10px] text-ink-secondary">{item.breakdown}</span>
+                        </td>
+                        <td className="border border-slate-300 px-3 py-1.5 text-right font-mono">
+                          ₹{item.amount.toLocaleString("en-IN")}
+                        </td>
+                      </tr>
+                    ))}
+                    {!waiveLateFee && (
+                      <tr>
+                        <td className="border border-slate-300 px-3 py-1.5 font-medium text-amber-900">
+                          Late fee penalty (standard policy)
+                        </td>
+                        <td className="border border-slate-300 px-3 py-1.5 text-right font-mono text-amber-900">
+                          ₹500
+                        </td>
+                      </tr>
+                    )}
+                    <tr className="bg-slate-50 font-bold">
+                      <td className="border border-slate-300 px-3 py-2 text-right">Grand Total Paid:</td>
+                      <td className="border border-slate-300 px-3 py-2 text-right font-mono text-primary text-sm">
+                        ₹{grandTotal.toLocaleString("en-IN")}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                {/* Signatures */}
+                <div className="pt-6 flex justify-between items-end text-[11px] text-center">
+                  <div className="w-32 border-t border-slate-400 pt-1">
+                    <span className="text-ink-secondary">Payer Signature</span>
+                  </div>
+                  <div className="w-36 border-t border-slate-400 pt-1">
+                    <span className="font-semibold text-ink">Cashier / Accountant</span>
+                    <div className="text-[10px] text-ink-secondary">Counter 1 Stamp</div>
+                  </div>
+                </div>
               </div>
             </div>
-          )}
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-between px-6 py-3.5 border-t border-line bg-surface">
+              <span className="text-xs text-ink-secondary">
+                Official computer-generated receipt.
+              </span>
+              <div className="flex gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setIsReceiptModalOpen(false)}
+                  className="px-4 py-2 border border-line-input rounded-control text-ink text-xs font-semibold hover:bg-slate-50"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrintReceipt}
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold flex items-center gap-1.5 shadow-xs"
+                >
+                  <FiPrinter size={14} />
+                  Print Receipt
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

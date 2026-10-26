@@ -380,7 +380,7 @@ export default function AdmissionsCRM() {
 
       {/* Filters Bar (06-Admissions.html) */}
           <div className="flex flex-wrap items-center gap-3 bg-surface border border-line rounded-card p-3.5">
-            <div className="relative flex-1 min-w-[240px]">
+            <div className="relative flex-1 min-w-[200px] w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-secondary" size={16} />
               <input
                 type="text"
