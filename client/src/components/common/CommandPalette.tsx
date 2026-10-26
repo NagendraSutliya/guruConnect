@@ -19,7 +19,7 @@ const COMMANDS = [
   { id: "fee_structure", title: "Fee Structure Masters", path: "/admin/fee-structure", icon: <FiCreditCard />, category: "Finance" },
   { id: "defaulters", title: "Defaulters & Dues Register", path: "/admin/defaulters", icon: <FiCreditCard />, category: "Finance" },
   { id: "cash_closing", title: "Day-End Cash Closing", path: "/admin/cash-closing", icon: <FiCreditCard />, category: "Finance" },
-  { id: "accounts", title: "Accounts Day Book & Vouchers", path: "/admin/accounts", icon: <FiCreditCard />, category: "Finance" },
+  { id: "accounts", title: "Accounts Day Book & Vouchers", path: "/admin/accounts", icon: <FiCreditCard />, category: "Accounts" },
   { id: "staff", title: "Staff & Faculty Directory", path: "/admin/staff", icon: <FiUsers />, category: "Staff & Leave" },
   { id: "staff_attendance", title: "Staff Biometric Attendance", path: "/admin/staff/attendance", icon: <FiUsers />, category: "Staff & Leave" },
   { id: "leaves", title: "Leave Management & Approvals", path: "/admin/staff/leave", icon: <FiUsers />, category: "Staff & Leave" },

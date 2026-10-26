@@ -197,7 +197,7 @@ export default function PayrollRun() {
             type="button"
             onClick={() => setIsApprovalModalOpen(true)}
             disabled={isApprovalSent}
-            className={`min-h-[42px] px-4.5 rounded-control text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 ${
+            className={`min-h-[42px] px-4 rounded-control text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 ${
               isApprovalSent
                 ? "bg-emerald-700 cursor-default"
                 : "bg-primary hover:bg-[#08393F] active:scale-[0.98]"
@@ -503,7 +503,7 @@ export default function PayrollRun() {
                   setSelectedException(null);
                   showToast("Exception accepted and verified for salary register!", "success");
                 }}
-                className="px-4.5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
               >
                 Confirm &amp; Keep Adjustment
               </button>

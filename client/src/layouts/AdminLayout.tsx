@@ -61,8 +61,7 @@ const AdminLayout = () => {
     path.startsWith("/admin/defaulters") ||
     path.startsWith("/admin/reconciliation") ||
     path.startsWith("/admin/online-payments") ||
-    path.startsWith("/admin/cash-closing") ||
-    path.startsWith("/admin/accounts");
+    path.startsWith("/admin/cash-closing");
 
   const isStaffRoute = (path: string) =>
     path.startsWith("/admin/staff") ||
@@ -157,9 +156,9 @@ const AdminLayout = () => {
         { name: "Defaulters", path: "/admin/defaulters" },
         { name: "Online Payments", path: "/admin/reconciliation" },
         { name: "Cash Closing", path: "/admin/cash-closing" },
-        { name: "Accounts", path: "/admin/accounts" },
       ],
     },
+    { name: "Accounts", icon: <MdAccountBalance size={18} />, path: "/admin/accounts" },
     {
       name: "Staff & Leave",
       icon: <FaChalkboardTeacher size={16} />,

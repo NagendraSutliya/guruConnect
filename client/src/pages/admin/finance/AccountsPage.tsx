@@ -173,7 +173,7 @@ export default function AccountsPage() {
       <div className="flex flex-wrap justify-between items-end gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-[13px] text-ink-secondary flex items-center gap-1.5 flex-wrap">
-            <span>Fees › Accounts ›</span>
+            <span>Accounts ›</span>
             {(["Day book", "Cash book", "Bank book", "Ledgers", "Trial balance"] as const).map((tab, idx) => (
               <React.Fragment key={tab}>
                 {idx > 0 && <span>·</span>}

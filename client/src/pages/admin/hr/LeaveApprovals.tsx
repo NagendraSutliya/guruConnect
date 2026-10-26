@@ -379,7 +379,7 @@ export default function LeaveApprovals() {
               <button
                 type="button"
                 onClick={handleConfirmAction}
-                className={`px-4.5 py-2 text-white rounded-control font-semibold shadow-xs ${
+                className={`px-4 py-2 text-white rounded-control font-semibold shadow-xs ${
                   activeActionModal.action === "approve"
                     ? "bg-primary hover:bg-[#08393F]"
                     : "bg-red-700 hover:bg-red-800"
