@@ -10,7 +10,6 @@ import {
   FiHelpCircle
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
-import FeesModuleNav from "../../../components/admin/fees/FeesModuleNav";
 
 interface FeeRow {
   id: string;
@@ -159,12 +158,12 @@ export default function FeeStructure() {
 
   return (
     <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12">
-      {/* Module Navigation */}
-      <FeesModuleNav activeTab="structure" />
-
       {/* Header Row (Matching 21-FeeStructure.html) */}
       <div className="flex flex-wrap justify-between items-end gap-4">
         <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">
+            Fees › Fee structure
+          </div>
           <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
             Fee structure · 2027-28 (draft)
           </h1>

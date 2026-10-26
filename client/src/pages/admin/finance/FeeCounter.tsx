@@ -18,7 +18,6 @@ import {
   FiChevronRight
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
-import FeesModuleNav from "../../../components/admin/fees/FeesModuleNav";
 
 interface Installment {
   id: string;
@@ -179,25 +178,11 @@ export default function FeeCounter() {
 
   return (
     <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12">
-      {/* Module Navigation */}
-      <FeesModuleNav activeTab="counter" />
-
       {/* Top Breadcrumb & Counter stats */}
       <div className="flex flex-wrap justify-between items-end gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-[13px] text-ink-secondary">
-            Fees &amp; Finance › Counter 1 ·{" "}
-            <Link to="/admin/fee-structure" className="text-primary hover:underline">
-              Fee structure
-            </Link>{" "}
-            ·{" "}
-            <Link to="/admin/defaulters" className="text-primary hover:underline">
-              Defaulters
-            </Link>{" "}
-            ·{" "}
-            <Link to="/admin/reconciliation" className="text-primary hover:underline">
-              Online payments
-            </Link>
+            Fees › Counter 1
           </div>
           <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
             Collect fee

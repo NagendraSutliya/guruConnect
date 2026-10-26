@@ -52,34 +52,39 @@ const AdminLayout = () => {
     return saved === "true";
   });
 
+  const isFeesRoute = (path: string) =>
+    path.startsWith("/admin/collect-fees") ||
+    path.startsWith("/admin/fee-structure") ||
+    path.startsWith("/admin/defaulters") ||
+    path.startsWith("/admin/reconciliation") ||
+    path.startsWith("/admin/online-payments") ||
+    path.startsWith("/admin/cash-closing") ||
+    path.startsWith("/admin/accounts");
+
   const [openMenus, setOpenMenus] = useState<Set<string>>(() => {
     const initial = new Set<string>();
-    if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin/admissions")) {
+    const path = typeof window !== "undefined" ? window.location.pathname : "";
+    if (path.startsWith("/admin/admissions")) {
       initial.add("Admissions");
+    }
+    if (isFeesRoute(path)) {
+      initial.add("Fees");
     }
     return initial;
   });
 
   useEffect(() => {
-    if (location.pathname.startsWith("/admin/admissions")) {
-      setOpenMenus(prev => {
-        if (!prev.has("Admissions")) {
-          const next = new Set(prev);
-          next.add("Admissions");
-          return next;
-        }
-        return prev;
-      });
-    } else {
-      setOpenMenus(prev => {
-        if (prev.has("Admissions")) {
-          const next = new Set(prev);
-          next.delete("Admissions");
-          return next;
-        }
-        return prev;
-      });
-    }
+    const path = location.pathname;
+    setOpenMenus(prev => {
+      const next = new Set(prev);
+      if (path.startsWith("/admin/admissions")) {
+        next.add("Admissions");
+      }
+      if (isFeesRoute(path)) {
+        next.add("Fees");
+      }
+      return next;
+    });
   }, [location.pathname]);
 
   const toggleMenu = (name: string) => {
@@ -139,9 +144,9 @@ const AdminLayout = () => {
         { name: "Defaulters", path: "/admin/defaulters" },
         { name: "Online Payments", path: "/admin/reconciliation" },
         { name: "Cash Closing", path: "/admin/cash-closing" },
+        { name: "Accounts", path: "/admin/accounts" },
       ],
     },
-    { name: "Accounts", icon: <MdAccountBalance size={18} />, path: "/admin/accounts" },
     { name: "Staff & Leave", icon: <FaChalkboardTeacher size={16} />, path: "/admin/staff" },
     { name: "Payroll", icon: <MdPayments size={18} />, path: "/admin/payroll" },
     { name: "Transport", icon: <MdDirectionsBus size={18} />, path: "/admin/transport" },
@@ -238,7 +243,12 @@ const AdminLayout = () => {
                 {menuItems.map((item) => {
                   const hasChildren = Boolean(item.children && item.children.length > 0);
                   const isItemActive = hasChildren
-                    ? location.pathname.startsWith("/admin/admissions") || item.children?.some(c => location.pathname === c.path)
+                    ? item.children?.some(
+                        c =>
+                          location.pathname === c.path ||
+                          (c.path === "/admin/admissions/pipeline" && location.pathname === "/admin/admissions") ||
+                          (c.path === "/admin/reconciliation" && location.pathname === "/admin/online-payments")
+                      )
                     : location.pathname === item.path;
                   const isOpen = openMenus.has(item.name);
 
@@ -281,7 +291,8 @@ const AdminLayout = () => {
                             {item.children!.map((child) => {
                               const isChildActive =
                                 location.pathname === child.path ||
-                                (child.path === "/admin/admissions/pipeline" && location.pathname === "/admin/admissions");
+                                (child.path === "/admin/admissions/pipeline" && location.pathname === "/admin/admissions") ||
+                                (child.path === "/admin/reconciliation" && location.pathname === "/admin/online-payments");
 
                               return (
                                 <NavLink

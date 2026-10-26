@@ -11,7 +11,6 @@ import {
   FiFilter
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
-import FeesModuleNav from "../../../components/admin/fees/FeesModuleNav";
 
 interface VoucherRow {
   id: string;
@@ -170,14 +169,11 @@ export default function AccountsPage() {
 
   return (
     <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12">
-      {/* Module Navigation */}
-      <FeesModuleNav activeTab="accounts" />
-
       {/* Header Row (Matching 25-Accounts.html) */}
       <div className="flex flex-wrap justify-between items-end gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-[13px] text-ink-secondary flex items-center gap-1.5 flex-wrap">
-            <span>Accounts ›</span>
+            <span>Fees › Accounts ›</span>
             {(["Day book", "Cash book", "Bank book", "Ledgers", "Trial balance"] as const).map((tab, idx) => (
               <React.Fragment key={tab}>
                 {idx > 0 && <span>·</span>}

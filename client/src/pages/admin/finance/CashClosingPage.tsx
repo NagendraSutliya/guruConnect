@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   FiPrinter,
   FiLock,
@@ -9,7 +8,6 @@ import {
   FiArrowLeft
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
-import FeesModuleNav from "../../../components/admin/fees/FeesModuleNav";
 
 interface Denomination {
   note: number;
@@ -69,17 +67,11 @@ export default function CashClosingPage() {
 
   return (
     <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12">
-      {/* Module Navigation */}
-      <FeesModuleNav activeTab="closing" />
-
       {/* Header Row (Matching 24-CashClosing.html) */}
       <div className="flex flex-wrap justify-between items-end gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-[13px] text-ink-secondary">
-            <Link to="/admin/collect-fees" className="text-primary hover:underline">
-              Fee counter
-            </Link>{" "}
-            › Day-end closing
+            Fees › Cash closing
           </div>
           <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
             Counter 1 · cash closing for 9 Oct 2026

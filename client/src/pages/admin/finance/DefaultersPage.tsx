@@ -11,7 +11,6 @@ import {
   FiX
 } from "react-icons/fi";
 import { useToast } from "../../../context/ToastContext";
-import FeesModuleNav from "../../../components/admin/fees/FeesModuleNav";
 
 interface DefaulterRow {
   id: string;
@@ -169,12 +168,12 @@ export default function DefaultersPage() {
 
   return (
     <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12">
-      {/* Module Navigation */}
-      <FeesModuleNav activeTab="defaulters" />
-
       {/* Header Row (Matching 22-Defaulters.html) */}
       <div className="flex flex-wrap justify-between items-end gap-4">
         <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">
+            Fees › Defaulters
+          </div>
           <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
             Defaulters · 184 students · ₹7,67,500
           </h1>
