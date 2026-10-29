@@ -12,7 +12,7 @@ exports.loginTeacher = async (req, res) => {
       return errorResponse(res, "Missing credentials", 400);
     }
 
-    const teacher = await Teacher.findOne({ email });
+    const teacher = await Teacher.findOne({ email }).populate("instituteId");
     if (!teacher) {
       return errorResponse(res, "Invalid credentials", 401);
     }
@@ -34,7 +34,7 @@ exports.loginTeacher = async (req, res) => {
       {
         id: teacher._id,
         role: "teacher",
-        instituteId: teacher.instituteId,
+        instituteId: teacher.instituteId?._id || teacher.instituteId,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
@@ -46,7 +46,10 @@ exports.loginTeacher = async (req, res) => {
       id: teacher._id,
       name: teacher.name,
       email: teacher.email,
-      instituteId: teacher.instituteId,
+      instituteId: teacher.instituteId?._id || teacher.instituteId,
+      instituteName: teacher.instituteId?.instituteName || "",
+      logoUrl: teacher.instituteId?.logoUrl || null,
+      instituteLogo: teacher.instituteId?.logoUrl || null,
       profileImage: teacher.profileImage,
       phone: teacher.phone,
       address: teacher.address,

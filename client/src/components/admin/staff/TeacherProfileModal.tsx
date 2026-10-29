@@ -170,7 +170,7 @@ export default function TeacherProfileModal({
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {/* Top Identity Card (Matching 27-TeacherProfile.html) */}
             <section className="bg-white border border-line rounded-card p-6 flex flex-wrap gap-6 items-center">
-              <div className="w-20 h-20 sm:w-22 sm:h-22 shrink-0 rounded-card bg-[#E3EFEF] text-primary flex items-center justify-center text-2xl sm:text-3xl font-semibold select-none border border-[#0E5A63]/20">
+              <div className="w-20 h-20 sm:w-22 sm:h-22 shrink-0 rounded-card bg-primary-tint text-primary flex items-center justify-center text-2xl sm:text-3xl font-semibold select-none border border-primary/20">
                 {initials}
               </div>
 
@@ -194,21 +194,21 @@ export default function TeacherProfileModal({
                   <span
                     className={`text-[12px] font-semibold px-2.5 py-0.5 rounded-full ${
                       staff.todayStatus === "Present"
-                        ? "bg-[#E4F1E8] text-[#1E5A33]"
+                        ? "bg-success-bg text-success-text"
                         : staff.todayStatus === "On leave"
-                        ? "bg-[#FFF6EC] text-[#7A4106]"
-                        : "bg-[#FDE8E8] text-[#9B1C1C]"
+                        ? "bg-warning-bg text-warning-text"
+                        : "bg-danger-bg text-danger-text"
                     }`}
                   >
                     {staff.todayStatus === "Present" ? "Present today" : staff.todayStatus}
                   </span>
                   {staff.classTeacher && (
-                    <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full bg-[#E3EFEF] text-primary">
+                    <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full bg-primary-tint text-primary">
                       {staff.classTeacher}
                     </span>
                   )}
                   {staff.reportsTo && (
-                    <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full bg-[#F1EEE6] text-[#5A4A24]">
+                    <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full bg-tag-bg text-tag-text">
                       Reports to: {staff.reportsTo}
                     </span>
                   )}
@@ -332,9 +332,9 @@ export default function TeacherProfileModal({
                 </div>
 
                 {staff.needsAttention && (
-                  <section className="bg-[#FFF6EC] border border-[#EBC99C] rounded-card p-4 flex flex-col gap-1">
-                    <h3 className="text-sm font-semibold text-[#7A4106]">Needs attention</h3>
-                    <span className="text-[13.5px] text-[#5E3305]">
+                  <section className="bg-warning-bg border border-warning-border rounded-card p-4 flex flex-col gap-1">
+                    <h3 className="text-sm font-semibold text-warning-text">Needs attention</h3>
+                    <span className="text-[13.5px] text-warning-strong">
                       {staff.needsAttention}
                     </span>
                   </section>
@@ -561,7 +561,7 @@ export default function TeacherProfileModal({
                       <div className="flex justify-between font-bold pt-1 border-t border-line"><span>Total Deductions</span><span className="font-mono text-red-700">₹4,100</span></div>
                     </div>
                   </div>
-                  <div className="p-3 bg-[#E3EFEF] rounded-control flex justify-between items-center text-sm font-semibold text-primary">
+                  <div className="p-3 bg-primary-tint rounded-control flex justify-between items-center text-sm font-semibold text-primary">
                     <span>Net Take-Home Monthly Salary</span>
                     <span className="font-mono text-base font-bold">₹48,300</span>
                   </div>
@@ -650,7 +650,7 @@ export default function TeacherProfileModal({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold"
                 >
                   Send Message
                 </button>
@@ -678,7 +678,7 @@ export default function TeacherProfileModal({
             </div>
 
             {/* Physical ID Card Preview */}
-            <div className="border-2 border-primary/40 rounded-card p-5 bg-gradient-to-b from-[#E3EFEF]/40 to-white shadow-md text-ink text-xs space-y-3">
+            <div className="border-2 border-primary/40 rounded-card p-5 bg-gradient-to-b from-primary-tint/40 to-white shadow-md text-ink text-xs space-y-3">
               <div className="text-center space-y-0.5">
                 {adminData?.logoUrl && (
                   <img
@@ -691,7 +691,7 @@ export default function TeacherProfileModal({
                 <div className="text-[10px] text-ink-secondary">{instituteSubtitle}</div>
               </div>
 
-              <div className="w-20 h-20 mx-auto rounded-card bg-[#0E5A63] text-white flex items-center justify-center text-2xl font-bold border-2 border-white shadow-xs">
+              <div className="w-20 h-20 mx-auto rounded-card bg-primary text-white flex items-center justify-center text-2xl font-bold border-2 border-white shadow-xs">
                 {initials}
               </div>
 
@@ -712,7 +712,7 @@ export default function TeacherProfileModal({
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold flex items-center gap-1.5 shadow-xs"
+                className="px-5 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold flex items-center gap-1.5 shadow-xs"
               >
                 <FiPrinter size={14} /> Print ID Badge
               </button>
@@ -845,7 +845,7 @@ export default function TeacherProfileModal({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold"
                 >
                   Save Changes
                 </button>

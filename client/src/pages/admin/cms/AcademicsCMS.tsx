@@ -2,15 +2,20 @@ import { useState, useEffect } from "react";
 import { 
   MdSave, 
   MdImage, 
-  MdPlayArrow,
   MdAutoGraph,
   MdScience,
-  MdLayers
+  MdLayers,
+  MdVisibility,
+  MdAdd,
+  MdClose
 } from "react-icons/md";
+import { Link } from "react-router-dom";
 import api from "../../../api/axiosInstance";
 import ImageUploadField from "./ImageUploadField";
+import { useToast } from "../../../context/ToastContext";
 
 export default function AcademicsCMS() {
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [activeTab, setActiveTab] = useState("banner");
@@ -69,20 +74,20 @@ export default function AcademicsCMS() {
         content: academicsData
       });
       if (response.data.success) {
-        alert("Academics content published successfully!");
+        showToast("Academics content published successfully!", "success");
       }
     } catch (error) {
-      alert("Failed to update content");
+      showToast("Failed to update content", "error");
     } finally {
       setLoading(false);
     }
   };
 
   const tabs = [
-    { id: 'banner', label: 'Page Banner', icon: <MdImage /> },
-    { id: 'phases', label: 'Learning Phases', icon: <MdLayers /> },
-    { id: 'infrastructure', label: 'Infrastructure', icon: <MdScience /> },
-    { id: 'departments', label: 'Departments', icon: <MdAutoGraph /> },
+    { id: 'banner', label: 'Page Banner', icon: <MdImage size={16} /> },
+    { id: 'phases', label: 'Learning Phases', icon: <MdLayers size={16} /> },
+    { id: 'infrastructure', label: 'Infrastructure', icon: <MdScience size={16} /> },
+    { id: 'departments', label: 'Departments', icon: <MdAutoGraph size={16} /> },
   ];
 
   const updateArrayItem = (arrayName: string, index: number, field: string, value: string) => {
@@ -94,91 +99,101 @@ export default function AcademicsCMS() {
   };
 
   return (
-    <div className="py-6 space-y-8 animate-fadeIn relative text-slate-900">
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
       
       {/* Header Section */}
-      <div className="sticky top-0 z-30 bg-gradient-to-r from-slate-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-            <MdLayers className="text-indigo-600" />
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary flex items-center gap-1.5">
+            <Link to="/admin/cms" className="hover:text-primary transition-colors">Website CMS</Link>
+            <span>›</span>
+            <span className="text-ink">Academics</span>
+          </div>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
             Academics CMS
-          </h2>
-          <p className="text-slate-500 text-sm font-medium mt-1">Manage the curriculum, phases, and facilities.</p>
+          </h1>
+          <div className="text-[13px] text-ink-secondary">
+            Manage curriculum phases, pedagogical methods, labs, and academic departments.
+          </div>
         </div>
 
-        <button 
-          onClick={handleSave}
-          disabled={loading || fetching}
-          className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 disabled:opacity-70"
-        >
-          <MdSave size={20} />
-          {loading ? "Updating..." : "Publish Changes"}
-        </button>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <a 
+            href={`${import.meta.env.VITE_SCHOOL_WEBSITE_URL || 'http://localhost:5174'}/academics`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-[13px] font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-2"
+          >
+            <MdVisibility size={16} className="text-primary" />
+            <span>Live preview</span>
+          </a>
+          <button 
+            type="button"
+            onClick={handleSave}
+            disabled={loading || fetching}
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.98] disabled:opacity-70 flex items-center gap-2"
+          >
+            <MdSave size={18} />
+            <span>{loading ? "Publishing..." : "Publish changes"}</span>
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
         {/* Navigation Sidebar */}
         <div className="lg:col-span-3 space-y-2">
-          <div className="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm space-y-1 sticky top-32">
+          <div className="bg-white rounded-card p-3 border border-line shadow-xs space-y-1 sticky top-6">
             {tabs.map(tab => (
               <button
                 key={tab.id}
+                type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-control text-xs font-semibold transition-colors cursor-pointer text-left ${
                   activeTab === tab.id 
-                    ? "bg-indigo-50 text-indigo-700 shadow-inner" 
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    ? "bg-primary text-white shadow-xs" 
+                    : "text-ink-secondary hover:bg-surface-subtle hover:text-ink"
                 }`}
               >
-                {tab.icon}
-                {tab.label}
+                <span className={activeTab === tab.id ? "text-white" : "text-ink-secondary"}>{tab.icon}</span>
+                <span>{tab.label}</span>
               </button>
             ))}
-            
-            <hr className="border-slate-100 my-4 mx-4" />
-            
-            <a 
-              href={`\${import.meta.env.VITE_SCHOOL_WEBSITE_URL || 'http://localhost:5174'}/academics`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-3 text-xs font-bold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl transition-all w-full"
-            >
-              <MdPlayArrow size={16} />
-              Open Live Page
-            </a>
           </div>
         </div>
 
         {/* Editor Area */}
-        <div className="lg:col-span-9 space-y-8">
+        <div className="lg:col-span-9 space-y-5">
           {fetching ? (
-            <div className="h-[400px] bg-slate-100 rounded-3xl animate-pulse" />
+            <div className="h-[360px] bg-white border border-line rounded-card animate-pulse" />
           ) : (
             <>
               {/* BANNER TAB */}
               {activeTab === 'banner' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <h3 className="text-lg font-black text-slate-800 mb-6">Banner Configuration</h3>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Banner Title</label>
+                <div className="bg-white rounded-card p-5 sm:p-6 border border-line shadow-xs space-y-4">
+                  <div className="pb-1 border-b border-line-row">
+                    <h2 className="text-base font-semibold text-ink">Banner Configuration</h2>
+                    <p className="text-xs text-ink-secondary">Header section of the Academics page</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-ink-secondary mb-1">Banner Title</label>
                       <input 
                         value={academicsData.bannerTitle}
                         onChange={(e) => setAcademicsData({...academicsData, bannerTitle: e.target.value})}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black text-slate-900 outline-none focus:bg-white focus:border-indigo-500 transition-all text-lg"
+                        className="w-full bg-surface-subtle border border-line-input rounded-control h-10 px-3 text-xs text-ink outline-none focus:bg-white focus:border-primary transition-colors"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Banner Subtitle</label>
+                    <div>
+                      <label className="block text-xs font-semibold text-ink-secondary mb-1">Banner Subtitle</label>
                       <textarea 
                         value={academicsData.bannerSubtitle}
                         onChange={(e) => setAcademicsData({...academicsData, bannerSubtitle: e.target.value})}
                         rows={3}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-bold text-slate-600 outline-none focus:bg-white focus:border-indigo-500 transition-all text-sm leading-relaxed"
+                        className="w-full bg-surface-subtle border border-line-input rounded-control p-3 text-xs text-ink outline-none focus:bg-white focus:border-primary transition-colors resize-none"
                       />
                     </div>
-                    <div className="pt-4 border-t border-slate-100">
+                    <div className="pt-2 border-t border-line-row">
                       <ImageUploadField
                         label="Banner Background Image"
                         value={academicsData.bannerImage}
@@ -191,56 +206,63 @@ export default function AcademicsCMS() {
 
               {/* PHASES TAB */}
               {activeTab === 'phases' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-black text-slate-800">Learning Phases</h3>
+                <div className="bg-white rounded-card p-5 sm:p-6 border border-line shadow-xs space-y-4">
+                  <div className="flex justify-between items-center pb-1 border-b border-line-row flex-wrap gap-2">
+                    <div>
+                      <h2 className="text-base font-semibold text-ink">Learning Phases</h2>
+                      <p className="text-xs text-ink-secondary">Development stages from Kindergarten through Senior School</p>
+                    </div>
                     <button 
+                      type="button"
                       onClick={() => setAcademicsData(prev => ({...prev, phases: [...prev.phases, { phase: "Phase X", title: "New Phase", years: "Grade X", desc: "Description", color: "emerald" }]}))}
-                      className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-indigo-100 transition-colors"
+                      className="min-h-[36px] px-3.5 rounded-control bg-primary-tint hover:bg-primary-tint/80 border border-primary/20 text-primary-dark font-semibold text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs"
                     >
-                      + Add Phase
+                      <MdAdd size={16} />
+                      <span>Add Phase</span>
                     </button>
                   </div>
                   <div className="space-y-4">
                     {academicsData.phases.map((item, i) => (
-                      <div key={i} className="p-5 bg-slate-50 rounded-3xl border border-slate-100 space-y-4 relative group">
+                      <div key={i} className="p-4 bg-surface-subtle rounded-control border border-line-row space-y-3 relative group">
                         <button 
+                          type="button"
                           onClick={() => setAcademicsData({...academicsData, phases: academicsData.phases.filter((_, idx) => idx !== i)})}
-                          className="absolute -top-3 -right-3 w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold shadow-md hover:bg-red-500 hover:text-white"
+                          className="absolute top-2 right-2 w-7 h-7 bg-white hover:bg-danger-bg text-ink-secondary hover:text-danger border border-line-input rounded-control flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+                          title="Remove phase"
                         >
-                          ×
+                          <MdClose size={15} />
                         </button>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pr-8">
                           <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phase Name</label>
+                            <label className="block text-[11px] font-semibold text-ink-secondary mb-1">Phase Code</label>
                             <input 
                               value={item.phase}
                               onChange={(e) => updateArrayItem('phases', i, 'phase', e.target.value)}
-                              className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-bold text-slate-800 text-sm outline-none mt-1"
+                              className="w-full bg-white border border-line-input rounded-control h-9 px-2.5 text-xs text-ink font-medium outline-none focus:border-primary transition-colors"
                             />
                           </div>
                           <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Title</label>
+                            <label className="block text-[11px] font-semibold text-ink-secondary mb-1">Title</label>
                             <input 
                               value={item.title}
                               onChange={(e) => updateArrayItem('phases', i, 'title', e.target.value)}
-                              className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-bold text-slate-800 text-sm outline-none mt-1"
+                              className="w-full bg-white border border-line-input rounded-control h-9 px-2.5 text-xs text-ink font-medium outline-none focus:border-primary transition-colors"
                             />
                           </div>
                           <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Years</label>
+                            <label className="block text-[11px] font-semibold text-ink-secondary mb-1">Grades/Years</label>
                             <input 
                               value={item.years}
                               onChange={(e) => updateArrayItem('phases', i, 'years', e.target.value)}
-                              className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-bold text-slate-800 text-sm outline-none mt-1"
+                              className="w-full bg-white border border-line-input rounded-control h-9 px-2.5 text-xs text-ink font-medium outline-none focus:border-primary transition-colors"
                             />
                           </div>
                           <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Color</label>
+                            <label className="block text-[11px] font-semibold text-ink-secondary mb-1">Badge Color</label>
                             <select 
                               value={item.color}
                               onChange={(e) => updateArrayItem('phases', i, 'color', e.target.value)}
-                              className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-bold text-slate-800 text-sm outline-none mt-1"
+                              className="w-full bg-white border border-line-input rounded-control h-9 px-2.5 text-xs text-ink outline-none focus:border-primary transition-colors cursor-pointer"
                             >
                               <option value="emerald">Emerald</option>
                               <option value="amber">Amber</option>
@@ -250,12 +272,12 @@ export default function AcademicsCMS() {
                           </div>
                         </div>
                         <div>
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                          <label className="block text-[11px] font-semibold text-ink-secondary mb-1">Description</label>
                           <textarea 
                             value={item.desc}
                             onChange={(e) => updateArrayItem('phases', i, 'desc', e.target.value)}
                             rows={2}
-                            className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-medium text-slate-600 text-sm outline-none mt-1"
+                            className="w-full bg-white border border-line-input rounded-control p-2.5 text-xs text-ink outline-none focus:border-primary transition-colors resize-none"
                           />
                         </div>
                       </div>
@@ -266,28 +288,31 @@ export default function AcademicsCMS() {
 
               {/* INFRASTRUCTURE TAB */}
               {activeTab === 'infrastructure' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <h3 className="text-lg font-black text-slate-800 mb-6">Infrastructure</h3>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Section Title</label>
+                <div className="bg-white rounded-card p-5 sm:p-6 border border-line shadow-xs space-y-4">
+                  <div className="pb-1 border-b border-line-row">
+                    <h2 className="text-base font-semibold text-ink">Academic Infrastructure</h2>
+                    <p className="text-xs text-ink-secondary">Showcase labs, libraries, smart classrooms, and learning spaces</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-ink-secondary mb-1">Section Title</label>
                       <input 
                         value={academicsData.infrastructureTitle}
                         onChange={(e) => setAcademicsData({...academicsData, infrastructureTitle: e.target.value})}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-black text-slate-900 outline-none focus:bg-white focus:border-indigo-500 transition-all text-sm"
+                        className="w-full bg-surface-subtle border border-line-input rounded-control h-10 px-3 text-xs text-ink outline-none focus:bg-white focus:border-primary transition-colors"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Section Description</label>
+                    <div>
+                      <label className="block text-xs font-semibold text-ink-secondary mb-1">Section Description</label>
                       <textarea 
                         value={academicsData.infrastructureDesc}
                         onChange={(e) => setAcademicsData({...academicsData, infrastructureDesc: e.target.value})}
                         rows={2}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-medium text-slate-600 outline-none focus:bg-white focus:border-indigo-500 transition-all text-sm"
+                        className="w-full bg-surface-subtle border border-line-input rounded-control p-3 text-xs text-ink outline-none focus:bg-white focus:border-primary transition-colors resize-none"
                       />
                     </div>
                     
-                    <div className="pt-4 border-t border-slate-100">
+                    <div className="pt-2 border-t border-line-row">
                       <ImageUploadField
                         label="Infrastructure Showcase Image"
                         value={academicsData.labImage}
@@ -295,49 +320,56 @@ export default function AcademicsCMS() {
                       />
                     </div>
 
-                    <div className="pt-6 border-t border-slate-100">
-                      <div className="flex justify-between items-center mb-4">
-                        <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Facilities</label>
+                    <div className="pt-4 border-t border-line-row">
+                      <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
+                        <div>
+                          <h3 className="text-sm font-semibold text-ink">Facilities List</h3>
+                          <p className="text-xs text-ink-secondary">Specific specialized rooms or smart facilities</p>
+                        </div>
                         <button 
+                          type="button"
                           onClick={() => setAcademicsData(prev => ({...prev, infrastructureItems: [...prev.infrastructureItems, { title: "New Facility", desc: "Description", icon: "MdComputer" }]}))}
-                          className="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-100 transition-colors"
+                          className="min-h-[34px] px-3 rounded-control bg-primary-tint hover:bg-primary-tint/80 border border-primary/20 text-primary-dark font-semibold text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs"
                         >
-                          + Add Facility
+                          <MdAdd size={15} />
+                          <span>Add Facility</span>
                         </button>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {academicsData.infrastructureItems.map((item, i) => (
-                          <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl relative group space-y-3">
+                          <div key={i} className="p-4 bg-surface-subtle border border-line-row rounded-control relative group space-y-3">
                             <button 
+                              type="button"
                               onClick={() => setAcademicsData({...academicsData, infrastructureItems: academicsData.infrastructureItems.filter((_, idx) => idx !== i)})}
-                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold shadow-md hover:bg-red-500 hover:text-white text-[10px]"
+                              className="absolute top-2 right-2 w-7 h-7 bg-white hover:bg-danger-bg text-ink-secondary hover:text-danger border border-line-input rounded-control flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+                              title="Remove facility"
                             >
-                              ×
+                              <MdClose size={15} />
                             </button>
-                            <div>
-                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Title</label>
+                            <div className="pr-8">
+                              <label className="block text-[11px] font-semibold text-ink-secondary mb-1">Title</label>
                               <input 
                                 value={item.title}
                                 onChange={(e) => updateArrayItem('infrastructureItems', i, 'title', e.target.value)}
-                                className="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-3 font-bold text-slate-800 text-xs outline-none mt-1"
+                                className="w-full bg-white border border-line-input rounded-control h-9 px-2.5 text-xs text-ink font-medium outline-none focus:border-primary transition-colors"
                               />
                             </div>
                             <div>
-                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Icon Name</label>
+                              <label className="block text-[11px] font-semibold text-ink-secondary mb-1">Icon Name</label>
                               <input 
                                 value={item.icon}
                                 onChange={(e) => updateArrayItem('infrastructureItems', i, 'icon', e.target.value)}
                                 placeholder="e.g. MdComputer"
-                                className="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-3 font-bold text-slate-800 text-xs outline-none mt-1"
+                                className="w-full bg-white border border-line-input rounded-control h-9 px-2.5 text-xs text-ink font-mono outline-none focus:border-primary transition-colors"
                               />
                             </div>
                             <div>
-                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                              <label className="block text-[11px] font-semibold text-ink-secondary mb-1">Description</label>
                               <textarea 
                                 value={item.desc}
                                 onChange={(e) => updateArrayItem('infrastructureItems', i, 'desc', e.target.value)}
                                 rows={2}
-                                className="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-3 font-medium text-slate-600 text-xs outline-none mt-1"
+                                className="w-full bg-white border border-line-input rounded-control p-2.5 text-xs text-ink outline-none focus:border-primary transition-colors resize-none"
                               />
                             </div>
                           </div>
@@ -350,29 +382,36 @@ export default function AcademicsCMS() {
 
               {/* DEPARTMENTS TAB */}
               {activeTab === 'departments' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-black text-slate-800">Departments</h3>
+                <div className="bg-white rounded-card p-5 sm:p-6 border border-line shadow-xs space-y-4">
+                  <div className="flex justify-between items-center pb-1 border-b border-line-row flex-wrap gap-2">
+                    <div>
+                      <h2 className="text-base font-semibold text-ink">Academic Departments</h2>
+                      <p className="text-xs text-ink-secondary">Faculty faculties and disciplinary clusters</p>
+                    </div>
                     <button 
+                      type="button"
                       onClick={() => setAcademicsData(prev => ({...prev, departments: [...prev.departments, { name: "New Department" }]}))}
-                      className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-indigo-100 transition-colors"
+                      className="min-h-[36px] px-3.5 rounded-control bg-primary-tint hover:bg-primary-tint/80 border border-primary/20 text-primary-dark font-semibold text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs"
                     >
-                      + Add Department
+                      <MdAdd size={16} />
+                      <span>Add Department</span>
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {academicsData.departments.map((dept, i) => (
                       <div key={i} className="relative group flex items-center">
                         <input 
                           value={dept.name}
                           onChange={(e) => updateArrayItem('departments', i, 'name', e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold text-slate-700 text-sm outline-none focus:border-indigo-500 focus:bg-white transition-all pr-10"
+                          className="w-full bg-surface-subtle border border-line-input rounded-control h-10 px-3 text-xs font-medium text-ink outline-none focus:border-primary focus:bg-white transition-colors pr-9"
                         />
                         <button 
+                          type="button"
                           onClick={() => setAcademicsData({...academicsData, departments: academicsData.departments.filter((_, idx) => idx !== i)})}
-                          className="absolute right-3 w-6 h-6 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold hover:bg-red-500 hover:text-white text-[10px]"
+                          className="absolute right-2 w-6 h-6 bg-white hover:bg-danger-bg text-ink-secondary hover:text-danger rounded-control flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer border border-line-input"
+                          title="Remove department"
                         >
-                          ×
+                          <MdClose size={13} />
                         </button>
                       </div>
                     ))}

@@ -160,12 +160,12 @@ export default function LibraryPage() {
             Returned <b className="font-mono text-ink">31</b>
           </span>
           <span>
-            Overdue <b className="font-mono text-[#8F4A09]">58</b>
+            Overdue <b className="font-mono text-warning-inline">58</b>
           </span>
           <button
             type="button"
             onClick={() => setIsAddBookModalOpen(true)}
-            className="min-h-[40px] px-3.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 ml-2"
+            className="min-h-[40px] px-3.5 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 ml-2"
           >
             <FiPlus size={14} />
             <span>Add book</span>
@@ -174,7 +174,7 @@ export default function LibraryPage() {
       </div>
 
       {/* Segment Switcher (Matching 33-Library.html) */}
-      <div className="grid grid-cols-2 bg-[#E7EBE8] rounded-control p-1 max-w-[340px]">
+      <div className="grid grid-cols-2 bg-surface-segmented rounded-control p-1 max-w-[340px]">
         <button
           type="button"
           onClick={() => setDeskMode("issue")}
@@ -216,8 +216,8 @@ export default function LibraryPage() {
               </label>
 
               {/* Member Card Preview */}
-              <div className="flex gap-3 items-center p-3 bg-[#F4F9F9] rounded-control border border-[#D5E4E0]">
-                <div className="w-10 h-10 rounded-full bg-[#E3EFEF] text-primary flex items-center justify-center font-semibold text-xs shrink-0">
+              <div className="flex gap-3 items-center p-3 bg-primary-row rounded-control border border-nav-text">
+                <div className="w-10 h-10 rounded-full bg-primary-tint text-primary flex items-center justify-center font-semibold text-xs shrink-0">
                   AM
                 </div>
                 <div className="flex flex-col gap-0.5 text-xs">
@@ -242,7 +242,7 @@ export default function LibraryPage() {
 
               {/* Book Preview Card */}
               <div className="flex gap-3 p-3 border border-line rounded-control">
-                <div className="w-13 h-18 shrink-0 rounded bg-[#E9DFC8] text-[#5A4A24] flex items-center justify-center text-[10px] text-center font-medium">
+                <div className="w-13 h-18 shrink-0 rounded bg-[#E9DFC8] text-tag-text flex items-center justify-center text-[10px] text-center font-medium">
                   [Cover]
                 </div>
                 <div className="flex flex-col gap-1 text-xs">
@@ -260,7 +260,7 @@ export default function LibraryPage() {
 
               <button
                 type="submit"
-                className="min-h-[46px] rounded-control bg-primary hover:bg-[#08393F] text-white font-semibold text-sm transition-all cursor-pointer shadow-xs active:scale-[0.98] mt-1"
+                className="min-h-[46px] rounded-control bg-primary hover:bg-primary-dark text-white font-semibold text-sm transition-all cursor-pointer shadow-xs active:scale-[0.98] mt-1"
               >
                 Issue book
               </button>
@@ -287,7 +287,7 @@ export default function LibraryPage() {
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  className="flex-1 min-h-[44px] rounded-control bg-primary hover:bg-[#08393F] text-white font-semibold text-sm transition-all cursor-pointer shadow-xs"
+                  className="flex-1 min-h-[44px] rounded-control bg-primary hover:bg-primary-dark text-white font-semibold text-sm transition-all cursor-pointer shadow-xs"
                 >
                   Confirm Return
                 </button>
@@ -305,7 +305,7 @@ export default function LibraryPage() {
 
         {/* Right: Overdue Books Register (Matching 33-Library.html) */}
         <section className="flex-1 basis-[420px] min-w-0 bg-white border border-line rounded-card overflow-hidden shadow-xs">
-          <div className="p-4 px-5 border-b border-[#EEF1EF] flex justify-between items-center gap-3 flex-wrap">
+          <div className="p-4 px-5 border-b border-line-row flex justify-between items-center gap-3 flex-wrap">
             <h2 className="m-0 text-base font-semibold text-ink">Overdue books</h2>
             <button
               type="button"
@@ -319,7 +319,7 @@ export default function LibraryPage() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm min-w-[500px]">
               <thead>
-                <tr className="bg-[#F2F4F2] text-left">
+                <tr className="bg-surface-head text-left">
                   <th className="py-2.5 px-4 font-semibold text-xs text-ink">Book</th>
                   <th className="py-2.5 px-4 font-semibold text-xs text-ink">Member</th>
                   <th className="py-2.5 px-4 font-semibold text-xs text-ink text-right">Days late</th>
@@ -328,14 +328,14 @@ export default function LibraryPage() {
               </thead>
               <tbody>
                 {overdueList.map(item => (
-                  <tr key={item.id} className="border-t border-[#EEF1EF] hover:bg-slate-50/60">
+                  <tr key={item.id} className="border-t border-line-row hover:bg-slate-50/60">
                     <td className="py-2.5 px-4 font-medium text-ink text-xs sm:text-sm">
                       {item.bookTitle}
                     </td>
                     <td className="py-2.5 px-4 text-xs text-ink-secondary">
                       {item.memberName} · {item.memberClass}
                     </td>
-                    <td className="py-2.5 px-4 text-xs text-right font-mono text-[#8F4A09] font-medium">
+                    <td className="py-2.5 px-4 text-xs text-right font-mono text-warning-inline font-medium">
                       {item.daysLate}
                     </td>
                     <td className="py-2.5 px-4 text-xs text-right font-mono text-ink">
@@ -347,7 +347,7 @@ export default function LibraryPage() {
             </table>
           </div>
 
-          <div className="p-3 px-5 text-xs text-ink-secondary border-t border-[#EEF1EF]">
+          <div className="p-3 px-5 text-xs text-ink-secondary border-t border-line-row">
             Fines (₹1 per day) are added to the student's fee ledger when the book is returned.
           </div>
         </section>
@@ -453,7 +453,7 @@ export default function LibraryPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Save to Catalog
                 </button>

@@ -222,7 +222,7 @@ export default function InventoryPage() {
           <button
             type="button"
             onClick={() => setIsPurchaseModalOpen(true)}
-            className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
             <FiPlus size={15} />
             <span>New purchase request</span>
@@ -232,14 +232,14 @@ export default function InventoryPage() {
 
       {/* Low Stock Warning Banner (Matching 34-Inventory.html) */}
       {lowStockItems.length > 0 && (
-        <div className="bg-[#FFF6EC] border border-[#EBC99C] rounded-card p-3 px-4 text-sm text-[#5E3305] flex items-center justify-between gap-3 flex-wrap">
+        <div className="bg-warning-bg border border-warning-border rounded-card p-3 px-4 text-sm text-warning-strong flex items-center justify-between gap-3 flex-wrap">
           <span>
             <b>{lowStockItems.length} items</b> are below reorder level. Create one purchase request for all of them?
           </span>
           <button
             type="button"
             onClick={handleReorderAllLowStock}
-            className="font-semibold text-xs text-[#8F4A09] hover:underline cursor-pointer"
+            className="font-semibold text-xs text-warning-inline hover:underline cursor-pointer"
           >
             Create Consolidated PO →
           </button>
@@ -251,7 +251,7 @@ export default function InventoryPage() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm min-w-[760px]">
             <thead>
-              <tr className="bg-[#F2F4F2] text-left text-xs text-ink font-semibold">
+              <tr className="bg-surface-head text-left text-xs text-ink font-semibold">
                 <th className="py-3 px-4 font-semibold">Item</th>
                 <th className="py-3 px-4 font-semibold">Category</th>
                 <th className="py-3 px-4 font-semibold text-right">In stock</th>
@@ -266,7 +266,7 @@ export default function InventoryPage() {
                 return (
                   <tr
                     key={item.id}
-                    className={`border-t border-[#EEF1EF] transition-colors ${
+                    className={`border-t border-line-row transition-colors ${
                       isLow ? "bg-[#FFFBF6]" : "bg-white hover:bg-slate-50/50"
                     }`}
                   >
@@ -278,7 +278,7 @@ export default function InventoryPage() {
                     </td>
                     <td
                       className={`py-2.5 px-4 text-xs text-right font-mono font-medium ${
-                        isLow ? "text-[#8F4A09]" : "text-ink"
+                        isLow ? "text-warning-inline" : "text-ink"
                       }`}
                     >
                       {item.inStock}
@@ -319,7 +319,7 @@ export default function InventoryPage() {
               <span className="text-xs text-ink-secondary">{asset.location}</span>
               <span
                 className={`text-xs font-semibold pt-0.5 ${
-                  asset.isOverdue ? "text-[#8F4A09]" : "text-ink-secondary"
+                  asset.isOverdue ? "text-warning-inline" : "text-ink-secondary"
                 }`}
               >
                 {asset.scheduleText}
@@ -405,7 +405,7 @@ export default function InventoryPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Confirm Issue
                 </button>
@@ -487,7 +487,7 @@ export default function InventoryPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Submit for Approval
                 </button>

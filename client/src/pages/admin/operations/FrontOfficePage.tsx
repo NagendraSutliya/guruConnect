@@ -306,7 +306,7 @@ export default function FrontOfficePage() {
           <button
             type="button"
             onClick={() => setIsLogComplaintOpen(true)}
-            className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
             <FiPlus size={15} />
             <span>Log complaint</span>
@@ -320,7 +320,7 @@ export default function FrontOfficePage() {
           {/* Left Form: Check-in Desk */}
           <section className="flex-1 basis-[340px] bg-white border border-line rounded-card p-5 flex flex-col gap-3.5 shadow-xs">
             {/* Entry Mode Switcher */}
-            <div className="grid grid-cols-2 bg-[#E7EBE8] rounded-control p-1">
+            <div className="grid grid-cols-2 bg-surface-segmented rounded-control p-1">
               <button
                 type="button"
                 onClick={() => setVisitorMode("visitor")}
@@ -404,7 +404,7 @@ export default function FrontOfficePage() {
               </div>
 
               <div className="flex gap-3 items-center pt-1">
-                <div className="w-16 h-16 rounded-control border border-dashed border-[#9AA8A3] bg-[#F9FAF8] flex items-center justify-center text-[10px] text-ink-secondary text-center">
+                <div className="w-16 h-16 rounded-control border border-dashed border-ink-muted bg-surface-subtle flex items-center justify-center text-[10px] text-ink-secondary text-center">
                   [Photo]
                 </div>
                 <button
@@ -419,7 +419,7 @@ export default function FrontOfficePage() {
 
               <button
                 type="submit"
-                className="min-h-[44px] rounded-control bg-primary hover:bg-[#08393F] text-white font-semibold text-xs transition-all cursor-pointer shadow-xs active:scale-[0.98] mt-1"
+                className="min-h-[44px] rounded-control bg-primary hover:bg-primary-dark text-white font-semibold text-xs transition-all cursor-pointer shadow-xs active:scale-[0.98] mt-1"
               >
                 Check in and print gate pass
               </button>
@@ -428,14 +428,14 @@ export default function FrontOfficePage() {
 
           {/* Right: Inside Campus Register (Matching 35-Visitors.html) */}
           <section className="flex-1 basis-[460px] min-w-0 bg-white border border-line rounded-card overflow-hidden shadow-xs">
-            <div className="p-3.5 px-5 border-b border-[#EEF1EF] flex justify-between items-center gap-3 flex-wrap">
+            <div className="p-3.5 px-5 border-b border-line-row flex justify-between items-center gap-3 flex-wrap">
               <h2 className="m-0 text-base font-semibold text-ink">
                 Inside campus now · {visitors.length}
               </h2>
               <span className="text-xs text-ink-secondary">31 visitors today</span>
             </div>
 
-            <div className="divide-y divide-[#EEF1EF]">
+            <div className="divide-y divide-line-row">
               {visitors.map(visitor => (
                 <div
                   key={visitor.id}
@@ -484,9 +484,9 @@ export default function FrontOfficePage() {
                   key={pill}
                   type="button"
                   onClick={() => setComplaintFilter(pill)}
-                  className={`min-h-[36px] px-3.5 rounded-full text-xs font-medium transition-colors cursor-pointer border ${
+                  className={`min-h-[36px] px-4 rounded-full text-xs font-medium transition-colors cursor-pointer border ${
                     isActive
-                      ? "bg-[#12302D] text-white border-[#12302D]"
+                      ? "bg-nav-bg text-white border-nav-bg"
                       : "bg-white text-ink border-line-input hover:bg-slate-50"
                   }`}
                 >
@@ -499,63 +499,79 @@ export default function FrontOfficePage() {
           {/* Complaints Table (Matching 36-Complaints.html) */}
           <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm min-w-[800px]">
+              <table className="w-full table-fixed border-collapse text-sm min-w-[880px]">
+                <colgroup>
+                  <col className="w-[150px]" />
+                  <col className="w-auto" />
+                  <col className="w-[190px]" />
+                  <col className="w-[160px]" />
+                  <col className="w-[150px]" />
+                  <col className="w-[130px]" />
+                </colgroup>
                 <thead>
-                  <tr className="bg-[#F2F4F2] text-left text-xs text-ink font-semibold">
-                    <th className="py-3 px-4 font-semibold">Ticket</th>
+                  <tr className="bg-surface-head text-left text-xs text-ink font-semibold">
+                    <th className="py-3 px-4 font-semibold whitespace-nowrap">Ticket</th>
                     <th className="py-3 px-4 font-semibold">Subject</th>
                     <th className="py-3 px-4 font-semibold">Raised by</th>
                     <th className="py-3 px-4 font-semibold">Assigned to</th>
-                    <th className="py-3 px-4 font-semibold">Response due</th>
-                    <th className="py-3 px-4 font-semibold">Status</th>
+                    <th className="py-3 px-4 font-semibold whitespace-nowrap">Response due</th>
+                    <th className="py-3 px-4 font-semibold whitespace-nowrap">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredComplaints.map(item => (
-                    <tr
-                      key={item.id}
-                      onClick={() => setSelectedTicket(item)}
-                      className="border-t border-[#EEF1EF] hover:bg-slate-50/70 cursor-pointer transition-colors"
-                    >
-                      <td className="py-2.5 px-4 font-mono text-xs text-ink">
-                        {item.ticketNo}
-                      </td>
-                      <td className="py-2.5 px-4 text-xs">
-                        <div className="flex flex-col">
-                          <span className="font-medium text-ink">{item.subject}</span>
-                          <span className="text-[11px] text-ink-secondary">{item.category}</span>
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-4 text-xs text-ink-secondary">
-                        {item.raisedBy}
-                      </td>
-                      <td className="py-2.5 px-4 text-xs text-ink">
-                        {item.assignedTo}
-                      </td>
-                      <td
-                        className={`py-2.5 px-4 text-xs font-semibold ${
-                          item.isOverdue ? "text-[#8F4A09]" : "text-ink-secondary font-normal"
-                        }`}
-                      >
-                        {item.responseDue}
-                      </td>
-                      <td className="py-2.5 px-4 text-xs">
-                        <span
-                          className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${
-                            item.status === "Escalated"
-                              ? "bg-[#FFF6EC] text-[#7A4106]"
-                              : item.status === "In progress"
-                              ? "bg-[#E3EFEF] text-primary"
-                              : item.status === "Resolved"
-                              ? "bg-[#E4F1E8] text-[#1E5A33]"
-                              : "bg-[#F1F2EF] text-ink-secondary"
-                          }`}
-                        >
-                          {item.status}
-                        </span>
+                  {filteredComplaints.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-xs text-ink-secondary">
+                        No complaints found for this filter.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filteredComplaints.map(item => (
+                      <tr
+                        key={item.id}
+                        onClick={() => setSelectedTicket(item)}
+                        className="border-t border-line-row hover:bg-slate-50/70 cursor-pointer transition-colors"
+                      >
+                        <td className="py-2.5 px-4 font-mono text-xs text-ink whitespace-nowrap">
+                          {item.ticketNo}
+                        </td>
+                        <td className="py-2.5 px-4 text-xs">
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-medium text-ink break-words">{item.subject}</span>
+                            <span className="text-[11px] text-ink-secondary">{item.category}</span>
+                          </div>
+                        </td>
+                        <td className="py-2.5 px-4 text-xs text-ink-secondary truncate" title={item.raisedBy}>
+                          {item.raisedBy}
+                        </td>
+                        <td className="py-2.5 px-4 text-xs text-ink truncate" title={item.assignedTo}>
+                          {item.assignedTo}
+                        </td>
+                        <td
+                          className={`py-2.5 px-4 text-xs font-semibold whitespace-nowrap ${
+                            item.isOverdue ? "text-warning-inline" : "text-ink-secondary font-normal"
+                          }`}
+                        >
+                          {item.responseDue}
+                        </td>
+                        <td className="py-2.5 px-4 text-xs whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap leading-tight ${
+                              item.status === "Escalated"
+                                ? "bg-warning-bg text-warning-text"
+                                : item.status === "In progress"
+                                ? "bg-primary-tint text-primary"
+                                : item.status === "Resolved"
+                                ? "bg-success-bg text-success-text"
+                                : "bg-[#F1F2EF] text-ink-secondary"
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -690,7 +706,7 @@ export default function FrontOfficePage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Generate Ticket (72h SLA)
                 </button>

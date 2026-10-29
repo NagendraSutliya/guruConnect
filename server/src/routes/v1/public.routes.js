@@ -9,7 +9,7 @@ const Institute = require("../../models/Institute");
 router.get("/institute/:id", async (req, res) => {
   try {
     const institute = await Institute.findById(req.params.id).select(
-      "instituteName instituteType"
+      "instituteName instituteType logoUrl"
     );
     if (!institute) return res.status(404).json({ msg: "Institute not found" });
     res.json({ data: institute });

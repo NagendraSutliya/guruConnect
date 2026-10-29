@@ -22,8 +22,9 @@ const TeacherNavbar: React.FC<TeacherNavbarProps> = ({ onSearch }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.instituteId) {
-      api.get(`/public/institute/${user.instituteId}`)
+    const instId = typeof user?.instituteId === 'object' ? user?.instituteId?._id : user?.instituteId;
+    if (instId) {
+      api.get(`/public/institute/${instId}`)
         .then((res) => setInstitute(res.data.data))
         .catch(() => {});
     }
@@ -90,7 +91,7 @@ const TeacherNavbar: React.FC<TeacherNavbarProps> = ({ onSearch }) => {
       <div className="flex items-center gap-4 ml-auto">
         {/* Session Indicator */}
         <span className="hidden sm:inline-block text-small font-medium text-ink-secondary">
-          Session 2026-27
+          {institute?.instituteName ? `${institute.instituteName} · ` : ""}Session 2026-27
         </span>
 
         {/* Notifications Button */}

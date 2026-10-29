@@ -4,7 +4,6 @@ import {
   MdSecurity, 
   MdNotifications, 
   MdDevices, 
-  MdVpnKey,
   MdFingerprint
 } from "react-icons/md";
 import { useToast } from "../../context/ToastContext";
@@ -27,7 +26,6 @@ export default function AccountSettings() {
     }
     
     setLoading(true);
-    // Simulation of API call
     setTimeout(() => {
       showToast("Password updated successfully!", "success");
       setPasswords({ current: "", new: "", confirm: "" });
@@ -36,143 +34,160 @@ export default function AccountSettings() {
   };
 
   return (
-    <div className="py-6 space-y-8 animate-fadeIn">
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
       {/* Header Section */}
-      <div className="sticky top-0 z-30 bg-gradient-to-r from-slate-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-            <MdSecurity className="text-slate-700" />
-            Account Settings
-          </h2>
-          <p className="text-slate-500 text-sm font-medium mt-1">Security, credentials, and authentication preferences.</p>
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">Settings › Account</div>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight flex items-center gap-2">
+            <MdSecurity className="text-primary" size={24} />
+            <span>Account settings</span>
+          </h1>
+          <p className="text-[13px] text-ink-secondary mt-0.5">
+            Security, credentials, and authentication preferences.
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Security Summary */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Security Score</h3>
-              <span className="text-emerald-500 font-black text-sm">85%</span>
-            </div>
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div className="w-[85%] h-full bg-emerald-500 rounded-full" />
-            </div>
-            <p className="text-xs text-slate-400 font-medium leading-relaxed">
-              Your account security is high. Enable two-factor authentication to reach 100%.
-            </p>
-
-            <div className="space-y-3 pt-4">
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                <div className="flex items-center gap-3">
-                  <MdFingerprint className="text-indigo-600" size={18} />
-                  <span className="text-xs font-bold text-slate-700">2FA Status</span>
-                </div>
-                <span className="text-[10px] font-black text-rose-500 uppercase">Disabled</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                <div className="flex items-center gap-3">
-                  <MdDevices className="text-indigo-600" size={18} />
-                  <span className="text-xs font-bold text-slate-700">Active Devices</span>
-                </div>
-                <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">02 Active</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-indigo-900 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
-            <h4 className="font-black text-lg mb-2 relative z-10">Advanced Security</h4>
-            <p className="text-indigo-200 text-xs leading-relaxed mb-6 relative z-10">
-              Session logs and IP whitelistings are managed by the enterprise security module.
-            </p>
-            <button className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all relative z-10">
-              View Logs
-            </button>
-            <MdVpnKey size={100} className="absolute -right-4 -bottom-4 opacity-10" />
-          </div>
-        </div>
-
-        {/* Password Management */}
-        <div className="lg:col-span-2 space-y-6">
-          <form onSubmit={handlePasswordChange} className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
-            <div className="flex items-center gap-3 text-slate-800 font-bold uppercase tracking-widest text-[10px]">
-              <MdLock size={16} className="text-indigo-500" />
-              Change Password
+      <div className="flex flex-wrap gap-5 items-start">
+        {/* Main Content (Left Column) */}
+        <div className="flex-1 basis-[520px] min-w-0 flex flex-col gap-5">
+          {/* Change Password Card */}
+          <form onSubmit={handlePasswordChange} className="bg-white border border-line rounded-card p-5 shadow-xs flex flex-col gap-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-line-row">
+              <MdLock size={18} className="text-primary" />
+              <h2 className="text-base font-semibold text-ink m-0">Change password</h2>
             </div>
 
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Current Password</label>
+            <div className="space-y-3.5">
+              <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                Current password
                 <input 
                   type="password"
                   value={passwords.current}
                   onChange={(e) => setPasswords({...passwords, current: e.target.value})}
-                  className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-bold text-slate-800 outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+                  className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none transition-colors"
                   required
                 />
-              </div>
+              </label>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">New Password</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  New password
                   <input 
                     type="password"
                     value={passwords.new}
                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
-                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-bold text-slate-800 outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none transition-colors"
                     required
                   />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Confirm New Password</label>
+                </label>
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Confirm new password
                   <input 
                     type="password"
                     value={passwords.confirm}
                     onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
-                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-bold text-slate-800 outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none transition-colors"
                     required
                   />
-                </div>
+                </label>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-slate-50 flex justify-end">
+            <div className="pt-3 border-t border-line-row flex justify-end">
               <button 
                 type="submit"
                 disabled={loading}
-                className="px-8 py-3 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 disabled:opacity-70 uppercase tracking-widest"
+                className="min-h-[40px] px-5 rounded-control bg-primary hover:bg-primary-dark text-white text-xs sm:text-[13px] font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.98] disabled:opacity-70"
               >
-                {loading ? "Processing..." : "Update Credentials"}
+                {loading ? "Processing..." : "Update credentials"}
               </button>
             </div>
           </form>
 
-          {/* Preferences */}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-            <div className="flex items-center gap-3 text-slate-800 font-bold uppercase tracking-widest text-[10px]">
-              <MdNotifications size={16} className="text-orange-500" />
-              Communication Preferences
+          {/* Communication Preferences Card */}
+          <div className="bg-white border border-line rounded-card p-5 shadow-xs flex flex-col gap-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-line-row">
+              <MdNotifications size={18} className="text-primary" />
+              <h2 className="text-base font-semibold text-ink m-0">Communication preferences</h2>
             </div>
-            <div className="space-y-4">
+
+            <div className="divide-y divide-line-row">
               {[
                 { title: "Email Notifications", desc: "Receive activity reports and system alerts via email.", active: true },
                 { title: "Security Alerts", desc: "Get notified of new login attempts and credential changes.", active: true },
                 { title: "Product Updates", desc: "Stay informed about new features and system improvements.", active: false },
               ].map((pref, i) => (
-                <div key={i} className="flex items-center justify-between py-2">
+                <div key={i} className="flex items-center justify-between py-3">
                   <div className="max-w-md">
-                    <p className="text-sm font-bold text-slate-800">{pref.title}</p>
-                    <p className="text-xs text-slate-400 font-medium">{pref.desc}</p>
+                    <p className="text-xs sm:text-sm font-semibold text-ink">{pref.title}</p>
+                    <p className="text-xs text-ink-secondary mt-0.5">{pref.desc}</p>
                   </div>
-                  <button className={`w-12 h-6 rounded-full transition-all relative ${pref.active ? 'bg-indigo-600' : 'bg-slate-200'}`}>
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${pref.active ? 'left-7' : 'left-1'}`} />
-                  </button>
+                  <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                    pref.active ? "bg-success-bg text-success-text" : "bg-surface-subtle text-ink-secondary border border-line-input"
+                  }`}>
+                    {pref.active ? "Enabled" : "Disabled"}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         </div>
+
+        {/* Right Aside (Synced Right Panel) */}
+        <aside className="flex-1 basis-[300px] max-w-full lg:max-w-[340px] flex flex-col gap-4">
+          {/* Security Summary Card */}
+          <div className="bg-white border border-line rounded-card p-4 shadow-xs flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h2 className="m-0 text-base font-semibold text-ink">Security health</h2>
+              <span className="text-success text-xs font-bold">85% High</span>
+            </div>
+            
+            <div className="w-full h-2 bg-surface-subtle border border-line-row rounded-full overflow-hidden">
+              <div className="w-[85%] h-full bg-success rounded-full" />
+            </div>
+
+            <p className="text-xs text-ink-secondary leading-relaxed">
+              Your account security is high. Enable two-factor authentication to achieve 100% compliance.
+            </p>
+
+            <div className="space-y-2 pt-2 border-t border-line-row text-xs">
+              <div className="flex items-center justify-between py-1">
+                <div className="flex items-center gap-2">
+                  <MdFingerprint className="text-primary" size={16} />
+                  <span className="text-ink font-medium">2FA status</span>
+                </div>
+                <span className="text-[11px] font-semibold text-warning-text bg-warning-bg px-2 py-0.5 rounded-full border border-warning-border">
+                  Disabled
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <div className="flex items-center gap-2">
+                  <MdDevices className="text-primary" size={16} />
+                  <span className="text-ink font-medium">Active devices</span>
+                </div>
+                <span className="text-[11px] font-mono text-ink-secondary">02 Active</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Audit Rail Card */}
+          <div className="bg-white border border-line rounded-card p-4 shadow-xs flex flex-col gap-2.5">
+            <h2 className="m-0 text-sm font-semibold text-ink flex items-center gap-1.5">
+              <MdSecurity size={16} className="text-primary" />
+              <span>Session & security logs</span>
+            </h2>
+            <p className="text-xs text-ink-secondary leading-relaxed">
+              All sign-ins, IP addresses, and credential changes are recorded in the central audit ledger.
+            </p>
+            <div className="pt-2 border-t border-line-row">
+              <span className="text-xs font-semibold text-primary">
+                Protected by TLS 1.3 End-to-End
+              </span>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );

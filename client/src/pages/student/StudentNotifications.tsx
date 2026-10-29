@@ -78,7 +78,7 @@ const StudentNotifications: React.FC = () => {
             onClick={() => setActiveFilter(tab.id as any)}
             className={`px-4 py-2 rounded-control text-small font-semibold transition-all cursor-pointer ${
               activeFilter === tab.id
-                ? "bg-[#12302D] text-white shadow-2xs"
+                ? "bg-nav-bg text-white shadow-2xs"
                 : "bg-surface text-ink-secondary hover:text-ink hover:bg-surface-subtle border border-line"
             }`}
           >
@@ -94,7 +94,7 @@ const StudentNotifications: React.FC = () => {
             key={item.id}
             onClick={() => handleItemClick(item)}
             className={`p-4 px-6 flex items-start gap-4 transition-colors cursor-pointer ${
-              item.unread ? "bg-[#F4F9F9] hover:bg-[#ebf5f5]" : "hover:bg-surface-subtle/60"
+              item.unread ? "bg-primary-row hover:bg-[#ebf5f5]" : "hover:bg-surface-subtle/60"
             }`}
           >
             <span

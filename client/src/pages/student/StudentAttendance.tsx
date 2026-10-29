@@ -91,13 +91,13 @@ const StudentAttendance: React.FC = () => {
 
           <div className="flex items-center gap-4 text-caption text-ink-secondary">
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#0E5A63]"></span> Present (10)
+              <span className="w-2.5 h-2.5 rounded-full bg-primary"></span> Present (10)
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#E6E9E7]"></span> Off / Holiday (6)
+              <span className="w-2.5 h-2.5 rounded-full bg-attendance-holiday"></span> Off / Holiday (6)
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-white border border-[#DDE2DE]"></span> Scheduled (15)
+              <span className="w-2.5 h-2.5 rounded-full bg-white border border-line"></span> Scheduled (15)
             </span>
           </div>
         </div>
@@ -124,7 +124,7 @@ const StudentAttendance: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="min-h-[70px] rounded-control bg-[#0E5A63] text-white p-2.5 flex flex-col justify-between shadow-2xs hover:opacity-95 transition-all"
+                  className="min-h-[70px] rounded-control bg-primary text-white p-2.5 flex flex-col justify-between shadow-2xs hover:opacity-95 transition-all"
                 >
                   <span className="font-mono text-small font-bold">{cell.day}</span>
                   <span className="text-[11px] font-medium text-white/90">{cell.desc}</span>
@@ -136,7 +136,7 @@ const StudentAttendance: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="min-h-[70px] rounded-control bg-[#E6E9E7] text-ink-secondary p-2.5 flex flex-col justify-between"
+                  className="min-h-[70px] rounded-control bg-attendance-holiday text-ink-secondary p-2.5 flex flex-col justify-between"
                 >
                   <span className="font-mono text-small font-semibold text-ink">{cell.day}</span>
                   <span className="text-[11px] text-ink-secondary truncate">{cell.desc}</span>

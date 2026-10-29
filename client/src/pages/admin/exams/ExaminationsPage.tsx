@@ -443,7 +443,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
               </div>
 
               {/* Half-Yearly Exam (Highlighted card) */}
-              <div className="border border-[#9CC3C4] bg-[#F4F9F9] rounded-[10px] p-3.5 flex flex-col gap-1 shadow-xs">
+              <div className="border border-primary-soft bg-primary-row rounded-[10px] p-3.5 flex flex-col gap-1 shadow-xs">
                 <span className="text-small font-semibold text-ink">Half-Yearly Exam</span>
                 <span className="font-mono text-xl font-bold text-primary">80</span>
                 <span className="text-[12.5px] text-ink-secondary">Written paper, 2.5 hours</span>
@@ -457,9 +457,9 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
 
           {/* Date sheet Card (Card 2 in Screen 17) */}
           <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
-            <div className="px-5 py-3.5 border-b border-[#EEF1EF] flex justify-between items-center gap-3 flex-wrap">
+            <div className="px-5 py-3.5 border-b border-line-row flex justify-between items-center gap-3 flex-wrap">
               <h2 className="text-base font-semibold text-ink">Date sheet</h2>
-              <span className="text-xs font-semibold text-[#7A4106] bg-[#FFF6EC] border border-[#EBC99C]/60 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-semibold text-warning-text bg-warning-bg border border-warning-border/60 px-2.5 py-1 rounded-full">
                 Invigilator missing for 2 papers
               </span>
             </div>
@@ -467,7 +467,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-xs sm:text-small min-w-[650px]">
                 <thead>
-                  <tr className="bg-[#F2F4F2] text-left text-ink">
+                  <tr className="bg-surface-head text-left text-ink">
                     <th className="px-4 py-3 font-semibold">Date</th>
                     <th className="px-4 py-3 font-semibold">Time</th>
                     <th className="px-4 py-3 font-semibold">Class 6</th>
@@ -476,7 +476,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                     <th className="px-4 py-3 font-semibold">Invigilators</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#EEF1EF]">
+                <tbody className="divide-y divide-line-row">
                   {DATE_SHEET_ROWS.map((row, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-4 py-2.5 font-semibold text-ink whitespace-nowrap">{row.date}</td>
@@ -486,7 +486,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                       <td className="px-4 py-2.5 font-medium">{row.class8}</td>
                       <td className="px-4 py-2.5 whitespace-nowrap">
                         {row.invigStatus === "warning" ? (
-                          <span className="text-[#8F4A09] font-semibold flex items-center gap-1.5">
+                          <span className="text-warning-inline font-semibold flex items-center gap-1.5">
                             <FiAlertTriangle size={13} /> {row.invigilators}
                           </span>
                         ) : (
@@ -618,8 +618,8 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
 
           {/* Error Banner when validation errors exist (Screen 18) */}
           {validationErrors.length > 0 && (
-            <div className="bg-[#FFF6EC] border border-[#EBC99C] rounded-[10px] px-4 py-3 text-small text-[#5E3305] flex items-center gap-2">
-              <FiAlertTriangle size={16} className="text-[#8F4A09] shrink-0" />
+            <div className="bg-warning-bg border border-warning-border rounded-[10px] px-4 py-3 text-small text-warning-strong flex items-center gap-2">
+              <FiAlertTriangle size={16} className="text-warning-inline shrink-0" />
               <span>
                 {validationErrors.length} entry needs fixing before submit: {validationErrors[0]}
               </span>
@@ -703,7 +703,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
             <div className="overflow-x-auto">
               <table className="w-full table-fixed border-collapse text-xs sm:text-small">
                 <thead>
-                  <tr className="bg-[#F2F4F2] text-left text-ink border-b border-line">
+                  <tr className="bg-surface-head text-left text-ink border-b border-line">
                     <th className="w-[8%] px-2 py-2 font-semibold text-center text-ink-secondary">Roll</th>
                     <th className="w-[16%] px-3 py-2 font-semibold text-ink text-left">Student</th>
                     <th className="w-[12%] px-1 py-2 font-semibold text-center">
@@ -731,7 +731,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                     <th className="w-[8%] px-2 py-2 font-semibold text-center">Grade</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#EEF1EF]">
+                <tbody className="divide-y divide-line-row">
                   {marksData.map((row) => {
                     const { total, grade } = computeStudentTotalAndGrade(row);
                     const isRowError =
@@ -760,7 +760,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                             disabled={marksWorkflowStep === 4}
                             onChange={(e) => handleCellChange(row.roll, "pt", e.target.value)}
                             className={`w-14 h-8 text-center rounded-[6px] border font-mono text-xs text-ink focus:outline-none focus:border-primary transition-all mx-auto block ${
-                              Number(row.pt) > 10 ? "border-amber-500 bg-amber-50 font-bold" : "border-[#C9D1CD] bg-white"
+                              Number(row.pt) > 10 ? "border-amber-500 bg-amber-50 font-bold" : "border-line-input bg-white"
                             }`}
                           />
                         </td>
@@ -773,7 +773,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                             disabled={marksWorkflowStep === 4}
                             onChange={(e) => handleCellChange(row.roll, "nb", e.target.value)}
                             className={`w-12 h-8 text-center rounded-[6px] border font-mono text-xs text-ink focus:outline-none focus:border-primary transition-all mx-auto block ${
-                              Number(row.nb) > 5 ? "border-amber-500 bg-amber-50 font-bold" : "border-[#C9D1CD] bg-white"
+                              Number(row.nb) > 5 ? "border-amber-500 bg-amber-50 font-bold" : "border-line-input bg-white"
                             }`}
                           />
                         </td>
@@ -786,7 +786,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                             disabled={marksWorkflowStep === 4}
                             onChange={(e) => handleCellChange(row.roll, "se", e.target.value)}
                             className={`w-12 h-8 text-center rounded-[6px] border font-mono text-xs text-ink focus:outline-none focus:border-primary transition-all mx-auto block ${
-                              Number(row.se) > 5 ? "border-amber-500 bg-amber-50 font-bold" : "border-[#C9D1CD] bg-white"
+                              Number(row.se) > 5 ? "border-amber-500 bg-amber-50 font-bold" : "border-line-input bg-white"
                             }`}
                           />
                         </td>
@@ -799,7 +799,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                             disabled={marksWorkflowStep === 4}
                             onChange={(e) => handleCellChange(row.roll, "hy", e.target.value)}
                             className={`w-14 h-8 text-center rounded-[6px] border font-mono text-xs text-ink focus:outline-none focus:border-primary transition-all mx-auto block ${
-                              Number(row.hy) > 80 ? "border-amber-500 bg-amber-50 font-bold text-amber-800" : "border-[#C9D1CD] bg-white"
+                              Number(row.hy) > 80 ? "border-amber-500 bg-amber-50 font-bold text-amber-800" : "border-line-input bg-white"
                             }`}
                           />
                         </td>
@@ -811,7 +811,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
 
                         {/* Grade Pill */}
                         <td className="px-2 py-1 text-center">
-                          <span className="inline-block min-w-[32px] px-2 py-0.5 rounded-[5px] bg-[#E3EFEF] text-[#08393F] font-semibold text-xs font-mono">
+                          <span className="inline-block min-w-[32px] px-2 py-0.5 rounded-[5px] bg-primary-tint text-primary-dark font-semibold text-xs font-mono">
                             {grade}
                           </span>
                         </td>
@@ -823,7 +823,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
             </div>
 
             {/* Bottom Guideline & Actions Bar */}
-          <div className="flex flex-wrap justify-between items-center gap-3 p-4 border-t border-[#EEF1EF] bg-surface">
+          <div className="flex flex-wrap justify-between items-center gap-3 p-4 border-t border-line-row bg-surface">
   <span className="text-[13px] text-ink-secondary flex-1 min-w-0">
     Allowed values: a number, AB (absent), ML (medical leave), EX (exempt). After the coordinator finalises, changes need an unlock request.
   </span>
@@ -844,8 +844,8 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
       disabled={validationErrors.length > 0 || marksWorkflowStep >= 2}
       className={`py-2 px-4 rounded-control text-sm font-semibold shadow-xs transition-colors ${
         validationErrors.length > 0 || marksWorkflowStep >= 2
-          ? "bg-[#9DB5B5] cursor-not-allowed text-white"
-          : "bg-[#0E5A63] hover:bg-[#08393F] text-white cursor-pointer"
+          ? "bg-primary-disabled cursor-not-allowed text-white"
+          : "bg-primary hover:bg-primary-dark text-white cursor-pointer"
       }`}
     >
       {marksWorkflowStep >= 2 ? "Submitted" : "Submit for verification"}
@@ -878,7 +878,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                 type="checkbox"
                 checked={withholdFeeDues}
                 onChange={(e) => setWithholdFeeDues(e.target.checked)}
-                className="w-4.5 h-4.5 rounded border-[#C9D1CD] text-primary focus:ring-primary cursor-pointer"
+                className="w-4.5 h-4.5 rounded border-line-input text-primary focus:ring-primary cursor-pointer"
               />
               <span>Withhold report cards for fee dues over 60 days</span>
             </label>
@@ -889,7 +889,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-xs sm:text-small min-w-[680px]">
                 <thead>
-                  <tr className="bg-[#F2F4F2] text-left text-ink">
+                  <tr className="bg-surface-head text-left text-ink">
                     <th className="px-4 py-3 font-semibold">Section</th>
                     <th className="px-4 py-3 font-semibold">Subjects final</th>
                     <th className="px-4 py-3 font-semibold">Remarks</th>
@@ -898,7 +898,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                     <th className="px-4 py-3 font-semibold text-right"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#EEF1EF]">
+                <tbody className="divide-y divide-line-row">
                   {sectionResults.map((sec) => (
                     <tr key={sec.section} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-4 py-2.5 font-semibold text-ink">{sec.section}</td>
@@ -907,7 +907,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                       <td className="px-4 py-2.5">
                         <span
                           className={`font-mono ${
-                            sec.isSubjectsFinalComplete ? "text-ink" : "text-[#8F4A09] font-semibold"
+                            sec.isSubjectsFinalComplete ? "text-ink" : "text-warning-inline font-semibold"
                           }`}
                         >
                           {sec.subjectsFinal}
@@ -916,7 +916,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
 
                       {/* Remarks */}
                       <td className="px-4 py-2.5">
-                        <span className={sec.isRemarksComplete ? "text-ink" : "text-[#8F4A09] font-medium"}>
+                        <span className={sec.isRemarksComplete ? "text-ink" : "text-warning-inline font-medium"}>
                           {sec.remarks}
                         </span>
                       </td>
@@ -929,17 +929,17 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                       {/* Report Cards Badge */}
                       <td className="px-4 py-2.5">
                         {sec.reportCardStatus === "Published" && (
-                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#E4F1E8] text-[#1E5A33]">
+                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-success-bg text-success-text">
                             Published
                           </span>
                         )}
                         {sec.reportCardStatus === "Generated" && (
-                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#E3EFEF] text-[#08393F]">
+                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-tint text-primary-dark">
                             Generated
                           </span>
                         )}
                         {sec.reportCardStatus === "Not ready" && (
-                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F1F2EF] text-[#4F5B57]">
+                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F1F2EF] text-ink-secondary">
                             Not ready
                           </span>
                         )}
@@ -954,7 +954,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                               setSelectedSectionForReport(sec.section);
                               setIsReportCardOpen(true);
                             }}
-                            className="min-h-[38px] px-3.5 rounded-control bg-[#4F5B57] hover:bg-slate-700 text-white text-[13px] font-semibold transition-colors cursor-pointer"
+                            className="min-h-[38px] px-3.5 rounded-control bg-ink-secondary hover:bg-slate-700 text-white text-[13px] font-semibold transition-colors cursor-pointer"
                           >
                             View
                           </button>
@@ -972,7 +972,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
                           <button
                             type="button"
                             disabled
-                            className="min-h-[38px] px-3.5 rounded-control bg-[#9DB5B5] text-white text-[13px] font-semibold cursor-not-allowed"
+                            className="min-h-[38px] px-3.5 rounded-control bg-primary-disabled text-white text-[13px] font-semibold cursor-not-allowed"
                           >
                             Generate
                           </button>
@@ -992,18 +992,18 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
             <section className="flex-1 min-w-[320px] bg-white border border-line rounded-card p-5 space-y-2.5 shadow-xs">
               <h2 className="text-base font-semibold text-ink">Withheld for fee dues · 11 students</h2>
               
-              <div className="divide-y divide-[#EEF1EF] text-small">
+              <div className="divide-y divide-line-row text-small">
                 <div className="flex justify-between items-center py-2">
                   <span>Harsh Vardhan · 8-A</span>
-                  <span className="font-mono font-medium text-[#8F4A09]">₹21,800</span>
+                  <span className="font-mono font-medium text-warning-inline">₹21,800</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span>Kunal Mehra · 7-C</span>
-                  <span className="font-mono font-medium text-[#8F4A09]">₹33,800</span>
+                  <span className="font-mono font-medium text-warning-inline">₹33,800</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span>Tanya Saini · 6-C</span>
-                  <span className="font-mono font-medium text-[#8F4A09]">₹16,900</span>
+                  <span className="font-mono font-medium text-warning-inline">₹16,900</span>
                 </div>
               </div>
 
@@ -1021,7 +1021,7 @@ export default function ExaminationsPage({ initialTab = "setup" }: ExaminationsP
             <section className="flex-1 min-w-[320px] bg-white border border-line rounded-card p-5 space-y-2.5 shadow-xs">
               <h2 className="text-base font-semibold text-ink">Subjects with lowest pass %</h2>
               
-              <div className="divide-y divide-[#EEF1EF] text-small">
+              <div className="divide-y divide-line-row text-small">
                 <div className="flex justify-between items-center py-2">
                   <span>Maths · 7-C</span>
                   <span className="font-mono font-medium text-ink">82.5%</span>

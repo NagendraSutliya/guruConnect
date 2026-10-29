@@ -185,7 +185,7 @@ export default function FeeStructure() {
           <button
             type="button"
             onClick={() => setIsApprovalModalOpen(true)}
-            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
             <FiCheckCircle size={15} />
             <span>Send for approval</span>
@@ -194,8 +194,8 @@ export default function FeeStructure() {
       </div>
 
       {/* Warning Alert Banner (Matching 21-FeeStructure.html) */}
-      <div className="bg-[#FFF6EC] border border-[#EBC99C] rounded-[10px] px-4 py-3 text-small text-[#5E3305] flex items-center gap-2.5">
-        <FiAlertTriangle size={17} className="text-[#8F4A09] shrink-0" />
+      <div className="bg-warning-bg border border-warning-border rounded-[10px] px-4 py-3 text-small text-warning-strong flex items-center gap-2.5">
+        <FiAlertTriangle size={17} className="text-warning-inline shrink-0" />
         <span>
           Tuition for Classes 9–10 is 12.0% higher than 2026-27, above the 10% limit set for this school. Add a reason or lower the amount.
         </span>
@@ -206,7 +206,7 @@ export default function FeeStructure() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-xs sm:text-small min-w-[900px]">
             <thead>
-              <tr className="bg-[#F2F4F2] text-left text-ink border-b border-line">
+              <tr className="bg-surface-head text-left text-ink border-b border-line">
                 <th className="px-4 py-3 font-semibold w-52">Fee head</th>
                 <th className="px-4 py-3 font-semibold w-28">Frequency</th>
                 <th className="px-4 py-3 font-semibold text-right">Nursery–UKG</th>
@@ -216,7 +216,7 @@ export default function FeeStructure() {
                 <th className="px-4 py-3 font-semibold text-right">Class 11–12</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF1EF]">
+            <tbody className="divide-y divide-line-row">
               {feeRows.map((row) => (
                 <tr key={row.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="px-4 py-2.5">
@@ -237,7 +237,7 @@ export default function FeeStructure() {
                       aria-label={`${row.name} Nursery-UKG amount`}
                       value={row.nurseryUkg.toLocaleString("en-IN")}
                       onChange={(e) => handleCellChange(row.id, "nurseryUkg", e.target.value)}
-                      className="w-24 min-h-[34px] px-2 text-right rounded-[6px] border border-[#C9D1CD] bg-white font-mono text-[13px] text-ink focus:outline-none focus:border-primary transition-all"
+                      className="w-24 min-h-[34px] px-2 text-right rounded-[6px] border border-line-input bg-white font-mono text-[13px] text-ink focus:outline-none focus:border-primary transition-all"
                     />
                   </td>
 
@@ -248,7 +248,7 @@ export default function FeeStructure() {
                       aria-label={`${row.name} Class 1-5 amount`}
                       value={row.class1to5.toLocaleString("en-IN")}
                       onChange={(e) => handleCellChange(row.id, "class1to5", e.target.value)}
-                      className="w-24 min-h-[34px] px-2 text-right rounded-[6px] border border-[#C9D1CD] bg-white font-mono text-[13px] text-ink focus:outline-none focus:border-primary transition-all"
+                      className="w-24 min-h-[34px] px-2 text-right rounded-[6px] border border-line-input bg-white font-mono text-[13px] text-ink focus:outline-none focus:border-primary transition-all"
                     />
                   </td>
 
@@ -259,7 +259,7 @@ export default function FeeStructure() {
                       aria-label={`${row.name} Class 6-8 amount`}
                       value={row.class6to8.toLocaleString("en-IN")}
                       onChange={(e) => handleCellChange(row.id, "class6to8", e.target.value)}
-                      className="w-24 min-h-[34px] px-2 text-right rounded-[6px] border border-[#C9D1CD] bg-white font-mono text-[13px] text-ink focus:outline-none focus:border-primary transition-all"
+                      className="w-24 min-h-[34px] px-2 text-right rounded-[6px] border border-line-input bg-white font-mono text-[13px] text-ink focus:outline-none focus:border-primary transition-all"
                     />
                   </td>
 
@@ -272,8 +272,8 @@ export default function FeeStructure() {
                       onChange={(e) => handleCellChange(row.id, "class9to10", e.target.value)}
                       className={`w-24 min-h-[34px] px-2 text-right rounded-[6px] font-mono text-[13px] text-ink focus:outline-none transition-all ${
                         row.hasWarning
-                          ? "border-2 border-[#B4610E] bg-[#FFF6EC] font-semibold"
-                          : "border border-[#C9D1CD] bg-white focus:border-primary"
+                          ? "border-2 border-warning-accent bg-warning-bg font-semibold"
+                          : "border border-line-input bg-white focus:border-primary"
                       }`}
                     />
                   </td>
@@ -285,14 +285,14 @@ export default function FeeStructure() {
                       aria-label={`${row.name} Class 11-12 amount`}
                       value={row.class11to12.toLocaleString("en-IN")}
                       onChange={(e) => handleCellChange(row.id, "class11to12", e.target.value)}
-                      className="w-24 min-h-[34px] px-2 text-right rounded-[6px] border border-[#C9D1CD] bg-white font-mono text-[13px] text-ink focus:outline-none focus:border-primary transition-all"
+                      className="w-24 min-h-[34px] px-2 text-right rounded-[6px] border border-line-input bg-white font-mono text-[13px] text-ink focus:outline-none focus:border-primary transition-all"
                     />
                   </td>
                 </tr>
               ))}
 
               {/* Annual Total Row (Matching 21-FeeStructure.html) */}
-              <tr className="border-t-2 border-line bg-[#F9FAF8] font-semibold">
+              <tr className="border-t-2 border-line bg-surface-subtle font-semibold">
                 <td className="px-4 py-3 text-ink font-bold">Annual total</td>
                 <td></td>
                 <td className="px-4 py-3 text-right font-mono font-bold text-ink">
@@ -304,7 +304,7 @@ export default function FeeStructure() {
                 <td className="px-4 py-3 text-right font-mono font-bold text-ink">
                   ₹{totalClass6to8.toLocaleString("en-IN")}
                 </td>
-                <td className="px-4 py-3 text-right font-mono font-bold text-ink text-[#8F4A09]">
+                <td className="px-4 py-3 text-right font-mono font-bold text-ink text-warning-inline">
                   ₹{totalClass9to10.toLocaleString("en-IN")}
                 </td>
                 <td className="px-4 py-3 text-right font-mono font-bold text-ink">
@@ -322,7 +322,7 @@ export default function FeeStructure() {
         <section className="flex-1 min-w-[320px] bg-white border border-line rounded-card p-5 space-y-3 shadow-xs">
           <h2 className="text-base font-semibold text-ink">Installment plan · quarterly</h2>
           
-          <div className="divide-y divide-[#EEF1EF] text-small">
+          <div className="divide-y divide-line-row text-small">
             <div className="flex justify-between py-2.5">
               <span className="font-medium text-ink">Installment 1</span>
               <span className="text-ink-secondary">Due 15 Apr · 25% + one-time + annual</span>
@@ -350,7 +350,7 @@ export default function FeeStructure() {
         <section className="flex-1 min-w-[320px] bg-white border border-line rounded-card p-5 space-y-3 shadow-xs">
           <h2 className="text-base font-semibold text-ink">Concession rules</h2>
           
-          <div className="divide-y divide-[#EEF1EF] text-small">
+          <div className="divide-y divide-line-row text-small">
             <div className="flex justify-between py-2.5 gap-3">
               <span className="font-medium text-ink">Sibling — 2nd child</span>
               <span className="text-ink-secondary text-right">10% of tuition · auto</span>
@@ -450,7 +450,7 @@ export default function FeeStructure() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Add Head
                 </button>
@@ -482,7 +482,7 @@ export default function FeeStructure() {
                 This draft will be sent to the School Director and Board of Governors for official ratification.
               </p>
 
-              <div className="bg-[#FFF6EC] border border-[#EBC99C] rounded-[8px] p-3 text-xs text-[#5E3305] space-y-1">
+              <div className="bg-warning-bg border border-warning-border rounded-[8px] p-3 text-xs text-warning-strong space-y-1">
                 <span className="font-bold block">Notice: 12% Hike on Classes 9–10</span>
                 <span>Requires explicit management justification prior to publishing in parent prospectus.</span>
               </div>
@@ -510,7 +510,7 @@ export default function FeeStructure() {
                 <button
                   type="button"
                   onClick={handleSendApproval}
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Confirm &amp; Send
                 </button>

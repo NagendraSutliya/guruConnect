@@ -248,7 +248,7 @@ export default function StaffAttendancePage() {
         {/* Card 3: Not punched yet */}
         <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
           <span className="text-[12.5px] text-ink-secondary font-medium">Not punched yet</span>
-          <span className="font-mono text-xl sm:text-[22px] font-semibold text-[#8F4A09]">2</span>
+          <span className="font-mono text-xl sm:text-[22px] font-semibold text-warning-inline">2</span>
           <span className="text-[11.5px] text-ink-secondary">After 7:40 am grace</span>
         </div>
 
@@ -256,7 +256,7 @@ export default function StaffAttendancePage() {
         <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
           <span className="text-[12.5px] text-ink-secondary font-medium">Late this month</span>
           <span className="font-mono text-xl sm:text-[22px] font-semibold text-ink">14</span>
-          <span className="text-[11.5px] text-[#8F4A09]">Across 8 staff members</span>
+          <span className="text-[11.5px] text-warning-inline">Across 8 staff members</span>
         </div>
       </div>
 
@@ -298,7 +298,7 @@ export default function StaffAttendancePage() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-[13px] min-w-[960px]">
             <thead>
-              <tr className="bg-[#F2F4F2] border-b border-line text-ink font-semibold">
+              <tr className="bg-surface-head border-b border-line text-ink font-semibold">
                 <th className="py-2.5 px-4 text-left min-w-[190px]">Employee</th>
                 {DAYS_HEADER.map(d => (
                   <th
@@ -348,12 +348,12 @@ export default function StaffAttendancePage() {
                             isSun
                               ? "text-ink-secondary/40 cursor-default"
                               : isPresent
-                              ? "bg-[#E3EFEF] text-primary hover:brightness-95 cursor-pointer"
+                              ? "bg-primary-tint text-primary hover:brightness-95 cursor-pointer"
                               : isLate
-                              ? "bg-[#FFF6EC] text-[#7A4106] hover:brightness-95 cursor-pointer"
+                              ? "bg-warning-bg text-warning-text hover:brightness-95 cursor-pointer"
                               : isLeave
                               ? "bg-purple-50 text-purple-800 border border-purple-200 cursor-pointer"
-                              : "bg-[#FDE8E8] text-[#9B1C1C] cursor-pointer"
+                              : "bg-danger-bg text-danger-text cursor-pointer"
                           }`}
                         >
                           {isSun ? "—" : status}
@@ -366,7 +366,7 @@ export default function StaffAttendancePage() {
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs ${
                         rec.lateCount > 2
-                          ? "bg-[#FFF6EC] text-[#7A4106] font-bold"
+                          ? "bg-warning-bg text-warning-text font-bold"
                           : rec.lateCount > 0
                           ? "text-ink-secondary"
                           : "text-ink-secondary/60"
@@ -422,7 +422,7 @@ export default function StaffAttendancePage() {
                   setIsImportModalOpen(false);
                   showToast("Synced 96 records from 3 biometric terminals with 0 errors!", "success");
                 }}
-                className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold shadow-xs"
               >
                 Sync Terminal Logs Now
               </button>
@@ -460,14 +460,14 @@ export default function StaffAttendancePage() {
               <button
                 type="button"
                 onClick={() => handleOverrideStatus("P")}
-                className="p-2.5 rounded-control bg-[#E3EFEF] text-primary font-semibold hover:brightness-95 cursor-pointer text-center"
+                className="p-2.5 rounded-control bg-primary-tint text-primary font-semibold hover:brightness-95 cursor-pointer text-center"
               >
                 Present (P)
               </button>
               <button
                 type="button"
                 onClick={() => handleOverrideStatus("LT")}
-                className="p-2.5 rounded-control bg-[#FFF6EC] text-[#7A4106] font-semibold hover:brightness-95 cursor-pointer text-center"
+                className="p-2.5 rounded-control bg-warning-bg text-warning-text font-semibold hover:brightness-95 cursor-pointer text-center"
               >
                 Late (LT)
               </button>
@@ -481,7 +481,7 @@ export default function StaffAttendancePage() {
               <button
                 type="button"
                 onClick={() => handleOverrideStatus("A")}
-                className="p-2.5 rounded-control bg-[#FDE8E8] text-[#9B1C1C] font-semibold hover:bg-red-100 cursor-pointer text-center"
+                className="p-2.5 rounded-control bg-danger-bg text-danger-text font-semibold hover:bg-red-100 cursor-pointer text-center"
               >
                 Absent (A)
               </button>

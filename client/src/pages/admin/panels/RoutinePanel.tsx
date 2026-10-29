@@ -48,7 +48,7 @@ const defaultPeriods = [
 const getSubjectTheme = (subjectName: string) => {
   const s = (subjectName || "").toLowerCase();
   if (s.includes("math")) {
-    return { bg: "bg-[#E3EFEF]", border: "border-[#C2DDD9]", text: "text-[#08393F]", badge: "bg-[#0E5A63]/10 text-[#0E5A63]" };
+    return { bg: "bg-primary-tint", border: "border-[#C2DDD9]", text: "text-primary-dark", badge: "bg-primary/10 text-primary" };
   }
   if (s.includes("eng")) {
     return { bg: "bg-[#EEF0F7]", border: "border-[#D5DBEC]", text: "text-[#1C2D5A]", badge: "bg-[#253E82]/10 text-[#253E82]" };
@@ -915,7 +915,7 @@ export default function RoutinePanel() {
                                   }}
                                   className={`group relative h-full rounded-control p-2 flex flex-col justify-between transition-all duration-200 border cursor-grab active:cursor-grabbing hover:-translate-y-0.5 hover:shadow-xs ${
                                     isConflict
-                                      ? "border-2 border-amber-600 bg-[#FFF6EC]"
+                                      ? "border-2 border-amber-600 bg-warning-bg"
                                       : `${theme.bg} ${theme.border}`
                                   }`}
                                 >
@@ -981,7 +981,7 @@ export default function RoutinePanel() {
               
               {/* Clash Notification Card */}
               {hasClashes ? (
-                <section className="bg-[#FFF6EC] border border-[#EBC99C] rounded-card p-4 flex flex-col gap-2.5 shadow-2xs">
+                <section className="bg-warning-bg border border-warning-border rounded-card p-4 flex flex-col gap-2.5 shadow-2xs">
                   <div className="flex items-center gap-2 text-amber-900 font-semibold text-small">
                     <FiAlertTriangle size={16} className="text-amber-600 shrink-0" />
                     <span>{detectedClashes.length} clash blocks publishing</span>
@@ -1252,7 +1252,7 @@ export default function RoutinePanel() {
                     <div className="relative h-3 bg-surface-subtle rounded-control border border-line overflow-visible">
                       <div
                         className={`h-full rounded-control transition-all duration-300 ${
-                          item.isBehind ? "bg-[#C2701A]" : "bg-primary"
+                          item.isBehind ? "bg-warning-chart" : "bg-primary"
                         }`}
                         style={{ width: `${item.completed}%` }}
                       />

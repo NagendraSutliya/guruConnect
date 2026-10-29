@@ -63,18 +63,18 @@ const StudentLibrary: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Book 1: Amber Alert */}
-          <div className="bg-[#FFF8F0] border border-[#EBC99C] rounded-control p-4 flex flex-col justify-between gap-3 shadow-2xs">
+          <div className="bg-warning-warm border border-warning-border rounded-control p-4 flex flex-col justify-between gap-3 shadow-2xs">
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-col">
-                <span className="text-body font-semibold text-[#17201D]">Wings of Fire</span>
-                <span className="text-small text-[#4F5B57]">A. P. J. Abdul Kalam · Issued on 1 Oct</span>
+                <span className="text-body font-semibold text-ink">Wings of Fire</span>
+                <span className="text-small text-ink-secondary">A. P. J. Abdul Kalam · Issued on 1 Oct</span>
               </div>
-              <span className="font-semibold text-caption px-2.5 py-1 rounded-full bg-amber-100/90 text-[#8F4A09] border border-amber-300 shrink-0">
+              <span className="font-semibold text-caption px-2.5 py-1 rounded-full bg-amber-100/90 text-warning-inline border border-amber-300 shrink-0">
                 Due in 2 days
               </span>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-amber-200/60 text-caption text-[#8F4A09]">
+            <div className="flex items-center justify-between pt-2 border-t border-amber-200/60 text-caption text-warning-inline">
               <span>Return deadline: Thu 15 Oct 2026</span>
               <span className="font-semibold">No overdue fine</span>
             </div>
@@ -169,8 +169,8 @@ const StudentLibrary: React.FC = () => {
                   <td className="py-3.5 px-6">
                     <span className={`text-caption font-semibold px-2.5 py-1 rounded-full ${
                       book.status === "Available"
-                        ? "bg-[#E4F1E8] text-[#1E5A33] border border-[#BCE1C7]"
-                        : "bg-[#F1F2EF] text-[#4F5B57] border border-[#DDE2DE]"
+                        ? "bg-success-bg text-success-text border border-success-border"
+                        : "bg-[#F1F2EF] text-ink-secondary border border-line"
                     }`}>
                       {book.status}
                     </span>

@@ -211,7 +211,7 @@ export default function FeeCounter() {
           {/* Student Profile Card (Matching 20-FeeCounter.html) */}
           <section className="bg-white border border-line rounded-card p-4 sm:p-5 flex flex-wrap gap-4 items-center justify-between shadow-xs">
             <div className="flex gap-3.5 items-center min-w-0">
-              <div className="w-12 h-12 rounded-card bg-[#E3EFEF] text-[#08393F] flex items-center justify-center font-bold text-base shrink-0">
+              <div className="w-12 h-12 rounded-card bg-primary-tint text-primary-dark flex items-center justify-center font-bold text-base shrink-0">
                 {selectedStudent.initials}
               </div>
               <div className="flex flex-col gap-0.5 min-w-0">
@@ -241,20 +241,20 @@ export default function FeeCounter() {
               <span className="text-[13px] text-ink-secondary">Oldest dues are selected first</span>
             </div>
 
-            <div className="divide-y divide-[#EEF1EF]">
+            <div className="divide-y divide-line-row">
               {installments.map((inst) => {
                 return (
                   <label
                     key={inst.id}
                     className={`flex items-center gap-3.5 px-5 py-3.5 cursor-pointer transition-colors select-none ${
-                      inst.checked ? "bg-[#F4F9F9]" : "bg-white hover:bg-slate-50/60"
+                      inst.checked ? "bg-primary-row" : "bg-white hover:bg-slate-50/60"
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={inst.checked}
                       onChange={() => toggleInstallment(inst.id)}
-                      className="w-5 h-5 rounded border-[#C9D1CD] text-primary focus:ring-primary cursor-pointer shrink-0"
+                      className="w-5 h-5 rounded border-line-input text-primary focus:ring-primary cursor-pointer shrink-0"
                     />
 
                     <span className="flex-1 flex flex-col gap-0.5 min-w-0">
@@ -267,7 +267,7 @@ export default function FeeCounter() {
                         ₹{inst.amount.toLocaleString("en-IN")}
                       </span>
                       {inst.isOverdue ? (
-                        <span className="text-xs font-semibold text-[#8F4A09]">
+                        <span className="text-xs font-semibold text-warning-inline">
                           {inst.dueDate}
                         </span>
                       ) : (
@@ -300,7 +300,7 @@ export default function FeeCounter() {
                   aria-pressed={isSelected}
                   className={`min-h-[44px] rounded-control border text-[13px] font-semibold transition-all cursor-pointer ${
                     isSelected
-                      ? "border-[#12302D] bg-[#12302D] text-white shadow-xs"
+                      ? "border-nav-bg bg-nav-bg text-white shadow-xs"
                       : "border-line-input bg-white text-ink hover:bg-slate-50"
                   }`}
                 >
@@ -409,8 +409,8 @@ export default function FeeCounter() {
             disabled={selectedDuesTotal === 0}
             className={`min-h-[50px] rounded-control border-0 text-white font-semibold text-[15px] transition-all cursor-pointer shadow-xs active:scale-[0.99] flex items-center justify-center gap-2 ${
               selectedDuesTotal === 0
-                ? "bg-[#9DB5B5] cursor-not-allowed"
-                : "bg-primary hover:bg-[#08393F]"
+                ? "bg-primary-disabled cursor-not-allowed"
+                : "bg-primary hover:bg-primary-dark"
             }`}
           >
             <span>
@@ -471,7 +471,7 @@ export default function FeeCounter() {
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded bg-[#E3EFEF] text-[#08393F] font-bold text-xs flex items-center justify-center">
+                      <div className="w-8 h-8 rounded bg-primary-tint text-primary-dark font-bold text-xs flex items-center justify-center">
                         {s.initials}
                       </div>
                       <div>

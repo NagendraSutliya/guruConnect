@@ -110,7 +110,7 @@ export default function DataGrid<T>({
                 }}
                 className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-control transition-colors ${
                   action.variant === "danger"
-                    ? "bg-[#FFF6EC] text-[#7A4106] hover:bg-[#EBC99C]"
+                    ? "bg-warning-bg text-warning-text hover:bg-warning-border"
                     : action.variant === "primary"
                     ? "bg-primary text-white hover:bg-primary-dark"
                     : "bg-surface text-ink-secondary border border-line hover:bg-surface-subtle"

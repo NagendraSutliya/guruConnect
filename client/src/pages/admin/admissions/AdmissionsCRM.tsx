@@ -464,7 +464,7 @@ export default function AdmissionsCRM() {
                 return (
                   <section
                     key={stage.key}
-                    className="w-[248px] shrink-0 bg-[#ECEFEC] rounded-card p-3 flex flex-col gap-2.5"
+                    className="w-[248px] shrink-0 bg-surface-column rounded-card p-3 flex flex-col gap-2.5"
                   >
                     {/* Column Header */}
                     <div className="flex justify-between items-center px-1">

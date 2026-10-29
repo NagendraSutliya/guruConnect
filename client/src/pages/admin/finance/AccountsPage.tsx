@@ -210,7 +210,7 @@ export default function AccountsPage() {
           <button
             type="button"
             onClick={() => setIsNewVoucherOpen(true)}
-            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
             <FiPlus size={15} />
             <span>New expense voucher</span>
@@ -250,7 +250,7 @@ export default function AccountsPage() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-xs sm:text-small min-w-[900px]">
             <thead>
-              <tr className="bg-[#F2F4F2] text-left text-ink border-b border-line">
+              <tr className="bg-surface-head text-left text-ink border-b border-line">
                 <th className="px-4 py-3 font-semibold w-36">Voucher</th>
                 <th className="px-4 py-3 font-semibold w-28">Type</th>
                 <th className="px-4 py-3 font-semibold">Ledger / narration</th>
@@ -259,7 +259,7 @@ export default function AccountsPage() {
                 <th className="px-4 py-3 font-semibold text-right w-36">Credit</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF1EF]">
+            <tbody className="divide-y divide-line-row">
               {vouchers.map((row) => (
                 <tr key={row.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="px-4 py-2.5 font-mono text-[12.5px] text-ink font-medium">
@@ -268,11 +268,11 @@ export default function AccountsPage() {
 
                   <td className="px-4 py-2.5">
                     {row.type === "Receipt" ? (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-[#E4F1E8] text-[#1E5A33]">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-success-bg text-success-text">
                         Receipt
                       </span>
                     ) : row.type === "Payment" ? (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-[#FFF6EC] text-[#7A4106]">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-warning-bg text-warning-text">
                         Payment
                       </span>
                     ) : (
@@ -389,7 +389,7 @@ export default function AccountsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4.5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4.5 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Post Voucher
                 </button>

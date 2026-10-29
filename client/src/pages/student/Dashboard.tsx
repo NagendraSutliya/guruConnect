@@ -45,13 +45,13 @@ const StudentDashboard: React.FC = () => {
 
         {/* Quick Period Status Indicators */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="bg-[#21524C] text-white border border-[#2d6e66] rounded-card p-3 px-4 flex flex-col gap-0.5 shadow-2xs min-w-[170px]">
-            <span className="text-[11px] font-mono font-medium text-[#A9C2BD] flex items-center gap-1.5">
+          <div className="bg-nav-active text-white border border-[#2d6e66] rounded-card p-3 px-4 flex flex-col gap-0.5 shadow-2xs min-w-[170px]">
+            <span className="text-[11px] font-mono font-medium text-nav-muted flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               NOW · 10:00 AM
             </span>
             <span className="text-[15px] font-semibold text-white tracking-tight">English</span>
-            <span className="text-[12px] text-[#D5E4E0]">Meenakshi Rao · Room 21</span>
+            <span className="text-[12px] text-nav-text">Meenakshi Rao · Room 21</span>
           </div>
 
           <div className="bg-surface-subtle border border-line rounded-card p-3 px-4 flex flex-col gap-0.5 min-w-[170px]">
@@ -99,7 +99,7 @@ const StudentDashboard: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-[#FFF6EC] text-[#7A4106] border border-[#EBC99C]/60">
+                  <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-warning-bg text-warning-text border border-warning-border/60">
                     To do
                   </span>
                   <Link
@@ -123,7 +123,7 @@ const StudentDashboard: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-[#E3EFEF] text-[#08393F] border border-[#C5DEDD]">
+                  <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-primary-tint text-primary-dark border border-primary-tint-border">
                     Submitted
                   </span>
                 </div>
@@ -141,7 +141,7 @@ const StudentDashboard: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-[#FFF6EC] text-[#7A4106] border border-[#EBC99C]/60">
+                  <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-warning-bg text-warning-text border border-warning-border/60">
                     To do
                   </span>
                 </div>
@@ -178,7 +178,7 @@ const StudentDashboard: React.FC = () => {
                 <span className="text-caption text-ink-secondary truncate">Ravi Kumar</span>
               </div>
 
-              <div className="p-3 rounded-control border border-primary/40 bg-[#E3EFEF] flex flex-col gap-1">
+              <div className="p-3 rounded-control border border-primary/40 bg-primary-tint flex flex-col gap-1">
                 <span className="font-mono text-micro font-semibold text-primary">P3 · 10:00 (NOW)</span>
                 <span className="text-small font-semibold text-ink">English</span>
                 <span className="text-caption text-ink-secondary truncate">Meenakshi Rao</span>
@@ -198,22 +198,22 @@ const StudentDashboard: React.FC = () => {
         <div className="flex flex-col gap-6">
           
           {/* Upcoming Exam Countdown Card */}
-          <div className="bg-[#12302D] text-white rounded-card p-6 shadow-xs flex flex-col justify-between gap-4">
+          <div className="bg-nav-bg text-white rounded-card p-6 shadow-xs flex flex-col justify-between gap-4">
             <div className="flex items-center justify-between">
-              <span className="text-caption font-semibold uppercase tracking-wider text-[#A9C2BD]">
+              <span className="text-caption font-semibold uppercase tracking-wider text-nav-muted">
                 Upcoming Exam
               </span>
-              <span className="font-mono text-2xl font-bold text-[#E9B872]">
+              <span className="font-mono text-2xl font-bold text-gold">
                 34 d
               </span>
             </div>
 
             <div className="flex flex-col">
               <span className="text-title font-semibold text-white">Half-Yearly Examination</span>
-              <span className="text-small text-[#D5E4E0] mt-1">
+              <span className="text-small text-nav-text mt-1">
                 Starts Mon 16 Nov · 9:00 – 11:30 AM
               </span>
-              <span className="text-caption text-[#A9C2BD] mt-0.5">
+              <span className="text-caption text-nav-muted mt-0.5">
                 First paper: English (Chapters 1–7)
               </span>
             </div>
@@ -228,26 +228,26 @@ const StudentDashboard: React.FC = () => {
           </div>
 
           {/* Library Book Alert Card */}
-          <div className="bg-[#FFF8F0] border border-[#EBC99C] rounded-card p-5 flex flex-col gap-2.5 shadow-2xs">
+          <div className="bg-warning-warm border border-warning-border rounded-card p-5 flex flex-col gap-2.5 shadow-2xs">
             <div className="flex items-center justify-between">
-              <span className="text-caption font-semibold uppercase tracking-wider text-[#8F4A09] flex items-center gap-1.5">
+              <span className="text-caption font-semibold uppercase tracking-wider text-warning-inline flex items-center gap-1.5">
                 <FiBookmark size={13} /> Library Notice
               </span>
-              <span className="text-caption font-bold text-[#8F4A09] px-2 py-0.5 rounded-full bg-amber-100/80">
+              <span className="text-caption font-bold text-warning-inline px-2 py-0.5 rounded-full bg-amber-100/80">
                 Due in 2 days
               </span>
             </div>
 
             <div className="flex flex-col">
-              <span className="text-body font-semibold text-[#17201D]">"Wings of Fire"</span>
-              <span className="text-caption text-[#4F5B57]">
+              <span className="text-body font-semibold text-ink">"Wings of Fire"</span>
+              <span className="text-caption text-ink-secondary">
                 A. P. J. Abdul Kalam · Return by Thu 15 Oct
               </span>
             </div>
 
             <Link
               to="/student/library"
-              className="text-caption font-semibold text-[#8F4A09] hover:underline flex items-center gap-1 mt-1"
+              className="text-caption font-semibold text-warning-inline hover:underline flex items-center gap-1 mt-1"
             >
               <span>Manage books & search catalogue →</span>
             </Link>

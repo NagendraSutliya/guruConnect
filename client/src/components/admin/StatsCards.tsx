@@ -22,7 +22,7 @@ const StatCard = ({ title, value, icon, trend, color, onClick }: StatCardProps) 
   const colorMap: Record<string, string> = {
     indigo: "bg-primary-tint text-primary",
     purple: "bg-primary-tint text-primary-dark",
-    blue: "bg-[#FFF6EC] text-gold",
+    blue: "bg-warning-bg text-gold",
     emerald: "bg-success-bg text-success-text"
   };
   
@@ -39,7 +39,7 @@ const StatCard = ({ title, value, icon, trend, color, onClick }: StatCardProps) 
         </div>
         {trend && (
           <div className={`flex items-center gap-1 px-2.5 py-1 rounded-control text-micro font-semibold tracking-tight ${
-            trend.positive ? "bg-success-bg text-success-text" : "bg-[#FFF6EC] text-[#7A4106]"
+            trend.positive ? "bg-success-bg text-success-text" : "bg-warning-bg text-warning-text"
           }`}>
             {trend.positive ? <FaArrowUp size={8} /> : <FaArrowDown size={8} />}
             {trend.value}

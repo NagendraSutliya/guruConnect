@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useToast } from "../../../context/ToastContext";
 import {
-  MdHelpOutline,
   MdSearch,
-  MdShield,
   MdClose,
   MdSend,
   MdCheckCircle,
   MdArrowForward,
+  MdArrowBack,
   MdAttachFile,
   MdOutlineChat,
 } from "react-icons/md";
@@ -190,357 +189,421 @@ export default function HelpSupportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F6F3] font-sans text-[#17201D] p-6 lg:p-8">
-      <div className="max-w-[1200px] mx-auto space-y-5">
-        {/* =========================================================================
-            SCREEN 47 VIEW: SUPPORT ACCESS
-           ========================================================================= */}
-        {currentView === "support_access" ? (
-          <div className="space-y-4">
-            <div className="text-xs text-[#4F5B57]">
-              <button
-                onClick={() => setCurrentView("help")}
-                className="hover:text-[#0E5A63] underline"
-              >
-                Help and support
-              </button>{" "}
-              › Support access
-            </div>
-
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-[#17201D]">Support access</h1>
-              <p className="text-sm text-[#4F5B57] mt-0.5">
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
+      {/* =========================================================================
+          SCREEN 47 VIEW: SUPPORT ACCESS
+         ========================================================================= */}
+      {currentView === "support_access" ? (
+        <div className="space-y-5">
+          {/* Header Row */}
+          <div className="flex flex-wrap justify-between items-end gap-4">
+            <div className="flex flex-col gap-1">
+              <div className="text-[13px] text-ink-secondary flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setCurrentView("help")}
+                  className="hover:text-primary transition-colors cursor-pointer"
+                >
+                  Help & support
+                </button>
+                <span>›</span>
+                <span className="text-ink">Support access</span>
+              </div>
+              <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+                Support access
+              </h1>
+              <div className="text-[13px] text-ink-secondary">
                 The software team can see your school's data only when you allow it, only for the area and time you approve. Every action is recorded in your audit log.
-              </p>
+              </div>
             </div>
 
-            {/* Decision Card matching Screen 47 */}
-            {supportRequestStatus === "pending" && (
-              <section className="bg-white border-2 border-[#0E5A63] rounded-2xl p-6 flex flex-col gap-3.5 shadow-xs">
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FFF6EC] text-[#7A4106] self-start">
+            <button
+              type="button"
+              onClick={() => setCurrentView("help")}
+              className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-[13px] font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
+            >
+              <MdArrowBack size={16} className="text-ink-secondary" />
+              <span>Back to Help & support</span>
+            </button>
+          </div>
+
+          {/* Decision Card matching Screen 47 */}
+          {supportRequestStatus === "pending" && (
+            <section className="bg-white border-2 border-primary rounded-card p-5 sm:p-6 flex flex-col gap-4 shadow-xs">
+              <div className="flex justify-between items-center">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-warning-bg text-warning-text">
                   Waiting for your decision
                 </span>
-
-                <h2 className="text-lg font-semibold text-[#17201D]">
-                  Priya Kumari (Support) asks to view your Fees
-                </h2>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-sm py-1">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-[#4F5B57]">Why</span>
-                    <span className="font-medium text-[#17201D]">
-                      Check fee installment names on 12 receipts after import (ticket TKT-0897)
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-[#4F5B57]">Area</span>
-                    <span className="font-medium text-[#17201D]">Fees only</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-[#4F5B57]">Access</span>
-                    <span className="font-medium text-[#17201D]">Read-only</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-[#4F5B57]">For how long</span>
-                    <span className="font-medium text-[#17201D]">2 hours from approval</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2.5 pt-2 flex-wrap">
-                  <button
-                    onClick={handleApproveAccess}
-                    className="h-11 px-5 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white text-sm font-semibold transition shadow-xs"
-                  >
-                    Approve for 2 hours
-                  </button>
-                  <button
-                    onClick={handleRejectAccess}
-                    className="h-11 px-4 rounded-lg border border-[#C9D1CD] bg-white hover:bg-[#F9FAF8] text-sm font-medium text-[#17201D] transition"
-                  >
-                    Reject
-                  </button>
-                </div>
-              </section>
-            )}
-
-            {supportRequestStatus === "approved" && (
-              <section className="bg-[#E4F1E8]/30 border border-[#1E5A33]/30 rounded-2xl p-5 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <MdCheckCircle className="text-[#1E5A33]" size={24} />
-                  <div>
-                    <div className="font-semibold text-sm text-[#1E5A33]">
-                      Active Support Grant: Priya Kumari (Fees, Read-only)
-                    </div>
-                    <div className="text-xs text-[#4F5B57]">Session expires in 1 hour 58 minutes.</div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setSupportRequestStatus("rejected");
-                    showToast("Access revoked immediately.", "info");
-                  }}
-                  className="h-9 px-3 rounded-lg border border-[#C9D1CD] bg-white text-xs font-semibold text-[#9B1C1C]"
-                >
-                  Revoke now
-                </button>
-              </section>
-            )}
-
-            {supportRequestStatus === "rejected" && (
-              <section className="bg-white border border-[#DDE2DE] rounded-xl p-4 text-xs text-[#4F5B57]">
-                No pending support requests. All requests rejected or expired.
-              </section>
-            )}
-
-            {/* History Table matching Screen 47 */}
-            <section className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-xs">
-              <div className="p-4 border-b border-[#EEF1EF]">
-                <h2 className="text-base font-semibold text-[#17201D]">History</h2>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm min-w-[760px] border-collapse">
-                  <thead>
-                    <tr className="bg-[#F2F4F2] text-[#17201D] border-b border-[#DDE2DE]">
-                      <th className="py-3 px-4 font-semibold">When</th>
-                      <th className="py-3 px-4 font-semibold">Who</th>
-                      <th className="py-3 px-4 font-semibold">Area</th>
-                      <th className="py-3 px-4 font-semibold">Approved by</th>
-                      <th className="py-3 px-4 font-semibold">Result</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#EEF1EF]">
-                    <tr className="hover:bg-[#F9FAF8] transition">
-                      <td className="py-2.5 px-4 text-xs font-medium text-[#17201D]">28 Sep</td>
-                      <td className="py-2.5 px-4 text-xs text-[#17201D]">Priya Kumari</td>
-                      <td className="py-2.5 px-4 text-xs text-[#17201D]">Whole school, read-only</td>
-                      <td className="py-2.5 px-4 text-xs text-[#4F5B57]">Meera Kumawat</td>
-                      <td className="py-2.5 px-4 text-xs text-[#4F5B57]">
-                        Revoked by school after 40 min · 6 actions
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-[#F9FAF8] transition">
-                      <td className="py-2.5 px-4 text-xs font-medium text-[#17201D]">12 Aug</td>
-                      <td className="py-2.5 px-4 text-xs text-[#17201D]">Aman Shekhawat</td>
-                      <td className="py-2.5 px-4 text-xs text-[#17201D]">Import (write)</td>
-                      <td className="py-2.5 px-4 text-xs text-[#4F5B57]">Meera Kumawat</td>
-                      <td className="py-2.5 px-4 text-xs text-[#4F5B57]">
-                        Ended on time · 214 actions (student import)
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-[#F9FAF8] transition">
-                      <td className="py-2.5 px-4 text-xs font-medium text-[#17201D]">20 Jul</td>
-                      <td className="py-2.5 px-4 text-xs text-[#17201D]">Priya Kumari</td>
-                      <td className="py-2.5 px-4 text-xs text-[#17201D]">Exams, read-only</td>
-                      <td className="py-2.5 px-4 text-xs text-[#4F5B57]">Dr. Kavita Rao</td>
-                      <td className="py-2.5 px-4 text-xs text-[#4F5B57]">Ended on time · 9 actions</td>
-                    </tr>
-                  </tbody>
-                </table>
+
+              <h2 className="text-lg font-semibold text-ink">
+                Priya Kumari (Support) asks to view your Fees
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs py-3 border-y border-line-row">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-ink-secondary">Why</span>
+                  <span className="font-medium text-ink leading-relaxed">
+                    Check fee installment names on 12 receipts after import (ticket TKT-0897)
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-ink-secondary">Area</span>
+                  <span className="font-medium text-ink">Fees only</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-ink-secondary">Access</span>
+                  <span className="font-medium text-ink">Read-only</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-ink-secondary">For how long</span>
+                  <span className="font-medium text-ink">2 hours from approval</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2.5 pt-1 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleApproveAccess}
+                  className="min-h-[40px] px-5 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+                >
+                  Approve for 2 hours
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRejectAccess}
+                  className="min-h-[40px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-[13px] font-medium text-ink transition-colors cursor-pointer"
+                >
+                  Reject
+                </button>
               </div>
             </section>
-          </div>
-        ) : (
-          /* =========================================================================
-              SCREEN 46 VIEW: HELP AND SUPPORT
-             ========================================================================= */
-          <div className="space-y-4">
-            <div className="flex flex-wrap justify-between items-end gap-4">
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-[#17201D]">Help and support</h1>
-                <p className="text-sm text-[#4F5B57] mt-0.5">
-                  Guides, your tickets to the software team, and support access requests.
-                </p>
-              </div>
+          )}
 
-              {/* Waiting banner matching Screen 46 */}
+          {supportRequestStatus === "approved" && (
+            <section className="bg-success-bg/30 border border-success-border rounded-card p-5 flex justify-between items-center gap-4 flex-wrap shadow-xs">
+              <div className="flex items-center gap-3">
+                <MdCheckCircle className="text-success-text shrink-0" size={24} />
+                <div>
+                  <div className="font-semibold text-sm text-success-text">
+                    Active Support Grant: Priya Kumari (Fees, Read-only)
+                  </div>
+                  <div className="text-xs text-ink-secondary">
+                    Session expires in 1 hour 58 minutes. Every action is recorded in audit ledger.
+                  </div>
+                </div>
+              </div>
               <button
-                onClick={() => setCurrentView("support_access")}
-                className="h-11 px-4 rounded-lg bg-[#FFF6EC] border border-[#EBC99C] text-[#7A4106] text-sm font-semibold transition hover:bg-[#FFEED9] flex items-center gap-2 shadow-xs"
+                type="button"
+                onClick={() => {
+                  setSupportRequestStatus("rejected");
+                  showToast("Access revoked immediately.", "info");
+                }}
+                className="min-h-[36px] px-3.5 rounded-control border border-danger-border bg-white text-xs font-semibold text-danger hover:bg-danger-bg transition-colors cursor-pointer"
               >
-                1 support access request waiting
+                Revoke now
               </button>
+            </section>
+          )}
+
+          {supportRequestStatus === "rejected" && (
+            <section className="bg-white border border-line rounded-card p-4 text-xs text-ink-secondary shadow-xs">
+              No pending support requests. All requests resolved or expired.
+            </section>
+          )}
+
+          {/* History Table matching Screen 47 */}
+          <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
+            <div className="p-4 sm:p-5 border-b border-line-row">
+              <h2 className="text-base font-semibold text-ink">History</h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="table-fixed w-full min-w-[760px] border-collapse text-left">
+                <colgroup>
+                  <col className="w-[120px]" />
+                  <col className="w-[160px]" />
+                  <col className="w-[200px]" />
+                  <col className="w-[160px]" />
+                  <col className="w-auto" />
+                </colgroup>
+                <thead>
+                  <tr className="bg-surface-head text-ink border-b border-line text-xs font-semibold">
+                    <th className="py-3 px-4">When</th>
+                    <th className="py-3 px-4">Who</th>
+                    <th className="py-3 px-4">Area</th>
+                    <th className="py-3 px-4">Approved by</th>
+                    <th className="py-3 px-4">Result</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line-row">
+                  <tr className="hover:bg-surface-subtle transition-colors">
+                    <td className="py-3 px-4 text-xs font-medium text-ink">28 Sep</td>
+                    <td className="py-3 px-4 text-xs text-ink">Priya Kumari</td>
+                    <td className="py-3 px-4 text-xs text-ink">Whole school, read-only</td>
+                    <td className="py-3 px-4 text-xs text-ink-secondary">Meera Kumawat</td>
+                    <td className="py-3 px-4 text-xs text-ink-secondary">
+                      Revoked by school after 40 min · 6 actions
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-surface-subtle transition-colors">
+                    <td className="py-3 px-4 text-xs font-medium text-ink">12 Aug</td>
+                    <td className="py-3 px-4 text-xs text-ink">Aman Shekhawat</td>
+                    <td className="py-3 px-4 text-xs text-ink">Import (write)</td>
+                    <td className="py-3 px-4 text-xs text-ink-secondary">Meera Kumawat</td>
+                    <td className="py-3 px-4 text-xs text-ink-secondary">
+                      Ended on time · 214 actions (student import)
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-surface-subtle transition-colors">
+                    <td className="py-3 px-4 text-xs font-medium text-ink">20 Jul</td>
+                    <td className="py-3 px-4 text-xs text-ink">Priya Kumari</td>
+                    <td className="py-3 px-4 text-xs text-ink">Exams, read-only</td>
+                    <td className="py-3 px-4 text-xs text-ink-secondary">Dr. Kavita Rao</td>
+                    <td className="py-3 px-4 text-xs text-ink-secondary">
+                      Ended on time · 9 actions
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      ) : (
+        /* =========================================================================
+            SCREEN 46 VIEW: HELP AND SUPPORT
+           ========================================================================= */
+        <div className="space-y-5">
+          {/* Header Row */}
+          <div className="flex flex-wrap justify-between items-end gap-4">
+            <div className="flex flex-col gap-1">
+              <div className="text-[13px] text-ink-secondary">
+                Help & support
+              </div>
+              <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+                Help and support
+              </h1>
+              <div className="text-[13px] text-ink-secondary">
+                Guides, your tickets to the software team, and support access requests.
+              </div>
             </div>
 
-            {/* 2 Column Layout matching Screen 46 */}
-            <div className="flex flex-wrap gap-5 items-start">
-              {/* Left Column: Search, Guides, Tickets */}
-              <div className="flex-[999] basis-[520px] min-w-0 space-y-4">
-                {/* Search Bar */}
-                <div className="flex items-center gap-3 h-[52px] px-4 border border-[#C9D1CD] rounded-xl bg-white shadow-xs">
-                  <MdSearch className="text-[#4F5B57]" size={20} />
+            {/* Waiting banner button matching Screen 46 */}
+            <button
+              type="button"
+              onClick={() => setCurrentView("support_access")}
+              className="min-h-[42px] px-4 rounded-control bg-warning-bg border border-warning-border text-warning-text text-[13px] font-semibold transition-all hover:bg-warning-warm flex items-center gap-2 shadow-xs cursor-pointer active:scale-[0.98]"
+            >
+              <span className="w-2 h-2 rounded-full bg-warning-accent animate-pulse" />
+              <span>1 support access request waiting</span>
+            </button>
+          </div>
+
+          {/* 2 Column Layout matching Screen 46 */}
+          <div className="flex flex-wrap gap-5 items-start">
+            {/* Left Column: Search, Guides, Tickets */}
+            <div className="flex-[999] basis-[520px] min-w-0 space-y-4">
+              {/* Search Bar */}
+              <div className="flex items-center gap-3 min-h-[46px] px-4 border border-line-input rounded-control bg-white shadow-xs focus-within:border-primary transition-colors">
+                <MdSearch className="text-ink-secondary shrink-0" size={20} />
+                <input
+                  type="search"
+                  placeholder="Search guides — for example: cancel a receipt, add a section"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 border-0 bg-transparent text-xs sm:text-[13.5px] text-ink outline-none placeholder:text-ink-muted"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="text-xs text-ink-secondary hover:text-ink cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {/* 6 Guide Cards Grid matching Screen 46 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {filteredGuides.map((g) => (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => setSelectedGuide(g)}
+                    className="text-left bg-white border border-line hover:border-primary rounded-card p-4 transition-all duration-150 flex flex-col gap-1.5 shadow-xs group cursor-pointer hover:shadow-sm"
+                  >
+                    <span className="text-[13.5px] font-semibold text-ink group-hover:text-primary transition-colors line-clamp-2">
+                      {g.title}
+                    </span>
+                    <span className="text-xs text-ink-secondary mt-auto flex items-center justify-between">
+                      <span>{g.stepsCount}</span>
+                      <MdArrowForward size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* My Tickets Section matching Screen 46 */}
+              <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
+                <div className="p-4 sm:p-5 border-b border-line-row flex justify-between items-center">
+                  <h2 className="text-base font-semibold text-ink">My tickets</h2>
+                  <span className="text-xs text-ink-secondary">{tickets.length} total</span>
+                </div>
+                <div className="divide-y divide-line-row">
+                  {tickets.map((t) => (
+                    <div
+                      key={t.id}
+                      className="p-4 flex justify-between items-center gap-3 flex-wrap hover:bg-surface-subtle transition-colors"
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-semibold text-ink">{t.subject}</span>
+                        <span className="text-xs text-ink-secondary">{t.meta}</span>
+                      </div>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${
+                          t.status === "Open"
+                            ? "bg-primary-tint text-primary-dark"
+                            : t.status === "Waiting on you"
+                            ? "bg-warning-bg text-warning-text"
+                            : "bg-success-bg text-success-text"
+                        }`}
+                      >
+                        {t.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            {/* Right Column: Raise a Ticket Form matching Screen 46 */}
+            <aside className="flex-1 basis-[320px] min-w-[280px] bg-white border border-line rounded-card p-5 flex flex-col gap-4 shadow-xs">
+              <div className="pb-1 border-b border-line-row">
+                <h2 className="text-base font-semibold text-ink">Raise a ticket</h2>
+                <p className="text-xs text-ink-secondary mt-0.5">Software engineering & product support</p>
+              </div>
+
+              <form onSubmit={handleCreateTicket} className="space-y-3.5 text-xs">
+                <div>
+                  <label className="block text-ink-secondary font-medium mb-1">What is it about?</label>
+                  <select
+                    value={ticketForm.category}
+                    onChange={(e) => setTicketForm({ ...ticketForm, category: e.target.value })}
+                    className="w-full h-10 px-3 border border-line-input rounded-control bg-surface-subtle focus:bg-white focus:outline-none focus:border-primary text-xs text-ink transition-colors cursor-pointer"
+                  >
+                    <option value="Fees">Fees</option>
+                    <option value="Attendance">Attendance</option>
+                    <option value="Exams and report cards">Exams and report cards</option>
+                    <option value="Login and users">Login and users</option>
+                    <option value="Something else">Something else</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-ink-secondary font-medium mb-1">Subject</label>
                   <input
-                    type="search"
-                    placeholder="Search guides — for example: cancel a receipt, add a section"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 border-0 bg-transparent text-sm text-[#17201D] outline-none"
+                    type="text"
+                    placeholder="One line summary"
+                    value={ticketForm.subject}
+                    onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
+                    className="w-full h-10 px-3 border border-line-input rounded-control bg-surface-subtle focus:bg-white focus:outline-none focus:border-primary text-xs text-ink transition-colors"
+                    required
                   />
                 </div>
 
-                {/* 6 Guide Cards Grid matching Screen 46 */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {filteredGuides.map((g) => (
-                    <button
-                      key={g.id}
-                      onClick={() => setSelectedGuide(g)}
-                      className="text-left bg-white border border-[#DDE2DE] hover:border-[#0E5A63] rounded-xl p-3.5 transition flex flex-col gap-1 shadow-xs group"
-                    >
-                      <span className="text-sm font-semibold text-[#17201D] group-hover:text-[#0E5A63]">
-                        {g.title}
-                      </span>
-                      <span className="text-xs text-[#4F5B57]">{g.stepsCount}</span>
-                    </button>
-                  ))}
+                <div>
+                  <label className="block text-ink-secondary font-medium mb-1">Details</label>
+                  <textarea
+                    rows={4}
+                    placeholder="What happened, which screen, and what you expected"
+                    value={ticketForm.details}
+                    onChange={(e) => setTicketForm({ ...ticketForm, details: e.target.value })}
+                    className="w-full p-2.5 border border-line-input rounded-control bg-surface-subtle focus:bg-white focus:outline-none focus:border-primary text-xs text-ink transition-colors resize-none"
+                    required
+                  />
                 </div>
 
-                {/* My Tickets Section matching Screen 46 */}
-                <section className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-xs">
-                  <div className="p-4 border-b border-[#EEF1EF]">
-                    <h2 className="text-base font-semibold text-[#17201D]">My tickets</h2>
-                  </div>
-                  <div className="divide-y divide-[#EEF1EF]">
-                    {tickets.map((t) => (
-                      <div
-                        key={t.id}
-                        className="p-4 flex justify-between items-center gap-3 flex-wrap hover:bg-[#F9FAF8] transition"
-                      >
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-sm font-semibold text-[#17201D]">{t.subject}</span>
-                          <span className="text-xs text-[#4F5B57]">{t.meta}</span>
-                        </div>
-                        <span
-                          style={{ backgroundColor: t.statusBg, color: t.statusColor }}
-                          className="text-xs font-semibold px-2.5 py-0.5 rounded-full"
-                        >
-                          {t.status}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              </div>
+                <button
+                  type="button"
+                  onClick={() => showToast("Opening screenshot file picker...", "info")}
+                  className="w-full min-h-[38px] px-3.5 border border-line-input rounded-control bg-white hover:bg-slate-50 text-xs font-medium text-ink transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <MdAttachFile size={16} className="text-ink-secondary" />
+                  <span>Attach screenshot</span>
+                </button>
 
-              {/* Right Column: Raise a Ticket Form matching Screen 46 */}
-              <aside className="flex-1 basis-[320px] bg-white border border-[#DDE2DE] rounded-xl p-5 flex flex-col gap-3 shadow-xs">
-                <h2 className="text-base font-semibold text-[#17201D]">Raise a ticket</h2>
-
-                <form onSubmit={handleCreateTicket} className="space-y-3 text-xs">
-                  <div>
-                    <label className="block text-[#17201D] font-medium mb-1">What is it about?</label>
-                    <select
-                      value={ticketForm.category}
-                      onChange={(e) => setTicketForm({ ...ticketForm, category: e.target.value })}
-                      className="w-full h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-xs text-[#17201D]"
-                    >
-                      <option value="Fees">Fees</option>
-                      <option value="Attendance">Attendance</option>
-                      <option value="Exams and report cards">Exams and report cards</option>
-                      <option value="Login and users">Login and users</option>
-                      <option value="Something else">Something else</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[#17201D] font-medium mb-1">Subject</label>
-                    <input
-                      type="text"
-                      placeholder="One line summary"
-                      value={ticketForm.subject}
-                      onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
-                      className="w-full h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-xs text-[#17201D]"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[#17201D] font-medium mb-1">Details</label>
-                    <textarea
-                      rows={4}
-                      placeholder="What happened, which screen, and what you expected"
-                      value={ticketForm.details}
-                      onChange={(e) => setTicketForm({ ...ticketForm, details: e.target.value })}
-                      className="w-full p-2.5 border border-[#C9D1CD] rounded-lg bg-white text-xs text-[#17201D]"
-                      required
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => showToast("Opening screenshot file picker...", "info")}
-                    className="w-full h-10 px-3 border border-[#C9D1CD] rounded-lg bg-white hover:bg-[#F9FAF8] text-xs font-medium text-[#17201D] transition flex items-center justify-center gap-1.5"
+                <div>
+                  <label className="block text-ink-secondary font-medium mb-1">How urgent?</label>
+                  <select
+                    value={ticketForm.urgency}
+                    onChange={(e) => setTicketForm({ ...ticketForm, urgency: e.target.value })}
+                    className="w-full h-10 px-3 border border-line-input rounded-control bg-surface-subtle focus:bg-white focus:outline-none focus:border-primary text-xs text-ink transition-colors cursor-pointer"
                   >
-                    <MdAttachFile size={16} /> Attach screenshot
-                  </button>
+                    <option value="Normal">Normal</option>
+                    <option value="High">High — work is stopped</option>
+                  </select>
+                </div>
 
-                  <div>
-                    <label className="block text-[#17201D] font-medium mb-1">How urgent?</label>
-                    <select
-                      value={ticketForm.urgency}
-                      onChange={(e) => setTicketForm({ ...ticketForm, urgency: e.target.value })}
-                      className="w-full h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-xs text-[#17201D]"
-                    >
-                      <option value="Normal">Normal</option>
-                      <option value="High">High — work is stopped</option>
-                    </select>
-                  </div>
+                <button
+                  type="submit"
+                  className="w-full min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.98] flex items-center justify-center gap-1.5"
+                >
+                  <MdSend size={16} />
+                  <span>Send ticket</span>
+                </button>
 
-                  <button
-                    type="submit"
-                    className="w-full h-12 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white text-sm font-semibold transition shadow-xs"
+                <div className="pt-1 text-center border-t border-line-row">
+                  <a
+                    href="https://wa.me/919829012345"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-ink-secondary hover:text-primary transition-colors inline-flex items-center gap-1.5"
                   >
-                    Send ticket
-                  </button>
-
-                  <div className="pt-1 text-center">
-                    <a
-                      href="https://wa.me/919829012345"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs text-[#4F5B57] hover:text-[#0E5A63] inline-flex items-center gap-1"
-                    >
-                      <MdOutlineChat size={14} /> Or chat on WhatsApp: +91 98290 12345
-                    </a>
-                  </div>
-                </form>
-              </aside>
-            </div>
+                    <MdOutlineChat size={15} />
+                    <span>Or chat on WhatsApp: +91 98290 12345</span>
+                  </a>
+                </div>
+              </form>
+            </aside>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* =========================================================================
           MODAL: GUIDE DETAIL WALKTHROUGH
          ========================================================================= */}
       {selectedGuide && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-[#DDE2DE] max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex justify-between items-start border-b border-[#EEF1EF] pb-3">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-card border border-line max-w-lg w-full p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex justify-between items-start border-b border-line-row pb-3">
               <div>
-                <span className="text-[11px] font-bold text-[#0E5A63] uppercase tracking-wide">
+                <span className="text-[11px] font-bold text-primary uppercase tracking-wide">
                   {selectedGuide.category} Guide
                 </span>
-                <h3 className="font-semibold text-lg text-[#17201D]">{selectedGuide.title}</h3>
+                <h3 className="font-semibold text-lg text-ink">{selectedGuide.title}</h3>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedGuide(null)}
-                className="text-[#4F5B57] hover:text-[#17201D]"
+                className="w-8 h-8 rounded-control flex items-center justify-center text-ink-secondary hover:text-ink hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <MdClose size={20} />
               </button>
             </div>
 
-            <div className="space-y-2.5 text-xs text-[#17201D] leading-relaxed">
+            <div className="space-y-2 text-xs text-ink leading-relaxed">
               {selectedGuide.content.map((step, idx) => (
-                <div key={idx} className="p-2.5 bg-[#F9FAF8] border border-[#EEF1EF] rounded-lg">
+                <div key={idx} className="p-3 bg-surface-subtle border border-line-row rounded-control">
                   {step}
                 </div>
               ))}
             </div>
 
-            <div className="flex justify-end pt-2">
+            <div className="flex justify-end pt-2 border-t border-line-row">
               <button
+                type="button"
                 onClick={() => setSelectedGuide(null)}
-                className="h-10 px-5 rounded-lg bg-[#0E5A63] text-white text-xs font-semibold"
+                className="min-h-[38px] px-5 rounded-control bg-primary hover:bg-primary-dark text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
               >
                 Understood, close
               </button>

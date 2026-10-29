@@ -7,7 +7,6 @@ import {
   MdAssignment,
   MdDashboard,
   MdFeedback,
-  MdLink,
   MdSchool,
   MdAttachMoney,
   MdSettings,
@@ -67,6 +66,8 @@ const AdminLayout = () => {
     path.startsWith("/admin/staff") ||
     path.startsWith("/admin/leaves");
 
+  const isCmsRoute = (path: string) => path.startsWith("/admin/cms");
+
   const [openMenus, setOpenMenus] = useState<Set<string>>(() => {
     const initial = new Set<string>();
     const path = typeof window !== "undefined" ? window.location.pathname : "";
@@ -79,12 +80,15 @@ const AdminLayout = () => {
     if (isStaffRoute(path)) {
       initial.add("Staff & Leave");
     }
+    if (isCmsRoute(path)) {
+      initial.add("Website CMS");
+    }
     return initial;
   });
 
   useEffect(() => {
     const path = location.pathname;
-    setOpenMenus(prev => {
+    setOpenMenus(() => {
       const next = new Set<string>();
       if (isAdmissionsRoute(path)) {
         next.add("Admissions");
@@ -94,6 +98,9 @@ const AdminLayout = () => {
       }
       if (isStaffRoute(path)) {
         next.add("Staff & Leave");
+      }
+      if (isCmsRoute(path)) {
+        next.add("Website CMS");
       }
       return next;
     });
@@ -176,6 +183,21 @@ const AdminLayout = () => {
     { name: "Inventory & Assets", icon: <MdInventory size={18} />, path: "/admin/inventory" },
     { name: "Front Office", icon: <MdPeople size={18} />, path: "/admin/front-office" },
     { name: "Communication", icon: <MdNotifications size={18} />, path: "/admin/communication" },
+    {
+      name: "Website CMS",
+      icon: <MdWeb size={18} />,
+      path: "/admin/cms",
+      children: [
+        { name: "Overview", path: "/admin/cms" },
+        { name: "Home Page", path: "/admin/cms/home" },
+        { name: "About Us", path: "/admin/cms/about" },
+        { name: "Admissions", path: "/admin/cms/admissions" },
+        { name: "Academics", path: "/admin/cms/academics" },
+        { name: "Achievements", path: "/admin/cms/achievements" },
+        { name: "Gallery", path: "/admin/cms/gallery" },
+        { name: "Contact", path: "/admin/cms/contact" },
+      ],
+    },
     { name: "Reports", icon: <MdFeedback size={18} />, path: "/admin/reports" },
     { name: "Settings", icon: <MdSettings size={18} />, path: "/admin/settings/institute" },
     { name: "Users & Audit", icon: <MdSecurity size={18} />, path: "/admin/users" },
@@ -407,7 +429,7 @@ const AdminLayout = () => {
               onToggleSidebar={toggleSidebar}
               adminData={adminData}
             />
-            <main className="flex-1 px-4 md:px-8 overflow-y-auto bg-page">
+            <main className="flex-1 px-4 md:px-8 overflow-y-auto [scrollbar-gutter:stable] bg-page">
               <div className="animate-fadeIn w-full max-w-content mx-auto py-8">
                 <Outlet />
               </div>

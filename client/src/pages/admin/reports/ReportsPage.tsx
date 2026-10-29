@@ -118,7 +118,7 @@ export default function ReportsPage() {
             <h2 className="m-0 text-base font-semibold text-ink">
               School average 82.4% · target 90%
             </h2>
-            <span className="text-xs text-[#8F4A09] font-medium bg-[#FFF6EC] px-2 py-0.5 rounded border border-[#EBC99C]">
+            <span className="text-xs text-warning-inline font-medium bg-warning-bg px-2 py-0.5 rounded border border-warning-border">
               Orange = below 75%
             </span>
           </div>
@@ -133,10 +133,10 @@ export default function ReportsPage() {
                 >
                   <span className="font-semibold text-ink">{item.className}</span>
 
-                  <span className="relative h-3.5 bg-[#EEF1EF] rounded-[4px] overflow-hidden block">
+                  <span className="relative h-3.5 bg-line-row rounded-[4px] overflow-hidden block">
                     <span
                       className={`block h-full rounded-[4px] transition-all duration-300 ${
-                        isLow ? "bg-[#C2701A]" : "bg-primary"
+                        isLow ? "bg-warning-chart" : "bg-primary"
                       }`}
                       style={{ width: `${item.efficiency}%` }}
                     />
@@ -166,14 +166,14 @@ export default function ReportsPage() {
         </section>
 
         {/* Right Aside: Comprehensive Report Library (Matching 39-Reports.html) */}
-        <aside className="flex-1 basis-[300px] max-w-full lg:max-w-[340px] bg-white border border-line rounded-card p-4.5 flex flex-col gap-3.5 shadow-xs">
+        <aside className="flex-1 basis-[300px] max-w-full lg:max-w-[340px] bg-white border border-line rounded-card p-4 flex flex-col gap-3.5 shadow-xs">
           <h2 className="m-0 text-base font-semibold text-ink">Report library</h2>
 
           {REPORT_CATEGORIES.map((cat, idx) => (
             <div
               key={cat.category}
               className={`flex flex-col gap-1.5 pt-2.5 ${
-                idx > 0 ? "border-t border-[#EEF1EF]" : ""
+                idx > 0 ? "border-t border-line-row" : ""
               }`}
             >
               <span className="text-xs font-semibold uppercase tracking-wider text-primary">
@@ -239,7 +239,7 @@ export default function ReportsPage() {
                   showToast(`${selectedReport} downloaded in official Excel / PDF format!`, "success");
                   setSelectedReport(null);
                 }}
-                className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs flex items-center gap-1.5"
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs flex items-center gap-1.5"
               >
                 <FiDownload size={13} />
                 <span>Download Report (PDF/Excel)</span>

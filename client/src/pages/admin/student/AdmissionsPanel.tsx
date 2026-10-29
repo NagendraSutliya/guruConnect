@@ -539,7 +539,7 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
               </div>
 
               {/* Status Segmented Control */}
-              <div className="flex bg-[#ECEFEC] p-1 rounded-control w-full sm:w-auto">
+              <div className="flex bg-surface-column p-1 rounded-control w-full sm:w-auto">
                 {(["all", "pending", "confirmed"] as const).map((status) => {
                   const isActive = statusFilter === status;
                   return (
@@ -563,7 +563,7 @@ const AdmissionsPanel: React.FC<AdmissionsPanelProps> = ({
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-body">
                 <thead>
-                  <tr className="bg-[#F2F4F2] text-ink-secondary text-micro uppercase tracking-wider font-semibold border-b border-line">
+                  <tr className="bg-surface-head text-ink-secondary text-micro uppercase tracking-wider font-semibold border-b border-line">
                     <th className="px-5 py-3.5">Admission Info</th>
                     <th className="px-5 py-3.5">Contact</th>
                     <th className="px-5 py-3.5">Academic Info</th>

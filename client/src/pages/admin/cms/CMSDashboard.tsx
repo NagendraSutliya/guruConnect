@@ -6,11 +6,11 @@ import {
   MdCheckCircle,
   MdArrowForward,
   MdImage,
-  MdSettings,
   MdVisibility
 } from "react-icons/md";
 import { Link } from "react-router-dom";
 import api from "../../../api/axiosInstance";
+import { useToast } from "../../../context/ToastContext";
 
 const calculateCompletion = (id: string, content: any) => {
   const steps: string[] = [];
@@ -75,6 +75,7 @@ const calculateCompletion = (id: string, content: any) => {
 };
 
 export default function CMSDashboard() {
+  const { showToast } = useToast();
   const [stats] = useState({
     totalSections: 7,
     lastUpdate: "Just Now",
@@ -108,7 +109,7 @@ export default function CMSDashboard() {
           }));
         }
       } catch(e) {
-        console.error("Failed to fetch CMS statuses");
+        console.error("Failed to fetch CMS statuses", e);
       }
     };
     fetchStatus();
@@ -116,126 +117,140 @@ export default function CMSDashboard() {
 
   const handleToggle = async (e: any, id: string, currentStatus: boolean) => {
     e.preventDefault(); // Prevent Link navigation
+    e.stopPropagation();
     try {
       const res = await api.post(`/cms/toggle/${id}`, { isEnabled: !currentStatus });
       if(res.data.success) {
         setPages(prev => prev.map(p => p.id === id ? { ...p, isEnabled: !currentStatus } : p));
+        showToast(`Section ${id.toUpperCase()} ${!currentStatus ? 'published' : 'disabled'} successfully.`, "success");
       }
     } catch(err) {
-      alert("Failed to toggle status");
+      showToast("Failed to toggle section status", "error");
     }
   };
 
   return (
-    <div className="py-6 space-y-10 animate-fadeIn text-slate-900">
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
       
-      {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <h2 className="text-3xl font-black tracking-tight text-slate-800">Website CMS Portal</h2>
-          <p className="text-slate-500 font-medium">Control your school's digital presence from one central command center.</p>
+      {/* Header Row (Matching Settings, Reports, Users & Plan) */}
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">Website CMS › Overview</div>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            Website CMS
+          </h1>
+          <div className="text-[13px] text-ink-secondary">
+            Manage your school website content, sections, and live digital presence.
+          </div>
         </div>
-        <div className="flex items-center gap-3">
+
+        <div className="flex items-center gap-2.5 flex-wrap">
           <a 
             href={import.meta.env.VITE_SCHOOL_WEBSITE_URL || 'http://localhost:5174'} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"
+            className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-[13px] font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-2"
           >
-            <MdVisibility size={18} className="text-indigo-600" />
-            View Live Site
+            <MdVisibility size={16} className="text-primary" />
+            <span>View live site</span>
           </a>
-          <button className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
-            <MdSettings size={20} />
-          </button>
         </div>
       </div>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "CMS Sections", val: stats.totalSections, icon: <MdWeb />, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Last Activity", val: stats.lastUpdate || "Just Now", icon: <MdHistory />, color: "text-indigo-600", bg: "bg-indigo-50" },
-          { label: "Content Health", val: stats.contentHealth, icon: <MdSpeed />, color: "text-emerald-600", bg: "bg-emerald-50" },
-          { label: "Live Promos", val: stats.activePromotions, icon: <MdCheckCircle />, color: "text-amber-600", bg: "bg-amber-50" },
+          { label: "CMS Sections", val: stats.totalSections, icon: <MdWeb size={20} />, bg: "bg-primary-tint", color: "text-primary-dark" },
+          { label: "Last Activity", val: stats.lastUpdate || "Just Now", icon: <MdHistory size={20} />, bg: "bg-surface-subtle", color: "text-ink-secondary" },
+          { label: "Content Health", val: stats.contentHealth, icon: <MdSpeed size={20} />, bg: "bg-success-bg", color: "text-success-text" },
+          { label: "Live Promos", val: stats.activePromotions, icon: <MdCheckCircle size={20} />, bg: "bg-warning-bg", color: "text-warning-text" },
         ].map((stat, i) => (
-          <div key={i} className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm flex items-center gap-5 hover:border-indigo-200 transition-colors">
-            <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center shadow-inner`}>
+          <div key={i} className="bg-white border border-line rounded-card p-4 sm:p-5 shadow-xs flex items-center gap-4">
+            <div className={`w-11 h-11 ${stat.bg} ${stat.color} rounded-control flex items-center justify-center shrink-0 border border-line-row`}>
               {stat.icon}
             </div>
             <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-              <p className="text-2xl font-black text-slate-800 tracking-tight">{stat.val}</p>
+              <p className="text-xs text-ink-secondary font-medium">{stat.label}</p>
+              <p className="font-mono text-2xl font-bold text-ink mt-0.5">{stat.val}</p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Pages Management */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between px-2">
-           <h3 className="text-xl font-black tracking-tight text-slate-800">Content Modules</h3>
-           <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] bg-indigo-50 px-3 py-1 rounded-full">Synchronized with Production</span>
+      {/* Pages Management Section */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+           <div>
+             <h2 className="text-base font-semibold text-ink">Content Modules</h2>
+             <p className="text-xs text-ink-secondary">Select a page to edit content, media, and SEO attributes</p>
+           </div>
+           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-tint text-primary-dark border border-primary/20">
+             Synchronized with live website
+           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {pages.map((page, i) => (
             <Link 
               key={i} 
               to={page.path}
-              className="group bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-100/30 transition-all duration-500 hover:-translate-y-1"
+              className="group bg-white rounded-card p-5 border border-line shadow-xs hover:border-primary hover:shadow-sm transition-all duration-150 flex flex-col gap-3.5 cursor-pointer"
             >
-              <div className="flex items-start justify-between mb-8">
-                <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
-                  <MdWeb size={24} />
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-control bg-surface-subtle border border-line-row flex items-center justify-center text-ink-secondary group-hover:text-primary group-hover:bg-primary-tint/50 transition-colors">
+                  <MdWeb size={20} />
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                    page.isEnabled ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                <div className="flex items-center gap-2.5">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                    page.isEnabled ? 'bg-success-bg text-success-text' : 'bg-surface-subtle text-ink-muted border border-line-row'
                   }`}>
                     {page.isEnabled ? 'Published' : 'Disabled'}
-                  </div>
+                  </span>
                   <button 
+                    type="button"
                     onClick={(e) => handleToggle(e, page.id, page.isEnabled)}
-                    className={`w-10 h-5 rounded-full relative transition-colors shadow-inner ${page.isEnabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                    className={`w-9 h-5 rounded-full relative transition-colors cursor-pointer shadow-inner ${page.isEnabled ? 'bg-primary' : 'bg-line-input'}`}
+                    title={page.isEnabled ? "Click to disable" : "Click to publish"}
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all shadow-sm ${page.isEnabled ? 'left-5' : 'left-0.5'}`} />
+                    <div className={`w-3.5 h-3.5 bg-white rounded-full absolute top-[3px] transition-all shadow-xs ${page.isEnabled ? 'left-[18px]' : 'left-[3px]'}`} />
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <h4 className="text-xl font-black tracking-tight text-slate-800">{page.name}</h4>
+              <div className="space-y-2.5">
+                <h3 className="text-[15px] font-semibold text-ink group-hover:text-primary transition-colors">
+                  {page.name}
+                </h3>
                 
-                <div className="space-y-2">
-                   <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <div className="space-y-1.5">
+                   <div className="flex items-center justify-between text-xs text-ink-secondary">
                       <span>Completion</span>
-                      <span className="text-slate-800">{page.completion}%</span>
+                      <span className="font-mono font-semibold text-ink">{page.completion}%</span>
                    </div>
-                   <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden mb-3">
+                   <div className="h-1.5 w-full bg-surface-column rounded-full overflow-hidden">
                       <div 
-                        className={`h-full transition-all duration-1000 ${
-                          page.completion === 100 ? 'bg-emerald-500' : 
-                          page.completion > 50 ? 'bg-indigo-500' : 'bg-rose-500'
+                        className={`h-full transition-all duration-500 rounded-full ${
+                          page.completion === 100 ? 'bg-success-text' : 
+                          page.completion > 50 ? 'bg-primary' : 'bg-warning-accent'
                         }`}
                         style={{ width: `${page.completion}%` }}
                       />
                    </div>
 
                    {/* Missing Steps Checklist */}
-                   <div className="pt-2">
+                   <div className="pt-1.5 min-h-[48px]">
                      {page.completion === 100 ? (
-                       <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-600">
-                         <MdCheckCircle />
-                         All content requirements met!
+                       <div className="flex items-center gap-1.5 text-xs font-semibold text-success-text">
+                         <MdCheckCircle size={15} />
+                         <span>All content requirements met</span>
                        </div>
                      ) : (
                        <div className="space-y-1">
-                         <p className="text-[10px] font-black uppercase text-rose-500 mb-1 tracking-widest">Pending Steps</p>
-                         {page.missingSteps.map((step, idx) => (
-                           <div key={idx} className="flex items-start gap-1.5 text-[10px] text-slate-500 font-medium">
-                             <span className="text-rose-400 mt-0.5">•</span>
-                             {step}
+                         <p className="text-[11px] font-semibold text-warning-strong uppercase tracking-wide">Pending Steps</p>
+                         {page.missingSteps.slice(0, 2).map((step, idx) => (
+                           <div key={idx} className="flex items-start gap-1.5 text-xs text-ink-secondary leading-snug">
+                             <span className="text-warning-accent mt-0.5">•</span>
+                             <span className="truncate">{step}</span>
                            </div>
                          ))}
                        </div>
@@ -243,54 +258,59 @@ export default function CMSDashboard() {
                    </div>
                 </div>
 
-                <div className="pt-4 flex items-center justify-between border-t border-slate-50">
-                   <div className="flex items-center gap-2 text-slate-400">
-                      <MdHistory size={14} />
-                      <span className="text-[10px] font-bold uppercase tracking-widest">Edited {page.lastEdit}</span>
+                <div className="pt-3 flex items-center justify-between border-t border-line-row text-xs text-ink-secondary">
+                   <div className="flex items-center gap-1.5">
+                      <MdHistory size={14} className="text-ink-muted" />
+                      <span>Edited {page.lastEdit}</span>
                    </div>
-                   <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                      <MdArrowForward size={18} />
+                   <div className="w-7 h-7 rounded-control bg-surface-subtle flex items-center justify-center text-ink-secondary group-hover:bg-primary group-hover:text-white transition-colors">
+                      <MdArrowForward size={15} />
                    </div>
                 </div>
               </div>
             </Link>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Asset Manager Quick Access */}
-      <div className="bg-slate-900 rounded-[3rem] p-10 text-white relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px] -mr-48 -mt-48 transition-all group-hover:bg-indigo-600/30" />
-        <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-indigo-300">
-              <MdImage size={14} />
-              Central Media Library
-            </div>
-            <h3 className="text-4xl font-black tracking-tight leading-tight">Manage Your Website <br />Assets in High Definition.</h3>
-            <p className="text-slate-400 font-medium">Upload, crop, and optimize images for every section of your website automatically.</p>
-            <button className="px-8 py-4 bg-white text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all flex items-center gap-3">
-              Open Asset Manager
-              <MdArrowForward size={18} />
-            </button>
+      {/* Asset Manager Quick Access (Styled matching Brand Dark Theme) */}
+      <section className="bg-nav-bg text-white rounded-card p-6 sm:p-7 border border-nav-divider flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
+        <div className="space-y-3 max-w-xl">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-white/10 border border-gold/30 rounded-full text-xs font-semibold text-gold">
+            <MdImage size={14} />
+            <span>Central Media Library</span>
           </div>
-          <div className="relative aspect-video rounded-3xl bg-white/5 border border-white/10 overflow-hidden">
-             <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                <MdWeb size={120} />
-             </div>
-             <div className="absolute inset-x-8 bottom-8 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 bg-indigo-600 rounded-xl" />
-                   <div>
-                      <p className="text-[10px] font-black uppercase">campus_hero.jpg</p>
-                      <p className="text-[9px] text-slate-400 font-bold">2.4 MB â€¢ 1920x1080</p>
-                   </div>
-                </div>
-                <MdCheckCircle className="text-emerald-500" size={20} />
-             </div>
+          <h2 className="text-xl sm:text-2xl font-semibold text-white tracking-tight leading-snug">
+            Manage your school website assets in high definition.
+          </h2>
+          <p className="text-nav-text text-xs sm:text-sm leading-relaxed">
+            Upload, crop, and optimize photos for your hero banners, faculty roster, and photo gallery automatically.
+          </p>
+          <div className="pt-1">
+            <Link 
+              to="/admin/cms/gallery" 
+              className="inline-flex items-center gap-2 min-h-[40px] px-4 rounded-control bg-gold hover:bg-gold-hover text-nav-bg font-semibold text-xs transition cursor-pointer shadow-xs active:scale-[0.98]"
+            >
+              <span>Open Media Gallery</span>
+              <MdArrowForward size={16} />
+            </Link>
           </div>
         </div>
-      </div>
+
+        <div className="w-full md:w-auto shrink-0 bg-nav-active/60 border border-nav-divider rounded-control p-4 flex items-center gap-4">
+           <div className="w-12 h-12 rounded-control bg-gold/20 border border-gold/40 flex items-center justify-center text-gold">
+              <MdWeb size={24} />
+           </div>
+           <div>
+              <p className="text-xs font-semibold text-white">campus_hero.jpg</p>
+              <p className="text-[11px] text-nav-muted font-mono">2.4 MB · 1920x1080</p>
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-success mt-1">
+                 <MdCheckCircle size={13} />
+                 <span>Optimized for Web</span>
+              </span>
+           </div>
+        </div>
+      </section>
 
     </div>
   );

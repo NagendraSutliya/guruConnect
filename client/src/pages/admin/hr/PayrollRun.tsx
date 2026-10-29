@@ -245,7 +245,7 @@ export default function PayrollRun() {
             className={`min-h-[42px] px-4 rounded-control text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 ${
               isApprovalSent
                 ? "bg-emerald-700 cursor-default"
-                : "bg-primary hover:bg-[#08393F] active:scale-[0.98]"
+                : "bg-primary hover:bg-primary-dark active:scale-[0.98]"
             }`}
           >
             <FiSend size={14} />
@@ -273,7 +273,7 @@ export default function PayrollRun() {
         </li>
 
         {/* Step 3 */}
-        <li className="p-3 rounded-control bg-[#E3EFEF] border border-primary flex flex-col gap-0.5 shadow-xs">
+        <li className="p-3 rounded-control bg-primary-tint border border-primary flex flex-col gap-0.5 shadow-xs">
           <span className="font-semibold text-primary text-[11px]">
             {isApprovalSent ? "Completed" : "In progress"}
           </span>
@@ -284,13 +284,13 @@ export default function PayrollRun() {
         <li
           className={`p-3 rounded-control border flex flex-col gap-0.5 shadow-xs ${
             isApprovalSent
-              ? "bg-[#FFF6EC] border-[#EBC99C]"
+              ? "bg-warning-bg border-warning-border"
               : "bg-white border-line text-ink-secondary"
           }`}
         >
           <span
             className={`font-semibold text-[11px] ${
-              isApprovalSent ? "text-[#7A4106]" : "text-ink-secondary"
+              isApprovalSent ? "text-warning-text" : "text-ink-secondary"
             }`}
           >
             {isApprovalSent ? "Pending review" : "Waiting"}
@@ -450,7 +450,7 @@ export default function PayrollRun() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-[13.5px] min-w-[900px]">
             <thead>
-              <tr className="bg-[#F2F4F2] border-b border-line text-left text-ink font-semibold">
+              <tr className="bg-surface-head border-b border-line text-left text-ink font-semibold">
                 <th className="py-2.5 px-4">Employee</th>
                 <th className="py-2.5 px-4 text-right">Payable days</th>
                 <th className="py-2.5 px-4 text-right">Gross</th>
@@ -473,7 +473,7 @@ export default function PayrollRun() {
                   </td>
                   <td
                     className={`py-2.5 px-4 text-right font-mono font-medium ${
-                      row.isLWP ? "text-[#8F4A09]" : "text-ink"
+                      row.isLWP ? "text-warning-inline" : "text-ink"
                     }`}
                   >
                     {row.payableDays}
@@ -535,7 +535,7 @@ export default function PayrollRun() {
                 <p className="text-ink-secondary">{selectedException.description}</p>
               </div>
 
-              <div className="p-3 bg-[#E3EFEF] border border-[#0E5A63]/30 rounded-control space-y-1 text-primary">
+              <div className="p-3 bg-primary-tint border border-primary/30 rounded-control space-y-1 text-primary">
                 <span className="font-semibold">Applied Formula &amp; Adjustment:</span>
                 <p>{selectedException.adjustment}</p>
               </div>
@@ -548,7 +548,7 @@ export default function PayrollRun() {
                   setSelectedException(null);
                   showToast("Exception accepted and verified for salary register!", "success");
                 }}
-                className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
               >
                 Confirm &amp; Keep Adjustment
               </button>
@@ -619,7 +619,7 @@ export default function PayrollRun() {
                 </div>
               </div>
 
-              <div className="p-3 bg-[#E3EFEF] rounded-control flex justify-between items-center text-sm font-bold text-primary">
+              <div className="p-3 bg-primary-tint rounded-control flex justify-between items-center text-sm font-bold text-primary">
                 <span>NET SALARY PAYABLE:</span>
                 <span className="font-mono text-base">₹{selectedPayslip.netPay.toLocaleString("en-IN")}</span>
               </div>
@@ -629,7 +629,7 @@ export default function PayrollRun() {
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold flex items-center gap-1.5 shadow-xs"
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold flex items-center gap-1.5 shadow-xs"
               >
                 <FiPrinter size={14} /> Print Payslip
               </button>
@@ -679,7 +679,7 @@ export default function PayrollRun() {
               <button
                 type="button"
                 onClick={handleSendApproval}
-                className="px-4.5 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                className="px-4.5 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
               >
                 Confirm &amp; Send to Principal
               </button>

@@ -2,26 +2,34 @@ import { useState, useEffect } from "react";
 import api from "../../../api/axiosInstance";
 import { useToast } from "../../../context/ToastContext";
 import {
-  MdSchool,
   MdSave,
   MdCloudUpload,
   MdCheckCircle,
-  MdInfoOutline,
+  MdSecurity,
+  MdHistory,
+  MdArrowForward,
 } from "react-icons/md";
+import { Link } from "react-router-dom";
+
+const SETTINGS_TABS = [
+  { id: "profile", label: "School profile" },
+  { id: "academic", label: "Academic" },
+  { id: "fees", label: "Fees and payments" },
+  { id: "numbering", label: "Numbering" },
+  { id: "communication", label: "Communication" },
+  { id: "attendance", label: "Attendance" },
+  { id: "branding", label: "Branding" },
+  { id: "privacy", label: "Data and privacy" },
+] as const;
+
+type SettingsTabId = typeof SETTINGS_TABS[number]["id"];
 
 export default function InstituteSettings() {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    | "profile"
-    | "academic"
-    | "fees"
-    | "numbering"
-    | "communication"
-    | "attendance"
-    | "branding"
-    | "privacy"
-  >("profile");
+  const [activeTab, setActiveTab] = useState<SettingsTabId>("profile");
+
+  const currentTabLabel = SETTINGS_TABS.find((t) => t.id === activeTab)?.label || "School profile";
 
   // Profile fields matching Screen 43
   const [formData, setFormData] = useState({
@@ -144,399 +152,24 @@ export default function InstituteSettings() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F6F3] font-sans text-[#17201D] p-6 lg:p-8">
-      <div className="max-w-[1200px] mx-auto space-y-5">
-        {/* Header matching Screen 43 */}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[#17201D]">Settings</h1>
-          <p className="text-sm text-[#4F5B57] mt-0.5">
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
+      {/* Header Row (Matching 39-Reports.html & 43-SchoolSettings.html) */}
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">Settings › {currentTabLabel}</div>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            School settings
+          </h1>
+          <div className="text-[13px] text-ink-secondary">
             School-wide settings. Changes are recorded in the audit log.
-          </p>
-        </div>
-
-        {/* 8 Tabs List matching Screen 43 */}
-        <div role="tablist" className="flex gap-1 border-b border-[#DDE2DE] overflow-x-auto">
-          {[
-            { id: "profile", label: "School profile" },
-            { id: "academic", label: "Academic" },
-            { id: "fees", label: "Fees and payments" },
-            { id: "numbering", label: "Numbering" },
-            { id: "communication", label: "Communication" },
-            { id: "attendance", label: "Attendance" },
-            { id: "branding", label: "Branding" },
-            { id: "privacy", label: "Data and privacy" },
-          ].map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={activeTab === t.id}
-              onClick={() => setActiveTab(t.id as any)}
-              className={`min-h-[44px] px-4 text-sm whitespace-nowrap transition border-b-[3px] font-sans ${
-                activeTab === t.id
-                  ? "border-[#0E5A63] text-[#0E5A63] font-semibold"
-                  : "border-transparent text-[#4F5B57] hover:text-[#17201D]"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        {/* =========================================================================
-            TAB 1: SCHOOL PROFILE (Screen 43 exact)
-           ========================================================================= */}
-        {activeTab === "profile" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-            {/* School Details */}
-            <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 flex flex-col gap-3 shadow-xs">
-              <h2 className="text-base font-semibold text-[#17201D]">School details</h2>
-
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                School name
-                <input
-                  name="schoolName"
-                  value={formData.schoolName}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm text-[#17201D] focus:outline-none focus:border-[#0E5A63]"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Campus
-                <input
-                  name="campus"
-                  value={formData.campus}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm text-[#17201D] focus:outline-none focus:border-[#0E5A63]"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Board and affiliation no.
-                <input
-                  name="boardAffiliation"
-                  value={formData.boardAffiliation}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm text-[#17201D] focus:outline-none focus:border-[#0E5A63]"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                UDISE code
-                <input
-                  name="udiseCode"
-                  value={formData.udiseCode}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm font-mono text-[#17201D] focus:outline-none focus:border-[#0E5A63]"
-                />
-              </label>
-
-              <span className="text-xs text-[#4F5B57] pt-1">
-                Shown on receipts, report cards, salary slips and certificates.
-              </span>
-            </section>
-
-            {/* Contact & Signatures */}
-            <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 flex flex-col gap-3 shadow-xs">
-              <h2 className="text-base font-semibold text-[#17201D]">Contact and signatures</h2>
-
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Phone
-                <input
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm font-mono text-[#17201D] focus:outline-none focus:border-[#0E5A63]"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Email
-                <input
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm text-[#17201D] focus:outline-none focus:border-[#0E5A63]"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Principal name
-                <input
-                  name="principalName"
-                  value={formData.principalName}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm text-[#17201D] focus:outline-none focus:border-[#0E5A63]"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Principal signature
-                <div className="flex gap-2 items-center">
-                  <input
-                    name="principalSignatureUrl"
-                    value={formData.principalSignatureUrl}
-                    onChange={handleChange}
-                    className="h-11 flex-1 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm text-[#17201D] focus:outline-none focus:border-[#0E5A63]"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => showToast("Opening signature file selector...", "info")}
-                    className="h-11 px-3 border border-[#C9D1CD] bg-[#F9FAF8] rounded-lg hover:bg-[#EEF1EF] text-xs font-medium flex items-center gap-1"
-                  >
-                    <MdCloudUpload size={16} /> Upload
-                  </button>
-                </div>
-              </label>
-
-              <span className="text-xs text-[#4F5B57] pt-1">
-                Signature image is automatically printed on Transfer Certificates (TC) and CBSE report cards.
-              </span>
-            </section>
           </div>
-        )}
+        </div>
 
-        {/* =========================================================================
-            TAB 2: ACADEMIC
-           ========================================================================= */}
-        {activeTab === "academic" && (
-          <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-semibold text-[#17201D]">Academic Configuration</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Active Academic Session
-                <select
-                  name="academicSession"
-                  value={formData.academicSession}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                >
-                  <option value="2026-27 (current)">2026-27 (current)</option>
-                  <option value="2025-26 (closed)">2025-26 (closed)</option>
-                </select>
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Evaluation & Term Breakdown
-                <input
-                  name="termsCount"
-                  value={formData.termsCount}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Grading Standard
-                <input
-                  name="gradingScale"
-                  value={formData.gradingScale}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Weekly Working Days Schedule
-                <input
-                  name="workingDays"
-                  value={formData.workingDays}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                />
-              </label>
-            </div>
-          </section>
-        )}
-
-        {/* =========================================================================
-            TAB 3: FEES & PAYMENTS
-           ========================================================================= */}
-        {activeTab === "fees" && (
-          <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-semibold text-[#17201D]">Finance and Cash Desk Rules</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Late Fee Policy
-                <input
-                  name="lateFeePerDay"
-                  value={formData.lateFeePerDay}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Online Payment Gateway Status
-                <input
-                  name="onlineGateway"
-                  value={formData.onlineGateway}
-                  disabled
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-[#F9FAF8] text-sm text-[#4F5B57]"
-                />
-              </label>
-            </div>
-            <div className="p-3 bg-[#E3EFEF]/40 border border-[#0E5A63]/20 rounded-lg text-xs text-[#08393F]">
-              Mandatory Day Book Cash Hand-over is active. Fee counters cannot accept payments for the next morning without verifying previous closing.
-            </div>
-          </section>
-        )}
-
-        {/* =========================================================================
-            TAB 4: NUMBERING
-           ========================================================================= */}
-        {activeTab === "numbering" && (
-          <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-semibold text-[#17201D]">Document Series & Identifier Formats</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Student Admission Number Prefix
-                <input
-                  name="admissionPrefix"
-                  value={formData.admissionPrefix}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white font-mono text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Fee Counter Receipt Series
-                <input
-                  name="receiptPrefix"
-                  value={formData.receiptPrefix}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white font-mono text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Transfer Certificate (TC) Prefix
-                <input
-                  name="tcPrefix"
-                  value={formData.tcPrefix}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white font-mono text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Staff Biometric / Employee Code Prefix
-                <input
-                  name="staffEmpPrefix"
-                  value={formData.staffEmpPrefix}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white font-mono text-sm"
-                />
-              </label>
-            </div>
-          </section>
-        )}
-
-        {/* =========================================================================
-            TAB 5: COMMUNICATION
-           ========================================================================= */}
-        {activeTab === "communication" && (
-          <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-semibold text-[#17201D]">Messaging & Broadcast Gateways</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                WhatsApp Official Sender
-                <input
-                  name="whatsappChannel"
-                  value={formData.whatsappChannel}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Govt. DLT Header (SMS Sender ID)
-                <input
-                  name="smsSenderId"
-                  value={formData.smsSenderId}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white font-mono text-sm"
-                />
-              </label>
-            </div>
-          </section>
-        )}
-
-        {/* =========================================================================
-            TAB 6: ATTENDANCE
-           ========================================================================= */}
-        {activeTab === "attendance" && (
-          <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-semibold text-[#17201D]">Attendance & Biometrics Sync</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Morning Attendance Cut-off Time
-                <input
-                  name="attendanceCutoff"
-                  value={formData.attendanceCutoff}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white font-mono text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Biometric Device Polling
-                <input
-                  name="biometricSync"
-                  value={formData.biometricSync}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                />
-              </label>
-            </div>
-          </section>
-        )}
-
-        {/* =========================================================================
-            TAB 7: BRANDING
-           ========================================================================= */}
-        {activeTab === "branding" && (
-          <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-semibold text-[#17201D]">Institution Brand & Colors</h2>
-            <div className="flex items-center gap-4 p-4 border border-[#DDE2DE] rounded-lg">
-              <div className="w-16 h-16 rounded-xl bg-[#0E5A63] text-white flex items-center justify-center font-bold text-xl">
-                {formData.schoolName.substring(0, 2).toUpperCase()}
-              </div>
-              <div>
-                <div className="font-semibold text-sm text-[#17201D]">{formData.schoolName}</div>
-                <div className="text-xs text-[#4F5B57]">{formData.campus}</div>
-                <div className="text-xs text-[#0E5A63] font-medium mt-1">Patshala Emerald Theme · #0E5A63</div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* =========================================================================
-            TAB 8: DATA & PRIVACY
-           ========================================================================= */}
-        {activeTab === "privacy" && (
-          <section className="bg-white border border-[#DDE2DE] rounded-xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-semibold text-[#17201D]">Compliance and Security Policy</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Two-Step Verification Requirement
-                <input
-                  name="twoStepPolicy"
-                  value={formData.twoStepPolicy}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-medium text-[#17201D]">
-                Data Retention Mandate
-                <input
-                  name="retentionYears"
-                  value={formData.retentionYears}
-                  onChange={handleChange}
-                  className="h-11 px-3 border border-[#C9D1CD] rounded-lg bg-white text-sm"
-                />
-              </label>
-            </div>
-          </section>
-        )}
-
-        {/* Action Buttons matching Screen 43 */}
-        <div className="flex justify-end gap-2.5 pt-2">
+        <div className="flex gap-2.5 flex-wrap">
           <button
             type="button"
             onClick={() => showToast("Changes discarded", "info")}
-            className="h-11 px-4 rounded-lg border border-[#C9D1CD] bg-white hover:bg-[#F9FAF8] text-sm font-medium text-[#17201D] transition"
+            className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink-dark text-[13px] font-semibold transition-colors cursor-pointer shadow-xs"
           >
             Cancel
           </button>
@@ -544,12 +177,528 @@ export default function InstituteSettings() {
             type="button"
             onClick={handleSave}
             disabled={loading}
-            className="h-11 px-5 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white text-sm font-semibold transition flex items-center gap-2 shadow-xs disabled:opacity-70"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-2 active:scale-[0.98] disabled:opacity-70"
           >
-            <MdSave size={18} />
-            {loading ? "Saving..." : "Save changes"}
+            <MdSave size={16} />
+            <span>{loading ? "Saving..." : "Save Changes"}</span>
           </button>
         </div>
+      </div>
+
+      {/* 8 Tabs List matching Screen 43 */}
+      <div role="tablist" className="flex gap-1 border-b border-line overflow-x-auto">
+        {SETTINGS_TABS.map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={activeTab === t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`min-h-[28px] px-3 text-sm font-semibold whitespace-nowrap transition border-b-[3px] font-sans cursor-pointer ${
+              activeTab === t.id
+                ? "border-primary text-primary"
+                : "border-transparent text-ink-secondary hover:text-ink"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Main 2-Column Content Layout (Matching ReportsPage & CommunicationPage) */}
+      <div className="flex flex-wrap gap-5 items-start">
+        {/* Left Column: Active Tab Main Content */}
+        <section className="flex-1 basis-[520px] min-w-0 bg-white border border-line rounded-card p-5 flex flex-col gap-4 shadow-xs">
+          {/* =========================================================================
+              TAB 1: SCHOOL PROFILE (Screen 43 exact)
+             ========================================================================= */}
+          {activeTab === "profile" && (
+            <>
+              <div className="flex justify-between items-baseline gap-3 pb-1 border-b border-line/60">
+                <h2 className="m-0 text-base font-semibold text-ink">School details</h2>
+                <span className="text-xs text-ink-secondary">Institutional identity</span>
+              </div>
+
+              <div className="space-y-3.5">
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  School name
+                  <input
+                    name="schoolName"
+                    value={formData.schoolName}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none transition-colors"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Campus
+                  <input
+                    name="campus"
+                    value={formData.campus}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none transition-colors"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Board and affiliation no.
+                  <input
+                    name="boardAffiliation"
+                    value={formData.boardAffiliation}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none transition-colors"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  UDISE code
+                  <input
+                    name="udiseCode"
+                    value={formData.udiseCode}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] font-mono text-ink focus:border-primary focus:outline-none transition-colors"
+                  />
+                </label>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                Shown on receipts, report cards, salary slips and certificates.
+              </div>
+            </>
+          )}
+
+          {/* =========================================================================
+              TAB 2: ACADEMIC
+             ========================================================================= */}
+          {activeTab === "academic" && (
+            <>
+              <div className="flex justify-between items-baseline gap-3 pb-1 border-b border-line/60">
+                <h2 className="m-0 text-base font-semibold text-ink">Academic configuration</h2>
+                <span className="text-xs text-ink-secondary">Terms & grading</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Active academic session
+                  <select
+                    name="academicSession"
+                    value={formData.academicSession}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  >
+                    <option value="2026-27 (current)">2026-27 (current)</option>
+                    <option value="2025-26 (closed)">2025-26 (closed)</option>
+                  </select>
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Evaluation & term breakdown
+                  <input
+                    name="termsCount"
+                    value={formData.termsCount}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Grading standard
+                  <input
+                    name="gradingScale"
+                    value={formData.gradingScale}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Weekly working schedule
+                  <input
+                    name="workingDays"
+                    value={formData.workingDays}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                Defines default term schedules, report card scales, and working calendar for academic year.
+              </div>
+            </>
+          )}
+
+          {/* =========================================================================
+              TAB 3: FEES & PAYMENTS
+             ========================================================================= */}
+          {activeTab === "fees" && (
+            <>
+              <div className="flex justify-between items-baseline gap-3 pb-1 border-b border-line/60">
+                <h2 className="m-0 text-base font-semibold text-ink">Finance and cash desk rules</h2>
+                <span className="text-xs text-ink-secondary">Fee counter policy</span>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                    Late fee policy
+                    <input
+                      name="lateFeePerDay"
+                      value={formData.lateFeePerDay}
+                      onChange={handleChange}
+                      className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                    />
+                  </label>
+
+                  <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                    Online payment gateway
+                    <input
+                      name="onlineGateway"
+                      value={formData.onlineGateway}
+                      disabled
+                      className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-surface-subtle text-xs sm:text-[13px] text-ink-secondary"
+                    />
+                  </label>
+                </div>
+
+                <div className="p-3 bg-primary-tint/50 border border-primary/20 rounded-control text-xs text-primary-dark flex items-start gap-2">
+                  <MdCheckCircle size={15} className="text-primary shrink-0 mt-0.5" />
+                  <span>
+                    <b>Mandatory Day Book Cash Hand-over:</b> Fee counters cannot accept payments for the next morning without verifying previous closing.
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                Late fine calculations auto-apply on all student accounts past the monthly due threshold.
+              </div>
+            </>
+          )}
+
+          {/* =========================================================================
+              TAB 4: NUMBERING
+             ========================================================================= */}
+          {activeTab === "numbering" && (
+            <>
+              <div className="flex justify-between items-baseline gap-3 pb-1 border-b border-line/60">
+                <h2 className="m-0 text-base font-semibold text-ink">Document series & identifier formats</h2>
+                <span className="text-xs text-ink-secondary">Prefixes & format</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Admission number prefix
+                  <input
+                    name="admissionPrefix"
+                    value={formData.admissionPrefix}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white font-mono text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Fee counter receipt series
+                  <input
+                    name="receiptPrefix"
+                    value={formData.receiptPrefix}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white font-mono text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Transfer certificate (TC) prefix
+                  <input
+                    name="tcPrefix"
+                    value={formData.tcPrefix}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white font-mono text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Staff biometric / employee code
+                  <input
+                    name="staffEmpPrefix"
+                    value={formData.staffEmpPrefix}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white font-mono text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                Sequential numbering resets or increments automatically at the start of each academic year.
+              </div>
+            </>
+          )}
+
+          {/* =========================================================================
+              TAB 5: COMMUNICATION
+             ========================================================================= */}
+          {activeTab === "communication" && (
+            <>
+              <div className="flex justify-between items-baseline gap-3 pb-1 border-b border-line/60">
+                <h2 className="m-0 text-base font-semibold text-ink">Messaging & broadcast gateways</h2>
+                <span className="text-xs text-ink-secondary">SMS & WhatsApp</span>
+              </div>
+
+              <div className="space-y-3.5">
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  WhatsApp official sender
+                  <input
+                    name="whatsappChannel"
+                    value={formData.whatsappChannel}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Govt. DLT header (SMS sender ID)
+                  <input
+                    name="smsSenderId"
+                    value={formData.smsSenderId}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white font-mono text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                All bulk broadcast messages require pre-approved DLT templates as mandated by TRAI telecom guidelines.
+              </div>
+            </>
+          )}
+
+          {/* =========================================================================
+              TAB 6: ATTENDANCE
+             ========================================================================= */}
+          {activeTab === "attendance" && (
+            <>
+              <div className="flex justify-between items-baseline gap-3 pb-1 border-b border-line/60">
+                <h2 className="m-0 text-base font-semibold text-ink">Attendance & biometrics sync</h2>
+                <span className="text-xs text-ink-secondary">Gate tracking</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Morning attendance cut-off
+                  <input
+                    name="attendanceCutoff"
+                    value={formData.attendanceCutoff}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white font-mono text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Biometric polling frequency
+                  <input
+                    name="biometricSync"
+                    value={formData.biometricSync}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                Automated SMS & WhatsApp alerts trigger to guardians for absentees 15 minutes after cut-off.
+              </div>
+            </>
+          )}
+
+          {/* =========================================================================
+              TAB 7: BRANDING
+             ========================================================= */}
+          {activeTab === "branding" && (
+            <>
+              <div className="flex justify-between items-baseline gap-3 pb-1 border-b border-line/60">
+                <h2 className="m-0 text-base font-semibold text-ink">Institution brand & theme</h2>
+                <span className="text-xs text-ink-secondary">Colors & badge</span>
+              </div>
+
+              <div className="flex items-center gap-4 p-4 border border-line rounded-control bg-surface-subtle">
+                <div className="w-14 h-14 rounded-card bg-primary text-white flex items-center justify-center font-bold text-lg shadow-xs">
+                  {formData.schoolName.substring(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <div className="font-semibold text-sm text-ink">{formData.schoolName}</div>
+                  <div className="text-xs text-ink-secondary">{formData.campus}</div>
+                  <div className="text-xs text-primary font-medium mt-1">Patshala Emerald Theme · #0E5A63</div>
+                </div>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                Brand colors reflect on student portal, parent mobile app, fee receipts and report cards.
+              </div>
+            </>
+          )}
+
+          {/* =========================================================================
+              TAB 8: DATA & PRIVACY
+             ========================================================================= */}
+          {activeTab === "privacy" && (
+            <>
+              <div className="flex justify-between items-baseline gap-3 pb-1 border-b border-line/60">
+                <h2 className="m-0 text-base font-semibold text-ink">Compliance and security policy</h2>
+                <span className="text-xs text-ink-secondary">Access & retention</span>
+              </div>
+
+              <div className="space-y-4">
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Two-step verification requirement
+                  <input
+                    name="twoStepPolicy"
+                    value={formData.twoStepPolicy}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Digital record retention mandate
+                  <input
+                    name="retentionYears"
+                    value={formData.retentionYears}
+                    onChange={handleChange}
+                    className="min-h-[40px] px-3.5 border border-line-input rounded-control bg-white text-xs sm:text-[13px] text-ink focus:border-primary focus:outline-none"
+                  />
+                </label>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                Audit logs are cryptographically sealed and cannot be modified or purged by any local role.
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* Right Aside: Synced Right Panel (Matching ReportsPage, CommunicationPage & HostelPage) */}
+        <aside className="flex-1 basis-[300px] max-w-full lg:max-w-[340px] flex flex-col gap-4">
+          {/* Card 1: Contact & Signatures (for Tab 1) or Quick Status Summary */}
+          {activeTab === "profile" ? (
+            <section className="bg-white border border-line rounded-card p-4 flex flex-col gap-3 shadow-xs">
+              <h2 className="m-0 text-base font-semibold text-ink">Contact and signatures</h2>
+
+              <div className="space-y-3 pt-1">
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Phone
+                  <input
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="min-h-[38px] px-3 border border-line-input rounded-control bg-white text-xs font-mono text-ink focus:outline-none focus:border-primary"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Email
+                  <input
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="min-h-[38px] px-3 border border-line-input rounded-control bg-white text-xs text-ink focus:outline-none focus:border-primary"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Principal name
+                  <input
+                    name="principalName"
+                    value={formData.principalName}
+                    onChange={handleChange}
+                    className="min-h-[38px] px-3 border border-line-input rounded-control bg-white text-xs text-ink focus:outline-none focus:border-primary"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5 text-xs font-semibold text-ink">
+                  Principal signature
+                  <div className="flex gap-2 items-center">
+                    <input
+                      name="principalSignatureUrl"
+                      value={formData.principalSignatureUrl}
+                      onChange={handleChange}
+                      className="min-h-[38px] flex-1 px-3 border border-line-input rounded-control bg-white text-xs text-ink focus:outline-none focus:border-primary"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => showToast("Opening signature file selector...", "info")}
+                      className="min-h-[38px] px-3 border border-line-input bg-surface-subtle hover:bg-slate-50 rounded-control text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs shrink-0"
+                    >
+                      <MdCloudUpload size={15} />
+                      <span>Upload</span>
+                    </button>
+                  </div>
+                </label>
+              </div>
+
+              <div className="text-xs text-ink-secondary pt-2 border-t border-line-row">
+                Signature image is automatically printed on Transfer Certificates (TC) and CBSE report cards.
+              </div>
+            </section>
+          ) : (
+            <section className="bg-white border border-line rounded-card p-4 flex flex-col gap-3 shadow-xs">
+              <h2 className="m-0 text-base font-semibold text-ink">Quick overview</h2>
+
+              <div className="space-y-2 text-xs pt-1">
+                <div className="flex justify-between items-center py-1.5 border-b border-line-row">
+                  <span className="text-ink-secondary">Academic session</span>
+                  <span className="font-semibold text-ink font-mono">{formData.academicSession}</span>
+                </div>
+                <div className="flex justify-between items-center py-1.5 border-b border-line-row">
+                  <span className="text-ink-secondary">Late fee rule</span>
+                  <span className="font-semibold text-ink">{formData.lateFeePerDay}</span>
+                </div>
+                <div className="flex justify-between items-center py-1.5 border-b border-line-row">
+                  <span className="text-ink-secondary">Online payments</span>
+                  <span className="font-semibold text-primary">{formData.onlineGateway}</span>
+                </div>
+                <div className="flex justify-between items-center py-1.5">
+                  <span className="text-ink-secondary">Attendance cut-off</span>
+                  <span className="font-semibold text-ink font-mono">{formData.attendanceCutoff}</span>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Card 2: Institutional Audit & Security Rail (Matching other pages) */}
+          <section className="bg-white border border-line rounded-card p-4 flex flex-col gap-2.5 shadow-xs">
+            <h2 className="m-0 text-sm font-semibold text-ink flex items-center gap-1.5">
+              <MdSecurity size={16} className="text-primary" />
+              <span>Audit & compliance</span>
+            </h2>
+
+            <div className="space-y-2 pt-1 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-ink-secondary">Profile status</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-success-bg text-success-text">
+                  <MdCheckCircle size={12} />
+                  <span>Synced</span>
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-ink-secondary">Audit trail</span>
+                <span className="font-mono text-ink text-[11px]">Enforced (CBSE)</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-ink-secondary">Last modified</span>
+                <span className="text-ink text-[11px]">Today · 10:30 am</span>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-line-row">
+              <Link
+                to="/admin/users"
+                className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+              >
+                <MdHistory size={14} />
+                <span>View system audit log</span>
+                <MdArrowForward size={12} className="ml-auto" />
+              </Link>
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
   );

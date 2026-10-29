@@ -116,7 +116,7 @@ const StudentNotices: React.FC = () => {
                   isSelected
                     ? "bg-surface border-primary ring-2 ring-primary/10"
                     : item.unread
-                    ? "bg-[#F4F9F9] border-line hover:border-primary/40"
+                    ? "bg-primary-row border-line hover:border-primary/40"
                     : "bg-surface border-line hover:border-primary/40"
                 }`}
               >

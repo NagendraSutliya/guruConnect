@@ -139,12 +139,12 @@ export default function ReconciliationPage() {
         </div>
 
         {/* Card 4: Exceptions */}
-        <div className="bg-[#FFF6EC] border border-[#EBC99C] rounded-card p-4 flex flex-col gap-1 shadow-xs">
-          <span className="text-[12.5px] text-[#7A4106] font-medium">Exceptions</span>
-          <span className="font-mono text-xl sm:text-[22px] font-semibold text-[#7A4106]">
+        <div className="bg-warning-bg border border-warning-border rounded-card p-4 flex flex-col gap-1 shadow-xs">
+          <span className="text-[12.5px] text-warning-text font-medium">Exceptions</span>
+          <span className="font-mono text-xl sm:text-[22px] font-semibold text-warning-text">
             {pendingExceptionsCount}
           </span>
-          <span className="text-[12.5px] text-[#7A4106]">
+          <span className="text-[12.5px] text-warning-text">
             {pendingExceptionsCount === 0 ? "All resolved!" : "need a person to decide"}
           </span>
         </div>
@@ -162,7 +162,7 @@ export default function ReconciliationPage() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-xs sm:text-small min-w-[880px]">
             <thead>
-              <tr className="bg-[#F2F4F2] text-left text-ink border-b border-line">
+              <tr className="bg-surface-head text-left text-ink border-b border-line">
                 <th className="px-4 py-3 font-semibold">Order</th>
                 <th className="px-4 py-3 font-semibold">Student</th>
                 <th className="px-4 py-3 font-semibold text-right">Amount</th>
@@ -171,7 +171,7 @@ export default function ReconciliationPage() {
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF1EF]">
+            <tbody className="divide-y divide-line-row">
               {exceptions.map((row) => (
                 <tr key={row.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="px-4 py-2.5 font-mono text-[12.5px] text-ink font-medium">
@@ -186,7 +186,7 @@ export default function ReconciliationPage() {
                     ₹{row.amount.toLocaleString("en-IN")}
                   </td>
 
-                  <td className="px-4 py-2.5 text-[#8F4A09] font-medium">
+                  <td className="px-4 py-2.5 text-warning-inline font-medium">
                     {row.problem}
                   </td>
 
@@ -204,7 +204,7 @@ export default function ReconciliationPage() {
                       <button
                         type="button"
                         onClick={() => handleResolveAction(row)}
-                        className="min-h-[38px] px-3.5 rounded-control border-0 bg-[#E3EFEF] hover:bg-[#d0e5e5] text-[#08393F] text-[13px] font-semibold transition-colors cursor-pointer"
+                        className="min-h-[38px] px-3.5 rounded-control border-0 bg-primary-tint hover:bg-[#d0e5e5] text-primary-dark text-[13px] font-semibold transition-colors cursor-pointer"
                       >
                         {row.actionLabel}
                       </button>
@@ -241,7 +241,7 @@ export default function ReconciliationPage() {
                 <div><b>Order ID:</b> <span className="font-mono">{activeModalAction.orderId}</span></div>
                 <div><b>Student:</b> {activeModalAction.student}</div>
                 <div><b>Amount:</b> <span className="font-mono font-bold">₹{activeModalAction.amount.toLocaleString("en-IN")}</span></div>
-                <div><b>Problem:</b> <span className="text-[#8F4A09]">{activeModalAction.problem}</span></div>
+                <div><b>Problem:</b> <span className="text-warning-inline">{activeModalAction.problem}</span></div>
               </div>
 
               <div className="p-3 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-900">
@@ -259,7 +259,7 @@ export default function ReconciliationPage() {
                 <button
                   type="button"
                   onClick={() => confirmResolution()}
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Confirm &amp; Apply
                 </button>
@@ -315,7 +315,7 @@ export default function ReconciliationPage() {
                     setIsUploadModalOpen(false);
                     showToast("Settlement file processed! 142 lines matched with 0 new errors.", "success");
                   }}
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Process File
                 </button>

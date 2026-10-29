@@ -638,204 +638,238 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
     showToast("Generating watermarked audit ledger (PDF) with digital timestamp...", "info");
   };
 
+  const tabTitles = {
+    users: {
+      breadcrumb: "Users",
+      title: "Users",
+      subtitle: "108 staff logins · 2,031 parent logins (1,412 active in the app)",
+    },
+    roles: {
+      breadcrumb: "Roles & permissions",
+      title: "Roles and permissions",
+      subtitle: "11 standard roles · 2 custom roles · fine-grained action permissions",
+    },
+    audit: {
+      breadcrumb: "Audit log",
+      title: "System audit log",
+      subtitle: "Every change to students, marks, fees, payroll, roles and settings. Entries cannot be edited or deleted.",
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-[#F5F6F3] font-sans text-[#17201D] p-6 lg:p-8">
-      <div className="max-w-[1200px] mx-auto space-y-5">
-        {/* Navigation Tabs (Screen 40 / 41 / 42) */}
-        <nav aria-label="Users and audit" className="flex gap-1 border-b border-[#DDE2DE] overflow-x-auto">
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
+      {/* Header Row (Matching Settings, Reports & Communication) */}
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary">
+           Users & Audit › {tabTitles[activeTab].breadcrumb}
+          </div>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
+            {tabTitles[activeTab].title}
+          </h1>
+          <div className="text-[13px] text-ink-secondary">
+            {tabTitles[activeTab].subtitle}
+          </div>
+        </div>
+
+        {activeTab === "users" && (
           <button
-            onClick={() => setActiveTab("users")}
-            className={`min-h-[44px] flex items-center px-4 font-sans text-sm font-semibold transition border-b-[3px] ${
-              activeTab === "users"
-                ? "border-[#0E5A63] text-[#0E5A63]"
-                : "border-transparent text-[#4F5B57] hover:text-[#17201D]"
+            type="button"
+            onClick={() => setShowInviteModal(true)}
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-2 active:scale-[0.98]"
+          >
+            <MdAdd size={18} />
+            <span>Invite staff user</span>
+          </button>
+        )}
+        {activeTab === "roles" && (
+          <button
+            type="button"
+            onClick={handleSaveRole}
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-2 active:scale-[0.98]"
+          >
+            <MdCheck size={18} />
+            <span>Save role</span>
+          </button>
+        )}
+        {activeTab === "audit" && (
+          <button
+            type="button"
+            onClick={handleExportAudit}
+            className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-[13px] font-semibold text-ink transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+          >
+            <MdFileDownload size={16} />
+            <span>Export (watermarked)</span>
+          </button>
+        )}
+      </div>
+
+      {/* Navigation Tabs (Screen 40 / 41 / 42) */}
+      <nav aria-label="Users and audit" className="flex gap-1 border-b border-line overflow-x-auto">
+        {[
+          { id: "users", label: "Users" },
+          { id: "roles", label: "Roles & permissions" },
+          { id: "audit", label: "Audit log" },
+        ].map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={activeTab === t.id}
+            onClick={() => setActiveTab(t.id as any)}
+            className={`min-h-[28px] px-4 text-sm font-semibold whitespace-nowrap transition border-b-[3px] font-sans cursor-pointer ${
+              activeTab === t.id
+                ? "border-primary text-primary"
+                : "border-transparent text-ink-secondary hover:text-ink"
             }`}
           >
-            Users
+            {t.label}
           </button>
-          <button
-            onClick={() => setActiveTab("roles")}
-            className={`min-h-[44px] flex items-center px-4 font-sans text-sm font-semibold transition border-b-[3px] ${
-              activeTab === "roles"
-                ? "border-[#0E5A63] text-[#0E5A63]"
-                : "border-transparent text-[#4F5B57] hover:text-[#17201D]"
-            }`}
-          >
-            Roles & permissions
-          </button>
-          <button
-            onClick={() => setActiveTab("audit")}
-            className={`min-h-[44px] flex items-center px-4 font-sans text-sm font-semibold transition border-b-[3px] ${
-              activeTab === "audit"
-                ? "border-[#0E5A63] text-[#0E5A63]"
-                : "border-transparent text-[#4F5B57] hover:text-[#17201D]"
-            }`}
-          >
-            Audit log
-          </button>
-        </nav>
+        ))}
+      </nav>
 
         {/* =========================================================================
             TAB 1: USERS (Screen 40)
            ========================================================================= */}
         {activeTab === "users" && (
-          <div className="space-y-4">
-            <div className="flex flex-wrap justify-between items-end gap-4">
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-[#17201D]">Users</h1>
-                <p className="text-sm text-[#4F5B57] mt-0.5">
-                  108 staff logins · 2,031 parent logins (1,412 active in the app)
-                </p>
-              </div>
-              <button
-                onClick={() => setShowInviteModal(true)}
-                className="h-11 px-5 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white text-sm font-semibold transition flex items-center gap-2 shadow-xs"
-              >
-                <MdAdd size={18} /> Invite staff user
-              </button>
-            </div>
+        <div className="space-y-4">
+          {/* Filter Pills matching Screen 40 */}
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              { id: "staff", label: "Staff · 108" },
+              { id: "parent", label: "Parents · 2,031" },
+              { id: "locked", label: "Locked · 1" },
+              { id: "2fa_missing", label: "Two-step missing · 2" },
+            ].map((pill) => {
+              const isActive = userFilter === pill.id;
+              return (
+                <button
+                  key={pill.id}
+                  type="button"
+                  onClick={() => setUserFilter(pill.id as any)}
+                  className={`min-h-[36px] px-3.5 rounded-full text-xs font-medium transition-colors cursor-pointer border ${
+                    isActive
+                      ? "bg-nav-bg text-white border-nav-bg"
+                      : "bg-white text-ink border-line-input hover:bg-slate-50"
+                  }`}
+                >
+                  {pill.label}
+                </button>
+              );
+            })}
 
-            {/* Filter Pills matching Screen 40 */}
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={() => setUserFilter("staff")}
-                className={`h-[38px] px-3.5 rounded-full text-[13px] font-medium transition border ${
-                  userFilter === "staff"
-                    ? "bg-[#12302D] text-white border-[#12302D]"
-                    : "bg-white text-[#17201D] border-[#C9D1CD] hover:bg-[#F9FAF8]"
-                }`}
-              >
-                Staff · 108
-              </button>
-              <button
-                onClick={() => setUserFilter("parent")}
-                className={`h-[38px] px-3.5 rounded-full text-[13px] font-medium transition border ${
-                  userFilter === "parent"
-                    ? "bg-[#12302D] text-white border-[#12302D]"
-                    : "bg-white text-[#17201D] border-[#C9D1CD] hover:bg-[#F9FAF8]"
-                }`}
-              >
-                Parents · 2,031
-              </button>
-              <button
-                onClick={() => setUserFilter("locked")}
-                className={`h-[38px] px-3.5 rounded-full text-[13px] font-medium transition border ${
-                  userFilter === "locked"
-                    ? "bg-[#12302D] text-white border-[#12302D]"
-                    : "bg-white text-[#17201D] border-[#C9D1CD] hover:bg-[#F9FAF8]"
-                }`}
-              >
-                Locked · 1
-              </button>
-              <button
-                onClick={() => setUserFilter("2fa_missing")}
-                className={`h-[38px] px-3.5 rounded-full text-[13px] font-medium transition border ${
-                  userFilter === "2fa_missing"
-                    ? "bg-[#12302D] text-white border-[#12302D]"
-                    : "bg-white text-[#17201D] border-[#C9D1CD] hover:bg-[#F9FAF8]"
-                }`}
-              >
-                Two-step missing · 2
-              </button>
-
-              <div className="ml-auto flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-                <div className="relative flex-1 sm:w-64">
-                  <MdSearch className="absolute left-3 top-2.5 text-[#4F5B57]" size={16} />
-                  <input
-                    type="search"
-                    placeholder="Search name, username or role..."
-                    value={userSearch}
-                    onChange={(e) => setUserSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 h-[38px] text-xs bg-white border border-[#C9D1CD] rounded-lg focus:outline-none focus:border-[#0E5A63]"
-                  />
-                </div>
+            <div className="ml-auto flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+              <div className="relative flex-1 sm:w-64">
+                <MdSearch className="absolute left-3 top-2.5 text-ink-secondary" size={16} />
+                <input
+                  type="search"
+                  placeholder="Search name, username or role..."
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 min-h-[36px] text-xs bg-white border border-line-input rounded-control focus:outline-none focus:border-primary transition-colors"
+                />
               </div>
             </div>
+          </div>
 
-            {/* Users Table matching Screen 40 */}
-            <div className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-xs">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm min-w-[900px] border-collapse">
-                  <thead>
-                    <tr className="bg-[#F2F4F2] text-[#17201D] border-b border-[#DDE2DE]">
-                      <th className="py-3 px-4 font-semibold">User</th>
-                      <th className="py-3 px-4 font-semibold">Roles</th>
-                      <th className="py-3 px-4 font-semibold">Scope</th>
-                      <th className="py-3 px-4 font-semibold">Two-step login</th>
-                      <th className="py-3 px-4 font-semibold">Last active</th>
-                      <th className="py-3 px-4 font-semibold text-right">Actions</th>
+          {/* Users Table matching Screen 40 */}
+          <div className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm min-w-[900px] border-collapse table-fixed">
+                <colgroup>
+                  <col className="w-[210px]" />
+                  <col className="w-auto" />
+                  <col className="w-[170px]" />
+                  <col className="w-[170px]" />
+                  <col className="w-[130px]" />
+                  <col className="w-[120px]" />
+                </colgroup>
+                <thead>
+                  <tr className="bg-surface-head text-ink border-b border-line text-xs font-semibold">
+                    <th className="py-3 px-4 font-semibold whitespace-nowrap">User</th>
+                    <th className="py-3 px-4 font-semibold">Roles</th>
+                    <th className="py-3 px-4 font-semibold">Scope</th>
+                    <th className="py-3 px-4 font-semibold whitespace-nowrap">Two-step login</th>
+                    <th className="py-3 px-4 font-semibold whitespace-nowrap">Last active</th>
+                    <th className="py-3 px-4 font-semibold text-right whitespace-nowrap">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line-row">
+                  {filteredUsers.map((u) => (
+                    <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="py-2.5 px-4">
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-semibold text-ink text-sm truncate">{u.name}</span>
+                          <span className="text-xs text-ink-secondary font-mono">{u.username}</span>
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <div className="flex gap-1.5 flex-wrap">
+                          {u.roles.map((r, i) => (
+                            <span
+                              key={i}
+                              className="text-xs font-semibold px-2 py-0.5 rounded-control bg-primary-tint text-primary-dark whitespace-nowrap"
+                            >
+                              {r}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-4 text-ink-secondary text-xs truncate" title={u.scope}>
+                        {u.scope}
+                      </td>
+                      <td className="py-2.5 px-4 whitespace-nowrap">
+                        {u.twoStep === "on" && (
+                          <span className="inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full bg-success-bg text-success-text whitespace-nowrap">
+                            On
+                          </span>
+                        )}
+                        {u.twoStep === "missing" && (
+                          <span className="inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full bg-warning-bg text-warning-text whitespace-nowrap">
+                            Required, not set
+                          </span>
+                        )}
+                        {u.twoStep === "not_needed" && (
+                          <span className="inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#F1F2EF] text-ink-secondary whitespace-nowrap">
+                            Not needed
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-4 text-ink-secondary text-xs font-mono whitespace-nowrap">
+                        {u.lastActive}
+                      </td>
+                      <td className="py-2 px-4 text-right whitespace-nowrap">
+                        {u.isLocked ? (
+                          <button
+                            type="button"
+                            onClick={() => handleUnlockUser(u.id, u.name)}
+                            className="min-h-[34px] px-3 rounded-control border border-primary bg-primary text-white text-xs font-semibold hover:bg-primary-dark transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-xs"
+                          >
+                            <MdLockOpen size={14} /> <span>Unlock</span>
+                          </button>
+                        ) : u.twoStep === "missing" ? (
+                          <button
+                            type="button"
+                            onClick={() => handleRemind2FA(u.name, u.mobile)}
+                            className="min-h-[34px] px-3 rounded-control border border-line-input bg-white text-ink text-xs font-medium hover:bg-slate-50 transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-xs"
+                          >
+                            <MdSend size={13} className="text-ink-secondary" /> <span>Remind</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => showToast(`Edit user details for ${u.name}`, "info")}
+                            className="min-h-[34px] px-3 rounded-control border border-line-input bg-white text-ink text-xs font-medium hover:bg-slate-50 transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-xs"
+                          >
+                            <MdEdit size={13} className="text-ink-secondary" /> <span>Edit</span>
+                          </button>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#EEF1EF]">
-                    {filteredUsers.map((u) => (
-                      <tr key={u.id} className="hover:bg-[#F9FAF8] transition">
-                        <td className="py-2.5 px-4">
-                          <div className="flex flex-col">
-                            <span className="font-semibold text-[#17201D]">{u.name}</span>
-                            <span className="text-xs text-[#4F5B57] font-mono">{u.username}</span>
-                          </div>
-                        </td>
-                        <td className="py-2.5 px-4">
-                          <div className="flex gap-1.5 flex-wrap">
-                            {u.roles.map((r, i) => (
-                              <span
-                                key={i}
-                                className="text-xs font-semibold px-2 py-0.5 rounded bg-[#E3EFEF] text-[#08393F]"
-                              >
-                                {r}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="py-2.5 px-4 text-[#4F5B57] text-xs">{u.scope}</td>
-                        <td className="py-2.5 px-4">
-                          {u.twoStep === "on" && (
-                            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#E4F1E8] text-[#1E5A33]">
-                              On
-                            </span>
-                          )}
-                          {u.twoStep === "missing" && (
-                            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FFF6EC] text-[#7A4106]">
-                              Required, not set
-                            </span>
-                          )}
-                          {u.twoStep === "not_needed" && (
-                            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#F1F2EF] text-[#4F5B57]">
-                              Not needed
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-2.5 px-4 text-[#4F5B57] text-xs font-mono">{u.lastActive}</td>
-                        <td className="py-2 px-4 text-right">
-                          {u.isLocked ? (
-                            <button
-                              onClick={() => handleUnlockUser(u.id, u.name)}
-                              className="h-[34px] px-3 rounded-lg border border-[#0E5A63] bg-[#0E5A63] text-white text-xs font-semibold hover:bg-[#08393F] transition inline-flex items-center gap-1.5"
-                            >
-                              <MdLockOpen size={14} /> Unlock
-                            </button>
-                          ) : u.twoStep === "missing" ? (
-                            <button
-                              onClick={() => handleRemind2FA(u.name, u.mobile)}
-                              className="h-[34px] px-3 rounded-lg border border-[#C9D1CD] bg-white text-[#17201D] text-xs font-medium hover:bg-[#F9FAF8] transition inline-flex items-center gap-1.5"
-                            >
-                              <MdSend size={13} /> Remind
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => showToast(`Edit user details for ${u.name}`, "info")}
-                              className="h-[34px] px-3 rounded-lg border border-[#C9D1CD] bg-white text-[#17201D] text-xs font-medium hover:bg-[#F9FAF8] transition inline-flex items-center gap-1.5"
-                            >
-                              <MdEdit size={13} /> Edit
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
+          </div>
           </div>
         )}
 
@@ -843,96 +877,91 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
             TAB 2: ROLES & PERMISSIONS (Screen 41)
            ========================================================================= */}
         {activeTab === "roles" && (
-          <div className="flex flex-wrap gap-5 items-start">
-            {/* Left Roles Sidebar */}
-            <div className="flex-1 basis-[240px] max-w-[280px] bg-white border border-[#DDE2DE] rounded-xl p-2 flex flex-col gap-1 shadow-xs">
-              {roles.map((r) => {
-                const isSelected = r.id === selectedRoleId;
-                return (
-                  <button
-                    key={r.id}
-                    onClick={() => setSelectedRoleId(r.id)}
-                    className={`text-left min-h-[44px] px-3 py-1.5 rounded-lg border-0 font-sans flex justify-between items-center gap-2 transition ${
-                      isSelected
-                        ? "bg-[#E3EFEF] text-[#17201D]"
-                        : "bg-transparent text-[#17201D] hover:bg-[#F9FAF8]"
-                    }`}
-                  >
-                    <div className="flex flex-col min-w-0">
-                      <span className={`text-sm truncate ${isSelected ? "font-semibold" : "font-normal"}`}>
-                        {r.name}
-                      </span>
-                      <span className="text-[11px] text-[#4F5B57]">{r.badge}</span>
-                    </div>
-                    <span className="font-mono text-xs text-[#4F5B57] bg-white/70 px-1.5 py-0.5 rounded border border-[#DDE2DE]">
-                      {r.usersCount}
-                    </span>
-                  </button>
-                );
-              })}
+        <div className="flex flex-wrap gap-5 items-start">
+          {/* Left Roles Sidebar */}
+          <div className="flex-1 basis-[240px] max-w-[280px] bg-white border border-line rounded-card p-2.5 flex flex-col gap-1 shadow-xs">
+            {roles.map((r) => {
+              const isSelected = r.id === selectedRoleId;
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => setSelectedRoleId(r.id)}
+                  className={`text-left min-h-[44px] px-3 py-1.5 rounded-control border-0 font-sans flex justify-between items-center gap-2 transition cursor-pointer ${
+                    isSelected
+                      ? "bg-primary-tint text-ink font-semibold"
+                      : "bg-transparent text-ink hover:bg-surface-subtle font-normal"
+                  }`}
+                >
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm truncate">{r.name}</span>
+                    <span className="text-[11px] text-ink-secondary font-normal">{r.badge}</span>
+                  </div>
+                  <span className="font-mono text-xs text-ink-secondary bg-white/70 px-1.5 py-0.5 rounded border border-line">
+                    {r.usersCount}
+                  </span>
+                </button>
+              );
+            })}
 
-              <button
-                onClick={() => setShowCloneModal(true)}
-                className="mt-2 mx-1 h-10 rounded-lg border border-dashed border-[#9AA8A3] bg-white hover:bg-[#F9FAF8] text-[13px] font-medium text-[#17201D] transition flex items-center justify-center gap-1.5"
-              >
-                <MdContentCopy size={14} /> Clone a role
-              </button>
+            <button
+              type="button"
+              onClick={() => setShowCloneModal(true)}
+              className="mt-2 mx-1 min-h-[38px] rounded-control border border-dashed border-line-input bg-surface-subtle hover:bg-slate-50 text-xs font-medium text-ink transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <MdContentCopy size={14} /> <span>Clone a role</span>
+            </button>
+          </div>
+
+          {/* Right Permissions Matrix */}
+          <div className="flex-[999] basis-[540px] min-w-0 bg-white border border-line rounded-card overflow-hidden shadow-xs">
+            <div className="p-4 sm:p-5 border-b border-line-row flex justify-between items-start gap-3 flex-wrap">
+              <div>
+                <h2 className="text-xl font-semibold text-ink m-0">{selectedRole.name}</h2>
+                <p className="text-xs text-ink-secondary mt-1">{selectedRole.description}</p>
+              </div>
             </div>
 
-            {/* Right Permissions Matrix */}
-            <div className="flex-[999] basis-[540px] min-w-0 bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-xs">
-              <div className="p-4 sm:p-5 border-b border-[#EEF1EF] flex justify-between items-start gap-3 flex-wrap">
-                <div>
-                  <h2 className="text-xl font-semibold text-[#17201D]">{selectedRole.name}</h2>
-                  <p className="text-xs text-[#4F5B57] mt-0.5">{selectedRole.description}</p>
-                </div>
-                <button
-                  onClick={handleSaveRole}
-                  className="h-10 px-5 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white text-sm font-semibold transition shadow-xs"
-                >
-                  Save role
-                </button>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm min-w-[760px] border-collapse">
-                  <thead>
-                    <tr className="bg-[#F2F4F2] text-[#17201D] border-b border-[#DDE2DE]">
-                      <th className="py-3 px-4 font-semibold">Module</th>
-                      {PERM_ACTIONS.map((a) => (
-                        <th key={a} className="py-3 px-2 font-semibold text-center">
-                          {a}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#EEF1EF]">
-                    {MODULES_LIST.map((mod) => {
-                      const modPerms = selectedRole.permissions[mod] || {};
-                      return (
-                        <tr key={mod} className="hover:bg-[#F9FAF8] transition">
-                          <td className="py-2.5 px-4 font-medium text-[#17201D]">{mod}</td>
-                          {PERM_ACTIONS.map((act) => {
-                            const isChecked = !!modPerms[act];
-                            return (
-                              <td key={act} className="py-2.5 px-2 text-center">
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked}
-                                  onChange={() => handleTogglePermission(mod, act)}
-                                  className="w-[18px] h-[18px] rounded border-[#C9D1CD] text-[#0E5A63] focus:ring-[#0E5A63] cursor-pointer"
-                                />
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm min-w-[760px] border-collapse">
+                <thead>
+                  <tr className="bg-surface-head text-ink border-b border-line text-xs font-semibold">
+                    <th className="py-3 px-4 font-semibold">Module</th>
+                    {PERM_ACTIONS.map((a) => (
+                      <th key={a} className="py-3 px-2 font-semibold text-center whitespace-nowrap">
+                        {a}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line-row">
+                  {MODULES_LIST.map((mod) => {
+                    const modPerms = selectedRole.permissions[mod] || {};
+                    return (
+                      <tr key={mod} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-2.5 px-4 font-medium text-ink text-xs sm:text-sm">{mod}</td>
+                        {PERM_ACTIONS.map((act) => {
+                          const isChecked = !!modPerms[act];
+                          return (
+                            <td key={act} className="py-2.5 px-2 text-center">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => handleTogglePermission(mod, act)}
+                                aria-label={`${mod} ${act}`}
+                                className="w-[18px] h-[18px] rounded border-line-input text-primary focus:ring-primary cursor-pointer"
+                              />
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
+        </div>
         )}
 
         {/* =========================================================================
@@ -940,29 +969,14 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
            ========================================================================= */}
         {activeTab === "audit" && (
           <div className="space-y-4">
-            <div className="flex flex-wrap justify-between items-end gap-4">
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-[#17201D]">Audit log</h1>
-                <p className="text-sm text-[#4F5B57] mt-0.5">
-                  Every change to students, marks, fees, payroll, roles and settings. Entries cannot be edited or deleted.
-                </p>
-              </div>
-              <button
-                onClick={handleExportAudit}
-                className="h-10 px-4 rounded-lg border border-[#C9D1CD] bg-white hover:bg-[#F9FAF8] text-sm font-medium text-[#17201D] transition flex items-center gap-1.5 shadow-xs"
-              >
-                <MdFileDownload size={16} /> Export (watermarked)
-              </button>
-            </div>
-
             {/* Filter Bar matching Screen 42 */}
-            <div className="flex flex-wrap items-center gap-3 bg-white border border-[#DDE2DE] rounded-xl p-3 shadow-xs">
-              <label className="flex items-center gap-2 text-xs text-[#4F5B57] font-medium">
+            <div className="flex flex-wrap items-center gap-3 bg-white border border-line rounded-card p-3.5 shadow-xs">
+              <label className="flex items-center gap-2 text-xs text-ink-secondary font-medium">
                 Module
                 <select
                   value={moduleFilter}
                   onChange={(e) => setModuleFilter(e.target.value)}
-                  className="h-9 px-2.5 rounded-lg border border-[#C9D1CD] bg-white text-xs font-semibold text-[#17201D] focus:outline-none"
+                  className="min-h-[36px] px-2.5 rounded-control border border-line-input bg-white text-xs font-semibold text-ink focus:outline-none focus:border-primary"
                 >
                   <option value="All">All modules</option>
                   <option value="Fees">Fees</option>
@@ -972,12 +986,12 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
                 </select>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-[#4F5B57] font-medium">
+              <label className="flex items-center gap-2 text-xs text-ink-secondary font-medium">
                 User
                 <select
                   value={userAuditFilter}
                   onChange={(e) => setUserAuditFilter(e.target.value)}
-                  className="h-9 px-2.5 rounded-lg border border-[#C9D1CD] bg-white text-xs font-semibold text-[#17201D] focus:outline-none"
+                  className="min-h-[36px] px-2.5 rounded-control border border-line-input bg-white text-xs font-semibold text-ink focus:outline-none focus:border-primary"
                 >
                   <option value="Anyone">Anyone</option>
                   <option value="Sunita">Sunita Rathore</option>
@@ -987,47 +1001,47 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
                 </select>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-[#4F5B57] font-medium">
+              <label className="flex items-center gap-2 text-xs text-ink-secondary font-medium">
                 Date
                 <input
                   type="date"
                   value={auditDate}
                   onChange={(e) => setAuditDate(e.target.value)}
-                  className="h-9 px-2.5 rounded-lg border border-[#C9D1CD] bg-white text-xs text-[#17201D] focus:outline-none"
+                  className="min-h-[36px] px-2.5 rounded-control border border-line-input bg-white text-xs text-ink focus:outline-none focus:border-primary"
                 />
               </label>
 
-              <label className="flex items-center gap-2 text-xs font-semibold text-[#17201D] ml-auto cursor-pointer">
+              <label className="flex items-center gap-2 text-xs font-semibold text-ink ml-auto cursor-pointer">
                 <input
                   type="checkbox"
                   checked={sensitiveOnly}
                   onChange={(e) => setSensitiveOnly(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#0E5A63] focus:ring-[#0E5A63]"
+                  className="w-4 h-4 rounded text-primary focus:ring-primary cursor-pointer"
                 />
-                Sensitive actions only
+                <span>Sensitive actions only</span>
               </label>
             </div>
 
             {/* Audit Log Timeline Entries */}
-            <div className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-xs divide-y divide-[#EEF1EF]">
+            <div className="bg-white border border-line rounded-card overflow-hidden shadow-xs divide-y divide-line-row">
               {filteredAudit.map((entry) => (
-                <div key={entry.id} className="grid grid-cols-[68px_1fr] gap-4 p-4 hover:bg-[#F9FAF8] transition">
-                  <span className="font-mono text-xs text-[#4F5B57] pt-0.5">{entry.time}</span>
+                <div key={entry.id} className="grid grid-cols-[68px_1fr] gap-4 p-4 hover:bg-slate-50/70 transition-colors">
+                  <span className="font-mono text-xs text-ink-secondary pt-0.5">{entry.time}</span>
 
                   <div className="flex flex-col gap-1.5 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
                         style={{ backgroundColor: entry.badgeBg, color: entry.badgeColor }}
-                        className="text-[11px] font-bold px-2 py-0.5 rounded tracking-wide uppercase"
+                        className="text-[11px] font-bold px-2 py-0.5 rounded tracking-wide uppercase inline-flex items-center"
                       >
                         {entry.actionBadge}
                       </span>
-                      <span className="text-sm font-semibold text-[#17201D]">{entry.title}</span>
+                      <span className="text-sm font-semibold text-ink">{entry.title}</span>
                     </div>
 
-                    <span className="text-xs text-[#3B4643]">{entry.changeSummary}</span>
+                    <span className="text-xs text-ink-body2">{entry.changeSummary}</span>
 
-                    <span className="text-[11.5px] text-[#4F5B57] font-mono">
+                    <span className="text-[11.5px] text-ink-secondary font-mono">
                       {entry.actor} · {entry.ip}
                     </span>
                   </div>
@@ -1036,55 +1050,55 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
             </div>
           </div>
         )}
-      </div>
 
       {/* =========================================================================
           MODAL: INVITE STAFF USER
          ========================================================================= */}
       {showInviteModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-[#DDE2DE] max-w-md w-full p-6 shadow-xl space-y-4">
-            <div className="flex justify-between items-center border-b border-[#EEF1EF] pb-3">
-              <h3 className="font-semibold text-base text-[#17201D]">Invite Staff Member</h3>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-card border border-line max-w-md w-full p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex justify-between items-center border-b border-line-row pb-3">
+              <h3 className="font-semibold text-base text-ink m-0">Invite Staff Member</h3>
               <button
+                type="button"
                 onClick={() => setShowInviteModal(false)}
-                className="text-[#4F5B57] hover:text-[#17201D]"
+                className="text-ink-secondary hover:text-ink cursor-pointer"
               >
                 <MdClose size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSendInvite} className="space-y-3 text-xs">
+            <form onSubmit={handleSendInvite} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-[#4F5B57] font-medium mb-1">Full Name</label>
+                <label className="block text-ink font-semibold mb-1">Full Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Ramesh Joshi"
                   value={inviteForm.name}
                   onChange={(e) => setInviteForm({ ...inviteForm, name: e.target.value })}
-                  className="w-full h-10 px-3 bg-[#F9FAF8] border border-[#C9D1CD] rounded-lg focus:outline-none focus:border-[#0E5A63]"
+                  className="w-full min-h-[38px] px-3 bg-white border border-line-input rounded-control focus:outline-none focus:border-primary text-xs"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[#4F5B57] font-medium mb-1">Mobile (Used for OTP Login)</label>
+                <label className="block text-ink font-semibold mb-1">Mobile (Used for OTP Login)</label>
                 <input
                   type="tel"
                   placeholder="10-digit mobile"
                   value={inviteForm.mobile}
                   onChange={(e) => setInviteForm({ ...inviteForm, mobile: e.target.value })}
-                  className="w-full h-10 px-3 bg-[#F9FAF8] border border-[#C9D1CD] rounded-lg focus:outline-none focus:border-[#0E5A63]"
+                  className="w-full min-h-[38px] px-3 bg-white border border-line-input rounded-control focus:outline-none focus:border-primary text-xs"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[#4F5B57] font-medium mb-1">Role</label>
+                <label className="block text-ink font-semibold mb-1">Role</label>
                 <select
                   value={inviteForm.role}
                   onChange={(e) => setInviteForm({ ...inviteForm, role: e.target.value })}
-                  className="w-full h-10 px-3 bg-[#F9FAF8] border border-[#C9D1CD] rounded-lg focus:outline-none focus:border-[#0E5A63]"
+                  className="w-full min-h-[38px] px-3 bg-white border border-line-input rounded-control focus:outline-none focus:border-primary text-xs"
                 >
                   {roles.map((r) => (
                     <option key={r.id} value={r.name}>
@@ -1095,27 +1109,27 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
               </div>
 
               <div>
-                <label className="block text-[#4F5B57] font-medium mb-1">Scope</label>
+                <label className="block text-ink font-semibold mb-1">Scope</label>
                 <input
                   type="text"
                   placeholder="e.g. Classes 9–10 or Whole school"
                   value={inviteForm.scope}
                   onChange={(e) => setInviteForm({ ...inviteForm, scope: e.target.value })}
-                  className="w-full h-10 px-3 bg-[#F9FAF8] border border-[#C9D1CD] rounded-lg focus:outline-none focus:border-[#0E5A63]"
+                  className="w-full min-h-[38px] px-3 bg-white border border-line-input rounded-control focus:outline-none focus:border-primary text-xs"
                 />
               </div>
 
-              <div className="pt-2 flex justify-end gap-2">
+              <div className="pt-2 flex justify-end gap-2 border-t border-line-row">
                 <button
                   type="button"
                   onClick={() => setShowInviteModal(false)}
-                  className="h-10 px-4 rounded-lg border border-[#C9D1CD] text-[#17201D] font-medium"
+                  className="min-h-[38px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink font-medium transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="h-10 px-5 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white font-semibold shadow-xs"
+                  className="min-h-[38px] px-5 rounded-control bg-primary hover:bg-primary-dark text-white font-semibold shadow-xs cursor-pointer active:scale-[0.98]"
                 >
                   Send Invitation
                 </button>
@@ -1129,25 +1143,26 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
           MODAL: CLONE A ROLE
          ========================================================================= */}
       {showCloneModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-[#DDE2DE] max-w-md w-full p-6 shadow-xl space-y-4">
-            <div className="flex justify-between items-center border-b border-[#EEF1EF] pb-3">
-              <h3 className="font-semibold text-base text-[#17201D]">Clone an Existing Role</h3>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-card border border-line max-w-md w-full p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex justify-between items-center border-b border-line-row pb-3">
+              <h3 className="font-semibold text-base text-ink m-0">Clone an Existing Role</h3>
               <button
+                type="button"
                 onClick={() => setShowCloneModal(false)}
-                className="text-[#4F5B57] hover:text-[#17201D]"
+                className="text-ink-secondary hover:text-ink cursor-pointer"
               >
                 <MdClose size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleCloneRole} className="space-y-3 text-xs">
+            <form onSubmit={handleCloneRole} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-[#4F5B57] font-medium mb-1">Base Role to Copy From</label>
+                <label className="block text-ink font-semibold mb-1">Base Role to Copy From</label>
                 <select
                   value={cloneForm.sourceRoleId}
                   onChange={(e) => setCloneForm({ ...cloneForm, sourceRoleId: e.target.value })}
-                  className="w-full h-10 px-3 bg-[#F9FAF8] border border-[#C9D1CD] rounded-lg focus:outline-none focus:border-[#0E5A63]"
+                  className="w-full min-h-[38px] px-3 bg-white border border-line-input rounded-control focus:outline-none focus:border-primary text-xs"
                 >
                   {roles.map((r) => (
                     <option key={r.id} value={r.id}>
@@ -1158,39 +1173,39 @@ export default function UsersAuditPage({ initialTab }: { initialTab?: "users" | 
               </div>
 
               <div>
-                <label className="block text-[#4F5B57] font-medium mb-1">New Role Name</label>
+                <label className="block text-ink font-semibold mb-1">New Role Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Senior Class Coordinator"
                   value={cloneForm.newRoleName}
                   onChange={(e) => setCloneForm({ ...cloneForm, newRoleName: e.target.value })}
-                  className="w-full h-10 px-3 bg-[#F9FAF8] border border-[#C9D1CD] rounded-lg focus:outline-none focus:border-[#0E5A63]"
+                  className="w-full min-h-[38px] px-3 bg-white border border-line-input rounded-control focus:outline-none focus:border-primary text-xs"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[#4F5B57] font-medium mb-1">Assigned Branch / Scope</label>
+                <label className="block text-ink font-semibold mb-1">Assigned Branch / Scope</label>
                 <input
                   type="text"
                   placeholder="e.g. Mansarovar Campus or Primary Wing"
                   value={cloneForm.scope}
                   onChange={(e) => setCloneForm({ ...cloneForm, scope: e.target.value })}
-                  className="w-full h-10 px-3 bg-[#F9FAF8] border border-[#C9D1CD] rounded-lg focus:outline-none focus:border-[#0E5A63]"
+                  className="w-full min-h-[38px] px-3 bg-white border border-line-input rounded-control focus:outline-none focus:border-primary text-xs"
                 />
               </div>
 
-              <div className="pt-2 flex justify-end gap-2">
+              <div className="pt-2 flex justify-end gap-2 border-t border-line-row">
                 <button
                   type="button"
                   onClick={() => setShowCloneModal(false)}
-                  className="h-10 px-4 rounded-lg border border-[#C9D1CD] text-[#17201D] font-medium"
+                  className="min-h-[38px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink font-medium transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="h-10 px-5 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white font-semibold shadow-xs"
+                  className="min-h-[38px] px-5 rounded-control bg-primary hover:bg-primary-dark text-white font-semibold shadow-xs cursor-pointer active:scale-[0.98]"
                 >
                   Create Cloned Role
                 </button>

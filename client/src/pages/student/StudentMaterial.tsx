@@ -86,7 +86,7 @@ const StudentMaterial: React.FC = () => {
             onClick={() => setSelectedSubject(sub)}
             className={`px-4 py-2 rounded-control text-small font-semibold whitespace-nowrap transition-all cursor-pointer ${
               selectedSubject === sub
-                ? "bg-[#12302D] text-white shadow-2xs"
+                ? "bg-nav-bg text-white shadow-2xs"
                 : "bg-surface text-ink-secondary hover:text-ink hover:bg-surface-subtle border border-line"
             }`}
           >

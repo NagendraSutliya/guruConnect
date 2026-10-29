@@ -351,7 +351,7 @@ export default function TransportPage() {
           <button
             type="button"
             onClick={() => setIsAddRouteModalOpen(true)}
-            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
             <FiPlus size={15} />
             <span>Add route</span>
@@ -374,7 +374,7 @@ export default function TransportPage() {
                 type="button"
                 onClick={() => setSelectedRouteId(r.id)}
                 className={`text-left border-0 rounded-control p-3 transition-colors cursor-pointer flex flex-col gap-2 ${
-                  isSelected ? "bg-[#E3EFEF]" : "bg-transparent hover:bg-slate-50"
+                  isSelected ? "bg-primary-tint" : "bg-transparent hover:bg-slate-50"
                 }`}
               >
                 <div className="flex justify-between items-center w-full gap-2">
@@ -386,10 +386,10 @@ export default function TransportPage() {
                 <div className="text-xs text-ink-secondary truncate">
                   {r.routeName}
                 </div>
-                <div className="h-1.5 w-full bg-[#E1E6E3] rounded-full overflow-hidden block">
+                <div className="h-1.5 w-full bg-line-track rounded-full overflow-hidden block">
                   <div
                     className={`block h-full transition-all duration-300 ${
-                      isWarning ? "bg-[#B4610E]" : "bg-primary"
+                      isWarning ? "bg-warning-accent" : "bg-primary"
                     }`}
                     style={{ width: `${percentage}%` }}
                   />
@@ -421,7 +421,7 @@ export default function TransportPage() {
                           }`}
                         />
                         {!isLast && (
-                          <span className="flex-1 w-[2px] bg-[#9CC3C4] min-h-[30px]" />
+                          <span className="flex-1 w-[2px] bg-primary-soft min-h-[30px]" />
                         )}
                       </div>
                       <div className="flex justify-between gap-3 flex-1 pb-3">
@@ -444,7 +444,7 @@ export default function TransportPage() {
             </div>
 
             {/* Live GPS Map Simulation Canvas (Screen 31) */}
-            <div className="flex-1 basis-[260px] min-h-[260px] rounded-control bg-[#EEF1EE] border border-dashed border-[#9AA8A3] flex flex-col items-center justify-center text-center p-4 text-xs text-ink-secondary relative overflow-hidden">
+            <div className="flex-1 basis-[260px] min-h-[260px] rounded-control bg-surface-placeholder border border-dashed border-ink-muted flex flex-col items-center justify-center text-center p-4 text-xs text-ink-secondary relative overflow-hidden">
               <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2 animate-pulse">
                 <FiNavigation size={22} />
               </div>
@@ -467,7 +467,7 @@ export default function TransportPage() {
                 </button>
                 <a
                   href={`tel:${selectedRoute.driverPhone}`}
-                  className="px-2.5 py-1 bg-primary text-white rounded text-[11px] font-medium hover:bg-[#08393F] flex items-center gap-1"
+                  className="px-2.5 py-1 bg-primary text-white rounded text-[11px] font-medium hover:bg-primary-dark flex items-center gap-1"
                 >
                   <FiPhone size={10} /> Call Driver
                 </a>
@@ -494,7 +494,7 @@ export default function TransportPage() {
               <div
                 className={`rounded-control p-3 flex flex-col gap-1 border ${
                   selectedRoute.insuranceStatus.status === "warning"
-                    ? "border-[#EBC99C] bg-[#FFF6EC]"
+                    ? "border-warning-border bg-warning-bg"
                     : "border-line bg-white"
                 }`}
               >
@@ -502,7 +502,7 @@ export default function TransportPage() {
                 <span
                   className={`text-xs font-semibold ${
                     selectedRoute.insuranceStatus.status === "warning"
-                      ? "text-[#7A4106]"
+                      ? "text-warning-text"
                       : "text-ink"
                   }`}
                 >
@@ -612,7 +612,7 @@ export default function TransportPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Confirm Assignment
                 </button>
@@ -745,7 +745,7 @@ export default function TransportPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Create Route
                 </button>

@@ -1021,70 +1021,70 @@ const StudentAttendancePanel: React.FC = () => {
             {/* Campus Overview Stacks (5 Top Metric Cards) */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {/* Stack 1: Total Enrolled */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Total Enrolled</span>
-                <span className="font-mono text-2xl font-semibold text-[#17201D]">{trackerMetrics.totalEnrolled}</span>
-                <span className="text-[11px] text-[#4F5B57]">Across {trackerMetrics.totalSections} sections</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Total Enrolled</span>
+                <span className="font-mono text-2xl font-semibold text-ink">{trackerMetrics.totalEnrolled}</span>
+                <span className="text-[11px] text-ink-secondary">Across {trackerMetrics.totalSections} sections</span>
               </div>
 
               {/* Stack 2: Campus Present */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Campus Present</span>
-                <span className="font-mono text-2xl font-semibold text-[#0E5A63]">{trackerMetrics.totalPresent}</span>
-                <span className="text-[11px] text-[#0E5A63] font-semibold">{trackerMetrics.campusRate}% overall rate</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Campus Present</span>
+                <span className="font-mono text-2xl font-semibold text-primary">{trackerMetrics.totalPresent}</span>
+                <span className="text-[11px] text-primary font-semibold">{trackerMetrics.campusRate}% overall rate</span>
               </div>
 
               {/* Stack 3: Campus Absent */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Campus Absent</span>
-                <span className="font-mono text-2xl font-semibold text-[#8F4A09]">{trackerMetrics.totalAbsent}</span>
-                <span className="text-[11px] text-[#8F4A09]">Automated notices dispatched</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Campus Absent</span>
+                <span className="font-mono text-2xl font-semibold text-warning-inline">{trackerMetrics.totalAbsent}</span>
+                <span className="text-[11px] text-warning-inline">Automated notices dispatched</span>
               </div>
 
               {/* Stack 4: On Leave / Half Day */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Approved Leave</span>
-                <span className="font-mono text-2xl font-semibold text-[#5B8E90]">{trackerMetrics.totalLeave}</span>
-                <span className="text-[11px] text-[#4F5B57]">Parent requests approved</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Approved Leave</span>
+                <span className="font-mono text-2xl font-semibold text-attendance-L">{trackerMetrics.totalLeave}</span>
+                <span className="text-[11px] text-ink-secondary">Parent requests approved</span>
               </div>
 
               {/* Stack 5: Section Submissions */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs col-span-2 sm:col-span-1">
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs col-span-2 sm:col-span-1">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-[#4F5B57] font-medium">Submissions</span>
-                  <span className="text-[11px] font-bold text-[#0E5A63]">
+                  <span className="text-xs text-ink-secondary font-medium">Submissions</span>
+                  <span className="text-[11px] font-bold text-primary">
                     {Math.round((trackerMetrics.submittedSections / (trackerMetrics.totalSections || 1)) * 100)}%
                   </span>
                 </div>
-                <span className="font-mono text-2xl font-semibold text-[#17201D]">
+                <span className="font-mono text-2xl font-semibold text-ink">
                   {trackerMetrics.submittedSections} / {trackerMetrics.totalSections}
                 </span>
                 {/* Progress bar */}
-                <div className="w-full bg-[#EEF1EF] h-1.5 rounded-full overflow-hidden mt-0.5">
+                <div className="w-full bg-line-row h-1.5 rounded-full overflow-hidden mt-0.5">
                   <div
-                    className="bg-[#0E5A63] h-full rounded-full transition-all duration-500"
+                    className="bg-primary h-full rounded-full transition-all duration-500"
                     style={{
                       width: `${Math.round((trackerMetrics.submittedSections / (trackerMetrics.totalSections || 1)) * 100)}%`,
                     }}
                   />
                 </div>
-                <span className="text-[11px] text-[#B4610E] font-medium">
+                <span className="text-[11px] text-warning-accent font-medium">
                   {trackerMetrics.pendingSections} pending cut-off (10:00 AM)
                 </span>
               </div>
             </div>
 
             {/* Cut-off Announcement & Bulk Action Banner */}
-            <div className="bg-[#FFF8F0] border border-[#F5D5B8] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+            <div className="bg-warning-warm border border-[#F5D5B8] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-lg bg-[#E9B872]/30 text-[#8F4A09] flex items-center justify-center flex-none">
+                <div className="w-9 h-9 rounded-lg bg-gold/30 text-warning-inline flex items-center justify-center flex-none">
                   <FiClock size={18} />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <div className="text-xs font-bold text-[#8F4A09] uppercase tracking-wide">
+                  <div className="text-xs font-bold text-warning-inline uppercase tracking-wide">
                     Morning Attendance Cut-off: 10:00 AM
                   </div>
-                  <div className="text-xs text-[#5E3305] mt-0.5">
+                  <div className="text-xs text-warning-strong mt-0.5">
                     Class teachers submit period 1 attendance. Guardians of absent and late students receive automated push alerts upon submission.
                   </div>
                 </div>
@@ -1094,7 +1094,7 @@ const StudentAttendancePanel: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleSendAllPendingReminders}
-                  className="px-3.5 py-2 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                  className="px-3.5 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition"
                 >
                   <FiBell size={13} />
                   <span>Send Reminder to All Pending ({trackerMetrics.pendingSections})</span>
@@ -1103,16 +1103,16 @@ const StudentAttendancePanel: React.FC = () => {
             </div>
 
             {/* Live Section Tracker Table / Cards */}
-            <div className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-2xs">
+            <div className="bg-white border border-line rounded-xl overflow-hidden shadow-2xs">
               {/* Filter & Search Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 border-b border-[#EEF1EF] bg-white">
-                <div className="flex items-center gap-1.5 p-0.5 bg-[#F5F6F3] border border-[#DDE2DE] rounded-lg text-xs font-semibold">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 border-b border-line-row bg-white">
+                <div className="flex items-center gap-1.5 p-0.5 bg-page border border-line rounded-lg text-xs font-semibold">
                   <button
                     onClick={() => setTrackerFilter("all")}
                     className={`px-3 py-1.5 rounded-md transition cursor-pointer ${
                       trackerFilter === "all"
-                        ? "bg-white text-[#17201D] shadow-2xs font-semibold"
-                        : "text-[#4F5B57] hover:text-[#17201D]"
+                        ? "bg-white text-ink shadow-2xs font-semibold"
+                        : "text-ink-secondary hover:text-ink"
                     }`}
                   >
                     All Sections ({trackerSections.length})
@@ -1121,49 +1121,49 @@ const StudentAttendancePanel: React.FC = () => {
                     onClick={() => setTrackerFilter("submitted")}
                     className={`px-3 py-1.5 rounded-md transition cursor-pointer flex items-center gap-1 ${
                       trackerFilter === "submitted"
-                        ? "bg-white text-[#0E5A63] shadow-2xs font-semibold"
-                        : "text-[#4F5B57] hover:text-[#0E5A63]"
+                        ? "bg-white text-primary shadow-2xs font-semibold"
+                        : "text-ink-secondary hover:text-primary"
                     }`}
                   >
-                    <span className="w-2 h-2 rounded-full bg-[#0E5A63]" />
+                    <span className="w-2 h-2 rounded-full bg-primary" />
                     <span>Submitted ({trackerMetrics.submittedSections})</span>
                   </button>
                   <button
                     onClick={() => setTrackerFilter("pending")}
                     className={`px-3 py-1.5 rounded-md transition cursor-pointer flex items-center gap-1 ${
                       trackerFilter === "pending"
-                        ? "bg-white text-[#B4610E] shadow-2xs font-semibold"
-                        : "text-[#4F5B57] hover:text-[#B4610E]"
+                        ? "bg-white text-warning-accent shadow-2xs font-semibold"
+                        : "text-ink-secondary hover:text-warning-accent"
                     }`}
                   >
-                    <span className="w-2 h-2 rounded-full bg-[#B4610E]" />
+                    <span className="w-2 h-2 rounded-full bg-warning-accent" />
                     <span>Pending ({trackerMetrics.pendingSections})</span>
                   </button>
                 </div>
 
                 <div className="relative min-w-[220px]">
-                  <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4F5B57]" size={13} />
+                  <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-secondary" size={13} />
                   <input
                     type="text"
                     value={trackerSearch}
                     onChange={(e) => setTrackerSearch(e.target.value)}
                     placeholder="Search class or teacher..."
-                    className="w-full pl-8 pr-3 py-1.5 text-xs border border-[#C9D1CD] rounded-lg bg-white text-[#17201D] outline-none focus:border-[#0E5A63]"
+                    className="w-full pl-8 pr-3 py-1.5 text-xs border border-line-input rounded-lg bg-white text-ink outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Sections Grid */}
-              <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 bg-[#F9FAF8]">
+              <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 bg-surface-subtle">
                 {trackerLoading ? (
-                  <div className="col-span-full py-16 text-center text-[#4F5B57]">
+                  <div className="col-span-full py-16 text-center text-ink-secondary">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <div className="w-7 h-7 border-2 border-[#0E5A63] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-7 h-7 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                       <span className="text-xs font-medium">Loading live campus tracker...</span>
                     </div>
                   </div>
                 ) : filteredSections.length === 0 ? (
-                  <div className="col-span-full py-12 text-center text-[#4F5B57]">
+                  <div className="col-span-full py-12 text-center text-ink-secondary">
                     <p className="m-0 font-medium text-sm">No sections match the current filter.</p>
                   </div>
                 ) : (
@@ -1180,26 +1180,26 @@ const StudentAttendancePanel: React.FC = () => {
                       <div
                         key={sec.id}
                         className={`bg-white border rounded-xl p-4 shadow-2xs transition-all flex flex-col justify-between gap-3.5 ${
-                          isSubmitted ? "border-[#DDE2DE]" : "border-[#F5D5B8] bg-[#FFFAF5]"
+                          isSubmitted ? "border-line" : "border-[#F5D5B8] bg-[#FFFAF5]"
                         }`}
                       >
                         {/* Header: Class Badge & Status Pill */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <span className="px-2.5 py-1 rounded-md bg-[#12302D] text-white font-mono text-xs font-bold">
+                            <span className="px-2.5 py-1 rounded-md bg-nav-bg text-white font-mono text-xs font-bold">
                               Class {sec.label}
                             </span>
-                            <span className="text-[11px] text-[#4F5B57] font-medium">
+                            <span className="text-[11px] text-ink-secondary font-medium">
                               {sec.enrolledCount} enrolled
                             </span>
                           </div>
 
                           {isSubmitted ? (
-                            <span className="px-2 py-0.5 rounded-full bg-[#E3EFEF] text-[#0E5A63] text-[11px] font-semibold flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-full bg-primary-tint text-primary text-[11px] font-semibold flex items-center gap-1">
                               <FiCheckCircle size={11} /> {sec.submittedAt || "Submitted"}
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-[#FFF8F0] text-[#B4610E] border border-[#F5D5B8] text-[11px] font-semibold flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-full bg-warning-warm text-warning-accent border border-[#F5D5B8] text-[11px] font-semibold flex items-center gap-1">
                               <FiClock size={11} /> Pending (10:00 AM)
                             </span>
                           )}
@@ -1209,14 +1209,14 @@ const StudentAttendancePanel: React.FC = () => {
                         <div className="flex flex-col gap-2.5">
                           {/* Teacher Info */}
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-[#E3EFEF] text-[#08393F] flex items-center justify-center font-bold text-xs flex-none">
+                            <div className="w-8 h-8 rounded-full bg-primary-tint text-primary-dark flex items-center justify-center font-bold text-xs flex-none">
                               {initials}
                             </div>
                             <div className="flex flex-col min-w-0">
-                              <span className="text-xs font-semibold text-[#17201D] truncate">
+                              <span className="text-xs font-semibold text-ink truncate">
                                 {sec.teacherName}
                               </span>
-                              <span className="text-[11px] text-[#4F5B57]">
+                              <span className="text-[11px] text-ink-secondary">
                                 {sec.teacherPhone || "Class Teacher"}
                               </span>
                             </div>
@@ -1224,28 +1224,28 @@ const StudentAttendancePanel: React.FC = () => {
 
                           {/* Attendance stats if submitted */}
                           {isSubmitted ? (
-                            <div className="bg-[#F5F6F3] rounded-lg p-2.5 flex items-center justify-between text-xs">
+                            <div className="bg-page rounded-lg p-2.5 flex items-center justify-between text-xs">
                               <div className="flex items-center gap-3">
                                 <div>
-                                  <span className="text-[#4F5B57] text-[10px] block">Present</span>
-                                  <span className="font-mono font-bold text-[#0E5A63]">{sec.presentCount}</span>
+                                  <span className="text-ink-secondary text-[10px] block">Present</span>
+                                  <span className="font-mono font-bold text-primary">{sec.presentCount}</span>
                                 </div>
                                 <div>
-                                  <span className="text-[#4F5B57] text-[10px] block">Absent</span>
-                                  <span className="font-mono font-bold text-[#8F4A09]">{sec.absentCount}</span>
+                                  <span className="text-ink-secondary text-[10px] block">Absent</span>
+                                  <span className="font-mono font-bold text-warning-inline">{sec.absentCount}</span>
                                 </div>
                                 <div>
-                                  <span className="text-[#4F5B57] text-[10px] block">Leave</span>
-                                  <span className="font-mono font-bold text-[#5B8E90]">{sec.leaveCount}</span>
+                                  <span className="text-ink-secondary text-[10px] block">Leave</span>
+                                  <span className="font-mono font-bold text-attendance-L">{sec.leaveCount}</span>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <span className="text-[#4F5B57] text-[10px] block">Rate</span>
-                                <span className="font-mono font-bold text-[#0E5A63] text-sm">{sec.rate}%</span>
+                                <span className="text-ink-secondary text-[10px] block">Rate</span>
+                                <span className="font-mono font-bold text-primary text-sm">{sec.rate}%</span>
                               </div>
                             </div>
                           ) : (
-                            <div className="bg-[#FFF4E8] rounded-lg p-2.5 flex items-center gap-2 text-xs text-[#8F4A09]">
+                            <div className="bg-[#FFF4E8] rounded-lg p-2.5 flex items-center gap-2 text-xs text-warning-inline">
                               <FiAlertTriangle size={14} className="flex-none" />
                               <span className="text-[11px] font-medium">
                                 Attendance has not been marked yet by class teacher.
@@ -1255,12 +1255,12 @@ const StudentAttendancePanel: React.FC = () => {
                         </div>
 
                         {/* Actions Footer */}
-                        <div className="pt-2 border-t border-[#EEF1EF] flex items-center justify-between gap-2">
+                        <div className="pt-2 border-t border-line-row flex items-center justify-between gap-2">
                           {isSubmitted ? (
                             <button
                               type="button"
                               onClick={() => handleOpenSectionRoster(sec)}
-                              className="w-full py-1.5 px-3 rounded-lg border border-[#C9D1CD] hover:border-[#0E5A63] hover:text-[#0E5A63] bg-white text-xs font-semibold text-[#17201D] transition cursor-pointer flex items-center justify-center gap-1.5"
+                              className="w-full py-1.5 px-3 rounded-lg border border-line-input hover:border-primary hover:text-primary bg-white text-xs font-semibold text-ink transition cursor-pointer flex items-center justify-center gap-1.5"
                             >
                               <FiEye size={12} />
                               <span>Review Class Roster</span>
@@ -1270,7 +1270,7 @@ const StudentAttendancePanel: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => handleOpenSectionRoster(sec)}
-                                className="flex-1 py-1.5 px-2.5 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white text-xs font-semibold transition cursor-pointer flex items-center justify-center gap-1 shadow-2xs"
+                                className="flex-1 py-1.5 px-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-xs font-semibold transition cursor-pointer flex items-center justify-center gap-1 shadow-2xs"
                               >
                                 <FiEdit2 size={11} />
                                 <span>Mark on Behalf</span>
@@ -1278,7 +1278,7 @@ const StudentAttendancePanel: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => handleSendReminder(sec)}
-                                className="py-1.5 px-2.5 rounded-lg border border-[#F5D5B8] bg-white hover:bg-[#FFF8F0] text-[#8F4A09] text-xs font-semibold transition cursor-pointer flex items-center justify-center gap-1"
+                                className="py-1.5 px-2.5 rounded-lg border border-[#F5D5B8] bg-white hover:bg-warning-warm text-warning-inline text-xs font-semibold transition cursor-pointer flex items-center justify-center gap-1"
                               >
                                 <FiBell size={11} />
                                 <span>Remind</span>
@@ -1308,51 +1308,51 @@ const StudentAttendancePanel: React.FC = () => {
             {/* Metric Summary Cards Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {/* Card 1: Present */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Present</span>
-                <span className="font-mono text-2xl font-semibold text-[#17201D]">{metrics.presentDisplay}</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Present</span>
+                <span className="font-mono text-2xl font-semibold text-ink">{metrics.presentDisplay}</span>
               </div>
 
               {/* Card 2: Absent */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Absent</span>
-                <span className="font-mono text-2xl font-semibold text-[#8F4A09]">{metrics.absent}</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Absent</span>
+                <span className="font-mono text-2xl font-semibold text-warning-inline">{metrics.absent}</span>
               </div>
 
               {/* Card 3: On leave */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">On leave</span>
-                <span className="font-mono text-2xl font-semibold text-[#17201D]">{metrics.leave}</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">On leave</span>
+                <span className="font-mono text-2xl font-semibold text-ink">{metrics.leave}</span>
               </div>
 
               {/* Card 4: Half day */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Half day</span>
-                <span className="font-mono text-2xl font-semibold text-[#17201D]">{metrics.halfday}</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Half day</span>
+                <span className="font-mono text-2xl font-semibold text-ink">{metrics.halfday}</span>
               </div>
 
               {/* Card 5: Today's % */}
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs col-span-2 sm:col-span-1">
-                <span className="text-xs text-[#4F5B57] font-medium">Today&apos;s %</span>
-                <span className="font-mono text-2xl font-semibold text-[#0E5A63]">{metrics.rate}%</span>
+              <div className="bg-white border border-line rounded-xl p-3.5 sm:p-4 flex flex-col gap-1 shadow-2xs col-span-2 sm:col-span-1">
+                <span className="text-xs text-ink-secondary font-medium">Today&apos;s %</span>
+                <span className="font-mono text-2xl font-semibold text-primary">{metrics.rate}%</span>
               </div>
             </div>
 
             {/* Student Attendance Section */}
-            <section className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-2xs">
+            <section className="bg-white border border-line rounded-xl overflow-hidden shadow-2xs">
               {/* Section Header with Legend & Mark All Present */}
-              <div className="flex justify-between items-center flex-wrap gap-3 px-4 py-3.5 border-b border-[#EEF1EF] bg-white">
-                <div className="flex gap-3.5 flex-wrap text-xs text-[#4F5B57] font-medium items-center">
+              <div className="flex justify-between items-center flex-wrap gap-3 px-4 py-3.5 border-b border-line-row bg-white">
+                <div className="flex gap-3.5 flex-wrap text-xs text-ink-secondary font-medium items-center">
                   <span className="flex items-center gap-1.5">
-                    <strong className="text-[#0E5A63]">P</strong> Present
+                    <strong className="text-primary">P</strong> Present
                   </span>
                   <span>·</span>
                   <span className="flex items-center gap-1.5">
-                    <strong className="text-[#B4610E]">A</strong> Absent
+                    <strong className="text-warning-accent">A</strong> Absent
                   </span>
                   <span>·</span>
                   <span className="flex items-center gap-1.5">
-                    <strong className="text-[#5B8E90]">L</strong> Leave
+                    <strong className="text-attendance-L">L</strong> Leave
                   </span>
                   <span>·</span>
                   <span className="flex items-center gap-1.5">
@@ -1360,32 +1360,32 @@ const StudentAttendancePanel: React.FC = () => {
                   </span>
                   <span>·</span>
                   <span className="flex items-center gap-1.5">
-                    <strong className="text-[#8C6B1F]">LT</strong> Late
+                    <strong className="text-attendance-LT">LT</strong> Late
                   </span>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleMarkAllPresent}
-                  className="min-h-[38px] px-3.5 rounded-lg border border-[#C9D1CD] bg-white font-sans text-xs font-semibold text-[#17201D] hover:bg-[#F5F6F3] transition cursor-pointer"
+                  className="min-h-[38px] px-3.5 rounded-lg border border-line-input bg-white font-sans text-xs font-semibold text-ink hover:bg-page transition cursor-pointer"
                 >
                   Mark all present
                 </button>
               </div>
 
               {/* Student Cards Grid (2 columns on desktop/laptop, matching 14-Attendance.png) */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 divide-[#EEF1EF]">
+              <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 divide-line-row">
                 {rosterLoading ? (
-                  <div className="col-span-full py-16 text-center text-[#4F5B57]">
+                  <div className="col-span-full py-16 text-center text-ink-secondary">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <div className="w-7 h-7 border-2 border-[#0E5A63] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-7 h-7 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                       <span className="text-xs font-medium">Loading roster for {currentOption?.label}...</span>
                     </div>
                   </div>
                 ) : roster.length === 0 ? (
-                  <div className="col-span-full py-14 text-center text-[#4F5B57]">
+                  <div className="col-span-full py-14 text-center text-ink-secondary">
                     <p className="m-0 font-medium text-sm">No active students found in this class/section.</p>
-                    <p className="m-0 text-xs text-[#4F5B57]/80 mt-1">
+                    <p className="m-0 text-xs text-ink-secondary/80 mt-1">
                       Add students in the Students directory or select another class from the dropdown above.
                     </p>
                   </div>
@@ -1397,17 +1397,17 @@ const StudentAttendancePanel: React.FC = () => {
                     return (
                       <div
                         key={student.studentId}
-                        className={`flex justify-between items-center gap-3 px-4 py-2.5 transition-colors border-b border-[#EEF1EF] ${
-                          isLeftColumn ? "lg:border-r lg:border-r-[#EEF1EF]" : ""
-                        } ${isAbsent ? "bg-[#FFF8F0]" : "bg-white hover:bg-[#F9FAF8]"}`}
+                        className={`flex justify-between items-center gap-3 px-4 py-2.5 transition-colors border-b border-line-row ${
+                          isLeftColumn ? "lg:border-r lg:border-r-line-row" : ""
+                        } ${isAbsent ? "bg-warning-warm" : "bg-white hover:bg-surface-subtle"}`}
                       >
                         {/* Student Roll and Name / Subtitle */}
                         <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                          <span className="font-mono text-xs text-[#4F5B57] w-[24px] flex-none">
+                          <span className="font-mono text-xs text-ink-secondary w-[24px] flex-none">
                             {String(student.rollNo).padStart(2, "0")}
                           </span>
                           <div className="flex flex-col min-w-0 flex-1">
-                            <span className="text-sm font-medium text-[#17201D] truncate">
+                            <span className="text-sm font-medium text-ink truncate">
                               {student.name}
                             </span>
 
@@ -1426,7 +1426,7 @@ const StudentAttendancePanel: React.FC = () => {
                                     );
                                   }}
                                   placeholder="Reason / note..."
-                                  className="h-5 px-1.5 text-[11px] border border-[#0E5A63] rounded bg-white font-sans text-[#17201D] w-full max-w-[200px]"
+                                  className="h-5 px-1.5 text-[11px] border border-primary rounded bg-white font-sans text-ink w-full max-w-[200px]"
                                   autoFocus
                                   onKeyDown={(e) => {
                                     if (e.key === "Enter") setEditingRemarksId(null);
@@ -1435,7 +1435,7 @@ const StudentAttendancePanel: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => setEditingRemarksId(null)}
-                                  className="text-[#0E5A63] hover:text-[#08393F] cursor-pointer"
+                                  className="text-primary hover:text-primary-dark cursor-pointer"
                                   title="Done"
                                 >
                                   <FiCheck size={12} />
@@ -1446,14 +1446,14 @@ const StudentAttendancePanel: React.FC = () => {
                                 <span
                                   className={`text-xs truncate ${
                                     isAbsent
-                                      ? "text-[#8F4A09] font-medium"
+                                      ? "text-warning-inline font-medium"
                                       : student.status === "late"
-                                      ? "text-[#8C6B1F] font-medium"
+                                      ? "text-attendance-LT font-medium"
                                       : student.status === "leave"
-                                      ? "text-[#5B8E90] font-medium"
+                                      ? "text-attendance-L font-medium"
                                       : student.status === "halfday"
                                       ? "text-[#2D6A4F] font-medium"
-                                      : "text-[#4F5B57] text-[11px]"
+                                      : "text-ink-secondary text-[11px]"
                                   }`}
                                 >
                                   {student.remarks || ""}
@@ -1462,7 +1462,7 @@ const StudentAttendancePanel: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => setEditingRemarksId(student.studentId)}
-                                    className="opacity-0 group-hover:opacity-100 text-[#4F5B57] hover:text-[#17201D] cursor-pointer p-0.5 transition"
+                                    className="opacity-0 group-hover:opacity-100 text-ink-secondary hover:text-ink cursor-pointer p-0.5 transition"
                                     title="Edit remark"
                                   >
                                     <FiEdit2 size={10} />
@@ -1486,8 +1486,8 @@ const StudentAttendancePanel: React.FC = () => {
                             onClick={() => handleStatusChange(student.studentId, "present")}
                             className={`min-w-[36px] min-h-[36px] px-1.5 rounded-md font-semibold text-xs transition cursor-pointer border ${
                               student.status === "present"
-                                ? "bg-[#0E5A63] text-white border-[#0E5A63] shadow-2xs"
-                                : "bg-white text-[#4F5B57] border-[#C9D1CD] hover:border-[#0E5A63]/70 hover:text-[#17201D]"
+                                ? "bg-primary text-white border-primary shadow-2xs"
+                                : "bg-white text-ink-secondary border-line-input hover:border-primary/70 hover:text-ink"
                             }`}
                           >
                             P
@@ -1500,8 +1500,8 @@ const StudentAttendancePanel: React.FC = () => {
                             onClick={() => handleStatusChange(student.studentId, "absent")}
                             className={`min-w-[36px] min-h-[36px] px-1.5 rounded-md font-semibold text-xs transition cursor-pointer border ${
                               student.status === "absent"
-                                ? "bg-[#B4610E] text-white border-[#B4610E] shadow-2xs"
-                                : "bg-white text-[#4F5B57] border-[#C9D1CD] hover:border-[#B4610E]/70 hover:text-[#17201D]"
+                                ? "bg-warning-accent text-white border-warning-accent shadow-2xs"
+                                : "bg-white text-ink-secondary border-line-input hover:border-warning-accent/70 hover:text-ink"
                             }`}
                           >
                             A
@@ -1514,8 +1514,8 @@ const StudentAttendancePanel: React.FC = () => {
                             onClick={() => handleStatusChange(student.studentId, "leave")}
                             className={`min-w-[36px] min-h-[36px] px-1.5 rounded-md font-semibold text-xs transition cursor-pointer border ${
                               student.status === "leave"
-                                ? "bg-[#5B8E90] text-white border-[#5B8E90] shadow-2xs"
-                                : "bg-white text-[#4F5B57] border-[#C9D1CD] hover:border-[#5B8E90]/70 hover:text-[#17201D]"
+                                ? "bg-attendance-L text-white border-attendance-L shadow-2xs"
+                                : "bg-white text-ink-secondary border-line-input hover:border-attendance-L/70 hover:text-ink"
                             }`}
                           >
                             L
@@ -1529,7 +1529,7 @@ const StudentAttendancePanel: React.FC = () => {
                             className={`min-w-[36px] min-h-[36px] px-1.5 rounded-md font-semibold text-xs transition cursor-pointer border ${
                               student.status === "halfday"
                                 ? "bg-[#2D6A4F] text-white border-[#2D6A4F] shadow-2xs"
-                                : "bg-white text-[#4F5B57] border-[#C9D1CD] hover:border-[#2D6A4F]/70 hover:text-[#17201D]"
+                                : "bg-white text-ink-secondary border-line-input hover:border-[#2D6A4F]/70 hover:text-ink"
                             }`}
                           >
                             HD
@@ -1542,8 +1542,8 @@ const StudentAttendancePanel: React.FC = () => {
                             onClick={() => handleStatusChange(student.studentId, "late")}
                             className={`min-w-[36px] min-h-[36px] px-1.5 rounded-md font-semibold text-xs transition cursor-pointer border ${
                               student.status === "late"
-                                ? "bg-[#8C6B1F] text-white border-[#8C6B1F] shadow-2xs"
-                                : "bg-white text-[#4F5B57] border-[#C9D1CD] hover:border-[#8C6B1F]/70 hover:text-[#17201D]"
+                                ? "bg-attendance-LT text-white border-attendance-LT shadow-2xs"
+                                : "bg-white text-ink-secondary border-line-input hover:border-attendance-LT/70 hover:text-ink"
                             }`}
                           >
                             LT
@@ -1556,16 +1556,16 @@ const StudentAttendancePanel: React.FC = () => {
               </div>
 
               {/* Bottom Footer Bar */}
-              <div className="flex justify-between items-center flex-wrap gap-4 p-4 border-t border-[#EEF1EF] bg-white">
+              <div className="flex justify-between items-center flex-wrap gap-4 p-4 border-t border-line-row bg-white">
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     id="notify-guardians"
                     checked={notifyGuardians}
                     onChange={(e) => setNotifyGuardians(e.target.checked)}
-                    className="w-4 h-4 rounded text-[#0E5A63] border-[#C9D1CD] cursor-pointer"
+                    className="w-4 h-4 rounded text-primary border-line-input cursor-pointer"
                   />
-                  <label htmlFor="notify-guardians" className="text-[13px] text-[#4F5B57] cursor-pointer select-none">
+                  <label htmlFor="notify-guardians" className="text-[13px] text-ink-secondary cursor-pointer select-none">
                     Guardians of absent and late students get a push notification within 5 minutes of submitting.
                   </label>
                 </div>
@@ -1574,7 +1574,7 @@ const StudentAttendancePanel: React.FC = () => {
                   type="button"
                   disabled={isSubmitting || rosterLoading}
                   onClick={handleSubmitAttendance}
-                  className="min-h-[46px] px-6 rounded-lg bg-[#0E5A63] hover:bg-[#08393F] text-white font-sans text-[15px] font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xs flex items-center gap-2"
+                  className="min-h-[46px] px-6 rounded-lg bg-primary hover:bg-primary-dark text-white font-sans text-[15px] font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xs flex items-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -1595,14 +1595,14 @@ const StudentAttendancePanel: React.FC = () => {
         {/* ========================================================= */}
         {activeTab === "monthly" && (
           <div className="flex flex-col gap-4">
-            <div className="bg-white p-4 rounded-xl border border-[#DDE2DE] shadow-2xs flex flex-wrap items-center justify-between gap-3">
+            <div className="bg-white p-4 rounded-xl border border-line shadow-2xs flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-3">
-                <label className="text-xs font-semibold text-[#4F5B57] flex items-center gap-2">
+                <label className="text-xs font-semibold text-ink-secondary flex items-center gap-2">
                   Class:
                   <select
                     value={selectedOptionKey}
                     onChange={(e) => setSelectedOptionKey(e.target.value)}
-                    className="h-9 px-3 border border-[#C9D1CD] rounded-lg bg-white text-xs font-semibold text-[#17201D] cursor-pointer"
+                    className="h-9 px-3 border border-line-input rounded-lg bg-white text-xs font-semibold text-ink cursor-pointer"
                   >
                     {classOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -1612,12 +1612,12 @@ const StudentAttendancePanel: React.FC = () => {
                   </select>
                 </label>
 
-                <label className="text-xs font-semibold text-[#4F5B57] flex items-center gap-2">
+                <label className="text-xs font-semibold text-ink-secondary flex items-center gap-2">
                   Month:
                   <select
                     value={matrixMonth}
                     onChange={(e) => setMatrixMonth(Number(e.target.value))}
-                    className="h-9 px-3 border border-[#C9D1CD] rounded-lg bg-white text-xs font-semibold text-[#17201D] cursor-pointer"
+                    className="h-9 px-3 border border-line-input rounded-lg bg-white text-xs font-semibold text-ink cursor-pointer"
                   >
                     {[
                       "January", "February", "March", "April", "May", "June",
@@ -1630,12 +1630,12 @@ const StudentAttendancePanel: React.FC = () => {
                   </select>
                 </label>
 
-                <label className="text-xs font-semibold text-[#4F5B57] flex items-center gap-2">
+                <label className="text-xs font-semibold text-ink-secondary flex items-center gap-2">
                   Year:
                   <select
                     value={matrixYear}
                     onChange={(e) => setMatrixYear(Number(e.target.value))}
-                    className="h-9 px-3 border border-[#C9D1CD] rounded-lg bg-white text-xs font-semibold text-[#17201D] cursor-pointer"
+                    className="h-9 px-3 border border-line-input rounded-lg bg-white text-xs font-semibold text-ink cursor-pointer"
                   >
                     {[2024, 2025, 2026, 2027].map((y) => (
                       <option key={y} value={y}>
@@ -1649,7 +1649,7 @@ const StudentAttendancePanel: React.FC = () => {
               <button
                 type="button"
                 onClick={handleExportCSV}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0E5A63] text-white font-semibold text-xs hover:bg-[#08393F] transition cursor-pointer shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-primary text-white font-semibold text-xs hover:bg-primary-dark transition cursor-pointer shadow-xs"
               >
                 <FiDownload size={13} />
                 <span>Export Matrix CSV</span>
@@ -1657,11 +1657,11 @@ const StudentAttendancePanel: React.FC = () => {
             </div>
 
             {/* Matrix Table */}
-            <div className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-2xs">
+            <div className="bg-white border border-line rounded-xl overflow-hidden shadow-2xs">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse font-sans text-xs">
                   <thead>
-                    <tr className="bg-[#F5F6F3] border-b border-[#DDE2DE] text-[#17201D] font-semibold">
+                    <tr className="bg-page border-b border-line text-ink font-semibold">
                       <th className="py-2.5 px-3 text-left w-12">Roll</th>
                       <th className="py-2.5 px-3 text-left min-w-[140px]">Student Name</th>
                       {Array.from({ length: daysInMatrixMonth }, (_, i) => (
@@ -1669,30 +1669,30 @@ const StudentAttendancePanel: React.FC = () => {
                           {i + 1}
                         </th>
                       ))}
-                      <th className="py-2.5 px-2 text-center text-[#0E5A63] font-bold border-l border-[#DDE2DE]">
+                      <th className="py-2.5 px-2 text-center text-primary font-bold border-l border-line">
                         P
                       </th>
-                      <th className="py-2.5 px-2 text-center text-[#8F4A09] font-bold">
+                      <th className="py-2.5 px-2 text-center text-warning-inline font-bold">
                         A
                       </th>
-                      <th className="py-2.5 px-2 text-center text-[#0E5A63] font-bold">
+                      <th className="py-2.5 px-2 text-center text-primary font-bold">
                         %
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#EEF1EF]">
+                  <tbody className="divide-y divide-line-row">
                     {monthlyLoading ? (
                       <tr>
-                        <td colSpan={daysInMatrixMonth + 5} className="py-12 text-center text-[#4F5B57]">
+                        <td colSpan={daysInMatrixMonth + 5} className="py-12 text-center text-ink-secondary">
                           <div className="flex flex-col items-center justify-center gap-2">
-                            <div className="w-6 h-6 border-2 border-[#0E5A63] border-t-transparent rounded-full animate-spin" />
+                            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                             <span className="text-xs font-medium">Loading monthly register matrix...</span>
                           </div>
                         </td>
                       </tr>
                     ) : monthlyStudents.length === 0 ? (
                       <tr>
-                        <td colSpan={daysInMatrixMonth + 5} className="py-10 text-center text-[#4F5B57]">
+                        <td colSpan={daysInMatrixMonth + 5} className="py-10 text-center text-ink-secondary">
                           No students in this class.
                         </td>
                       </tr>
@@ -1702,11 +1702,11 @@ const StudentAttendancePanel: React.FC = () => {
                         let aCount = 0;
 
                         return (
-                          <tr key={s._id || s.studentId} className="hover:bg-[#F9FAF8]">
-                            <td className="py-1.5 px-3 font-mono text-[#4F5B57]">
+                          <tr key={s._id || s.studentId} className="hover:bg-surface-subtle">
+                            <td className="py-1.5 px-3 font-mono text-ink-secondary">
                               {s.rollNo || idx + 1}
                             </td>
-                            <td className="py-1.5 px-3 font-medium text-[#17201D] whitespace-nowrap">
+                            <td className="py-1.5 px-3 font-medium text-ink whitespace-nowrap">
                               {s.name}
                             </td>
                             {Array.from({ length: daysInMatrixMonth }, (_, i) => {
@@ -1714,19 +1714,19 @@ const StudentAttendancePanel: React.FC = () => {
                               const status = monthlyMap.get(`${s._id || s.studentId}_${day}`);
 
                               let badge = "-";
-                              let color = "text-[#A9C2BD]";
+                              let color = "text-nav-muted";
 
                               if (status === "present" || (!status && s.status === "present")) {
                                 badge = "P";
-                                color = "bg-[#E3EFEF] text-[#0E5A63] font-bold";
+                                color = "bg-primary-tint text-primary font-bold";
                                 pCount++;
                               } else if (status === "absent" || (!status && s.status === "absent")) {
                                 badge = "A";
-                                color = "bg-[#FFF8F0] text-[#B4610E] font-bold";
+                                color = "bg-warning-warm text-warning-accent font-bold";
                                 aCount++;
                               } else if (status === "late" || (!status && s.status === "late")) {
                                 badge = "LT";
-                                color = "bg-[#FDF8E8] text-[#8C6B1F] font-bold";
+                                color = "bg-[#FDF8E8] text-attendance-LT font-bold";
                                 pCount += 1;
                               } else if (status === "halfday" || (!status && s.status === "halfday")) {
                                 badge = "HD";
@@ -1734,7 +1734,7 @@ const StudentAttendancePanel: React.FC = () => {
                                 pCount += 0.5;
                               } else if (status === "leave" || (!status && s.status === "leave")) {
                                 badge = "L";
-                                color = "bg-[#EDF4F5] text-[#5B8E90] font-bold";
+                                color = "bg-[#EDF4F5] text-attendance-L font-bold";
                               }
 
                               return (
@@ -1745,13 +1745,13 @@ const StudentAttendancePanel: React.FC = () => {
                                 </td>
                               );
                             })}
-                            <td className="py-1.5 px-2 text-center font-bold text-[#0E5A63] border-l border-[#DDE2DE]">
+                            <td className="py-1.5 px-2 text-center font-bold text-primary border-l border-line">
                               {pCount}
                             </td>
-                            <td className="py-1.5 px-2 text-center font-bold text-[#8F4A09]">
+                            <td className="py-1.5 px-2 text-center font-bold text-warning-inline">
                               {aCount}
                             </td>
-                            <td className="py-1.5 px-2 text-center font-bold text-[#0E5A63]">
+                            <td className="py-1.5 px-2 text-center font-bold text-primary">
                               {pCount + aCount > 0 ? Math.round((pCount / (pCount + aCount)) * 100) : 0}%
                             </td>
                           </tr>
@@ -1770,26 +1770,26 @@ const StudentAttendancePanel: React.FC = () => {
         {/* ========================================================= */}
         {activeTab === "defaulters" && (
           <div className="flex flex-col gap-4">
-            <div className="bg-white p-4 rounded-xl border border-[#DDE2DE] shadow-2xs flex flex-wrap items-center justify-between gap-3">
+            <div className="bg-white p-4 rounded-xl border border-line shadow-2xs flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="m-0 font-bold text-sm text-[#17201D] flex items-center gap-1.5">
-                  <FiAlertTriangle className="text-[#B4610E]" size={16} />
+                <h3 className="m-0 font-bold text-sm text-ink flex items-center gap-1.5">
+                  <FiAlertTriangle className="text-warning-accent" size={16} />
                   <span>Attendance Defaulter Registry</span>
                 </h3>
-                <p className="text-xs text-[#4F5B57] m-0 mt-0.5">
+                <p className="text-xs text-ink-secondary m-0 mt-0.5">
                   Students with attendance below 75% requiring parental notice or intervention.
                 </p>
               </div>
-              <span className="px-3 py-1 bg-[#FFF8F0] text-[#B4610E] border border-[#F5D5B8] rounded-full text-xs font-bold">
+              <span className="px-3 py-1 bg-warning-warm text-warning-accent border border-[#F5D5B8] rounded-full text-xs font-bold">
                 {defaulters.length} Defaulters Identified
               </span>
             </div>
 
-            <div className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-2xs">
+            <div className="bg-white border border-line rounded-xl overflow-hidden shadow-2xs">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse font-sans text-xs">
                   <thead>
-                    <tr className="bg-[#F5F6F3] border-b border-[#DDE2DE] text-[#17201D] font-semibold">
+                    <tr className="bg-page border-b border-line text-ink font-semibold">
                       <th className="py-2.5 px-3 text-left">Student Name</th>
                       <th className="py-2.5 px-3 text-left">Class & Section</th>
                       <th className="py-2.5 px-3 text-center">Attendance Rate</th>
@@ -1798,23 +1798,23 @@ const StudentAttendancePanel: React.FC = () => {
                       <th className="py-2.5 px-3 text-center">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#EEF1EF]">
+                  <tbody className="divide-y divide-line-row">
                     {defaultersLoading ? (
                       <tr>
-                        <td colSpan={6} className="py-12 text-center text-[#4F5B57]">
+                        <td colSpan={6} className="py-12 text-center text-ink-secondary">
                           <div className="flex flex-col items-center justify-center gap-2">
-                            <div className="w-6 h-6 border-2 border-[#0E5A63] border-t-transparent rounded-full animate-spin" />
+                            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                             <span className="text-xs font-medium">Scanning student records...</span>
                           </div>
                         </td>
                       </tr>
                     ) : defaulters.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="py-10 text-center text-[#4F5B57]">
+                        <td colSpan={6} className="py-10 text-center text-ink-secondary">
                           <div className="flex flex-col items-center justify-center gap-1">
-                            <FiCheckCircle size={24} className="text-[#0E5A63] mb-1" />
-                            <h4 className="m-0 font-semibold text-sm text-[#17201D]">No Attendance Defaulters!</h4>
-                            <p className="text-xs text-[#4F5B57] m-0">
+                            <FiCheckCircle size={24} className="text-primary mb-1" />
+                            <h4 className="m-0 font-semibold text-sm text-ink">No Attendance Defaulters!</h4>
+                            <p className="text-xs text-ink-secondary m-0">
                               All active students have an attendance rate of 75% or higher.
                             </p>
                           </div>
@@ -1822,28 +1822,28 @@ const StudentAttendancePanel: React.FC = () => {
                       </tr>
                     ) : (
                       defaulters.map((s) => (
-                        <tr key={s._id || s.studentId} className="hover:bg-[#F9FAF8]">
+                        <tr key={s._id || s.studentId} className="hover:bg-surface-subtle">
                           <td className="py-2.5 px-3">
                             <div className="flex flex-col">
-                              <span className="font-semibold text-[#17201D] text-xs">{s.name}</span>
-                              <span className="text-[10px] text-[#4F5B57] font-mono">
+                              <span className="font-semibold text-ink text-xs">{s.name}</span>
+                              <span className="text-[10px] text-ink-secondary font-mono">
                                 Adm: {s.admissionNo || "—"}
                               </span>
                             </div>
                           </td>
-                          <td className="py-2.5 px-3 font-semibold text-[#17201D]">
+                          <td className="py-2.5 px-3 font-semibold text-ink">
                             {s.classId?.name || s.className || "Class"}
                             {s.sectionId?.name || s.sectionName ? `-${s.sectionId?.name || s.sectionName}` : ""}
                           </td>
                           <td className="py-2.5 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded-full bg-[#FFF8F0] text-[#B4610E] font-bold border border-[#F5D5B8] text-xs">
+                            <span className="px-2 py-0.5 rounded-full bg-warning-warm text-warning-accent font-bold border border-[#F5D5B8] text-xs">
                               {s.attendancePct}%
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-[#17201D] font-medium">
+                          <td className="py-2.5 px-3 text-ink font-medium">
                             {s.parentName || "Guardian"}
                           </td>
-                          <td className="py-2.5 px-3 font-mono text-[#17201D] text-[11px]">
+                          <td className="py-2.5 px-3 font-mono text-ink text-[11px]">
                             {s.parentPhone || s.phone || "—"}
                           </td>
                           <td className="py-2.5 px-3 text-center">
@@ -1852,7 +1852,7 @@ const StudentAttendancePanel: React.FC = () => {
                               onClick={() => {
                                 showToast(`Notice dispatched to ${s.parentName || "parent"} of ${s.name}`, "success");
                               }}
-                              className="inline-flex items-center gap-1 px-3 py-1 rounded bg-[#E9B872] hover:bg-[#dfac62] text-[#12302D] font-semibold text-[11px] transition cursor-pointer shadow-2xs"
+                              className="inline-flex items-center gap-1 px-3 py-1 rounded bg-gold hover:bg-gold-hover text-nav-bg font-semibold text-[11px] transition cursor-pointer shadow-2xs"
                             >
                               <FiSend size={11} /> Send Notice
                             </button>
@@ -1873,36 +1873,36 @@ const StudentAttendancePanel: React.FC = () => {
         {activeTab === "analytics" && (
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Campus-wide Present</span>
-                <span className="font-mono text-2xl font-bold text-[#0E5A63]">
+              <div className="bg-white border border-line rounded-xl p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Campus-wide Present</span>
+                <span className="font-mono text-2xl font-bold text-primary">
                   {todayAnalytics?.present ?? metrics.present}
                 </span>
               </div>
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Campus-wide Absent</span>
-                <span className="font-mono text-2xl font-bold text-[#8F4A09]">
+              <div className="bg-white border border-line rounded-xl p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Campus-wide Absent</span>
+                <span className="font-mono text-2xl font-bold text-warning-inline">
                   {todayAnalytics?.absent ?? metrics.absent}
                 </span>
               </div>
-              <div className="bg-white border border-[#DDE2DE] rounded-xl p-4 flex flex-col gap-1 shadow-2xs">
-                <span className="text-xs text-[#4F5B57] font-medium">Overall Attendance Rate</span>
-                <span className="font-mono text-2xl font-bold text-[#17201D]">
+              <div className="bg-white border border-line rounded-xl p-4 flex flex-col gap-1 shadow-2xs">
+                <span className="text-xs text-ink-secondary font-medium">Overall Attendance Rate</span>
+                <span className="font-mono text-2xl font-bold text-ink">
                   {todayAnalytics?.rate ?? metrics.rate}%
                 </span>
               </div>
             </div>
 
-            <div className="bg-white border border-[#DDE2DE] rounded-xl overflow-hidden shadow-2xs">
-              <div className="px-4 py-3 border-b border-[#EEF1EF] bg-[#F5F6F3]">
-                <h3 className="m-0 text-xs font-semibold text-[#17201D] uppercase tracking-wide">
+            <div className="bg-white border border-line rounded-xl overflow-hidden shadow-2xs">
+              <div className="px-4 py-3 border-b border-line-row bg-page">
+                <h3 className="m-0 text-xs font-semibold text-ink uppercase tracking-wide">
                   Classwise Attendance Breakdown ({selectedDate})
                 </h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse font-sans text-xs">
                   <thead>
-                    <tr className="bg-white border-b border-[#DDE2DE] text-[#4F5B57] font-semibold">
+                    <tr className="bg-white border-b border-line text-ink-secondary font-semibold">
                       <th className="py-2 px-4 text-left">Class</th>
                       <th className="py-2 px-4 text-center">Present</th>
                       <th className="py-2 px-4 text-center">Absent</th>
@@ -1910,28 +1910,28 @@ const StudentAttendancePanel: React.FC = () => {
                       <th className="py-2 px-4 text-center">Attendance Rate</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#EEF1EF]">
+                  <tbody className="divide-y divide-line-row">
                     {analyticsLoading ? (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-[#4F5B57]">
+                        <td colSpan={5} className="py-8 text-center text-ink-secondary">
                           Loading analytics...
                         </td>
                       </tr>
                     ) : classAnalytics.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-[#4F5B57]">
+                        <td colSpan={5} className="py-8 text-center text-ink-secondary">
                           No class attendance recorded for this date yet.
                         </td>
                       </tr>
                     ) : (
                       classAnalytics.map((c, i) => (
-                        <tr key={i} className="hover:bg-[#F9FAF8]">
-                          <td className="py-2.5 px-4 font-semibold text-[#17201D]">{c.class}</td>
-                          <td className="py-2.5 px-4 text-center font-bold text-[#0E5A63]">{c.present}</td>
-                          <td className="py-2.5 px-4 text-center font-bold text-[#8F4A09]">{c.absent}</td>
-                          <td className="py-2.5 px-4 text-center text-[#4F5B57]">{c.total}</td>
+                        <tr key={i} className="hover:bg-surface-subtle">
+                          <td className="py-2.5 px-4 font-semibold text-ink">{c.class}</td>
+                          <td className="py-2.5 px-4 text-center font-bold text-primary">{c.present}</td>
+                          <td className="py-2.5 px-4 text-center font-bold text-warning-inline">{c.absent}</td>
+                          <td className="py-2.5 px-4 text-center text-ink-secondary">{c.total}</td>
                           <td className="py-2.5 px-4 text-center">
-                            <span className="px-2 py-0.5 rounded-full bg-[#E3EFEF] text-[#0E5A63] font-bold text-xs">
+                            <span className="px-2 py-0.5 rounded-full bg-primary-tint text-primary font-bold text-xs">
                               {c.rate}%
                             </span>
                           </td>

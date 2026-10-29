@@ -299,7 +299,7 @@ export default function HostelPage() {
           </h1>
         </div>
 
-        <div className="flex gap-2.5 flex-wrap items-center">
+        <div className="flex gap-2 flex-wrap items-center">
           <label className="flex items-center gap-2 text-[13px] text-ink-secondary">
             Floor
             <select
@@ -316,7 +316,7 @@ export default function HostelPage() {
           <button
             type="button"
             onClick={() => setIsAllocateModalOpen(true)}
-            className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
             <FiPlus size={15} />
             <span>Allocate bed</span>
@@ -325,27 +325,27 @@ export default function HostelPage() {
       </div>
 
       {/* 4 KPI Cards (Matching 32-Hostel.html) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
           <span className="text-xs text-ink-secondary font-medium">Beds on this floor</span>
-          <span className="font-mono text-2xl font-semibold text-ink">{totalBeds}</span>
+          <span className="font-mono text-xl font-semibold text-ink">{totalBeds}</span>
         </div>
 
         <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
           <span className="text-xs text-ink-secondary font-medium">Occupied</span>
-          <span className="font-mono text-2xl font-semibold text-ink">{occupiedBeds}</span>
+          <span className="font-mono text-xl font-semibold text-ink">{occupiedBeds}</span>
         </div>
 
         <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
           <span className="text-xs text-ink-secondary font-medium">Night roll call</span>
-          <span className="font-mono text-2xl font-semibold text-ink">
+          <span className="font-mono text-xl font-semibold text-ink">
             {nightRollCallPresent} + {outOnPassCount} on pass
           </span>
         </div>
 
         <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
           <span className="text-xs text-ink-secondary font-medium">Mess fee due</span>
-          <span className="font-mono text-2xl font-semibold text-ink">₹62,400</span>
+          <span className="font-mono text-xl font-semibold text-ink">₹62,400</span>
         </div>
       </div>
 
@@ -361,11 +361,11 @@ export default function HostelPage() {
                 Occupied
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-[3px] border border-dashed border-[#4F5B57] bg-white block" />
+                <span className="w-3 h-3 rounded-[3px] border border-dashed border-ink-secondary bg-white block" />
                 Vacant
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-[3px] bg-[#D9822B] block" />
+                <span className="w-3 h-3 rounded-[3px] bg-warning-cell block" />
                 Out on pass
               </span>
             </div>
@@ -408,7 +408,7 @@ export default function HostelPage() {
                           <span
                             key={bed.bedNumber}
                             title={`${bed.studentName} · Out on pass`}
-                            className="h-7 rounded-[5px] bg-[#D9822B] border border-[#D9822B] block"
+                            className="h-7 rounded-[5px] bg-warning-cell border border-warning-cell block"
                           />
                         );
                       }
@@ -416,7 +416,7 @@ export default function HostelPage() {
                         <span
                           key={bed.bedNumber}
                           title="Vacant Bed"
-                          className="h-7 rounded-[5px] bg-white border border-dashed border-[#4F5B57] block"
+                          className="h-7 rounded-[5px] bg-white border border-dashed border-ink-secondary block"
                         />
                       );
                     })}
@@ -428,14 +428,14 @@ export default function HostelPage() {
         </section>
 
         {/* Right Aside: Outpass Requests (Matching 32-Hostel.html) */}
-        <aside className="flex-1 basis-[300px] max-w-full lg:max-w-[340px] bg-white border border-line rounded-card p-4.5 flex flex-col gap-2.5 shadow-xs">
+        <aside className="flex-1 basis-[300px] max-w-full lg:max-w-[340px] bg-white border border-line rounded-card p-4 flex flex-col gap-2.5 shadow-xs">
           <h2 className="m-0 text-sm font-semibold text-ink">Outpass requests</h2>
 
           {outpasses.map((op, idx) => (
             <div
               key={op.id}
               className={`flex flex-col gap-1.5 pt-2.5 ${
-                idx > 0 ? "border-t border-[#EEF1EF]" : ""
+                idx > 0 ? "border-t border-line-row" : ""
               }`}
             >
               <div className="flex justify-between items-baseline gap-2">
@@ -450,9 +450,9 @@ export default function HostelPage() {
                 <span
                   className={`text-xs font-semibold ${
                     op.status === "Parent approved in app"
-                      ? "text-[#1E5A33]"
+                      ? "text-success-text"
                       : op.status === "Out now"
-                      ? "text-[#8F4A09]"
+                      ? "text-warning-inline"
                       : "text-ink-secondary"
                   }`}
                 >
@@ -513,7 +513,7 @@ export default function HostelPage() {
                         bed.status === "Occupied"
                           ? "bg-primary text-white"
                           : bed.status === "Out on pass"
-                          ? "bg-[#D9822B] text-white"
+                          ? "bg-warning-cell text-white"
                           : "bg-slate-200 text-ink-secondary"
                       }`}
                     >
@@ -629,7 +629,7 @@ export default function HostelPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Confirm Bed Allotment
                 </button>

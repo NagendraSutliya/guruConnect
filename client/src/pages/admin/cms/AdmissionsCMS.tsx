@@ -2,16 +2,21 @@ import { useState, useEffect } from "react";
 import { 
   MdSave, 
   MdImage, 
-  MdPlayArrow,
   MdFormatListNumbered,
   MdHelp,
   MdAssignment,
-  MdVerified
+  MdVerified,
+  MdAdd,
+  MdDeleteOutline,
+  MdVisibility
 } from "react-icons/md";
+import { Link } from "react-router-dom";
 import api from "../../../api/axiosInstance";
 import ImageUploadField from "./ImageUploadField";
+import { useToast } from "../../../context/ToastContext";
 
 export default function AdmissionsCMS() {
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [activeTab, setActiveTab] = useState("banner");
@@ -73,21 +78,23 @@ export default function AdmissionsCMS() {
         content: admissionsData
       });
       if (response.data.success) {
-        alert("Admissions content published successfully!");
+        showToast("Admissions content published successfully!", "success");
+      } else {
+        showToast("Failed to update admissions content", "error");
       }
     } catch (error) {
-      alert("Failed to update content");
+      showToast("Failed to update content. Please try again.", "error");
     } finally {
       setLoading(false);
     }
   };
 
   const tabs = [
-    { id: 'banner', label: 'Page Banner', icon: <MdImage /> },
-    { id: 'steps', label: 'Application Steps', icon: <MdFormatListNumbered /> },
-    { id: 'faqs', label: 'FAQs', icon: <MdHelp /> },
-    { id: 'eligibility', label: 'Eligibility Matrix', icon: <MdVerified /> },
-    { id: 'documents', label: 'Required Documents', icon: <MdAssignment /> },
+    { id: 'banner', label: 'Page Banner', icon: <MdImage size={16} /> },
+    { id: 'steps', label: 'Application Steps', icon: <MdFormatListNumbered size={16} /> },
+    { id: 'faqs', label: 'FAQs', icon: <MdHelp size={16} /> },
+    { id: 'eligibility', label: 'Eligibility Matrix', icon: <MdVerified size={16} /> },
+    { id: 'documents', label: 'Required Documents', icon: <MdAssignment size={16} /> },
   ];
 
   const updateArrayItem = (arrayName: string, index: number, field: string, value: string) => {
@@ -107,91 +114,101 @@ export default function AdmissionsCMS() {
   };
 
   return (
-    <div className="py-6 space-y-8 animate-fadeIn relative text-slate-900">
-      
+    <div className="space-y-5 animate-fadeIn max-w-content mx-auto pb-12 font-sans">
       {/* Header Section */}
-      <div className="sticky top-0 z-30 bg-gradient-to-r from-slate-100 via-white to-indigo-100 pb-4 pt-6 -mt-6 -mx-8 px-8 mb-6 border-b border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-            <MdAssignment className="text-indigo-600" />
+      <div className="flex flex-wrap justify-between items-end gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[13px] text-ink-secondary flex items-center gap-1.5">
+            <Link to="/admin/cms" className="hover:text-primary transition-colors">Website CMS</Link>
+            <span>›</span>
+            <span className="text-ink">Admissions</span>
+          </div>
+          <h1 className="text-2xl sm:text-[26px] font-semibold text-ink leading-tight">
             Admissions CMS
-          </h2>
-          <p className="text-slate-500 text-sm font-medium mt-1">Manage the enrollment guidelines and steps.</p>
+          </h1>
+          <div className="text-[13px] text-ink-secondary">
+            Manage the enrollment guidelines, age criteria, and required documents.
+          </div>
         </div>
 
-        <button 
-          onClick={handleSave}
-          disabled={loading || fetching}
-          className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 disabled:opacity-70"
-        >
-          <MdSave size={20} />
-          {loading ? "Updating..." : "Publish Changes"}
-        </button>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <a 
+            href={`${import.meta.env.VITE_SCHOOL_WEBSITE_URL || 'http://localhost:5174'}/admissions`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="min-h-[42px] px-4 rounded-control border border-line-input bg-white hover:bg-slate-50 text-ink text-[13px] font-semibold transition-colors cursor-pointer shadow-xs flex items-center gap-2"
+          >
+            <MdVisibility size={16} className="text-primary" />
+            <span>Live preview</span>
+          </a>
+          <button 
+            type="button"
+            onClick={handleSave}
+            disabled={loading || fetching}
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.98] disabled:opacity-70 flex items-center gap-2"
+          >
+            <MdSave size={18} />
+            <span>{loading ? "Publishing..." : "Publish changes"}</span>
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* Navigation Sidebar */}
         <div className="lg:col-span-3 space-y-2">
-          <div className="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm space-y-1 sticky top-32">
+          <div className="bg-white rounded-card border border-line p-3 space-y-1 sticky top-6">
+            <div className="text-[11px] font-semibold text-ink-secondary uppercase tracking-wider px-3 py-1.5">
+              Sections
+            </div>
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-xs font-medium transition-all ${
                   activeTab === tab.id 
-                    ? "bg-indigo-50 text-indigo-700 shadow-inner" 
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    ? "bg-primary text-white font-semibold shadow-sm" 
+                    : "text-ink-secondary hover:text-ink hover:bg-slate-50"
                 }`}
               >
                 {tab.icon}
                 {tab.label}
               </button>
             ))}
-            
-            <hr className="border-slate-100 my-4 mx-4" />
-            
-            <a 
-              href={`\${import.meta.env.VITE_SCHOOL_WEBSITE_URL || 'http://localhost:5174'}/admissions`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-3 text-xs font-bold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl transition-all w-full"
-            >
-              <MdPlayArrow size={16} />
-              Open Live Page
-            </a>
           </div>
         </div>
 
         {/* Editor Area */}
-        <div className="lg:col-span-9 space-y-8">
+        <div className="lg:col-span-9 space-y-5">
           {fetching ? (
-            <div className="h-[400px] bg-slate-100 rounded-3xl animate-pulse" />
+            <div className="h-96 bg-white border border-line rounded-card animate-pulse" />
           ) : (
             <>
               {/* BANNER TAB */}
               {activeTab === 'banner' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <h3 className="text-lg font-black text-slate-800 mb-6">Banner Configuration</h3>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Banner Title</label>
+                <div className="bg-white rounded-card border border-line p-5 space-y-4">
+                  <div>
+                    <h3 className="text-sm font-semibold text-ink">Banner Configuration</h3>
+                    <p className="text-xs text-ink-secondary">Set the hero heading, introductory text, and background picture.</p>
+                  </div>
+                  <div className="space-y-4 pt-2">
+                    <div>
+                      <label className="block text-xs font-medium text-ink-secondary mb-1.5">Banner Title</label>
                       <input 
                         value={admissionsData.bannerTitle}
                         onChange={(e) => setAdmissionsData({...admissionsData, bannerTitle: e.target.value})}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black text-slate-900 outline-none focus:bg-white focus:border-indigo-500 transition-all text-lg"
+                        className="w-full bg-white border border-line-input rounded-control px-3 py-2 text-xs text-ink placeholder:text-ink-secondary/60 focus:border-primary focus:outline-none transition-colors"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Banner Subtitle</label>
+                    <div>
+                      <label className="block text-xs font-medium text-ink-secondary mb-1.5">Banner Subtitle</label>
                       <textarea 
                         value={admissionsData.bannerSubtitle}
                         onChange={(e) => setAdmissionsData({...admissionsData, bannerSubtitle: e.target.value})}
                         rows={3}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-bold text-slate-600 outline-none focus:bg-white focus:border-indigo-500 transition-all text-sm leading-relaxed"
+                        className="w-full bg-white border border-line-input rounded-control px-3 py-2 text-xs text-ink placeholder:text-ink-secondary/60 focus:border-primary focus:outline-none transition-colors"
                       />
                     </div>
-                    <div className="pt-4 border-t border-slate-100">
+                    <div className="pt-2">
                       <ImageUploadField
                         label="Banner Background Image"
                         value={admissionsData.bannerImage}
@@ -204,49 +221,53 @@ export default function AdmissionsCMS() {
 
               {/* STEPS TAB */}
               {activeTab === 'steps' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-black text-slate-800">Application Steps</h3>
+                <div className="bg-white rounded-card border border-line p-5 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-semibold text-ink">Application Steps</h3>
+                      <p className="text-xs text-ink-secondary">Guide prospective families through your admission roadmap.</p>
+                    </div>
                     <button 
-                      onClick={() => setAdmissionsData(prev => ({...prev, steps: [...prev.steps, { step: "0X", title: "New Step", desc: "Description" }]}))}
-                      className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-indigo-100 transition-colors"
+                      onClick={() => setAdmissionsData(prev => ({...prev, steps: [...prev.steps, { step: `0${prev.steps.length + 1}`, title: "New Step", desc: "Description" }]}))}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-control bg-primary-tint text-primary-dark hover:bg-primary/20 text-xs font-medium transition-colors"
                     >
-                      + Add Step
+                      <MdAdd size={14} /> Add Step
                     </button>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3 pt-2">
                     {admissionsData.steps.map((item, i) => (
-                      <div key={i} className="p-5 bg-slate-50 rounded-3xl border border-slate-100 space-y-4 relative group">
+                      <div key={i} className="p-4 bg-slate-50/70 rounded-card border border-line space-y-3 relative group">
                         <button 
                           onClick={() => setAdmissionsData({...admissionsData, steps: admissionsData.steps.filter((_, idx) => idx !== i)})}
-                          className="absolute -top-3 -right-3 w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold shadow-md hover:bg-red-500 hover:text-white"
+                          className="absolute top-3 right-3 text-ink-secondary hover:text-red-600 transition-colors"
+                          title="Remove Step"
                         >
-                          ×
+                          <MdDeleteOutline size={16} />
                         </button>
-                        <div className="grid grid-cols-[80px_1fr] gap-4">
+                        <div className="grid grid-cols-[100px_1fr] gap-3 pr-8">
                           <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Step #</label>
+                            <label className="block text-[11px] font-medium text-ink-secondary mb-1">Step #</label>
                             <input 
                               value={item.step}
                               onChange={(e) => updateArrayItem('steps', i, 'step', e.target.value)}
-                              className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-bold text-slate-800 text-sm outline-none mt-1"
+                              className="w-full bg-white border border-line-input rounded-control px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
                             />
                           </div>
                           <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Title</label>
+                            <label className="block text-[11px] font-medium text-ink-secondary mb-1">Title</label>
                             <input 
                               value={item.title}
                               onChange={(e) => updateArrayItem('steps', i, 'title', e.target.value)}
-                              className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-bold text-slate-800 text-sm outline-none mt-1"
+                              className="w-full bg-white border border-line-input rounded-control px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
                             />
                           </div>
                         </div>
                         <div>
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                          <label className="block text-[11px] font-medium text-ink-secondary mb-1">Description</label>
                           <input 
                             value={item.desc}
                             onChange={(e) => updateArrayItem('steps', i, 'desc', e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-medium text-slate-600 text-sm outline-none mt-1"
+                            className="w-full bg-white border border-line-input rounded-control px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
                           />
                         </div>
                       </div>
@@ -257,40 +278,44 @@ export default function AdmissionsCMS() {
 
               {/* FAQS TAB */}
               {activeTab === 'faqs' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-black text-slate-800">Frequently Asked Questions</h3>
+                <div className="bg-white rounded-card border border-line p-5 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-semibold text-ink">Frequently Asked Questions</h3>
+                      <p className="text-xs text-ink-secondary">Common admissions questions and concise answers.</p>
+                    </div>
                     <button 
                       onClick={() => setAdmissionsData(prev => ({...prev, faqs: [...prev.faqs, { q: "New Question?", a: "Answer..." }]}))}
-                      className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-indigo-100 transition-colors"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-control bg-primary-tint text-primary-dark hover:bg-primary/20 text-xs font-medium transition-colors"
                     >
-                      + Add FAQ
+                      <MdAdd size={14} /> Add FAQ
                     </button>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3 pt-2">
                     {admissionsData.faqs.map((item, i) => (
-                      <div key={i} className="p-5 bg-slate-50 rounded-3xl border border-slate-100 space-y-4 relative group">
+                      <div key={i} className="p-4 bg-slate-50/70 rounded-card border border-line space-y-3 relative group">
                         <button 
                           onClick={() => setAdmissionsData({...admissionsData, faqs: admissionsData.faqs.filter((_, idx) => idx !== i)})}
-                          className="absolute -top-3 -right-3 w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold shadow-md hover:bg-red-500 hover:text-white"
+                          className="absolute top-3 right-3 text-ink-secondary hover:text-red-600 transition-colors"
+                          title="Remove FAQ"
                         >
-                          ×
+                          <MdDeleteOutline size={16} />
                         </button>
-                        <div>
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Question</label>
+                        <div className="pr-8">
+                          <label className="block text-[11px] font-medium text-ink-secondary mb-1">Question</label>
                           <input 
                             value={item.q}
                             onChange={(e) => updateArrayItem('faqs', i, 'q', e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-bold text-slate-800 text-sm outline-none mt-1"
+                            className="w-full bg-white border border-line-input rounded-control px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Answer</label>
+                          <label className="block text-[11px] font-medium text-ink-secondary mb-1">Answer</label>
                           <textarea 
                             value={item.a}
                             onChange={(e) => updateArrayItem('faqs', i, 'a', e.target.value)}
                             rows={2}
-                            className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 font-medium text-slate-600 text-sm outline-none mt-1"
+                            className="w-full bg-white border border-line-input rounded-control px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
                           />
                         </div>
                       </div>
@@ -301,56 +326,64 @@ export default function AdmissionsCMS() {
 
               {/* ELIGIBILITY MATRIX TAB */}
               {activeTab === 'eligibility' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <h3 className="text-lg font-black text-slate-800 mb-6">Eligibility Settings</h3>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Section Title</label>
+                <div className="bg-white rounded-card border border-line p-5 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-semibold text-ink">Eligibility Settings</h3>
+                      <p className="text-xs text-ink-secondary">Define grade levels and corresponding age requirements.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-4 pt-2">
+                    <div>
+                      <label className="block text-xs font-medium text-ink-secondary mb-1.5">Section Title</label>
                       <input 
                         value={admissionsData.eligibilityTitle}
                         onChange={(e) => setAdmissionsData({...admissionsData, eligibilityTitle: e.target.value})}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-black text-slate-900 outline-none focus:bg-white focus:border-indigo-500 transition-all text-sm"
+                        className="w-full bg-white border border-line-input rounded-control px-3 py-2 text-xs text-ink placeholder:text-ink-secondary/60 focus:border-primary focus:outline-none transition-colors"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Section Description</label>
+                    <div>
+                      <label className="block text-xs font-medium text-ink-secondary mb-1.5">Section Description</label>
                       <textarea 
                         value={admissionsData.eligibilityDesc}
                         onChange={(e) => setAdmissionsData({...admissionsData, eligibilityDesc: e.target.value})}
                         rows={2}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-medium text-slate-600 outline-none focus:bg-white focus:border-indigo-500 transition-all text-sm"
+                        className="w-full bg-white border border-line-input rounded-control px-3 py-2 text-xs text-ink placeholder:text-ink-secondary/60 focus:border-primary focus:outline-none transition-colors"
                       />
                     </div>
                     
-                    <div className="pt-6 border-t border-slate-100">
-                      <div className="flex justify-between items-center mb-4">
-                        <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-widest">Age Matrix</label>
+                    <div className="pt-3 border-t border-line">
+                      <div className="flex justify-between items-center mb-3">
+                        <label className="block text-xs font-medium text-ink-secondary">Age Matrix</label>
                         <button 
                           onClick={() => setAdmissionsData(prev => ({...prev, matrix: [...prev.matrix, { grade: "Grade X", age: "Y - Z Years" }]}))}
-                          className="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-100 transition-colors"
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-control bg-primary-tint text-primary-dark hover:bg-primary/20 text-[11px] font-medium transition-colors"
                         >
-                          + Add Row
+                          <MdAdd size={13} /> Add Row
                         </button>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {admissionsData.matrix.map((item, i) => (
-                          <div key={i} className="flex gap-2 items-center relative group p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                            <button 
-                              onClick={() => setAdmissionsData({...admissionsData, matrix: admissionsData.matrix.filter((_, idx) => idx !== i)})}
-                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-100 text-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold shadow-md hover:bg-red-500 hover:text-white text-[10px]"
-                            >
-                              ×
-                            </button>
+                          <div key={i} className="flex gap-2 items-center p-2.5 bg-slate-50/70 border border-line rounded-card relative group">
                             <input 
                               value={item.grade}
                               onChange={(e) => updateArrayItem('matrix', i, 'grade', e.target.value)}
-                              className="w-1/2 bg-white border border-slate-200 rounded-lg py-1.5 px-3 font-bold text-slate-800 text-xs outline-none"
+                              placeholder="Grade (e.g. Nursery)"
+                              className="w-1/2 bg-white border border-line-input rounded-control px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
                             />
                             <input 
                               value={item.age}
                               onChange={(e) => updateArrayItem('matrix', i, 'age', e.target.value)}
-                              className="w-1/2 bg-white border border-slate-200 rounded-lg py-1.5 px-3 font-medium text-slate-600 text-xs outline-none"
+                              placeholder="Age (e.g. 3-4 Years)"
+                              className="w-1/2 bg-white border border-line-input rounded-control px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
                             />
+                            <button 
+                              onClick={() => setAdmissionsData({...admissionsData, matrix: admissionsData.matrix.filter((_, idx) => idx !== i)})}
+                              className="text-ink-secondary hover:text-red-600 transition-colors p-1"
+                              title="Remove"
+                            >
+                              <MdDeleteOutline size={15} />
+                            </button>
                           </div>
                         ))}
                       </div>
@@ -361,29 +394,33 @@ export default function AdmissionsCMS() {
 
               {/* DOCUMENTS TAB */}
               {activeTab === 'documents' && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-black text-slate-800">Required Documents</h3>
+                <div className="bg-white rounded-card border border-line p-5 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-semibold text-ink">Required Documents</h3>
+                      <p className="text-xs text-ink-secondary">Checklist of documents families must submit during enrollment.</p>
+                    </div>
                     <button 
                       onClick={() => setAdmissionsData(prev => ({...prev, documents: [...prev.documents, "New Document"]}))}
-                      className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-indigo-100 transition-colors"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-control bg-primary-tint text-primary-dark hover:bg-primary/20 text-xs font-medium transition-colors"
                     >
-                      + Add Document
+                      <MdAdd size={14} /> Add Document
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     {admissionsData.documents.map((doc, i) => (
-                      <div key={i} className="relative group flex items-center">
+                      <div key={i} className="flex items-center gap-2 p-2 bg-slate-50/70 border border-line rounded-card">
                         <input 
                           value={doc}
                           onChange={(e) => updateStringArrayItem('documents', i, e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-bold text-slate-700 text-sm outline-none focus:border-indigo-500 focus:bg-white transition-all pr-10"
+                          className="flex-1 bg-white border border-line-input rounded-control px-2.5 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
                         />
                         <button 
                           onClick={() => setAdmissionsData({...admissionsData, documents: admissionsData.documents.filter((_, idx) => idx !== i)})}
-                          className="absolute right-3 w-6 h-6 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold hover:bg-red-500 hover:text-white text-[10px]"
+                          className="text-ink-secondary hover:text-red-600 transition-colors p-1"
+                          title="Remove Document"
                         >
-                          ×
+                          <MdDeleteOutline size={15} />
                         </button>
                       </div>
                     ))}

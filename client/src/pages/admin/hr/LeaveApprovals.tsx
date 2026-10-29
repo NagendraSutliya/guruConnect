@@ -136,7 +136,7 @@ export default function LeaveApprovals() {
         <button
           type="button"
           onClick={() => setIsApplyModalOpen(true)}
-          className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+          className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
         >
           <FiPlus size={15} />
           <span>Apply staff leave</span>
@@ -188,7 +188,7 @@ export default function LeaveApprovals() {
               <article
                 key={req.id}
                 className={`bg-white border rounded-card p-5 flex flex-wrap gap-4 items-center justify-between shadow-xs transition-colors ${
-                  req.isUrgent ? "border-[#EBC99C] bg-amber-50/20" : "border-line"
+                  req.isUrgent ? "border-warning-border bg-amber-50/20" : "border-line"
                 }`}
               >
                 <div className="flex-1 min-w-[300px] flex flex-col gap-1">
@@ -212,7 +212,7 @@ export default function LeaveApprovals() {
                     Balance after:{" "}
                     <b className="font-mono font-medium text-ink">{req.balanceAfter}</b>
                   </div>
-                  <div className="text-[#8F4A09] font-medium flex items-center gap-1.5">
+                  <div className="text-warning-inline font-medium flex items-center gap-1.5">
                     <FiAlertTriangle size={13} className="shrink-0" />
                     <span>{req.substituteNote}</span>
                   </div>
@@ -229,7 +229,7 @@ export default function LeaveApprovals() {
                   <button
                     type="button"
                     onClick={() => setActiveActionModal({ request: req, action: "approve" })}
-                    className="min-h-[32px] px-4 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+                    className="min-h-[32px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.98]"
                   >
                     Approve
                   </button>
@@ -262,7 +262,7 @@ export default function LeaveApprovals() {
                   {req.leaveType} ({req.dates}) · Approved by Principal
                 </div>
               </div>
-              <span className="px-2.5 py-1 rounded-full bg-[#E4F1E8] text-[#1E5A33] font-semibold">
+              <span className="px-2.5 py-1 rounded-full bg-success-bg text-success-text font-semibold">
                 Approved &amp; Scheduled
               </span>
             </div>
@@ -301,7 +301,7 @@ export default function LeaveApprovals() {
                 </p>
               </div>
             </div>
-            <div className="p-3 bg-[#FFF6EC] rounded-control border border-[#EBC99C] text-[#5E3305]">
+            <div className="p-3 bg-warning-bg rounded-control border border-warning-border text-warning-strong">
               <b>Unapproved Absence / LWP Rule:</b> 3 late arrivals in a month count as 0.5 day Leave Without Pay (LWP).
             </div>
           </div>
@@ -381,7 +381,7 @@ export default function LeaveApprovals() {
                 onClick={handleConfirmAction}
                 className={`px-4 py-2 text-white rounded-control font-semibold shadow-xs ${
                   activeActionModal.action === "approve"
-                    ? "bg-primary hover:bg-[#08393F]"
+                    ? "bg-primary hover:bg-primary-dark"
                     : "bg-red-700 hover:bg-red-800"
                 }`}
               >
@@ -466,7 +466,7 @@ export default function LeaveApprovals() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Submit Leave
                 </button>

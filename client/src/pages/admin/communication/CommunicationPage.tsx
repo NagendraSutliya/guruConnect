@@ -136,7 +136,7 @@ export default function CommunicationPage() {
             <button
               type="button"
               onClick={() => setIsNewPTMModalOpen(true)}
-              className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+              className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
             >
               <FiPlus size={15} />
               <span>New PTM</span>
@@ -149,7 +149,7 @@ export default function CommunicationPage() {
       {activeTab === "notices" && (
         <div className="flex flex-wrap gap-5 items-start">
           {/* Left Form: Notice Composer */}
-          <section className="flex-1 basis-[480px] min-w-0 bg-white border border-line rounded-card p-5.5 flex flex-col gap-4 shadow-xs">
+          <section className="flex-1 basis-[480px] min-w-0 bg-white border border-line rounded-card p-4 flex flex-col gap-4 shadow-xs">
             <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
               Title
               <input
@@ -204,7 +204,7 @@ export default function CommunicationPage() {
                       onClick={() => setSelectedAudience(aud)}
                       className={`min-h-[36px] px-3.5 rounded-full text-xs font-medium transition-colors cursor-pointer border ${
                         isSelected
-                          ? "bg-[#12302D] text-white border-[#12302D]"
+                          ? "bg-nav-bg text-white border-nav-bg"
                           : "bg-white text-ink border-line-input hover:bg-slate-50"
                       }`}
                     >
@@ -266,7 +266,7 @@ export default function CommunicationPage() {
               <span>Ask parents to acknowledge (Yes / No)</span>
             </label>
 
-            <div className="flex justify-end gap-2.5 pt-2.5 border-t border-[#EEF1EF]">
+            <div className="flex justify-end gap-2.5 pt-2.5 border-t border-line-row">
               <button
                 type="button"
                 onClick={() => showToast("Notice draft saved for scheduled broadcast.", "info")}
@@ -277,7 +277,7 @@ export default function CommunicationPage() {
               <button
                 type="button"
                 onClick={handleSendNotice}
-                className="min-h-[42px] px-4.5 rounded-control bg-primary hover:bg-[#08393F] text-white font-semibold text-sm transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+                className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white font-semibold text-sm transition-all cursor-pointer shadow-xs active:scale-[0.98]"
               >
                 Send for principal approval
               </button>
@@ -287,10 +287,10 @@ export default function CommunicationPage() {
           {/* Right Aside: Preview & Recent Notices (Matching 37-Notices.html) */}
           <aside className="flex-1 basis-[300px] max-w-full lg:max-w-[340px] flex flex-col gap-4">
             {/* Live Parent App Card Preview */}
-            <section className="bg-white border border-line rounded-card p-4.5 flex flex-col gap-3 shadow-xs">
+            <section className="bg-white border border-line rounded-card p-4 flex flex-col gap-3 shadow-xs">
               <h2 className="m-0 text-sm font-semibold text-ink">Preview in parent app</h2>
 
-              <div className="border border-line rounded-card p-3.5 bg-[#F9FAF8] flex flex-col gap-1.5">
+              <div className="border border-line rounded-card p-3.5 bg-surface-subtle flex flex-col gap-1.5">
                 <span className="text-xs font-semibold text-primary uppercase tracking-wide">
                   Notice · GuruConnect Institute
                 </span>
@@ -304,10 +304,10 @@ export default function CommunicationPage() {
             </section>
 
             {/* Recent Notices */}
-            <section className="bg-white border border-line rounded-card p-4.5 flex flex-col gap-1 shadow-xs">
+            <section className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
               <h2 className="m-0 mb-2 text-sm font-semibold text-ink">Recent notices</h2>
 
-              <div className="py-2.5 border-t border-[#EEF1EF] flex flex-col gap-1">
+              <div className="py-2.5 border-t border-line-row flex flex-col gap-1">
                 <div className="flex justify-between items-baseline gap-2 text-xs">
                   <span className="font-semibold text-ink">PTM for Class 6 on 9 Oct</span>
                   <span className="text-ink-secondary shrink-0">02 Oct</span>
@@ -315,7 +315,7 @@ export default function CommunicationPage() {
                 <span className="text-xs text-ink-secondary">98% delivered · 412 acknowledges</span>
               </div>
 
-              <div className="py-2.5 border-t border-[#EEF1EF] flex flex-col gap-1">
+              <div className="py-2.5 border-t border-line-row flex flex-col gap-1">
                 <div className="flex justify-between items-baseline gap-2 text-xs">
                   <span className="font-semibold text-ink">Fee installment 3 due date reminder</span>
                   <span className="text-ink-secondary shrink-0">28 Sep</span>
@@ -334,28 +334,28 @@ export default function CommunicationPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
               <span className="text-xs text-ink-secondary font-medium">Slots</span>
-              <span className="font-mono text-2xl font-semibold text-ink">36</span>
+              <span className="font-mono text-xl font-semibold text-ink">36</span>
             </div>
 
             <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
               <span className="text-xs text-ink-secondary font-medium">Booked</span>
-              <span className="font-mono text-2xl font-semibold text-ink">31</span>
+              <span className="font-mono text-xl font-semibold text-ink">31</span>
             </div>
 
             <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
               <span className="text-xs text-ink-secondary font-medium">Met so far</span>
-              <span className="font-mono text-2xl font-semibold text-ink">4</span>
+              <span className="font-mono text-xl font-semibold text-ink">4</span>
             </div>
 
             <div className="bg-white border border-line rounded-card p-4 flex flex-col gap-1 shadow-xs">
               <span className="text-xs text-ink-secondary font-medium">No-shows</span>
-              <span className="font-mono text-2xl font-semibold text-ink">1</span>
+              <span className="font-mono text-xl font-semibold text-ink">1</span>
             </div>
           </div>
 
           {/* Interactive PTM Matrix by Teacher (Matching 38-PTM.html) */}
           <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
-            <div className="p-3.5 px-5 border-b border-[#EEF1EF] flex justify-between items-center gap-3 flex-wrap">
+            <div className="p-3.5 px-5 border-b border-line-row flex justify-between items-center gap-3 flex-wrap">
               <h2 className="m-0 text-base font-semibold text-ink">
                 Slots by class teacher
               </h2>
@@ -366,15 +366,15 @@ export default function CommunicationPage() {
                   Booked
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-[3px] bg-[#9CC3C4] block" />
+                  <span className="w-3 h-3 rounded-[3px] bg-primary-soft block" />
                   Met
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-[3px] bg-[#D9822B] block" />
+                  <span className="w-3 h-3 rounded-[3px] bg-warning-cell block" />
                   No-show
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-[3px] border border-dashed border-[#4F5B57] bg-white block" />
+                  <span className="w-3 h-3 rounded-[3px] border border-dashed border-ink-secondary bg-white block" />
                   Free
                 </span>
               </div>
@@ -383,11 +383,11 @@ export default function CommunicationPage() {
             <div className="overflow-x-auto">
               <div className="grid grid-cols-[160px_repeat(12,minmax(44px,1fr))] min-w-[760px] text-xs">
                 {/* Header Row */}
-                <div className="p-2.5 px-4 bg-[#F2F4F2] font-semibold text-ink">Teacher</div>
+                <div className="p-2.5 px-4 bg-surface-head font-semibold text-ink">Teacher</div>
                 {TIME_SLOTS.map(t => (
                   <div
                     key={t}
-                    className="p-2.5 bg-[#F2F4F2] font-mono text-[11.5px] text-center text-ink-secondary"
+                    className="p-2.5 bg-surface-head font-mono text-[11.5px] text-center text-ink-secondary"
                   >
                     {t}
                   </div>
@@ -396,7 +396,7 @@ export default function CommunicationPage() {
                 {/* Rows */}
                 {ptmMatrix.map(row => (
                   <React.Fragment key={row.classGrade}>
-                    <div className="p-2.5 px-4 border-t border-[#EEF1EF] flex flex-col justify-center">
+                    <div className="p-2.5 px-4 border-t border-line-row flex flex-col justify-center">
                       <span className="font-semibold text-ink">{row.classGrade}</span>
                       <span className="text-[11px] text-ink-secondary">{row.teacherName}</span>
                     </div>
@@ -404,12 +404,12 @@ export default function CommunicationPage() {
                     {row.slots.map((status, idx) => (
                       <div
                         key={idx}
-                        className="p-2 border-t border-[#EEF1EF] flex items-center justify-center"
+                        className="p-2 border-t border-line-row flex items-center justify-center"
                       >
                         {status === "Met" && (
                           <span
                             title="Met"
-                            className="w-full h-8 rounded-[5px] bg-[#9CC3C4] border border-[#9CC3C4] block cursor-pointer"
+                            className="w-full h-8 rounded-[5px] bg-primary-soft border border-primary-soft block cursor-pointer"
                           />
                         )}
                         {status === "Booked" && (
@@ -421,13 +421,13 @@ export default function CommunicationPage() {
                         {status === "No-show" && (
                           <span
                             title="No-show"
-                            className="w-full h-8 rounded-[5px] bg-[#D9822B] border border-[#D9822B] block cursor-pointer"
+                            className="w-full h-8 rounded-[5px] bg-warning-cell border border-warning-cell block cursor-pointer"
                           />
                         )}
                         {status === "Free" && (
                           <span
                             title="Free"
-                            className="w-full h-8 rounded-[5px] bg-white border border-dashed border-[#4F5B57] block cursor-pointer"
+                            className="w-full h-8 rounded-[5px] bg-white border border-dashed border-ink-secondary block cursor-pointer"
                           />
                         )}
                       </div>
@@ -523,7 +523,7 @@ export default function CommunicationPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold shadow-xs"
                 >
                   Generate Slot Grid
                 </button>

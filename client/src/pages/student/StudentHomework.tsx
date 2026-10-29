@@ -102,13 +102,13 @@ const StudentHomework: React.FC = () => {
   const getStatusBadge = (status: HomeworkItem["status"]) => {
     switch (status) {
       case "To do":
-        return "bg-[#FFF6EC] text-[#7A4106] border border-[#EBC99C]/60";
+        return "bg-warning-bg text-warning-text border border-warning-border/60";
       case "Submitted":
-        return "bg-[#E3EFEF] text-[#08393F] border border-[#C5DEDD]";
+        return "bg-primary-tint text-primary-dark border border-primary-tint-border";
       case "Checked":
-        return "bg-[#E4F1E8] text-[#1E5A33] border border-[#BCE1C7]";
+        return "bg-success-bg text-success-text border border-success-border";
       case "Redo":
-        return "bg-[#F1EEE6] text-[#5A4A24] border border-[#D5CDB8]";
+        return "bg-tag-bg text-tag-text border border-tag-border";
       default:
         return "bg-surface-subtle text-ink-secondary";
     }

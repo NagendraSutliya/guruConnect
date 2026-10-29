@@ -93,7 +93,7 @@ export default function CashClosingPage() {
 
       {/* Locked Status Banner if already closed */}
       {isLocked && (
-        <div className="bg-[#E4F1E8] border border-emerald-300 rounded-[10px] p-4 text-xs text-[#1E5A33] flex items-center justify-between">
+        <div className="bg-success-bg border border-emerald-300 rounded-[10px] p-4 text-xs text-success-text flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FiCheckCircle size={18} />
             <span className="font-semibold text-sm">
@@ -112,7 +112,7 @@ export default function CashClosingPage() {
             <h2 className="text-base font-semibold text-ink">Notes and coins counted</h2>
           </div>
 
-          <div className="divide-y divide-[#EEF1EF]">
+          <div className="divide-y divide-line-row">
             {denominations.map((denom) => {
               const subtotal = denom.note * denom.count;
               return (
@@ -195,8 +195,8 @@ export default function CashClosingPage() {
               <div
                 className={`flex justify-between items-center px-3 py-2.5 mt-1 rounded-control font-semibold ${
                   variance < 0
-                    ? "bg-[#FFF6EC] text-[#7A4106]"
-                    : "bg-[#E4F1E8] text-[#1E5A33]"
+                    ? "bg-warning-bg text-warning-text"
+                    : "bg-success-bg text-success-text"
                 }`}
               >
                 <span>{variance < 0 ? "Short" : "Surplus"}</span>
@@ -205,7 +205,7 @@ export default function CashClosingPage() {
                 </span>
               </div>
             ) : (
-              <div className="flex justify-between items-center px-3 py-2.5 mt-1 rounded-control bg-[#E4F1E8] text-[#1E5A33] font-semibold">
+              <div className="flex justify-between items-center px-3 py-2.5 mt-1 rounded-control bg-success-bg text-success-text font-semibold">
                 <span>Exact Match</span>
                 <span className="font-mono">₹0</span>
               </div>
@@ -254,8 +254,8 @@ export default function CashClosingPage() {
                 disabled={isLocked}
                 className={`w-full min-h-[48px] rounded-control border-0 text-white font-semibold text-sm transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2 ${
                   isLocked
-                    ? "bg-[#9DB5B5] cursor-not-allowed"
-                    : "bg-primary hover:bg-[#08393F] active:scale-[0.99]"
+                    ? "bg-primary-disabled cursor-not-allowed"
+                    : "bg-primary hover:bg-primary-dark active:scale-[0.99]"
                 }`}
               >
                 <FiLock size={15} />

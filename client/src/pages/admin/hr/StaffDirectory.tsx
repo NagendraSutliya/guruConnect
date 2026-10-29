@@ -440,7 +440,7 @@ export default function StaffDirectory() {
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-[#08393F] text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
+            className="min-h-[42px] px-4 rounded-control bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
           >
             <FiPlus size={15} />
             <span>Add employee</span>
@@ -449,9 +449,9 @@ export default function StaffDirectory() {
       </div>
 
       {/* Compliance Expiry Warning Banner (Screen 26) */}
-      <div className="bg-[#FFF6EC] border border-[#EBC99C] rounded-control px-4 py-3 text-[13.5px] text-[#5E3305] flex items-center justify-between gap-3 flex-wrap">
+      <div className="bg-warning-bg border border-warning-border rounded-control px-4 py-3 text-[13.5px] text-warning-strong flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <FiAlertTriangle className="text-[#8F4A09] shrink-0" size={16} />
+          <FiAlertTriangle className="text-warning-inline shrink-0" size={16} />
           <span>
             <b>3 documents expire within 30 days:</b> police verification (2), medical fitness (1).
           </span>
@@ -459,7 +459,7 @@ export default function StaffDirectory() {
         <button
           type="button"
           onClick={() => setIsComplianceModalOpen(true)}
-          className="text-[#7A4106] font-semibold hover:underline text-[13px] cursor-pointer"
+          className="text-warning-text font-semibold hover:underline text-[13px] cursor-pointer"
         >
           Review renewals →
         </button>
@@ -536,7 +536,7 @@ export default function StaffDirectory() {
               className="bg-white border border-line rounded-card p-4 flex flex-col gap-3 shadow-xs hover:shadow-sm hover:border-primary/50 transition-all cursor-pointer group"
             >
               <div className="flex gap-3 items-center">
-                <div className="w-11 h-11 flex-none rounded-full bg-[#E3EFEF] text-primary flex items-center justify-center font-semibold text-sm border border-[#0E5A63]/15 group-hover:scale-105 transition-transform">
+                <div className="w-11 h-11 flex-none rounded-full bg-primary-tint text-primary flex items-center justify-center font-semibold text-sm border border-primary/15 group-hover:scale-105 transition-transform">
                   {initials}
                 </div>
                 <div className="flex flex-col gap-0.5 min-w-0 flex-1">
@@ -560,10 +560,10 @@ export default function StaffDirectory() {
                 <span
                   className={`text-[11.5px] font-semibold px-2 py-0.5 rounded-full ${
                     emp.status === "Probation"
-                      ? "bg-[#E3EFEF] text-primary"
+                      ? "bg-primary-tint text-primary"
                       : emp.todayStatus === "Present"
-                      ? "bg-[#E4F1E8] text-[#1E5A33]"
-                      : "bg-[#FFF6EC] text-[#7A4106]"
+                      ? "bg-success-bg text-success-text"
+                      : "bg-warning-bg text-warning-text"
                   }`}
                 >
                   {emp.status === "Probation"
@@ -777,7 +777,7 @@ export default function StaffDirectory() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control font-semibold cursor-pointer shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control font-semibold cursor-pointer shadow-xs"
                 >
                   Onboard Employee
                 </button>
@@ -843,7 +843,7 @@ export default function StaffDirectory() {
                   setIsComplianceModalOpen(false);
                   showToast("Bulk SMS reminders sent to 3 staff members for document renewal!", "success");
                 }}
-                className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold shadow-xs"
               >
                 Send Renewal Reminders
               </button>

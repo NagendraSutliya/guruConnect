@@ -212,11 +212,11 @@ export default function DefaultersPage() {
           type="button"
           onClick={() => setAgeingFilter(ageingFilter === "31-60" ? "ALL" : "31-60")}
           className={`text-left bg-white border rounded-card p-4 flex flex-col gap-1 shadow-xs transition-all cursor-pointer ${
-            ageingFilter === "31-60" ? "border-[#8F4A09] ring-2 ring-[#8F4A09]/20" : "border-line hover:border-slate-300"
+            ageingFilter === "31-60" ? "border-warning-inline ring-2 ring-warning-inline/20" : "border-line hover:border-slate-300"
           }`}
         >
           <span className="text-[12.5px] text-ink-secondary font-medium">31–60 days late</span>
-          <span className="font-mono text-xl sm:text-[22px] font-semibold text-[#8F4A09]">₹2,21,300</span>
+          <span className="font-mono text-xl sm:text-[22px] font-semibold text-warning-inline">₹2,21,300</span>
           <span className="text-[12.5px] text-ink-secondary">52 students</span>
         </button>
 
@@ -225,11 +225,11 @@ export default function DefaultersPage() {
           type="button"
           onClick={() => setAgeingFilter(ageingFilter === "OVER-60" ? "ALL" : "OVER-60")}
           className={`text-left bg-white border rounded-card p-4 flex flex-col gap-1 shadow-xs transition-all cursor-pointer ${
-            ageingFilter === "OVER-60" ? "border-[#8F4A09] ring-2 ring-[#8F4A09]/20" : "border-line hover:border-slate-300"
+            ageingFilter === "OVER-60" ? "border-warning-inline ring-2 ring-warning-inline/20" : "border-line hover:border-slate-300"
           }`}
         >
           <span className="text-[12.5px] text-ink-secondary font-medium">Over 60 days late</span>
-          <span className="font-mono text-xl sm:text-[22px] font-semibold text-[#8F4A09]">₹2,33,800</span>
+          <span className="font-mono text-xl sm:text-[22px] font-semibold text-warning-inline">₹2,33,800</span>
           <span className="text-[12.5px] text-ink-secondary">36 students · report cards on hold</span>
         </button>
       </div>
@@ -237,7 +237,7 @@ export default function DefaultersPage() {
       {/* Defaulters Section & Actions */}
       <section className="bg-white border border-line rounded-card overflow-hidden shadow-xs">
         {/* Selected Banner (Matching 22-Defaulters.html) */}
-        <div className="flex justify-between items-center flex-wrap gap-3 px-4 py-3 bg-[#E3EFEF] border-b border-[#EEF1EF]">
+        <div className="flex justify-between items-center flex-wrap gap-3 px-4 py-3 bg-primary-tint border-b border-line-row">
           <span className="text-sm font-semibold text-ink">
             {selectedIds.length} selected · ₹{selectedTotalAmount.toLocaleString("en-IN")}
           </span>
@@ -261,8 +261,8 @@ export default function DefaultersPage() {
               onClick={() => handleSendReminder("WhatsApp")}
               className={`min-h-[38px] px-3.5 rounded-control text-white text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
                 selectedIds.length === 0
-                  ? "bg-[#9DB5B5] cursor-not-allowed"
-                  : "bg-primary hover:bg-[#08393F] active:scale-[0.98]"
+                  ? "bg-primary-disabled cursor-not-allowed"
+                  : "bg-primary hover:bg-primary-dark active:scale-[0.98]"
               }`}
             >
               <FiSend size={13} />
@@ -298,14 +298,14 @@ export default function DefaultersPage() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-xs sm:text-small min-w-[880px]">
             <thead>
-              <tr className="bg-[#F2F4F2] text-left text-ink border-b border-line">
+              <tr className="bg-surface-head text-left text-ink border-b border-line">
                 <th className="px-4 py-3 w-10 text-center">
                   <input
                     type="checkbox"
                     aria-label="Select all defaulters"
                     checked={selectedIds.length === filteredData.length && filteredData.length > 0}
                     onChange={toggleSelectAll}
-                    className="w-4 h-4 rounded border-[#C9D1CD] text-primary focus:ring-primary cursor-pointer"
+                    className="w-4 h-4 rounded border-line-input text-primary focus:ring-primary cursor-pointer"
                   />
                 </th>
                 <th className="px-3 py-3 font-semibold">Student</th>
@@ -316,14 +316,14 @@ export default function DefaultersPage() {
                 <th className="px-4 py-3 font-semibold">Note</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF1EF]">
+            <tbody className="divide-y divide-line-row">
               {filteredData.map((row) => {
                 const isSelected = selectedIds.includes(row.id);
                 return (
                   <tr
                     key={row.id}
                     className={`transition-colors ${
-                      isSelected ? "bg-[#F4F9F9]" : "bg-white hover:bg-slate-50/60"
+                      isSelected ? "bg-primary-row" : "bg-white hover:bg-slate-50/60"
                     }`}
                   >
                     <td className="px-4 py-2.5 text-center">
@@ -332,7 +332,7 @@ export default function DefaultersPage() {
                         aria-label={`Select ${row.name}`}
                         checked={isSelected}
                         onChange={() => toggleSelectOne(row.id)}
-                        className="w-4 h-4 rounded border-[#C9D1CD] text-primary focus:ring-primary cursor-pointer"
+                        className="w-4 h-4 rounded border-line-input text-primary focus:ring-primary cursor-pointer"
                       />
                     </td>
 
@@ -350,7 +350,7 @@ export default function DefaultersPage() {
                       </span>
                     </td>
 
-                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-[#8F4A09]">
+                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-warning-inline">
                       ₹{row.overdueAmount.toLocaleString("en-IN")}
                     </td>
 
@@ -414,7 +414,7 @@ export default function DefaultersPage() {
                 <button
                   type="button"
                   onClick={confirmSendReminder}
-                  className="px-4 py-2 bg-primary hover:bg-[#08393F] text-white rounded-control text-xs font-semibold shadow-xs"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold shadow-xs"
                 >
                   Send Now
                 </button>

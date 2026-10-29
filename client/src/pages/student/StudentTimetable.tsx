@@ -99,7 +99,7 @@ const StudentTimetable: React.FC = () => {
                     <tr
                       key={idx}
                       className={`hover:bg-surface-subtle/60 transition-colors ${
-                        p.active ? "bg-[#E3EFEF]/60" : ""
+                        p.active ? "bg-primary-tint/60" : ""
                       }`}
                     >
                       <td className="py-3.5 px-6 font-mono font-semibold text-ink">
@@ -149,25 +149,25 @@ const StudentTimetable: React.FC = () => {
       {activeTab === "exams" && (
         <div className="flex flex-col gap-6">
           {/* Half-Yearly Hero Banner */}
-          <div className="bg-[#12302D] text-white rounded-card p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
+          <div className="bg-nav-bg text-white rounded-card p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-col">
-              <span className="text-caption font-semibold uppercase tracking-wider text-[#A9C2BD]">
+              <span className="text-caption font-semibold uppercase tracking-wider text-nav-muted">
                 Upcoming Half-Yearly Examinations 2026-27
               </span>
               <h2 className="text-title font-semibold text-white mt-1 m-0">
                 Starts Monday, 16 November 2026
               </h2>
-              <span className="text-small text-[#D5E4E0] mt-1">
+              <span className="text-small text-nav-text mt-1">
                 Exam Hours: 09:00 AM – 11:30 AM · Reporting time: 08:30 AM
               </span>
             </div>
 
             <div className="flex items-center gap-4">
               <div className="flex flex-col text-right">
-                <span className="font-mono text-3xl font-bold text-[#E9B872]">
+                <span className="font-mono text-3xl font-bold text-gold">
                   34 days
                 </span>
-                <span className="text-caption text-[#A9C2BD]">Countdown left</span>
+                <span className="text-caption text-nav-muted">Countdown left</span>
               </div>
               <button
                 type="button"
@@ -219,7 +219,7 @@ const StudentTimetable: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-4 bg-[#E3EFEF]/60 border border-[#C5DEDD] rounded-control flex items-center gap-3 text-small text-[#08393F]">
+          <div className="p-4 bg-primary-tint/60 border border-primary-tint-border rounded-control flex items-center gap-3 text-small text-primary-dark">
             <FiAward size={18} className="shrink-0 text-primary" />
             <span>
               Admit cards will be distributed directly in class by your class teacher Sunita Rathore 1 week prior to exams.
