@@ -4,7 +4,6 @@ import { useToast } from "../../../context/ToastContext";
 import {
   FiCheckCircle,
   FiCalendar,
-  FiTrendingUp,
   FiAlertTriangle,
   FiSend,
   FiChevronDown,
@@ -16,7 +15,6 @@ import {
   FiBell,
   FiSearch,
   FiEye,
-  FiLayers,
   FiPieChart,
 } from "react-icons/fi";
 

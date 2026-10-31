@@ -2,7 +2,7 @@ import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import TeacherNavbar from "../components/teacher/TeacherNavbar";
 import { useAuth } from "../context/AuthContext";
-import { FiMenu, FiChevronLeft } from "react-icons/fi";
+import { FiMenu, FiChevronLeft, FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { 
   MdDashboard,
   MdCalendarToday,
@@ -20,6 +20,9 @@ const TeacherLayout = () => {
   const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [institute, setInstitute] = useState<any>(null);
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
+    "/teacher/homework": true,
+  });
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -55,7 +58,15 @@ const TeacherLayout = () => {
     { label: "My timetable", path: "/teacher/routine", icon: <MdCalendarToday size={18} /> },
     { label: "My class · 8-B", path: "/teacher/students", icon: <MdGroups size={18} />, badge: "2" },
     { label: "Attendance", path: "/teacher/attendance", icon: <MdFactCheck size={18} /> },
-    { label: "Homework & syllabus", path: "/teacher/homework", icon: <MdMenuBook size={18} /> },
+    {
+      label: "Homework & syllabus",
+      path: "/teacher/homework",
+      icon: <MdMenuBook size={18} />,
+      subItems: [
+        { label: "Requirement UI", path: "/teacher/homework" },
+        { label: "Advanced Tracker", path: "/teacher/homework/advanced" },
+      ],
+    },
     { label: "Marks & remarks", path: "/teacher/results", icon: <MdGrade size={18} />, badge: "1" },
     { label: "Messages", path: "/teacher/messages", icon: <MdChatBubbleOutline size={18} />, badge: "3" },
     { label: "Leave & payslip", path: "/teacher/leave-payslip", icon: <MdPayments size={18} /> },
@@ -122,9 +133,83 @@ const TeacherLayout = () => {
         {/* Navigation Items */}
         <nav aria-label="Main" className="flex-1 p-3.5 space-y-1 overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
+            const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
             const isMatch =
               location.pathname === item.path ||
               (item.path !== "/teacher/dashboard" && location.pathname.startsWith(item.path));
+            const isExpanded = expandedMenus[item.path] ?? isMatch;
+
+            if (hasSubItems && !collapsed) {
+              return (
+                <div key={item.path} className="space-y-1">
+                  <div
+                    className={`relative group flex items-center justify-between min-h-[40px] px-3 py-2 rounded-control text-[14px] transition-all duration-200 select-none cursor-pointer ${
+                      isMatch
+                        ? "bg-nav-active text-white font-medium shadow-xs"
+                        : "text-nav-text font-normal hover:bg-nav-active/50 hover:text-white"
+                    }`}
+                    onClick={() => {
+                      setExpandedMenus((prev) => ({
+                        ...prev,
+                        [item.path]: !isExpanded,
+                      }));
+                      if (!isMatch) {
+                        navigate(item.path);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className={`flex items-center justify-center shrink-0 transition-colors ${
+                          isMatch ? "text-gold" : "text-nav-muted group-hover:text-nav-text"
+                        }`}
+                      >
+                        {item.icon}
+                      </div>
+                      <span className="truncate">{item.label}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-nav-muted group-hover:text-white">
+                      {item.badge && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-gold/20 text-gold border border-gold/30">
+                          {item.badge}
+                        </span>
+                      )}
+                      <span className="text-xs">
+                        {isExpanded ? <FiChevronDown size={14} /> : <FiChevronRight size={14} />}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Sub-items list */}
+                  {isExpanded && (
+                    <div className="ml-5 pl-2.5 border-l border-nav-divider/70 my-1 space-y-1">
+                      {item.subItems!.map((sub) => {
+                        const isSubActive =
+                          sub.path === "/teacher/homework"
+                            ? location.pathname === "/teacher/homework" || location.pathname === "/teacher/homework/requirement"
+                            : location.pathname === sub.path;
+
+                        return (
+                          <NavLink
+                            key={sub.path}
+                            to={sub.path}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-control text-[13px] transition-all duration-150 ${
+                              isSubActive
+                                ? "bg-nav-active text-gold font-medium"
+                                : "text-nav-muted hover:text-white hover:bg-nav-active/40 font-normal"
+                            }`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${isSubActive ? "bg-gold" : "bg-nav-muted/60"}`} />
+                            <span className="truncate">{sub.label}</span>
+                          </NavLink>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
 
             return (
               <NavLink

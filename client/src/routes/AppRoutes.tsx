@@ -309,6 +309,8 @@ export default function AppRoutes() {
         <Route path="students" element={<TeacherMyClass />} />
         <Route path="attendance" element={<AttendanceTeacher />} />
         <Route path="homework" element={<TeacherHomework />} />
+        <Route path="homework/requirement" element={<TeacherHomework />} />
+        <Route path="homework/advanced" element={<TeacherHomework />} />
         <Route path="syllabus" element={<TeacherHomework />} />
         <Route path="assignments" element={<TeacherHomework />} />
         <Route path="material" element={<TeacherHomework />} />
