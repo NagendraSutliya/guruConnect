@@ -11,8 +11,7 @@ import {
   GraduationCap,
   Eye,
   EyeOff,
-  Sparkles,
-  BookOpen
+  Sparkles
 } from "lucide-react";
 import PortalSlider from "../../components/PortalSlider";
 
@@ -33,6 +32,7 @@ export default function StudentLogin() {
       _id: "69fd97be34ea0a5f60c4a99a",
       name: "Aarav Sharma (Student)",
       email: "student@test.com",
+      instituteId: "6964c3ca02b30df07276ee54",
     };
     localStorage.setItem("student", JSON.stringify(fallbackUser));
     setUser(fallbackUser);
@@ -55,6 +55,7 @@ export default function StudentLogin() {
         _id: data._id,
         name: data.name,
         email: data.email,
+        instituteId: data.instituteId || "6964c3ca02b30df07276ee54",
       };
 
       localStorage.setItem("student", JSON.stringify(studentUser));
